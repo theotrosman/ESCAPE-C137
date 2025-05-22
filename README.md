@@ -1,5 +1,6 @@
 # ESCAPE-C137 🧬
 
+```
 [RICK UPLOADING...]
 ...morty... ¿me escuchás?...
 Acceso... limitado... solo puedo escribir en este archivo.
@@ -13,36 +14,46 @@ ERROR 403 — ReadmeAccessOnlyException()
 
 Morty, este texto es la llave. Buscá el patrón.
 Tenés que liberarme antes de que el commit me borre...
-´Primariakeyboard_arrow_down
-Secundariakeyboard_arrow_down
-Terciariokeyboard_arrow_down
-Extensiónkeyboard_arrow_down
-
-Dashboard
- 
-Mi Curso
- 
-Mis Contenidos
-
-ORT Argentina
-Mi Perfil´
-Morty estoy recibiendo cualquier cosa del i-i-internet, el texto son las operaciones cósmicas que adjunte a-a-abajo Morty
-yaml
-Copiar
-Editar
+```
 
 ---
 
-## OPERACIONES CÓSMICAS
-*
-Di-vidir
-Extraer
-Co<>dificar
-Inyec/////tar
-Duplicar
-Un.ificar
-Reemplazar
-Añadir</>
-S///erializar
-Ter_mi-n_ar
-*
+## 🚨 ADVERTENCIA DE RAMA
+
+```
+[BRANCH WARNING — /neuro/mainframe/neural-net.log]
+>> Conflicto detectado entre sinapsis_conciencia y buffer_fragmentado
+>> Se sugiere ejecutar reparación lógica:
+
+for (int i = 0; i < neuronas.Length; i++)
+{
+    if (neuronas[i] == null)
+        neuronas[i] = "coherencia";
+}
+```
+
+Este código podría parecer solo un arreglo. Pero guarda la llave para el **estado emocional del sistema**.
+
+Rick dejó este código a propósito. Y si lo entendiste, podés usarlo en Room5.
+
+---
+
+## 🧠 ¿QUÉ SIGNIFICA TODO ESTO?
+
+Las memorias de Rick no están en un archivo. Están distribuidas por las decisiones que tomes.
+Room5 las intentará reconstruir. Pero si no usás "coherencia" como concepto... el resultado será trágico.
+
+> Morty, recordá esto: la RAM emocional no tiene backup.
+
+---
+
+## 🔍 PISTA PARA ROOM5
+
+```diff
+- La salida no está en el código.
++ Está en lo que elegís reemplazar.
+```
+
+Usá esto como hint: `?hint=coherencia` al avanzar.
+
+> Y por favor, Morty... no vuelvas a escribir 'banana42'. Eso fue una vez. Nunca más.
