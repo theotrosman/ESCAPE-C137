@@ -40,11 +40,11 @@ Room5 las intentará reconstruir. Pero si no usás "coherencia" como concepto...
 
 ---
 
-## 🔍 PISTA PARA ROOM5
+## 🔍 PISTA PARA ROOM2
 
 ```diff
-- La salida no está en el código.
-+ Está en lo que elegís reemplazar.
+- La salida no está en el juego.
++ Está en lo que te dice Rick.
 ```
 
 Usá esto como hint: `?hint=coherencia` al avanzar.
