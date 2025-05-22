@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Tutorial";
+}
+
+<div class="tutorial-container">
+    <h1 class="glitch-title" data-text="MANUAL DE ESCAPE MULTIVERSAL">MANUAL DE ESCAPE MULTIVERSAL</h1>
+
+    <ul class="tutorial-list">
+        <li><span class="bullet">➤</span> Usá los audios de Rick como pistas. Cada uno desbloquea un nuevo nivel lógico.</li>
+        <li><span class="bullet">➤</span> Prestá atención a los bugs: no son errores... son *huecos en el código*.</li>
+        <li><span class="bullet">➤</span> Si ves algo glitcheado, hacé clic. Puede ser un portal oculto.</li>
+        <li><span class="bullet">➤</span> Si el sistema crashea, no te asustes... Rick lo hizo a propósito.</li>
+        <li><span class="bullet">➤</span> El objetivo: escapar del universo MVC y llegar al verdadero C-137.</li>
+    </ul>
+
+    <a href="/Home/Index" class="ascii-button">← VOLVER AL INICIO</a>
+</div>
+
+@section Styles {
+    <style>
+        .tutorial-container {
+            padding: 60px 20px;
+            text-align: center;
+            color: #00ff00;
+            font-family: monospace;
+        }
+
+        .glitch-title {
+            font-size: 28px;
+            animation: flicker 2s infinite;
+            margin-bottom: 30px;
+        }
+
+        .tutorial-list {
+            text-align: left;
+            max-width: 600px;
+            margin: auto;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+
+        .bullet {
+            color: #00ffcc;
+            margin-right: 8px;
+        }
+
+        .ascii-button {
+            margin-top: 40px;
+            font-size: 18px;
+            padding: 12px 30px;
+            background: black;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            font-family: monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .ascii-button:hover {
+            background: #00ff00;
+            color: black;
+        }
+    </style>
+}

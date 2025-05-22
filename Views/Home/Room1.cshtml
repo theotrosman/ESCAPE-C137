@@ -1,0 +1,120 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ROOM 1 - NÚCLEO DE CÓDIGO</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: monospace;
+            margin: 0;
+            padding: 30px;
+        }
+
+        #terminal {
+            white-space: pre-wrap;
+            font-size: 16px;
+            line-height: 1.5;
+            min-height: 300px;
+        }
+
+        #input-line {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            width: 50px;
+        }
+
+        #rick-gif {
+            display: none;
+            position: fixed;
+            bottom: 1px;
+            left: 10px;
+            width: 200px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando">
+    <audio id="audio" src="~/img/audio2.mp3" preload="auto"></audio>
+
+    <div id="terminal"></div>
+
+    <div id="input-line">
+        > ¿Entendiste? (y/n): <input id="respuesta" maxlength="1" autofocus />
+    </div>
+
+    <script>
+        const terminal = document.getElementById("terminal");
+        const inputLine = document.getElementById("input-line");
+        const input = document.getElementById("respuesta");
+        const audio = document.getElementById("audio");
+        const gif = document.getElementById("rick-gif");
+
+        const texto = [
+            "Conexión establecida con realidad MVC-137...",
+            "Rick: w-w-w-we're inside the code, Morty...",
+            "Se detectó un entorno inestable con múltiples colisiones de lógica.",
+            "El sistema de vistas está fragmentado, hay bugs en el núcleo Razor.",
+            "Vamos a necesitar tu ayuda para reescribir parte del código desde adentro.",
+            "Tu misión:",
+            "- Identificar errores lógicos en salas simuladas.",
+            "- Arreglar variables perdidas en entornos fragmentados.",
+            "- Desbloquear componentes cerrados del framework.",
+            "- Romper la cuarta pared del controlador.",
+            "Morty... esto no es un juego... es una fucking misión.",
+            "¿Estás listo para ayudar a Rick a escapar del multiverso de código?",
+            "¿Entendiste? (y/n)"
+        ];
+
+        let i = 0;
+function escribirLinea() {
+    if (i < texto.length) {
+        terminal.innerHTML += texto[i] + "\n";
+
+        if (i === 1) {
+            audio.play().catch(() => {});
+            setTimeout(() => {
+                gif.style.display = "block";
+            }, 700); 
+        }
+
+        i++;
+        setTimeout(escribirLinea, 1000);
+    } else {
+        inputLine.style.display = "block";
+        input.focus();
+    }
+}
+
+        escribirLinea();
+
+        input.addEventListener("input", function () {
+            const val = input.value.toLowerCase();
+            if (val === "y" || val === "n") {
+                terminal.innerHTML = "";
+                inputLine.style.display = "none";
+                setTimeout(() => {
+                    window.location.href = "/Home/GameStart";
+                }, 500);
+            } else {
+                input.value = "";
+            }
+        });
+    </script>
+</body>
+</html>

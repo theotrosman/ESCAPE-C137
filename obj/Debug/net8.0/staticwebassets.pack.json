@@ -1,0 +1,117 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\favicon.ico",
+      "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio1.mp3",
+      "PackagePath": "staticwebassets\\img\\audio1.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio2.mp3",
+      "PackagePath": "staticwebassets\\img\\audio2.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio3.mp3",
+      "PackagePath": "staticwebassets\\img\\audio3.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio4.mp3",
+      "PackagePath": "staticwebassets\\img\\audio4.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio5.mp3",
+      "PackagePath": "staticwebassets\\img\\audio5.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\audio7.mp3",
+      "PackagePath": "staticwebassets\\img\\audio7.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\rick-theme.mp3",
+      "PackagePath": "staticwebassets\\img\\rick-theme.mp3"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\img\\rickgif.gif",
+      "PackagePath": "staticwebassets\\img\\rickgif.gif"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\js\\site.js",
+      "PackagePath": "staticwebassets\\js\\site.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
+    },
+    {
+      "Id": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.PrimerProyecto.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.PrimerProyecto.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.PrimerProyecto.props",
+      "PackagePath": "build\\PrimerProyecto.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.PrimerProyecto.props",
+      "PackagePath": "buildMultiTargeting\\PrimerProyecto.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.PrimerProyecto.props",
+      "PackagePath": "buildTransitive\\PrimerProyecto.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -1,0 +1,183 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Room 3 - Logs del Sistema</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 40px;
+        }
+
+        #terminal {
+            white-space: pre-wrap;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        #logs {
+            display: none;
+            font-size: 14px;
+            background: #111;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            height: 280px;
+            overflow-y: auto;
+        }
+
+        #input-section {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            width: 400px;
+        }
+
+        button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            font-family: monospace;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .log.error { color: red; }
+        .log.warn { color: yellow; }
+        .log.info { color: #00ffff; }
+
+        #eleccion {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .eleccion-btn {
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        #mensaje-final {
+            margin-top: 20px;
+            color: cyan;
+        }
+    </style>
+</head>
+<body>
+    <audio src="~/img/rick-theme.mp3" autoplay loop></audio>
+
+    <div id="terminal"></div>
+    <div id="logs"></div>
+
+    <div id="input-section">
+        <p>[SISTEMA] Registro incompleto detectado. Por favor completalo:</p>
+        <label>→ [CRÍTICO] Transferencia multiversal activa. ID de autorización:</label>
+        <input id="logInput" type="text" placeholder="morty|rick" />
+        <button onclick="completarLog()">ENVIAR</button>
+    </div>
+
+    <div id="eleccion">
+        <p>Rick: “Morty... sólo uno de nosotros puede pasar.”</p>
+        <p>Morty: “Rick... no me dejes solo...”</p>
+        <p>Elegí a quién liberar del código:</p>
+        <button class="eleccion-btn" onclick="finalizar('rick')">Liberar a Rick</button>
+        <button class="eleccion-btn" onclick="finalizar('morty')">Liberar a Morty</button>
+    </div>
+
+    <div id="mensaje-final"></div>
+
+    <script>
+        const terminal = document.getElementById("terminal");
+        const logs = document.getElementById("logs");
+        const inputSection = document.getElementById("input-section");
+        const eleccion = document.getElementById("eleccion");
+        const mensajeFinal = document.getElementById("mensaje-final");
+
+        const dialogo = [
+            "Rick: Morty... tenemos acceso al núcleo de logs.",
+            "Morty: ¿Podemos salir, Rick?",
+            "Rick: Depende... hay un bug lógico que nos ancla a uno de los dos.",
+            "Morty: ...",
+            "Rick: Mirá los logs, Morty. Ahí está la decisión."
+        ];
+
+        const systemLogs = [
+            "<span class='log info'>[INFO] MVC Runtime iniciado en modo aislamiento.</span>",
+            "<span class='log warn'>[WARN] Overload en controlador interdimensional.</span>",
+            "<span class='log error'>[ERROR] HomeController línea 58: 'View not found'</span>",
+            "<span class='log info'>[INFO] Validación de colisiones múltiples... OK</span>",
+            "<span class='log warn'>[WARN] Duplicación de identidad detectada: rick / morty</span>",
+            "<span class='log info'>[INFO] Transferencia dimensional pendiente de autorización.</span>",
+            "<span class='log error'>[ERROR] Falta confirmación manual de escape (uno solo permitido).</span>",
+            "<span class='log info'>[INFO] Esperando autorización manual...</span>"
+        ];
+
+        let i = 0;
+        function mostrarDialogo() {
+            if (i < dialogo.length) {
+                terminal.innerHTML += dialogo[i] + "\n";
+                i++;
+                setTimeout(mostrarDialogo, 2000);
+            } else {
+                setTimeout(mostrarLogs, 1500);
+            }
+        }
+
+        function mostrarLogs() {
+            logs.style.display = "block";
+            let l = 0;
+            const interval = setInterval(() => {
+                if (l < systemLogs.length) {
+                    logs.innerHTML += systemLogs[l] + "<br>";
+                    l++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        inputSection.style.display = "block";
+                    }, 1500);
+                }
+            }, 1200);
+        }
+
+        function completarLog() {
+            const val = document.getElementById("logInput").value.trim().toLowerCase();
+            if (val === "rick" || val === "morty") {
+                inputSection.style.display = "none";
+                eleccion.style.display = "block";
+            } else {
+                alert("El ID debe ser 'rick' o 'morty'");
+            }
+        }
+
+        function finalizar(eleccionUsuario) {
+            eleccion.style.display = "none";
+
+            if (eleccionUsuario === "rick") {
+                mensajeFinal.innerHTML = "🚪 Se abre el portal... Rick escapa. Morty queda atrapado en el código.";
+            } else {
+                mensajeFinal.innerHTML = "🌀 Morty huye a la realidad. Rick queda consumido por la lógica infinita.";
+            }
+
+            setTimeout(() => {
+                window.location.href = "/Home/FinalRoom";
+            }, 5000);
+        }
+
+        mostrarDialogo();
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "MVC ESCAPE";
+}
+
+<div class="matrix-effect"></div>
+
+<div class="terminal-screen">
+    <div class="ascii-title-glitch">
+        <span class="glitch-line" data-text="███    ███ ██    ██  ██████       ███████ ███████ ██████   █████  ██████  ███████">
+            ███    ███ ██    ██  ██████       ███████ ███████ ██████   █████  ██████  ███████
+        </span>
+        <span class="glitch-line" data-text="████  ████ ██    ██ ██           ██      ██      ██   ██ ██   ██ ██   ██ ██      ">
+            ████  ████ ██    ██ ██           ██      ██      ██   ██ ██   ██ ██      
+        </span>
+        <span class="glitch-line" data-text="██ ████ ██ ██    ██ ██   ███     ███████ █████   ██████  ███████ ██████  █████   ">
+            ██ ████ ██ ██    ██ ██   ███     ███████ █████   ██████  ███████ █████   
+        </span>
+        <span class="glitch-line" data-text="██  ██  ██ ██    ██ ██    ██          ██ ██      ██   ██ ██   ██ ██   ██ ██      ">
+            ██  ██  ██ ██    ██ ██    ██          ██ ██      ██   ██ ██   ██ ██      
+        </span>
+        <span class="glitch-line" data-text="██      ██  ██████   ██████      ███████ ███████ ██   ██ ██   ██ ██   ██ ███████ ">
+            ██      ██  ██████   ██████      ███████ ███████ ██   ██ ██   ██ ███████ 
+        </span>
+    </div>
+
+    <p class="glitch-subtext">> Terminal multiversal [RICK ID: C-137] iniciando protocolo de escape...</p>
+
+    <button class="ascii-button" onclick="entrarJuego()">> ACCEDER AL CÓDIGO FUENTE <</button>
+    <button class="ascii-button tutorial-button" onclick="verTutorial()">> VER TUTORIAL <</button>
+
+    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
+    <audio id="audio1" src="~/audio1.mp3" autoplay></audio>
+    <audio id="musica" src="~/img/rick-theme.mp3" autoplay loop></audio>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById("rick-gif").style.display = "block";
+        const audio = document.getElementById("audio1");
+        audio.onended = () => {
+            document.getElementById("rick-gif").style.display = "none";
+        };
+
+        function entrarJuego() {
+            window.location.href = "/Home/Escape";
+        }
+
+        function verTutorial() {
+            window.location.href = "/Home/Tutorial";
+        }
+    </script>
+}

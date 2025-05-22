@@ -1,0 +1,147 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Room 2 - Parche Binario</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 40px;
+        }
+
+        #tablero {
+            display: grid;
+            grid-template-columns: repeat(8, 40px);
+            gap: 2px;
+            margin-bottom: 30px;
+        }
+
+        .celda {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #00ff00;
+        }
+
+        .blanco {
+            background-color: white;
+        }
+
+        .negro {
+            background-color: black;
+        }
+
+        .destacado {
+            box-shadow: 0 0 4px 2px lime;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            font-family: monospace;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .mensaje {
+            margin-top: 15px;
+        }
+
+        #rick-gif {
+            display: none;
+            position: fixed;
+            bottom: 1px;
+            left: 10px;
+            width: 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <audio id="audio7" src="~/img/audio7.mp3" preload="auto"></audio>
+    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
+
+    <h1>♟ Room 2: Parche Binario</h1>
+    <p>
+        <strong>Instrucción:</strong> leé los <span style="color:lime">cuadrados verdes</span> como bits, en orden
+        <strong>de izquierda a derecha y de arriba hacia abajo</strong>. Las celdas blancas valen 1, las negras 0.
+    </p>
+
+    <div id="tablero"></div>
+
+    <p>Convertí ese binario a decimal y escribilo abajo:</p>
+    <input type="text" id="respuesta" placeholder="ej: 280" />
+    <br />
+    <button onclick="verificar()">DECODIFICAR</button>
+    <div class="mensaje" id="mensaje"></div>
+
+    <script>
+        const tablero = document.getElementById("tablero");
+        const audio = document.getElementById("audio7");
+        const gif = document.getElementById("rick-gif");
+
+        const binarioFijo = "111011111"; // representa 479
+        const destacados = binarioFijo.split("");
+
+        // crea 64 celdas, destacando las que queremos (primeros 9 bits)
+        for (let i = 0; i < 64; i++) {
+            const celda = document.createElement("div");
+            celda.className = "celda";
+
+            const esBlanco = Math.random() > 0.5;
+            celda.classList.add(esBlanco ? "blanco" : "negro");
+
+            if ([0, 7, 8, 9, 10, 11, 12, 13, 14].includes(i)) {
+                celda.classList.add("destacado");
+            }
+
+            tablero.appendChild(celda);
+        }
+
+        setTimeout(() => {
+            gif.style.display = "block";
+            audio.play().then(() => {
+                audio.onended = () => {
+                    gif.style.display = "none";
+                };
+            }).catch(() => { });
+        }, 1500);
+
+        function verificar() {
+            const input = document.getElementById("respuesta").value.trim();
+            const mensaje = document.getElementById("mensaje");
+            const valorDecimal = parseInt(binarioFijo, 2); // 479
+
+            if (input === valorDecimal.toString()) {
+                mensaje.innerText = "✔️ ¡Perfecto Morty! Decodificaste el parche.";
+                mensaje.style.color = "#00ff00";
+                setTimeout(() => {
+                    window.location.href = "/Home/Room3";
+                }, 2500);
+            } else {
+                mensaje.innerText = "❌ Nah Morty... ese número no desbloquea nada.";
+                mensaje.style.color = "red";
+            }
+        }
+    </script>
+</body>
+
+</html>

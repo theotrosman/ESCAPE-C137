@@ -1,0 +1,80 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Error</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body class="escape-error-screen">
+    <div class="main-error-box" id="error1">
+        <h1>An unhandled exception occurred while processing the request.</h1>
+        <p><strong>InvalidOperationException:</strong> The view 'Escape' was not found. The following locations were searched:</p>
+        <ul>
+            <li>/Views/Home/Escape.cshtml</li>
+            <li>/Views/Shared/Escape.cshtml</li>
+        </ul>
+        <p>Microsoft.AspNetCore.Mvc.ViewEngines.ViewEngineResult.EnsureSuccessful(IEnumerable&lt;string&gt; originalLocations)</p>
+        <p>Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddlewareImpl.Invoke(HttpContext context)</p>
+    </div>
+
+    <div class="glitched-error" id="error2">
+        <h1>System.CollapseException: MULTIVERSAL STRUCTURE FAILURE</h1>
+        <p>Reality reference mismatch in file <code>/Views/C137Reality.cshtml</code></p>
+    </div>
+
+    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
+
+    <audio id="audio1" src="~/img/audio5.mp3" preload="auto"></audio>
+    <audio id="audio2" src="~/img/audio2.mp3" preload="auto"></audio>
+    <audio id="audio3" src="~/img/audio3.mp3" preload="auto"></audio>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById("error2").style.display = "block";
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById("rick-gif").style.display = "block";
+            document.getElementById("audio1").play().catch(() => {});
+        }, 3500);
+
+        setTimeout(() => {
+            document.getElementById("audio2").play().catch(() => {});
+        }, 6000);
+
+        setTimeout(() => {
+            document.getElementById("audio3").play().catch(() => {});
+        }, 8500);
+
+        setTimeout(() => {
+            window.location.href = "/Home/Room1";
+        }, 11500);
+        
+    </script>
+    <div class="final-error" id="error3">
+    <h1>UnhandledRealityException: COLLISION WITH CODE CORE</h1>
+    <p>Unhandled multiversal exception detected. System cannot stabilize current timeline.</p>
+</div>
+
+<div id="ayuda-rick" class="mensaje-ayuda">
+    ⚠ TENÉS QUE AYUDAR A RICK A ESTABILIZAR EL CÓDIGO
+    <button onclick="comenzarEscape()">ACCEDER AL NÚCLEO</button>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById("error3").style.display = "block";
+        document.getElementById("ayuda-rick").style.display = "block";
+    }, 11000); // aparece justo después del último audio
+
+    function comenzarEscape() {
+        window.location.href = "/Home/GameStart"; // ruta nueva para el juego real
+    }
+</script>
+
+</body>
+</html>
