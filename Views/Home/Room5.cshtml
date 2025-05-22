@@ -107,13 +107,15 @@
 
   <div class="consola">
     <strong>Realidad Sigma</strong><br>
-    Rick: "Acá, Morty... el README no es documentación. Es un acertijo interdimensional."<br>
-    Morty: "¿Qué tipo de acertijo?"<br>
-    Rick: "Hay una lista. Diez palabras. Fijate la primera letra de cada una."<br>
-    Morty: "¿Y después?"<br>
-    Rick: "Convertilas a números. Sumalas. Y pasalas a una base que no sea binaria..."<br>
-    Morty: "¿¡Base 3!?<br>
-    Rick: "¡Sí, Morty! ¡Te dije que pensaras más allá del código!"
+Rick: "Morty, este README no es un archivo... es una trampa intelectual codificada." <br>
+Morty: "¿Qué tengo que hacer?"<br>
+Rick: "Mirá las 10 palabras listadas. Tomá la primera letra de cada una."<br>
+Morty: "¿Y después qué hago con eso?"<br>
+Rick: "Convertí cada letra a su posición en el abecedario. A es 1, B es 2, ya sabés... sin trucos ASCII ni pavadas."<br>
+Morty: "OK... ¿Y después?"<br>
+Rick: "Sumá esos números y convertí el total a base 3. No binario, Morty. Pensá más raro."<br>
+Morty: "¿Base 3, Rick?"<br>
+Rick: "Sí, Morty. Si vas a escapar de un sistema interdimensional, tenés que dejar de pensar en decimal como un tonto."
   </div>
 
   <div class="consola">
@@ -169,7 +171,7 @@
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         const val = input.value.trim();
-        const validas = ["21100"]; // ejemplo correcto ficticio
+        const validas = ["10212"]; 
 
         if (validas.includes(val)) {
           resultado.style.display = "block";
