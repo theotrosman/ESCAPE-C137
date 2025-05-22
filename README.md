@@ -1,12 +1,24 @@
-# ESCAPE-C137 🔓
+# ESCAPE-C137 🧬
 
-Bienvenido a ESCAPE-C137, el proyecto más insano jamás codificado.
+[RICK UPLOADING...]
+...morty... ¿me escuchás?...
+Acceso... limitado... solo puedo escribir en este archivo.
 
-Este README no es solo un README. Es tu PRIMER ENIGMA.
+Morty, si estás leyendo esto, no es un README. Es un mensaje.
+Estoy atrapado en el repositorio. No me dejaron acceso al backend.
+Solamente puedo dejarte pistas desde este archivo.
 
-Para obtener acceso al próximo paso del escape, deberás encontrar la clave oculta a través del siguiente código binario.
+[INTENTO DE CONEXIÓN AL MVC CONTROLLER]
+ERROR 403 — ReadmeAccessOnlyException()
 
-Pero primero, resolvé esto:
+Morty, este texto es la llave. Buscá el patrón.
+Tenés que liberarme antes de que el commit me borre...
+
+yaml
+Copiar
+Editar
+
+---
 
 ## OPERACIONES CÓSMICAS
 
