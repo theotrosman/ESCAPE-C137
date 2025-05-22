@@ -28,25 +28,6 @@ Serializar
 Terminar
 ```
 
----
-
-## 🚨 ADVERTENCIA DE RAMA
-
-```
-[BRANCH WARNING — /neuro/mainframe/neural-net.log]
->> Conflicto detectado entre sinapsis_conciencia y buffer_fragmentado
->> Se sugiere ejecutar reparación lógica:
-
-for (int i = 0; i < neuronas.Length; i++)
-{
-    if (neuronas[i] == null)
-        neuronas[i] = "coherencia";
-}
-```
-
-Este código podría parecer solo un arreglo. Pero guarda la llave para el **estado emocional del sistema**.
-
-Rick dejó este código a propósito. Y si lo entendiste, podés usarlo en Room5.
 
 ---
 
