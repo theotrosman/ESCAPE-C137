@@ -1,0 +1,214 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Room 4.5 - Glitch Final</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #0f0;
+      font-family: monospace;
+      margin: 0;
+      padding: 20px;
+    }
+    #rickCommand {
+      width: 100%;
+      padding: 10px;
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      border: 1px solid #0f0;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    .rick-console-errors {
+      background-color: #000;
+      color: #f00;
+      font-family: monospace;
+      padding: 20px;
+      border: 2px dashed red;
+      animation: flickerRed 0.3s infinite alternate;
+    }
+    @keyframes flickerRed {
+      0% { opacity: 0.8; }
+      100% { opacity: 0.3; }
+    }
+    @keyframes chaosText {
+      0% { color: red; }
+      25% { color: yellow; }
+      50% { color: cyan; }
+      75% { color: magenta; }
+      100% { color: lime; }
+    }
+    .shake {
+      animation: shakeAnim 0.2s;
+    }
+    @keyframes shakeAnim {
+      0% { transform: translate(1px, 1px); }
+      25% { transform: translate(-1px, 1px); }
+      50% { transform: translate(1px, -1px); }
+      75% { transform: translate(-1px, -1px); }
+      100% { transform: translate(1px, 1px); }
+    }
+    #deathMessage {
+      font-family: monospace;
+      font-size: 20px;
+      margin-top: 30px;
+      white-space: pre-wrap;
+      padding: 10px;
+    }
+    .neural-console {
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid #0f0;
+      background: #111;
+    }
+    .meta-log {
+      font-size: 12px;
+      opacity: 0.5;
+      margin-top: 50px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="rick-console-errors" id="rickConsole">
+    <pre class="rick-logs" id="rickLogs">
+[Console.WriteLine("Morty... estás... rompiendo todo...")]
+[Console.WriteLine("Estoy... alcanzando... el Internet entero, Morty...")]
+[Console.WriteLine("Y lo único que encuentro... son memes italianos, brainrots sin sentido...")]
+[Console.WriteLine("Morty... los italianos... están ROMPIENDO la conciencia colectiva...")]
+[Console.WriteLine("System.Exception: ConsciousnessIntegrityFailure")]
+    </pre>
+  </div>
+
+  <div class="audio-glitch-zone" id="audioGlitchZone">
+    <audio id="rickAudio1" src="/audio/audio1.mp3" autoplay loop></audio>
+    <audio id="rickAudio2" src="/audio/audio2.mp3" autoplay loop></audio>
+    <audio id="rickAudio3" src="/audio/audio3.mp3" autoplay loop></audio>
+    <audio id="rickAudio4" src="/audio/audio4.mp3" autoplay loop></audio>
+    <audio id="rickAudio5" src="/audio/audio5.mp3" autoplay loop></audio>
+    <audio id="rickTheme" src="/audio/rick-theme.mp3" autoplay></audio>
+  </div>
+
+  <input type="text" id="rickCommand" placeholder="escribí: sync consciousness o trascender realidad" />
+  <pre id="deathMessage"></pre>
+
+  <div class="neural-console">
+    <h3>🧠 Assembling ramas neuronales...</h3>
+    <p>Corré este fragmento para estabilizar la red:</p>
+    <pre>
+string[] neuronas = new string[] { "conciencia", null, "código", "sinapsis" };
+for(int i = 0; i < neuronas.Length; i++)
+{
+    if(neuronas[i] == null)
+        neuronas[i] = "coherencia";
+}
+    </pre>
+    <p>¿Qué reemplazo se hizo en la red y por qué fue necesario?</p>
+    <p>Si entendiste la lógica, estás más cerca de Rick de lo que creés.</p>
+  </div>
+
+  <div class="meta-log">
+    ESCAPE-C137 Room4.5 — Estado del sistema: fractura en la capa de percepción.<br/>
+    Último log registrado: "Morty creyó que estaba jugando, pero estaba escribiendo historia."
+  </div>
+
+  <script>
+    let logText = document.getElementById("rickLogs");
+    let input = document.getElementById("rickCommand");
+    let consoleDiv = document.getElementById("rickConsole");
+    let deathMessage = document.getElementById("deathMessage");
+    let rickTheme = document.getElementById("rickTheme");
+    const audios = document.querySelectorAll(".audio-glitch-zone audio");
+
+    let chaos = [
+      "Morty... reality is a placeholder...",
+      "Morty... esto no es código, es memoria...",
+      "MORTY... INTERNET ES UN INFINITO DE MIERDA...",
+      "Morty... they speak in capcut edits and emoji madness...",
+      "Morty... SYSTEM FAILURE: Realität bricht zusammen...",
+      "MORTY... НЕЕЕЕЕЕТ...",
+      "Morty...你已经无法 detener esto..."
+    ];
+    let i = 0;
+    setInterval(() => {
+      if (i >= chaos.length) i = 0;
+      logText.innerText += "\n" + chaos[i];
+      logText.style.animation = 'chaosText 0.2s infinite';
+      i++;
+    }, 1600);
+
+    setInterval(() => {
+      let jump = Math.random() > 0.7;
+      if (jump) rickTheme.currentTime = Math.random() * rickTheme.duration;
+    }, 4000);
+
+    input.addEventListener("input", () => {
+      consoleDiv.classList.add("shake");
+      setTimeout(() => consoleDiv.classList.remove("shake"), 200);
+    });
+
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        const val = input.value.trim();
+        if (val === "sync consciousness" || val === "trascender realidad") {
+          logText.innerText += "\n[Console.WriteLine(\"Rick se ha fundido con la red.\")]";
+          audios.forEach(a => a.pause());
+          input.disabled = true;
+          document.body.style.backgroundColor = "#fff";
+          document.body.style.color = "#000";
+          document.body.innerHTML += "<div style='text-align:center;margin-top:10%;font-family:monospace;font-size:20px;'>La conciencia de Rick ya no está en el juego. Ahora está en todas partes.<br><br>¿Estás seguro de querer seguir avanzando?<br><br><button onclick=\\\"window.location.href='/Room5'\\\">Continuar</button></div>";
+        } else {
+          logText.innerText += "\n[Console.WriteLine(\"ELECCIÓN INCORRECTA. REALIDAD ALTERADA.\")]";
+          document.body.style.backgroundColor = "#f00";
+          document.body.style.color = "#000";
+          audios.forEach(a => {
+            a.playbackRate = 0.3 + Math.random();
+            a.volume = Math.random();
+          });
+          revealDeathMessage("Morty destruyó la puerta de salida con su ignorancia digital. Rick ha muerto.");
+          input.disabled = true;
+        }
+        input.value = "";
+      }
+    });
+
+    function revealDeathMessage(text) {
+      let index = 0;
+      const interval = setInterval(() => {
+        deathMessage.textContent += text[index];
+        deathMessage.style.color = index % 2 === 0 ? "black" : "darkred";
+        index++;
+        if (index >= text.length) clearInterval(interval);
+      }, 120);
+    }
+
+    // Consolas alternas troll
+    const trollConsolas = [
+      "[rick-alt.log] Warning: Nivel de cringe detectado en la línea temporal 9.88.",
+      "[portal.log] Acceso denegado: estás intentando entrar con un cerebro versión beta.",
+      "[rick-thoughts.sys] ¿Y si todo esto es solo una forma de recordarme que fui yo quien creó esta prisión?",
+      "[console.shadow] La respuesta no es 'banana42', pero te haría pensar que sí.",
+      "[holograma.info] Morty, si ves esto, escribí 'coherencia' y no preguntes por qué."
+    ];
+    setInterval(() => {
+      const cont = document.createElement("div");
+      cont.style.background = "#111";
+      cont.style.color = "#0f0";
+      cont.style.padding = "10px";
+      cont.style.border = "1px dashed #0f0";
+      cont.style.marginTop = "10px";
+      cont.style.fontFamily = "monospace";
+      cont.style.fontSize = "14px";
+      cont.textContent = trollConsolas[Math.floor(Math.random() * trollConsolas.length)];
+      document.body.appendChild(cont);
+    }, 7000);
+  </script>
+</body>
+</html>
