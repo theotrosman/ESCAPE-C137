@@ -2,10 +2,10 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Room 3 - Logs del Sistema</title>
+    <title>Room 3 — Paradoja de Sacrificio</title>
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
         body {
@@ -13,28 +13,31 @@
             color: #00ff00;
             font-family: monospace;
             padding: 40px;
+            overflow: hidden;
+            animation: flickerBg 2s infinite alternate;
+        }
+
+        @keyframes flickerBg {
+            0% { background-color: black; }
+            100% { background-color: #111; }
         }
 
         #terminal {
             white-space: pre-wrap;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 30px;
+            animation: textGlow 2s ease-in-out infinite;
         }
 
-        #logs {
-            display: none;
-            font-size: 14px;
-            background: #111;
-            padding: 20px;
-            border: 1px solid #00ff00;
-            height: 280px;
-            overflow-y: auto;
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 5px #0f0; }
+            100% { text-shadow: 0 0 20px #0f0; }
         }
 
-        #input-section {
+        #input-section, #eleccion, #mensaje-final, #mensajeExtra {
             display: none;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         input {
@@ -54,130 +57,125 @@
             padding: 10px 25px;
             font-family: monospace;
             cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .log.error { color: red; }
-        .log.warn { color: yellow; }
-        .log.info { color: #00ffff; }
-
-        #eleccion {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .eleccion-btn {
             margin: 10px;
-            font-size: 16px;
         }
 
-        #mensaje-final {
+        .log {
             margin-top: 20px;
-            color: cyan;
+            font-size: 14px;
+        }
+
+        .flash {
+            animation: flashError 0.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes flashError {
+            from { background-color: black; }
+            to { background-color: red; }
+        }
+
+        .rickFace {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 120px;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px lime);
         }
     </style>
 </head>
 <body>
-    <audio src="~/img/rick-theme.mp3" autoplay loop></audio>
 
-    <div id="terminal"></div>
-    <div id="logs"></div>
+<audio src="/img/rick-theme.mp3" autoplay loop></audio>
+<img src="/rickgif.gif" class="rickFace" />
 
-    <div id="input-section">
-        <p>[SISTEMA] Registro incompleto detectado. Por favor completalo:</p>
-        <label>→ [CRÍTICO] Transferencia multiversal activa. ID de autorización:</label>
-        <input id="logInput" type="text" placeholder="morty|rick" />
-        <button onclick="completarLog()">ENVIAR</button>
-    </div>
+<div id="terminal"></div>
+<div id="input-section">
+    <p>[SISTEMA] Registro incompleto. Completá el ID de acceso:</p>
+    <input id="logInput" type="text" placeholder="rick / morty" />
+    <button onclick="completarLog()">ENVIAR</button>
+</div>
 
-    <div id="eleccion">
-        <p>Rick: “Morty... sólo uno de nosotros puede pasar.”</p>
-        <p>Morty: “Rick... no me dejes solo...”</p>
-        <p>Elegí a quién liberar del código:</p>
-        <button class="eleccion-btn" onclick="finalizar('rick')">Liberar a Rick</button>
-        <button class="eleccion-btn" onclick="finalizar('morty')">Liberar a Morty</button>
-    </div>
+<div id="eleccion">
+    <p>Rick: “Morty... sólo uno de nosotros puede pasar.”</p>
+    <p>Morty: “Rick... ¿vas a dejarme atrás?”</p>
+    <p>Elegí a quién liberar del código:</p>
+    <button onclick="finalizar('rick')">Liberar a Rick</button>
+    <button onclick="finalizar('morty')">Liberar a Morty</button>
+</div>
 
-    <div id="mensaje-final"></div>
+<div id="mensaje-final"></div>
+<div id="mensajeExtra"></div>
 
-    <script>
-        const terminal = document.getElementById("terminal");
-        const logs = document.getElementById("logs");
-        const inputSection = document.getElementById("input-section");
-        const eleccion = document.getElementById("eleccion");
-        const mensajeFinal = document.getElementById("mensaje-final");
+<script>
+    const terminal = document.getElementById("terminal");
+    const inputSection = document.getElementById("input-section");
+    const eleccion = document.getElementById("eleccion");
+    const mensajeFinal = document.getElementById("mensaje-final");
+    const mensajeExtra = document.getElementById("mensajeExtra");
 
-        const dialogo = [
-            "Rick: Morty... tenemos acceso al núcleo de logs.",
-            "Morty: ¿Podemos salir, Rick?",
-            "Rick: Depende... hay un bug lógico que nos ancla a uno de los dos.",
-            "Morty: ...",
-            "Rick: Mirá los logs, Morty. Ahí está la decisión."
-        ];
+    const dialogo = [
+        "Rick: Morty... logré romper los logs del sistema.",
+        "Morty: ¿Eso es bueno?",
+        "Rick: Sí. Pero hay una condición. El código solo deja salir a uno.",
+        "Morty: ¿Qué!?",
+        "Rick: Vas a tener que elegir... o no salimos ninguno.",
+        "Rick: Leé los logs. El sistema quiere que creas que hay una elección real.",
+        "[SISTEMA] Acceso a logs habilitado. ID incompleto. Por favor completalo..."
+    ];
 
-        const systemLogs = [
-            "<span class='log info'>[INFO] MVC Runtime iniciado en modo aislamiento.</span>",
-            "<span class='log warn'>[WARN] Overload en controlador interdimensional.</span>",
-            "<span class='log error'>[ERROR] HomeController línea 58: 'View not found'</span>",
-            "<span class='log info'>[INFO] Validación de colisiones múltiples... OK</span>",
-            "<span class='log warn'>[WARN] Duplicación de identidad detectada: rick / morty</span>",
-            "<span class='log info'>[INFO] Transferencia dimensional pendiente de autorización.</span>",
-            "<span class='log error'>[ERROR] Falta confirmación manual de escape (uno solo permitido).</span>",
-            "<span class='log info'>[INFO] Esperando autorización manual...</span>"
-        ];
-
-        let i = 0;
-        function mostrarDialogo() {
-            if (i < dialogo.length) {
-                terminal.innerHTML += dialogo[i] + "\n";
-                i++;
-                setTimeout(mostrarDialogo, 2000);
-            } else {
-                setTimeout(mostrarLogs, 1500);
-            }
+    let i = 0;
+    function mostrarDialogo() {
+        if (i < dialogo.length) {
+            terminal.innerHTML += dialogo[i] + "\n";
+            i++;
+            setTimeout(mostrarDialogo, 2000);
+        } else {
+            inputSection.style.display = "block";
         }
+    }
 
-        function mostrarLogs() {
-            logs.style.display = "block";
-            let l = 0;
-            const interval = setInterval(() => {
-                if (l < systemLogs.length) {
-                    logs.innerHTML += systemLogs[l] + "<br>";
-                    l++;
-                } else {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        inputSection.style.display = "block";
-                    }, 1500);
-                }
-            }, 1200);
+    function completarLog() {
+        const val = document.getElementById("logInput").value.trim().toLowerCase();
+        if (val === "rick" || val === "morty") {
+            inputSection.style.display = "none";
+            eleccion.style.display = "block";
+        } else {
+            alert("El ID debe ser 'rick' o 'morty'");
         }
+    }
 
-        function completarLog() {
-            const val = document.getElementById("logInput").value.trim().toLowerCase();
-            if (val === "rick" || val === "morty") {
-                inputSection.style.display = "none";
-                eleccion.style.display = "block";
-            } else {
-                alert("El ID debe ser 'rick' o 'morty'");
-            }
-        }
+    function finalizar(eleccionUsuario) {
+        eleccion.style.display = "none";
+        terminal.innerHTML += "\n[SISTEMA] Registro completado. Ejecutando protocolo de transferencia...\n";
+        document.body.classList.add("flash");
 
-        function finalizar(eleccionUsuario) {
-            eleccion.style.display = "none";
-
-            if (eleccionUsuario === "rick") {
-                mensajeFinal.innerHTML = "🚪 Se abre el portal... Rick escapa. Morty queda atrapado en el código.";
-            } else {
-                mensajeFinal.innerHTML = "🌀 Morty huye a la realidad. Rick queda consumido por la lógica infinita.";
-            }
+        setTimeout(() => {
+            mensajeFinal.style.display = "block";
+            mensajeFinal.innerHTML = eleccionUsuario === "rick"
+                ? "⚠️ Rick ha sido liberado. Morty quedó atrás... ¿o no?"
+                : "⚠️ Morty escapó. Rick fue absorbido por el código... ¿o eso parece?";
 
             setTimeout(() => {
-                window.location.href = "/Home/FinalRoom";
-            }, 5000);
-        }
+                document.body.classList.remove("flash");
+                mensajeExtra.style.display = "block";
+                mensajeExtra.innerHTML = `
+                    <p style='color:#00ffff;'>Rick: “JAJAJA MORTY, CAÍSTE.”</p>
+                    <p style='color:#00ffff;'>Rick: “NUNCA IBA A DEJARTE. USÉ LA ELECCIÓN COMO ENGAÑO PARA ROMPER LA LÓGICA DEL CÓDIGO.”</p>
+                    <p style='color:#00ffff;'>Rick: “AHORA PODEMOS PASAR LOS DOS, ¡TARADOOO!”</p>
+                    <p>✔️ REALIDAD ESTABILIZADA - REDIRECCIONANDO A ROOM 4...</p>
+                `;
 
-        mostrarDialogo();
-    </script>
+                setTimeout(() => {
+                    window.location.href = "/Room4";
+                }, 6000);
+            }, 4000);
+        }, 3000);
+    }
+
+    mostrarDialogo();
+</script>
+
 </body>
 </html>
+
