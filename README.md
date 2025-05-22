@@ -34,7 +34,7 @@ Editar
 ---
 
 ## OPERACIONES CÓSMICAS
-
+*
 Di-vidir
 Extraer
 Co<>dificar
@@ -45,3 +45,4 @@ Reemplazar
 Añadir</>
 S///erializar
 Ter_mi-n_ar
+*
