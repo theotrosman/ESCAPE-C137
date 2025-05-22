@@ -1,0 +1,174 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Room 5 — El Limbo de las Realidades</title>
+  <style>
+    body {
+      background-color: black;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      transition: all 0.8s ease-in-out;
+    }
+    .invertido {
+      background-color: #fff;
+      color: #000;
+    }
+    .consola {
+      width: 30%;
+      height: 250px;
+      background: #111;
+      border: 1px solid #0f0;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 12px;
+      white-space: pre-wrap;
+    }
+    .entrada {
+      width: 100%;
+      margin-top: 20px;
+    }
+    .entrada input {
+      width: 100%;
+      padding: 10px;
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      font-size: 16px;
+    }
+    .resultado {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #111;
+      border: 2px dashed #0f0;
+    }
+    .troll {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Reproducir audio bugueado -->
+<audio src="/audio/audio3.mp3" autoplay loop></audio>
+<!-- 9 Consolas de realidades paralelas -->
+<div class="consola">
+  <strong>Realidad Alpha</strong><br>
+  Rick: "Morty, este universo está hecho de memes cancelados y tweets borrados."<br>
+  Morty: "¿Por eso nadie quiere recordarlo?"<br>
+  Rick: "Exacto. Acá todo es cringe eterno."
+</div>
+
+<div class="consola">
+  <strong>Realidad Beta</strong><br>
+  Rick: "Morty, construí una máquina para imprimir emociones. Se fundió al minuto."<br>
+  Morty: "¿Qué imprimiste primero?"<br>
+  Rick: "Vergüenza, Morty. Y explotó."
+</div>
+
+<div class="consola">
+  <strong>Realidad Gamma</strong><br>
+  Rick: "Este universo se resetea cada 30 segundos."<br>
+  Morty: "¿¡Estamos atrapados en un bucle!?"<br>
+  Rick: "No, peor... es un corto animado experimental."
+</div>
+
+<div class="consola">
+  <strong>Realidad Delta</strong><br>
+  Rick: "Morty, esta línea de código piensa que es poesía."<br>
+  Morty: "¿Y qué pasa si la leemos?"<br>
+  Rick: "\"Return if not (soul = null)\"... te hace llorar, Morty."
+</div>
+
+<div class="consola">
+  <strong>Realidad Omega</strong><br>
+  Rick: "La física en este universo es emocional."<br>
+  Morty: "¿Qué significa?"<br>
+  Rick: "Que cada vez que dudás... la gravedad cambia, Morty."
+</div>
+
+<div class="consola">
+  <strong>Realidad Sigma</strong><br>
+  Rick: "Acá, Morty... el README es un manifiesto existencial."<br>
+  Morty: "¿En serio?"<br>
+  Rick: "¡Sí! Tiene la clave oculta. Usá las letras. Sumá. Convertí. Pensá."
+</div>
+
+<div class="consola">
+  <strong>Realidad Zeta</strong><br>
+  Rick: "Morty, descubrí que todo esto es una app educativa para una escuela."<br>
+  Morty: "¿¡Somos parte de un trabajo práctico!?"<br>
+  Rick: "Sí, y el profe nos está mirando, Morty."
+</div>
+
+<div class="consola">
+  <strong>Realidad Theta</strong><br>
+  Rick: "Morty, no hay escape. Pero hay entendimiento."<br>
+  Morty: "¿Qué tengo que entender?"<br>
+  Rick: "Lo que une todo esto no es código. Es significado, Morty."
+</div>
+
+<div class="consola">
+  <strong>Realidad Final</strong><br>
+  Rick: "Morty... hay una secuencia en todo esto. Está en los nombres."<br>
+  Morty: "¿De qué hablás?"<br>
+  Rick: "Las letras. Del README. Convertilas... a otra base. Te lo dije en Sigma..."
+</div>
+<!-- Entrada del jugador -->
+<div class="entrada">
+  <input type="text" id="codigoInput" placeholder="Ingresá el código en base 3..." />
+</div>
+
+<!-- Resultado final -->
+<div class="resultado" id="resultadoFinal">
+  <h3>🧠 Conciencia Reconectada</h3>
+  <p>Rick: "Morty... todas las realidades están alineadas. Pero ahora empieza lo real."</p>
+  <p>Las consolas dejan de vibrar. El audio se estabiliza. El mundo cambia de forma.</p>
+</div>
+
+<!-- Mensaje de error troll -->
+<div class="troll" id="mensajeTroll"></div>
+
+<script>
+  const input = document.getElementById("codigoInput");
+  const resultado = document.getElementById("resultadoFinal");
+  const troll = document.getElementById("mensajeTroll");
+  let flashes = 0;
+
+  // Cambia de color la realidad cada 2.5s
+  setInterval(() => {
+    document.body.classList.toggle("invertido");
+    flashes++;
+    if (flashes > 20) {
+      troll.innerText = "Rick: ¿Pensabas que podías esperar a que el universo te lo resuelva? Pensá.";
+    }
+  }, 2500);
+
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      const val = input.value.trim();
+      const validas = ["21100"]; // ejemplo correcto ficticio
+
+      if (validas.includes(val)) {
+        resultado.style.display = "block";
+        input.disabled = true;
+        troll.innerText = "";
+      } else {
+        troll.innerText = "Rick: Esa base está mal, Morty. ¿Convertiste bien el total?";
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
