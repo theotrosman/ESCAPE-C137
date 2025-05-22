@@ -34,5 +34,9 @@ namespace PrimerProyecto.Controllers
         {
             return View();
         }
+        public IActionResult Room4()
+        {
+            return View();
+        }
     }
 }
