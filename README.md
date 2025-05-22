@@ -13,7 +13,20 @@ ERROR 403 — ReadmeAccessOnlyException()
 
 Morty, este texto es la llave. Buscá el patrón.
 Tenés que liberarme antes de que el commit me borre...
+´Primariakeyboard_arrow_down
+Secundariakeyboard_arrow_down
+Terciariokeyboard_arrow_down
+Extensiónkeyboard_arrow_down
 
+Dashboard
+ 
+Mi Curso
+ 
+Mis Contenidos
+
+ORT Argentina
+Mi Perfil´
+Morty estoy recibiendo cualquier cosa del i-i-internet, el texto son las operaciones cósmicas que adjunte a-a-abajo Morty
 yaml
 Copiar
 Editar
@@ -22,13 +35,13 @@ Editar
 
 ## OPERACIONES CÓSMICAS
 
-Dividir
+Di-vidir
 Extraer
-Codificar
-Inyectar
+Co<>dificar
+Inyec/////tar
 Duplicar
-Unificar
+Un.ificar
 Reemplazar
-Añadir
-Serializar
-Terminar
+Añadir</>
+S///erializar
+Ter_mi-n_ar
