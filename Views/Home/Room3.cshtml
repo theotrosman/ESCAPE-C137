@@ -144,6 +144,22 @@
             alert("El ID debe ser 'rick' o 'morty'");
         }
     }
+setTimeout(() => {
+    // Ataque de Rick a los logs
+    terminal.innerHTML += "\n[⚠️] Rick está inyectando código en los logs...\n";
+    const ataqueLogs = [
+        "[RICK HACK] Reescribiendo lógica de escape...",
+        "[OVERRIDE] if (sacrifice) → sacrifice = false;",
+        "[SARCASMO] Qué clase de juego sólo deja salir a uno, Morty?",
+        "[ERROR] SYSTEM.RESPECT.RULES = false;",
+        "[GLITCH] RICK > SYSTEM >> YOU"
+    ];
+    ataqueLogs.forEach((log, index) => {
+        setTimeout(() => {
+            terminal.innerHTML += log + "\n";
+        }, 500 * index);
+    });
+}, 5000);
 
     function finalizar(eleccionUsuario) {
         eleccion.style.display = "none";
