@@ -1,4 +1,3 @@
-
 @{
     Layout = null;
 }
@@ -6,28 +5,41 @@
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>Room 3 — Logs del Sistema</title>
+    <title>Room 3 — Paradoja de Sacrificio</title>
+    <link rel="stylesheet" href="~/css/site.css" />
     <style>
         body {
             background-color: black;
             color: #00ff00;
             font-family: monospace;
             padding: 40px;
-            overflow-x: hidden;
+            overflow: hidden;
+            animation: flickerBg 2s infinite alternate;
         }
-        #terminal, #logs, #mensaje-final, #mensajeExtra {
+
+        @keyframes flickerBg {
+            0% { background-color: black; }
+            100% { background-color: #111; }
+        }
+
+        #terminal {
             white-space: pre-wrap;
             font-size: 16px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 30px;
+            animation: textGlow 2s ease-in-out infinite;
         }
-        .log { margin-bottom: 10px; }
-        .log strong { color: cyan; }
-        .flash { animation: flashBg 0.3s infinite alternate; }
-        @keyframes flashBg {
-            from { background-color: black; }
-            to { background-color: red; }
+
+        @keyframes textGlow {
+            0% { text-shadow: 0 0 5px #0f0; }
+            100% { text-shadow: 0 0 20px #0f0; }
         }
+
+        #input-section, #eleccion, #mensaje-final, #mensajeExtra {
+            display: none;
+            margin-top: 30px;
+        }
+
         input {
             background: black;
             border: none;
@@ -37,6 +49,7 @@
             font-size: 16px;
             width: 400px;
         }
+
         button {
             background: #00ff00;
             color: black;
@@ -44,44 +57,71 @@
             padding: 10px 25px;
             font-family: monospace;
             cursor: pointer;
-            margin-left: 10px;
+            margin: 10px;
+        }
+
+        .log {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .flash {
+            animation: flashError 0.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes flashError {
+            from { background-color: black; }
+            to { background-color: red; }
+        }
+
+        .rickFace {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 120px;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 10px lime);
         }
     </style>
 </head>
 <body>
+
 <audio src="/img/rick-theme.mp3" autoplay loop></audio>
+<img src="/rickgif.gif" class="rickFace" />
 
 <div id="terminal"></div>
-<div id="logs"></div>
-<div id="input-section" style="display:none;">
-    <p>[SISTEMA] Descubrí las claves ocultas y escribilas separadas por guiones:</p>
-    <input id="logInput" type="text" placeholder="ej: puerta-verde-codigo" />
+<div id="input-section">
+    <p>[SISTEMA] Registro incompleto. Completá el ID de acceso:</p>
+    <input id="logInput" type="text" placeholder="rick / morty" />
     <button onclick="completarLog()">ENVIAR</button>
 </div>
+
+<div id="eleccion">
+    <p>Rick: “Morty... sólo uno de nosotros puede pasar.”</p>
+    <p>Morty: “Rick... ¿vas a dejarme atrás?”</p>
+    <p>Elegí a quién liberar del código:</p>
+    <button onclick="finalizar('rick')">Liberar a Rick</button>
+    <button onclick="finalizar('morty')">Liberar a Morty</button>
+</div>
+
 <div id="mensaje-final"></div>
 <div id="mensajeExtra"></div>
 
 <script>
     const terminal = document.getElementById("terminal");
-    const logs = document.getElementById("logs");
     const inputSection = document.getElementById("input-section");
+    const eleccion = document.getElementById("eleccion");
     const mensajeFinal = document.getElementById("mensaje-final");
     const mensajeExtra = document.getElementById("mensajeExtra");
 
     const dialogo = [
-        "Rick: Morty, tenemos acceso al núcleo del sistema.",
-        "Morty: ¿Podemos salir?",
-        "Rick: Solo si desciframos el patrón oculto en los logs.",
-        "[SISTEMA] Logs habilitados. Iniciando transmisión..."
-    ];
-
-    const systemLogs = [
-        "<span class='log'>[INFO] Inicializando módulo clave: <strong>puerta</strong></span>",
-        "<span class='log'>[INFO] Carga del núcleo lógico... OK</span>",
-        "<span class='log'>[WARN] clave parcial detectada: <strong>verde</strong></span>",
-        "<span class='log'>[ERROR] Corrupción en matriz /r0.c0d3</span>",
-        "<span class='log'>[INFO] clave final confirmada: <strong>codigo</strong></span>",
-        "<span class='log'>[INFO] Esperando reconstrucción de comando por usuario...</span>"
+        "Rick: Morty... logré romper los logs del sistema.",
+        "Morty: ¿Eso es bueno?",
+        "Rick: Sí. Pero hay una condición. El código solo deja salir a uno.",
+        "Morty: ¿Qué!?",
+        "Rick: Vas a tener que elegir... o no salimos ninguno.",
+        "Rick: Leé los logs. El sistema quiere que creas que hay una elección real.",
+        "[SISTEMA] Acceso a logs habilitado. ID incompleto. Por favor completalo..."
     ];
 
     let i = 0;
@@ -89,41 +129,52 @@
         if (i < dialogo.length) {
             terminal.innerHTML += dialogo[i] + "\n";
             i++;
-            setTimeout(mostrarDialogo, 1800);
+            setTimeout(mostrarDialogo, 2000);
         } else {
-            mostrarLogs();
+            inputSection.style.display = "block";
         }
-    }
-
-    function mostrarLogs() {
-        let l = 0;
-        const interval = setInterval(() => {
-            if (l < systemLogs.length) {
-                logs.innerHTML += systemLogs[l] + "<br>";
-                l++;
-            } else {
-                clearInterval(interval);
-                setTimeout(() => inputSection.style.display = "block", 1000);
-            }
-        }, 1000);
     }
 
     function completarLog() {
         const val = document.getElementById("logInput").value.trim().toLowerCase();
-        if (val === "puerta-verde-codigo") {
-            document.body.classList.add("flash");
-            mensajeFinal.innerHTML = "[SISTEMA] Validación completada. Ejecutando salto lógico...";
+        if (val === "rick" || val === "morty") {
+            inputSection.style.display = "none";
+            eleccion.style.display = "block";
+        } else {
+            alert("El ID debe ser 'rick' o 'morty'");
+        }
+    }
+
+    function finalizar(eleccionUsuario) {
+        eleccion.style.display = "none";
+        terminal.innerHTML += "\n[SISTEMA] Registro completado. Ejecutando protocolo de transferencia...\n";
+        document.body.classList.add("flash");
+
+        setTimeout(() => {
+            mensajeFinal.style.display = "block";
+            mensajeFinal.innerHTML = eleccionUsuario === "rick"
+                ? "⚠️ Rick ha sido liberado. Morty quedó atrás... ¿o no?"
+                : "⚠️ Morty escapó. Rick fue absorbido por el código... ¿o eso parece?";
+
             setTimeout(() => {
                 document.body.classList.remove("flash");
-                mensajeExtra.innerHTML = "Rick: JAJAJA MORTY, obvio que no te iba a dejar. Era todo un truco para romper la estructura del código.<br><br>✔️ AMBOS LIBERADOS. Redirigiendo a Room 4...";
-                setTimeout(() => window.location.href = "/Room4", 6000);
+                mensajeExtra.style.display = "block";
+                mensajeExtra.innerHTML = `
+                    <p style='color:#00ffff;'>Rick: “JAJAJA MORTY, CAÍSTE.”</p>
+                    <p style='color:#00ffff;'>Rick: “NUNCA IBA A DEJARTE. USÉ LA ELECCIÓN COMO ENGAÑO PARA ROMPER LA LÓGICA DEL CÓDIGO.”</p>
+                    <p style='color:#00ffff;'>Rick: “AHORA PODEMOS PASAR LOS DOS, ¡TARADOOO!”</p>
+                    <p>✔️ REALIDAD ESTABILIZADA - REDIRECCIONANDO A ROOM 4...</p>
+                `;
+
+                setTimeout(() => {
+                    window.location.href = "/Room4";
+                }, 6000);
             }, 4000);
-        } else {
-            mensajeFinal.innerHTML = "Rick: Esa no es la secuencia correcta, Morty. Leé mejor los logs.";
-        }
+        }, 3000);
     }
 
     mostrarDialogo();
 </script>
+
 </body>
 </html>
