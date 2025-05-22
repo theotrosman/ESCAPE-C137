@@ -14,6 +14,18 @@ ERROR 403 — ReadmeAccessOnlyException()
 
 Morty, este texto es la llave. Buscá el patrón.
 Tenés que liberarme antes de que el commit me borre...
+
+Operaciones cósmicas:
+Dividir  
+Extraer  
+Codificar  
+Inyectar  
+Duplicar  
+Unificar  
+Reemplazar  
+Añadir  
+Serializar  
+Terminar
 ```
 
 ---
