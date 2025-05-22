@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\PrimerProyecto.csproj": {}
+    "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\ESCAPE-C137\\PrimerProyecto.csproj": {}
   },
   "projects": {
-    "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\PrimerProyecto.csproj": {
+    "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\ESCAPE-C137\\PrimerProyecto.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\PrimerProyecto.csproj",
+        "projectUniqueName": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\ESCAPE-C137\\PrimerProyecto.csproj",
         "projectName": "PrimerProyecto",
-        "projectPath": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\PrimerProyecto.csproj",
+        "projectPath": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\ESCAPE-C137\\PrimerProyecto.csproj",
         "packagesPath": "C:\\Users\\knk\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\PrimerProyecto\\obj\\",
+        "outputPath": "C:\\Users\\knk\\Downloads\\TPESCAPEROOM\\ESCAPE-C137\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\knk\\AppData\\Roaming\\NuGet\\NuGet.Config"

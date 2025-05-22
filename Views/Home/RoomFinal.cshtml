@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Room Final — Realidades Colapsadas</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .consola {
+      background: #111;
+      border: 2px dashed #0f0;
+      padding: 20px;
+      margin: 10px;
+      width: 90%;
+      max-width: 800px;
+      height: 180px;
+      overflow-y: auto;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .titulo {
+      color: #ff00ff;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+    .glitch {
+      animation: glitch 0.2s infinite alternate;
+    }
+    @@keyframes glitch {
+      0% { text-shadow: 2px 0 red; }
+      100% { text-shadow: -2px 0 blue; }
+    }
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+<video id="videoFinal" src="/img/videofinal.mp4" autoplay muted playsinline controls></video>
+<div id="contenedor"></div>
+<script>
+const consolas = [
+  {
+    titulo: "Realidad: Breaking Bad",
+    pregunta: "Rick: ¿Cuál es el verdadero nombre de Heisenberg?",
+    respuesta: "walter"
+  },
+  {
+    titulo: "Realidad: Hora de Aventura",
+    pregunta: "Rick: ¿Cómo se llama el perro que acompaña a Finn?",
+    respuesta: "jake"
+  },
+  {
+    titulo: "Realidad: Prison Break",
+    pregunta: "Rick: ¿Cómo se llama el protagonista que se tatúa el plano para escapar de prisión?",
+    respuesta: "michael"
+  },
+  {
+    titulo: "Realidad: Volver al Futuro",
+    pregunta: "Rick: ¿En qué fecha exacta viajan Marty y Doc al futuro en la segunda película?",
+    respuesta: "21 de octubre de 2015"
+  },
+  {
+    titulo: "Realidad: Los Simpsons",
+    pregunta: "Rick: ¿Cómo se llama el bar que frecuenta Homero Simpson?",
+    respuesta: "la taberna de moe"
+  }
+];
+
+const contenedor = document.getElementById("contenedor");
+const coloresFondo = ['#0c0c0c', '#1a0033', '#001a1a', '#1a1a00', '#2c0f0f'];
+const coloresTexto = ['#00ff00', '#ff99ff', '#00ffff', '#ffff66', '#ffcc99'];
+const video = document.getElementById("videoFinal");
+let actual = 0;
+
+function mostrarConsola() {
+  document.body.style.backgroundColor = coloresFondo[actual] || 'black';
+  document.body.style.color = coloresTexto[actual] || '#00ff00';
+  contenedor.innerHTML = "";
+  const datos = consolas[actual];
+  const div = document.createElement("div");
+  div.className = "consola glitch";
+  div.innerHTML = `<div class='titulo'>${datos.titulo}</div>${datos.pregunta}\nMorty: `;
+
+  const input = document.createElement("input");
+  input.style.background = "black";
+  input.style.color = "#0f0";
+  input.style.border = "1px solid #0f0";
+  input.style.fontFamily = "monospace";
+  input.style.fontSize = "14px";
+  input.style.marginTop = "5px";
+  input.autofocus = true;
+  input.onkeydown = (e) => {
+    if (e.key === "Enter") {
+      const val = input.value.trim().toLowerCase();
+      if (val.toLowerCase().trim() === datos.respuesta.toLowerCase().trim()) {
+        actual++;
+        if (actual < consolas.length) mostrarConsola();
+        else reproducirVideo();
+      } else {
+        div.innerHTML += `\n[SISTEMA] Respuesta incorrecta. Intentalo otra vez.`;
+        input.value = "";
+      }
+    }
+  };
+
+  div.appendChild(document.createElement("br"));
+  div.appendChild(input);
+  contenedor.appendChild(div);
+  input.focus();
+}
+
+function reproducirVideo() {
+  contenedor.innerHTML = "";
+  video.style.display = "block";
+  video.muted = false;
+  video.play();
+}
+
+window.onload = mostrarConsola;
+</script>
+</body>
+</html>

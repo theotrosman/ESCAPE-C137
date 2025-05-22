@@ -4,177 +4,226 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title>Room 3 — Paradoja de Sacrificio</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <style>
-        body {
-            background-color: black;
-            color: #00ff00;
-            font-family: monospace;
-            padding: 40px;
-            overflow: hidden;
-            animation: flickerBg 2s infinite alternate;
-        }
+<meta charset="utf-8" />
+<title>Room 3 — Paradoja Extendida</title>
+<link rel="stylesheet" href="~/css/site.css" />
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow-y: auto;
+    background-color: black;
+    color: #00ff00;
+    font-family: monospace;
+    padding: 20px;
+    animation: shake 0.3s infinite alternate, flash 1s infinite alternate;
+}
 
-        @keyframes flickerBg {
-            0% { background-color: black; }
-            100% { background-color: #111; }
-        }
+@@keyframes shake {
+  0% { transform: translate(0px, 0px); }
+  25% { transform: translate(-1px, 1px); }
+  50% { transform: translate(1px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+  100% { transform: translate(1px, 1px); }
+}
 
-        #terminal {
-            white-space: pre-wrap;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-            animation: textGlow 2s ease-in-out infinite;
-        }
+@@keyframes flash {
+  from { background-color: #000; }
+  to { background-color: #111; }
+}
 
-        @keyframes textGlow {
-            0% { text-shadow: 0 0 5px #0f0; }
-            100% { text-shadow: 0 0 20px #0f0; }
-        }
+.terminal {
+  white-space: pre-wrap;
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
 
-        #input-section, #eleccion, #mensaje-final, #mensajeExtra {
-            display: none;
-            margin-top: 30px;
-        }
+.code-zone, .drop-zone {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-        input {
-            background: black;
-            border: none;
-            border-bottom: 1px solid #00ff00;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 16px;
-            width: 400px;
-        }
+.block {
+  background: #002200;
+  border: 1px solid #00ff00;
+  padding: 10px;
+  cursor: move;
+  user-select: none;
+  color: #00ff00;
+}
 
-        button {
-            background: #00ff00;
-            color: black;
-            border: none;
-            padding: 10px 25px;
-            font-family: monospace;
-            cursor: pointer;
-            margin: 10px;
-        }
+.slot {
+  border: 1px dashed #00ff00;
+  min-height: 40px;
+  padding: 10px;
+  color: #00ff00;
+  background: rgba(0, 50, 0, 0.3);
+}
 
-        .log {
-            margin-top: 20px;
-            font-size: 14px;
-        }
+.timer {
+  font-size: 20px;
+  color: red;
+  margin-top: 10px;
+}
 
-        .flash {
-            animation: flashError 0.4s ease-in-out infinite alternate;
-        }
+#universos {
+  display: none;
+  flex-wrap: wrap;
+  margin-top: 40px;
+  gap: 4px;
+}
 
-        @keyframes flashError {
-            from { background-color: black; }
-            to { background-color: red; }
-        }
-
-        .rickFace {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            width: 120px;
-            opacity: 0.8;
-            filter: drop-shadow(0 0 10px lime);
-        }
-    </style>
+.universo {
+  background: white;
+  color: black;
+  font-size: 10px;
+  width: calc(100% / 9 - 6px);
+  height: 80px;
+  overflow: hidden;
+  padding: 4px;
+  border: 1px solid black;
+}
+</style>
 </head>
 <body>
-
-<audio src="/img/rick-theme.mp3" autoplay loop></audio>
-<img src="/rickgif.gif" class="rickFace" />
-
-<div id="terminal"></div>
-<div id="input-section">
-    <p>[SISTEMA] Registro incompleto. Completá el ID de acceso:</p>
-    <input id="logInput" type="text" placeholder="rick / morty" />
-    <button onclick="completarLog()">ENVIAR</button>
-</div>
-
-<div id="eleccion">
-    <p>Rick: “Morty... sólo uno de nosotros puede pasar.”</p>
-    <p>Morty: “Rick... ¿vas a dejarme atrás?”</p>
-    <p>Elegí a quién liberar del código:</p>
-    <button onclick="finalizar('rick')">Liberar a Rick</button>
-    <button onclick="finalizar('morty')">Liberar a Morty</button>
-</div>
-
-<div id="mensaje-final"></div>
-<div id="mensajeExtra"></div>
-
+<audio id="bgMusic" autoplay loop></audio>
 <script>
-    const terminal = document.getElementById("terminal");
-    const inputSection = document.getElementById("input-section");
-    const eleccion = document.getElementById("eleccion");
-    const mensajeFinal = document.getElementById("mensaje-final");
-    const mensajeExtra = document.getElementById("mensajeExtra");
-
-    const dialogo = [
-        "Rick: Morty... logré romper los logs del sistema.",
-        "Morty: ¿Eso es bueno?",
-        "Rick: Sí. Pero hay una condición. El código solo deja salir a uno.",
-        "Morty: ¿Qué!?",
-        "Rick: Vas a tener que elegir... o no salimos ninguno.",
-        "Rick: Leé los logs. El sistema quiere que creas que hay una elección real.",
-        "[SISTEMA] Acceso a logs habilitado. ID incompleto. Por favor completalo..."
-    ];
-
-    let i = 0;
-    function mostrarDialogo() {
-        if (i < dialogo.length) {
-            terminal.innerHTML += dialogo[i] + "\n";
-            i++;
-            setTimeout(mostrarDialogo, 2000);
-        } else {
-            inputSection.style.display = "block";
-        }
-    }
-
-    function completarLog() {
-        const val = document.getElementById("logInput").value.trim().toLowerCase();
-        if (val === "rick" || val === "morty") {
-            inputSection.style.display = "none";
-            eleccion.style.display = "block";
-        } else {
-            alert("El ID debe ser 'rick' o 'morty'");
-        }
-    }
-
-    function finalizar(eleccionUsuario) {
-        eleccion.style.display = "none";
-        terminal.innerHTML += "\n[SISTEMA] Registro completado. Ejecutando protocolo de transferencia...\n";
-        document.body.classList.add("flash");
-
-        setTimeout(() => {
-            mensajeFinal.style.display = "block";
-            mensajeFinal.innerHTML = eleccionUsuario === "rick"
-                ? "⚠️ Rick ha sido liberado. Morty quedó atrás... ¿o no?"
-                : "⚠️ Morty escapó. Rick fue absorbido por el código... ¿o eso parece?";
-
-            setTimeout(() => {
-                document.body.classList.remove("flash");
-                mensajeExtra.style.display = "block";
-                mensajeExtra.innerHTML = `
-                    <p style='color:#00ffff;'>Rick: “JAJAJA MORTY, CAÍSTE.”</p>
-                    <p style='color:#00ffff;'>Rick: “NUNCA IBA A DEJARTE. USÉ LA ELECCIÓN COMO ENGAÑO PARA ROMPER LA LÓGICA DEL CÓDIGO.”</p>
-                    <p style='color:#00ffff;'>Rick: “AHORA PODEMOS PASAR LOS DOS, ¡TARADOOO!”</p>
-                    <p>✔️ REALIDAD ESTABILIZADA - REDIRECCIONANDO A ROOM 4...</p>
-                `;
-
-                setTimeout(() => {
-                    window.location.href = "/Room4";
-                }, 6000);
-            }, 4000);
-        }, 3000);
-    }
-
-    mostrarDialogo();
+const bgMusic = document.getElementById("bgMusic");
+const parts = [
+  "/img/rick-theme.mp3#t=0,20",
+  "/img/rick-theme.mp3#t=20,40",
+  "/img/rick-theme.mp3#t=40,60",
+  "/img/rick-theme.mp3#t=60,80",
+  "/img/rick-theme.mp3#t=80,100"
+];
+function playRandomPart() {
+  const part = parts[Math.floor(Math.random() * parts.length)];
+  bgMusic.src = part;
+  bgMusic.play();
+}
+bgMusic.onended = playRandomPart;
+playRandomPart();
 </script>
+<div class="terminal" id="terminal"></div>
+<div class="timer" id="timer"></div>
+<ul>
+  <li>📌 using System; debe ir primero.</li>
+  <li>📌 Después la clase <strong>Portal</strong>.</li>
+  <li>📌 Luego el método <strong>Salir</strong>.</li>
+  <li>📌 Luego la validación y acción si es verdadera.</li>
+  <li>📌 Después el método <strong>Validar</strong>.</li>
+  <li>📌 Finalmente el método <strong>Abrir</strong> y la llave final.</li>
+</ul>
+<div class="code-zone" id="codeZone"></div>
+<div class="drop-zone" id="dropZone"></div>
+<div id="universos"></div>
+<script>
+const terminal = document.getElementById("terminal");
+const codeZone = document.getElementById("codeZone");
+const dropZone = document.getElementById("dropZone");
+const timer = document.getElementById("timer");
+const universos = document.getElementById("universos");
 
+const bloques = [
+  "using System;",
+  "public class Portal {",
+  "    public void Salir() {",
+  "        if (Validar()) { Abrir(); }",
+  "    }",
+  "    private bool Validar() => true;",
+  "    private void Abrir() => Console.WriteLine(\"Abierto\");",
+  "}"
+];
+
+const ordenCorrecto = [...bloques];
+let tiempo = 105;
+
+function iniciar() {
+    
+  terminal.innerText = "Rick: Morty, reconstruí este mini código o se fragmenta la realidad. Y no te equivoques... ya empieza a temblar todo.";
+  timer.innerText = `⏱ Tiempo: ${tiempo}s`;
+  bloques.sort(() => Math.random() - 0.5).forEach((linea, i) => {
+    const b = document.createElement("div");
+    b.className = "block";
+    b.textContent = linea;
+    b.draggable = true;
+    b.id = `bloque${i}`;
+    b.ondragstart = e => e.dataTransfer.setData("text", b.id);
+    codeZone.appendChild(b);
+  });
+
+  for (let i = 0; i < bloques.length; i++) {
+    const zona = document.createElement("div");
+    zona.className = "slot";
+    zona.ondragover = e => e.preventDefault();
+    zona.ondrop = e => {
+      const id = e.dataTransfer.getData("text");
+      const bloque = document.getElementById(id);
+      zona.innerText = bloque.textContent;
+      bloque.remove();
+      validar();
+    };
+    zona.onclick = () => {
+      if (zona.innerText) {
+        const devolver = document.createElement("div");
+        devolver.className = "block";
+        devolver.textContent = zona.innerText;
+        devolver.draggable = true;
+        devolver.ondragstart = e => e.dataTransfer.setData("text", devolver.id = Math.random());
+        codeZone.appendChild(devolver);
+        zona.innerText = "";
+      }
+    };
+    dropZone.appendChild(zona);
+  }
+  countdown();
+}
+
+function countdown() {
+  const t = setInterval(() => {
+    tiempo--;
+    timer.innerText = `⏱ Tiempo: ${tiempo}s`;
+    if (tiempo <= 0) {
+      clearInterval(t);
+      fallo();
+    }
+  }, 1000);
+}
+
+function validar() {
+  const actuales = Array.from(document.querySelectorAll(".slot")).map(z => z.innerText);
+  if (actuales.every(Boolean) && actuales.join() === ordenCorrecto.join()) {
+    terminal.innerText = "✅ ¡Código restaurado! Saltando a la siguiente dimensión...";
+    setTimeout(() => window.location.href = "/Home/Room4", 3000);
+  }
+}
+
+function fallo() {
+  codeZone.innerHTML = "";
+  dropZone.innerHTML = "";
+  document.body.style.background = "white";
+  document.body.style.color = "black";
+  timer.style.display = "none";
+  terminal.innerText = "💥 El código falló. Multiverso en colapso...";
+  universos.style.display = "flex";
+  for (let i = 0; i < 81; i++) {
+    const div = document.createElement("div");
+    div.className = "universo";
+    const serie = series[Math.floor(Math.random() * series.length)];
+    div.innerHTML = `<strong>${i}</strong><br>${serie}<br><em>Rick:</em> ${rickFrase(serie)}<br><em>Morty:</em> ${mortyFrase(serie)}`;
+    universos.appendChild(div);
+  }
+  setTimeout(() => location.reload(), 20000);
+}
+
+const series = ["Breaking Bad", "The Office", "Evangelion", "Pokemon", "BoJack", "Gravity Falls", "Dragon Ball", "Star Wars", "Los Simpsons", "Futurama", "South Park", "Stranger Things"];
+function rickFrase(s) { return `Morty, en ${s} todo está más roto que en nuestra realidad.`; }
+function mortyFrase(s) { return `¿En serio Rick? ¿Otra vez ${s}?`; }
+
+iniciar();
+</script>
 </body>
 </html>

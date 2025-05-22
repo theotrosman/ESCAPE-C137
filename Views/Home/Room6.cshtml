@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Room 6 — Caos del Núcleo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: radial-gradient(#000, #111);
+      color: #00ffcc;
+      overflow: hidden;
+      height: 100vh;
+    }
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+    }
+    .instrucciones {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 20px;
+      border: 1px solid #00ffcc;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .terminal {
+      background: #000;
+      border: 2px dashed #00ffcc;
+      padding: 20px;
+      height: 220px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 30px 0;
+    }
+    .cell {
+      width: 80px;
+      height: 80px;
+      background: #111;
+      border: 1px solid #00ffcc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .cell.activo {
+      background: #ff0066;
+      color: #fff;
+      box-shadow: 0 0 20px #ff0088;
+    }
+    #score {
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<audio id="bgAudio" src="/audio/rick-dubstep.mp3" autoplay loop></audio>
+<canvas id="matrix"></canvas>
+
+<div class="instrucciones">
+  <h2>⚠️ Room 6: Caos del Núcleo</h2>
+  <p>Rick: Morty, estamos en el núcleo caótico de la realidad. La física no responde. Los bugs están vivos. Y el código... se genera solo.</p>
+  <p><strong>OBJETIVO:</strong> Tenés 60 segundos para hacer clic en los <span style="color:#ff66cc">CUADRADOS ACTIVOS</span> que parpadean al azar. Cada clic correcto suma +1. Cada clic fallado resta -1.</p>
+  <p>Lográ <strong>20 puntos</strong> y Rick desbloqueará el núcleo para acceder a la siguiente sala.</p>
+</div>
+
+<div class="grid" id="grid"></div>
+<div id="score">Puntaje: 0</div>
+<div class="terminal" id="terminal"></div>
+
+<script>
+const canvas = document.getElementById('matrix');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const cols = Math.floor(canvas.width / 20);
+const ypos = Array(cols).fill(0);
+function matrixRain() {
+  ctx.fillStyle = '#0002';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#0ff';
+  ctx.font = '15pt monospace';
+  ypos.forEach((y, ind) => {
+    const text = String.fromCharCode(Math.random() * 128);
+    const x = ind * 20;
+    ctx.fillText(text, x, y);
+    if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+    else ypos[ind] = y + 20;
+  });
+}
+setInterval(matrixRain, 40);
+
+const grid = document.getElementById("grid");
+const scoreDisplay = document.getElementById("score");
+const terminal = document.getElementById("terminal");
+let score = 0;
+let tiempo = 60;
+let intervalo;
+let finalizado = false;
+let celdaActiva = -1;
+
+function crearCeldas() {
+  for (let i = 0; i < 25; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.id = `cell${i}`;
+    cell.onclick = () => {
+      if (finalizado) return;
+      if (cell.classList.contains("activo")) {
+        score++;
+        terminal.innerText += `✔️ Click correcto en ${cell.id}\n`;
+      } else {
+        score--;
+        terminal.innerText += `❌ Click fallado en ${cell.id}\n`;
+      }
+      actualizar();
+    };
+    grid.appendChild(cell);
+  }
+}
+
+function activarRandom() {
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('activo'));
+  let r;
+  do {
+    r = Math.floor(Math.random() * 25);
+  } while (r === celdaActiva);
+  celdaActiva = r;
+  document.getElementById(`cell${r}`).classList.add("activo");
+}
+
+function actualizar() {
+  scoreDisplay.innerText = `Puntaje: ${score}`;
+  if (score >= 20 && !finalizado) {
+    finalizado = true;
+    clearInterval(intervalo);
+    document.body.innerHTML = '<div id="finalConsola" style="color: #00ff00; font-family: monospace; padding: 40px; font-size: 16px; white-space: pre-wrap;">[CONEXIÓN ESTABLECIDA]</div>';
+    const charla = [
+      "Rick: Morty... estás viendo el núcleo de la red de realidades.",
+      "Morty: ¿Y qué hay en la siguiente habitación?",
+      "Rick: Algo peor que bugs, Morty... un sistema que piensa por sí mismo.",
+      "Morty: ¿Cómo que piensa? ¿Tiene conciencia?",
+      "Rick: Sí, Morty. Se reprograma solo, aprende de nosotros...",
+      "Rick: Si no lo controlamos... nos va a compilar a nosotros.",
+      "Morty: ¿Y entonces qué hacemos?",
+      "Rick: Prepararnos. En la siguiente sala... no hay instrucciones.",
+      "Rick: Solo decisiones.",
+      "[PREPARANDO ROOM 7...]"
+    ];
+    let i = 0;
+    const consola = document.getElementById("finalConsola");
+    function escribirLinea() {
+      if (i < charla.length) {
+        const linea = charla[i];
+        let j = 0;
+        const escribirChar = setInterval(() => {
+          consola.innerText += linea[j] || "";
+          j++;
+          if (j >= linea.length) {
+            consola.innerText += "\n";
+            clearInterval(escribirChar);
+            i++;
+            setTimeout(escribirLinea, 800);
+          }
+        }, 30);
+      } else {
+        setTimeout(() => window.location.href = "/Home/Room7", 4000);
+      }
+    }
+    setTimeout(escribirLinea, 1000);
+  }
+}
+
+function iniciarCaos() {
+  crearCeldas();
+  intervalo = setInterval(() => {
+    activarRandom();
+    tiempo--;
+    if (tiempo % 10 === 0 && tiempo > 0) {
+      terminal.innerText += `\nRick: ${frases[Math.floor(Math.random() * frases.length)]}`;
+    }
+    if (tiempo <= 0 && !finalizado) {
+      clearInterval(intervalo);
+      terminal.innerHTML += "\n💥 Fracaso. El núcleo colapsó. Reiniciando...";
+      setTimeout(() => location.reload(), 5000);
+    }
+  }, 700);
+}
+
+const frases = [
+  "¡Apuntá mejor Morty!",
+  "¡Estás fallando demasiado!",
+  "El núcleo está cada vez más inestable...",
+  "Esa luz rosa no es decoración, Morty, es radiación!",
+  "¡20 puntos o morimos bugueados!"
+];
+
+iniciarCaos();
+</script>
+</body>
+</html>

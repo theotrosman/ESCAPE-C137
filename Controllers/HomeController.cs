@@ -38,5 +38,21 @@ namespace PrimerProyecto.Controllers
         {
             return View();
         }
+        public IActionResult Room5()
+        {
+            return View();
+        }
+        public IActionResult Room6()
+        {
+            return View();
+        }
+        public IActionResult Room7()
+        {
+            return View();
+        }
+        public IActionResult RoomFinal()
+        {
+            return View();
+        }
     }
 }

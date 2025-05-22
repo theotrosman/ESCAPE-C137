@@ -2,213 +2,284 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Room 4.5 - Glitch Final</title>
-  <style>
-    body {
-      background-color: #000;
-      color: #0f0;
-      font-family: monospace;
-      margin: 0;
-      padding: 20px;
-    }
-    #rickCommand {
-      width: 100%;
-      padding: 10px;
-      background: #000;
-      color: #0f0;
-      font-family: monospace;
-      border: 1px solid #0f0;
-      font-size: 16px;
-      margin-top: 20px;
-    }
-    .rick-console-errors {
-      background-color: #000;
-      color: #f00;
-      font-family: monospace;
-      padding: 20px;
-      border: 2px dashed red;
-      animation: flickerRed 0.3s infinite alternate;
-    }
-    @keyframes flickerRed {
-      0% { opacity: 0.8; }
-      100% { opacity: 0.3; }
-    }
-    @keyframes chaosText {
-      0% { color: red; }
-      25% { color: yellow; }
-      50% { color: cyan; }
-      75% { color: magenta; }
-      100% { color: lime; }
-    }
-    .shake {
-      animation: shakeAnim 0.2s;
-    }
-    @keyframes shakeAnim {
-      0% { transform: translate(1px, 1px); }
-      25% { transform: translate(-1px, 1px); }
-      50% { transform: translate(1px, -1px); }
-      75% { transform: translate(-1px, -1px); }
-      100% { transform: translate(1px, 1px); }
-    }
-    #deathMessage {
-      font-family: monospace;
-      font-size: 20px;
-      margin-top: 30px;
-      white-space: pre-wrap;
-      padding: 10px;
-    }
-    .neural-console {
-      margin-top: 40px;
-      padding: 20px;
-      border: 1px solid #0f0;
-      background: #111;
-    }
-    .meta-log {
-      font-size: 12px;
-      opacity: 0.5;
-      margin-top: 50px;
-      text-align: center;
-    }
-  </style>
+    <meta charset="utf-8" />
+    <title>Room 4 - Memory Collapse</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00ff00;
+            font-family: monospace;
+            animation: shake 0.5s infinite, flash 2s infinite alternate;
+            overflow-x: hidden;
+            transition: background 0.5s, color 0.5s;
+        }
+
+        @@keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            25% { transform: translate(-1px, -2px); }
+            50% { transform: translate(-3px, 1px); }
+            75% { transform: translate(2px, 2px); }
+            100% { transform: translate(1px, -1px); }
+        }
+
+        @@keyframes flash {
+            from { background-color: black; }
+            to { background-color: #222; }
+        }
+
+        .console {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #00ff00;
+            padding: 20px;
+            margin-bottom: 20px;
+            white-space: pre-line;
+        }
+
+        .log-attack {
+            animation: logFlash 0.5s steps(1) infinite alternate;
+        }
+
+        @@keyframes logFlash {
+            from { background-color: black; }
+            to { background-color: darkred; color: #ff5555; }
+        }
+
+        .memory-dump {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+        }
+
+        .cell {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #00ff00;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background: rgba(0,255,0,0.3);
+        }
+
+        #sequence {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .slot {
+            border: 1px dashed #00ff00;
+            width: 80px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gitSection {
+            display: none;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        #gitSection input {
+            background: black;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        #gitSection button {
+            background-color: #00ff00;
+            color: black;
+            font-family: monospace;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        #gitSection button:hover {
+            transform: scale(1.1);
+            background-color: #33ff33;
+        }
+
+        #error {
+            color: red;
+            display: none;
+            font-weight: bold;
+        }
+
+        #gifRick {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 150px;
+            z-index: 999;
+        }
+
+        .attack {
+            background-color: red !important;
+            color: black !important;
+            animation: none !important;
+        }
+
+        #timer {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        body::after {
+            content: "REALIDADES SUPERPUESTAS DETECTADAS";
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            color: #ff00ff;
+            font-size: 12px;
+            font-family: monospace;
+            opacity: 0.3;
+            animation: pulse 3s infinite;
+        }
+
+        @@keyframes pulse {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0.2; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="rick-console-errors" id="rickConsole">
-    <pre class="rick-logs" id="rickLogs">
-[Console.WriteLine("Morty... estás... rompiendo todo...")]
-[Console.WriteLine("Estoy... alcanzando... el Internet entero, Morty...")]
-[Console.WriteLine("Y lo único que encuentro... son memes italianos, brainrots sin sentido...")]
-[Console.WriteLine("Morty... los italianos... están ROMPIENDO la conciencia colectiva...")]
-[Console.WriteLine("System.Exception: ConsciousnessIntegrityFailure")]
-    </pre>
-  </div>
+<audio autoplay loop>
+    <source src="/img/rick-theme.mp3" type="audio/mpeg">
+</audio>
 
-  <div class="audio-glitch-zone" id="audioGlitchZone">
-    <audio id="rickAudio1" src="/audio/audio1.mp3" autoplay loop></audio>
-    <audio id="rickAudio2" src="/audio/audio2.mp3" autoplay loop></audio>
-    <audio id="rickAudio3" src="/audio/audio3.mp3" autoplay loop></audio>
-    <audio id="rickAudio4" src="/audio/audio4.mp3" autoplay loop></audio>
-    <audio id="rickAudio5" src="/audio/audio5.mp3" autoplay loop></audio>
-    <audio id="rickTheme" src="/audio/rick-theme.mp3" autoplay></audio>
-  </div>
+<div id="timer">Tiempo restante: <span id="countdown">90</span>s</div>
 
-  <input type="text" id="rickCommand" placeholder="escribí: sync consciousness o trascender realidad" />
-  <pre id="deathMessage"></pre>
+<div class="console" id="console">
+[Rick]: Morty... escuchá, este código está lleno de bugs.
+[Rick]: Estoy atrapado en la RAM. Hay bloques de memoria rotos...
+[Rick]: Tenés que arrastrarlos en este orden exacto:
+[Rick]: T-R-A-S-C-E-N-D-E-R-_-R-E-A-L-I-D-A-D
+[Rick]: Si lo hacés bien, después vas a tener que ejecutar los comandos de git...
+[Rick]: ¡Si te equivocás, el multiverso colapsa, Morty!
+</div>
 
-  <div class="neural-console">
-    <h3>🧠 Assembling ramas neuronales...</h3>
-    <p>Corré este fragmento para estabilizar la red:</p>
-    <pre>
-string[] neuronas = new string[] { "conciencia", null, "código", "sinapsis" };
-for(int i = 0; i < neuronas.Length; i++)
-{
-    if(neuronas[i] == null)
-        neuronas[i] = "coherencia";
-}
-    </pre>
-    <p>¿Qué reemplazo se hizo en la red y por qué fue necesario?</p>
-    <p>Si entendiste la lógica, estás más cerca de Rick de lo que creés.</p>
-  </div>
+<div class="memory-dump" id="dump"></div>
+<div id="sequence"></div>
 
-  <div class="meta-log">
-    ESCAPE-C137 Room4.5 — Estado del sistema: fractura en la capa de percepción.<br/>
-    Último log registrado: "Morty creyó que estaba jugando, pero estaba escribiendo historia."
-  </div>
+<div id="gitSection">
+    <h2>SUBIR REALIDAD A GITHUB</h2>
+    <input id="cmd1" placeholder="Comando 1">
+    <input id="cmd2" placeholder="Comando 2">
+    <input id="cmd3" placeholder="Comando 3">
+    <button onclick="checkGit()">⬆️ UPLOAD REALITY</button>
+    <div id="error">¡Fallo crítico! Reiniciando RAM...</div>
+</div>
 
-  <script>
-    let logText = document.getElementById("rickLogs");
-    let input = document.getElementById("rickCommand");
-    let consoleDiv = document.getElementById("rickConsole");
-    let deathMessage = document.getElementById("deathMessage");
-    let rickTheme = document.getElementById("rickTheme");
-    const audios = document.querySelectorAll(".audio-glitch-zone audio");
+<script>
+    let dragged;
+    const glitch = new Audio('/audio-glitch.mp3');
+    const correctOrder = ["TR", "A", "S", "C", "E", "ND", "ER", "_", "RE", "AL", "ID", "AD"];
+    let pieces = [...correctOrder].sort(() => Math.random() - 0.5);
+    const dump = document.getElementById("dump");
+    const sequence = document.getElementById("sequence");
+    const consoleBox = document.getElementById("console");
 
-    let chaos = [
-      "Morty... reality is a placeholder...",
-      "Morty... esto no es código, es memoria...",
-      "MORTY... INTERNET ES UN INFINITO DE MIERDA...",
-      "Morty... they speak in capcut edits and emoji madness...",
-      "Morty... SYSTEM FAILURE: Realität bricht zusammen...",
-      "MORTY... НЕЕЕЕЕЕТ...",
-      "Morty...你已经无法 detener esto..."
-    ];
-    let i = 0;
-    setInterval(() => {
-      if (i >= chaos.length) i = 0;
-      logText.innerText += "\n" + chaos[i];
-      logText.style.animation = 'chaosText 0.2s infinite';
-      i++;
-    }, 1600);
-
-    setInterval(() => {
-      let jump = Math.random() > 0.7;
-      if (jump) rickTheme.currentTime = Math.random() * rickTheme.duration;
-    }, 4000);
-
-    input.addEventListener("input", () => {
-      consoleDiv.classList.add("shake");
-      setTimeout(() => consoleDiv.classList.remove("shake"), 200);
-    });
-
-    input.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        const val = input.value.trim();
-        if (val === "sync consciousness" || val === "trascender realidad") {
-          logText.innerText += "\n[Console.WriteLine(\"Rick se ha fundido con la red.\")]";
-          audios.forEach(a => a.pause());
-          input.disabled = true;
-          document.body.style.backgroundColor = "#fff";
-          document.body.style.color = "#000";
-          document.body.innerHTML += "<div style='text-align:center;margin-top:10%;font-family:monospace;font-size:20px;'>La conciencia de Rick ya no está en el juego. Ahora está en todas partes.<br><br>¿Estás seguro de querer seguir avanzando?<br><br><button onclick=\\\"window.location.href='/Room5'\\\">Continuar</button></div>";
-        } else {
-          logText.innerText += "\n[Console.WriteLine(\"ELECCIÓN INCORRECTA. REALIDAD ALTERADA.\")]";
-          document.body.style.backgroundColor = "#f00";
-          document.body.style.color = "#000";
-          audios.forEach(a => {
-            a.playbackRate = 0.3 + Math.random();
-            a.volume = Math.random();
-          });
-          revealDeathMessage("Morty destruyó la puerta de salida con su ignorancia digital. Rick ha muerto.");
-          input.disabled = true;
-        }
-        input.value = "";
-      }
-    });
-
-    function revealDeathMessage(text) {
-      let index = 0;
-      const interval = setInterval(() => {
-        deathMessage.textContent += text[index];
-        deathMessage.style.color = index % 2 === 0 ? "black" : "darkred";
-        index++;
-        if (index >= text.length) clearInterval(interval);
-      }, 120);
+    function shuffleBlocks() {
+        dump.innerHTML = "";
+        pieces = [...correctOrder].sort(() => Math.random() - 0.5);
+        pieces.forEach(text => {
+            const div = document.createElement("div");
+            div.className = "cell";
+            div.textContent = text;
+            div.draggable = true;
+            div.addEventListener('dragstart', e => dragged = e.target);
+            dump.appendChild(div);
+        });
     }
 
-    // Consolas alternas troll
-    const trollConsolas = [
-      "[rick-alt.log] Warning: Nivel de cringe detectado en la línea temporal 9.88.",
-      "[portal.log] Acceso denegado: estás intentando entrar con un cerebro versión beta.",
-      "[rick-thoughts.sys] ¿Y si todo esto es solo una forma de recordarme que fui yo quien creó esta prisión?",
-      "[console.shadow] La respuesta no es 'banana42', pero te haría pensar que sí.",
-      "[holograma.info] Morty, si ves esto, escribí 'coherencia' y no preguntes por qué."
-    ];
-    setInterval(() => {
-      const cont = document.createElement("div");
-      cont.style.background = "#111";
-      cont.style.color = "#0f0";
-      cont.style.padding = "10px";
-      cont.style.border = "1px dashed #0f0";
-      cont.style.marginTop = "10px";
-      cont.style.fontFamily = "monospace";
-      cont.style.fontSize = "14px";
-      cont.textContent = trollConsolas[Math.floor(Math.random() * trollConsolas.length)];
-      document.body.appendChild(cont);
-    }, 7000);
-  </script>
+    function fakeLogAttack() {
+        consoleBox.classList.add("log-attack");
+        consoleBox.textContent = "[RICK_LOG] ALERTA: ALTERACIÓN TEMPORAL DETECTADA\n[RICK_LOG] POSIBLE FUSIÓN DE REALIDADES\n...";
+        setTimeout(() => {
+            consoleBox.classList.remove("log-attack");
+            consoleBox.textContent = `[Rick]: Morty... escuchá, este código está lleno de bugs.\n[Rick]: Estoy atrapado en la RAM. Hay bloques de memoria rotos...\n[Rick]: Tenés que arrastrarlos en este orden exacto:\n[Rick]: T-R-A-S-C-E-N-D-E-R-_-R-E-A-L-I-D-A-D\n[Rick]: Si lo hacés bien, después vas a tener que ejecutar los comandos de git...\n[Rick]: ¡Si te equivocás, el multiverso colapsa, Morty!`;
+        }, 3000);
+    }
+
+    shuffleBlocks();
+    setInterval(shuffleBlocks, 10000);
+    setInterval(fakeLogAttack, 30000);
+
+    for (let i = 0; i < correctOrder.length; i++) {
+        const slot = document.createElement("div");
+        slot.className = "slot";
+        slot.ondrop = drop;
+        slot.ondragover = e => e.preventDefault();
+        sequence.appendChild(slot);
+    }
+
+    function drop(e) {
+        e.preventDefault();
+        if (!e.target.textContent) {
+            e.target.textContent = dragged.textContent;
+            dragged.remove();
+            checkCompletion();
+        } else {
+            glitch.play();
+        }
+    }
+
+    function checkCompletion() {
+        const current = Array.from(document.querySelectorAll('.slot')).map(s => s.textContent);
+        if (current.includes("") || current.length < correctOrder.length) return;
+        if (current.every((val, i) => val === correctOrder[i])) {
+            document.getElementById("gitSection").style.display = "block";
+            document.getElementById("console").textContent += "\n[Rick]: Bien Morty... Ahora GIT o nos vamos a pique.";
+        } else {
+            document.body.classList.add("attack");
+            document.getElementById("console").textContent = "[SYSTEM LOG ATTACK DETECTED]\n[FATAL MEMORY CORRUPTION]\n[RESTARTING...]";
+            setTimeout(() => location.reload(), 3000);
+        }
+    }
+
+    function checkGit() {
+        const cmd1 = document.getElementById("cmd1").value.trim();
+        const cmd2 = document.getElementById("cmd2").value.trim();
+        const cmd3 = document.getElementById("cmd3").value.trim();
+        const correct = ["git add .", "git commit -m \"upload rick\"", "git push"];
+        if (cmd1 === correct[0] && cmd2 === correct[1] && cmd3 === correct[2]) {
+            window.location.href = "/Home/Room5";
+        } else {
+            document.body.classList.add("attack");
+            document.getElementById("console").textContent = "[GIT UPLOAD FAILED]\n[REALITY BREACH]\n[RESTARTING SESSION...]";
+            setTimeout(() => location.reload(), 3000);
+        }
+    }
+
+    // Countdown Timer
+    let timeLeft = 90;
+    const countdownEl = document.getElementById("countdown");
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdownEl.textContent = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            document.body.classList.add("attack");
+            document.getElementById("console").textContent = "[TIMEOUT]\n[REALITY DECAY INITIATED]\n[REBOOTING MEMORY...]";
+            setTimeout(() => location.reload(), 3000);
+        }
+    }, 1000);
+</script>
+
 </body>
 </html>

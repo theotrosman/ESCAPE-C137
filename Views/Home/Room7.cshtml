@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Room 7 — El Sistema Vivo</title>
+  <style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: monospace;
+      padding: 40px;
+      overflow: hidden;
+      position: relative;
+      height: 500px;
+    }
+    .consola {
+      background: #000;
+      border: 1px solid #0f0;
+      padding: 20px;
+      white-space: pre-wrap;
+      height: 300px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .glitch { animation: glitchText 0.3s infinite; }
+    @@keyframes glitchText {
+      0% { color: #0f0; }
+      25% { color: #f0f; }
+      50% { color: #0ff; }
+      75% { color: #f00; }
+      100% { color: #0f0; }
+    }
+    .flash { animation: flashBG 0.5s infinite alternate; }
+    @@keyframes flashBG {
+      0% { background-color: black; }
+      100% { background-color: #111; }
+    }
+    .errorSpawn {
+      position: absolute;
+      color: #f00;
+      font-size: 12px;
+      pointer-events: none;
+      animation: fall 3s linear forwards;
+    }
+    @@keyframes fall {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(600px); }
+    }
+    .popup {
+      position: absolute;
+      background: #000;
+      border: 1px solid #0f0;
+      padding: 10px;
+      color: #0f0;
+      z-index: 10;
+      width: 220px;
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 100px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #222;
+      border: 1px solid #0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: transparent;
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+    }
+    .card.flipped {
+      background-color: #0f0;
+      color: black;
+    }
+    .disintegrate {
+      animation: disintegrate 1.5s forwards;
+    }
+    @@keyframes disintegrate {
+      0% { filter: blur(0); opacity: 1; }
+      100% { filter: blur(8px); opacity: 0; transform: rotate(30deg) scale(1.5); }
+    }
+  </style>
+</head>
+<body class="flash">
+<audio id="audio" autoplay loop></audio>
+<h2 class="glitch">ROOM 7 — INTERFAZ HOSTIL</h2>
+<div class="consola" id="consola"></div>
+<div class="grid" id="grid"></div>
+
+<script>
+const consola = document.getElementById("consola");
+const grid = document.getElementById("grid");
+const audio = document.getElementById("audio");
+
+const glitchLines = [
+  "[SISTEMA] Boot sequence interceptada...",
+  "Rick: ¿Morty? ¿Estás ahí?",
+  "[SISTEMA] No más Rick. No más Morty.",
+  "Rick: Esta interfaz... está viva.",
+  "[SISTEMA] Generando caos interactivo...",
+  "Rick: ¡Morty, esto ya no es un juego!"
+];
+
+function escribirLinea(index = 0) {
+  if (index < glitchLines.length) {
+    consola.innerText += glitchLines[index] + "\n";
+    if (index === 3) document.body.classList.add("flash");
+    setTimeout(() => escribirLinea(index + 1), 1800);
+  } else {
+    iniciarJuego();
+    generarErroresCaoticos();
+    generarPopUpsMolestos();
+  }
+}
+
+const symbols = ['🧠','🧪','💾','⚡','🕳️'];
+let selected = [];
+let matched = 0;
+
+function iniciarJuego() {
+  const cartas = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+  cartas.forEach((sim, i) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.dataset.sim = sim;
+    div.innerText = sim;
+    let x = 100 + Math.random() * (window.innerWidth - 220);
+    let y = 100 + Math.random() * (window.innerHeight - 220);
+    div.style.left = x + "px";
+    div.style.top = y + "px";
+    div.onclick = () => flipCard(div);
+    grid.appendChild(div);
+    animateBounce(div);
+  });
+}
+
+function animateBounce(el) {
+  let dx = Math.random() * 4 - 2;
+  let dy = Math.random() * 4 - 2;
+  setInterval(() => {
+    let x = parseFloat(el.style.left);
+    let y = parseFloat(el.style.top);
+    x += dx; y += dy;
+    if (x < 0 || x > window.innerWidth - 100) dx *= -1;
+    if (y < 0 || y > window.innerHeight - 100) dy *= -1;
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+  }, 30);
+}
+
+function flipCard(card) {
+  if (selected.length < 2 && !card.classList.contains('flipped')) {
+    card.classList.add('flipped');
+    selected.push(card);
+    if (selected.length === 2) {
+      setTimeout(checkMatch, 800);
+    }
+  }
+}
+
+function checkMatch() {
+  const [a, b] = selected;
+  if (a.dataset.sim === b.dataset.sim) {
+    matched++;
+    consola.innerText += `✔️ Emparejados ${a.dataset.sim}\n`;
+    erroresSeguidos = 0;
+    if (matched === symbols.length) {
+      document.body.classList.remove("flash");
+      const mensajeFinal = [
+        "[SISTEMA] Emparejamientos completados.",
+        "Rick: ¡Lo hiciste, Morty!",
+        "Rick: Nunca pensé que alguien pudiera domar un sistema fuera de control.",
+        "Rick: Ni siquiera yo pude... vos lo domaste.",
+        "Rick: Ahora andate. Antes de que vuelva."
+      ];
+      let i = 0;
+      const escribir = setInterval(() => {
+        if (i < mensajeFinal.length) {
+          consola.innerText += mensajeFinal[i] + "\n";
+          i++;
+        } else {
+          clearInterval(escribir);
+          setTimeout(() => window.location.href = "/Home/RoomFinal", 4000);
+        }
+      }, 1500);
+    }
+  } else {
+    a.classList.remove('flipped');
+    b.classList.remove('flipped');
+    consola.innerText += `❌ Error con ${a.dataset.sim} y ${b.dataset.sim}\n`;
+  }
+  selected = [];
+}
+
+function triggerDesintegracion() {
+  document.querySelectorAll('.card').forEach(c => c.classList.add('disintegrate'));
+  consola.innerText += "\n[SISTEMA] Error crítico detectado. Interfaz corrupta.\n";
+  setTimeout(() => location.reload(), 4000);
+}
+
+function generarErroresCaoticos() {
+  const frases = [
+    "#ERR_NULL_VOICE",
+    "#STACK_OVER_REALITY",
+    "#UNDEFINED_EMOTION",
+    "#INTERRUPT_RECURSION",
+    "#CONFLICT_MULTIVERSE_LOOP"
+  ];
+  setInterval(() => {
+    const span = document.createElement("span");
+    span.className = "errorSpawn";
+    span.innerText = frases[Math.floor(Math.random() * frases.length)];
+    span.style.left = Math.random() * window.innerWidth + "px";
+    span.style.top = "0px";
+    document.body.appendChild(span);
+    setTimeout(() => span.remove(), 4000);
+  }, 1000);
+}
+
+function generarPopUpsMolestos() {
+  setInterval(() => {
+    if (document.querySelectorAll('.popup').length >= 5) return;
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    const a = Math.floor(Math.random() * 10);
+    const b = Math.floor(Math.random() * 10);
+    popup.innerHTML = `Resolvé: ${a} + ${b}<br><input type='text' style='width:40px;' /> <button>Cerrar</button>`;
+    popup.style.left = Math.random() * (window.innerWidth - 300) + "px";
+    popup.style.top = Math.random() * (window.innerHeight - 150) + "px";
+    document.body.appendChild(popup);
+    const input = popup.querySelector("input");
+    const btn = popup.querySelector("button");
+    btn.onclick = () => {
+      if (parseInt(input.value) === a + b) popup.remove();
+      else input.style.border = "2px solid red";
+    };
+  }, 2500);
+}
+
+const tracks = [
+  "/img/audio/rick-theme.mp3#t=0,10",
+  "/img/audio/rick-theme.mp3#t=10,20",
+  "/img/audio/rick-theme.mp3#t=20,30",
+  "/img/audio/rick-theme.mp3#t=30,40"
+];
+function playCorrupto() {
+  const pieza = tracks[Math.floor(Math.random() * tracks.length)];
+  audio.src = pieza;
+  audio.play();
+}
+audio.onended = playCorrupto;
+playCorrupto();
+
+window.onload = () => escribirLinea();
+</script>
+</body>
+</html>
