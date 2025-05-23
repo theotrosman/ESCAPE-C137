@@ -87,7 +87,7 @@
         const r = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // quita tildes
         const feedback = document.getElementById("feedback");
 
-        if (r === "linea 15" || r === "line 15" || r === "15") {
+        if (r === "linea 32" || r === "line 32" || r === "32") {
             feedback.innerText = "✔️ ¡Correcto, Morty! Portal desbloqueado...";
             setTimeout(() => window.location.href = "/Home/Room2", 2500);
         } else {

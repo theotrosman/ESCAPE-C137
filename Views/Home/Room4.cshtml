@@ -262,12 +262,12 @@
         } else {
             document.body.classList.add("attack");
             document.getElementById("console").textContent = "[GIT UPLOAD FAILED]\n[REALITY BREACH]\n[RESTARTING SESSION...]";
-            setTimeout(() => location.reload(), 3000);
+            setTimeout(() => location.reload(), 6000);
         }
     }
 
     // Countdown Timer
-    let timeLeft = 30;
+    let timeLeft = 60;
     const countdownEl = document.getElementById("countdown");
     const timer = setInterval(() => {
         timeLeft--;
