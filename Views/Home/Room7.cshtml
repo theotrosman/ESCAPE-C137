@@ -248,19 +248,6 @@ function generarPopUpsMolestos() {
   }, 2500);
 }
 
-const tracks = [
-  "/img/audio/rick-theme.mp3#t=0,10",
-  "/img/audio/rick-theme.mp3#t=10,20",
-  "/img/audio/rick-theme.mp3#t=20,30",
-  "/img/audio/rick-theme.mp3#t=30,40"
-];
-function playCorrupto() {
-  const pieza = tracks[Math.floor(Math.random() * tracks.length)];
-  audio.src = pieza;
-  audio.play();
-}
-audio.onended = playCorrupto;
-playCorrupto();
 
 window.onload = () => escribirLinea();
 </script>

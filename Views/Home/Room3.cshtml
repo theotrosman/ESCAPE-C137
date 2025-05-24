@@ -1,245 +1,345 @@
 @{
     Layout = null;
+    var secuenciaCorrecta = ViewBag.SecuenciaCorrecta as string;
 }
+
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Room 3 — Paradoja Extendida</title>
-<link rel="stylesheet" href="~/css/site.css" />
-<style>
-html, body {
-    height: 100%;
-    margin: 0;
-    overflow-y: auto;
-    background-color: black;
-    color: #00ff00;
-    font-family: monospace;
-    padding: 20px;
-    animation: shake 0.3s infinite alternate, flash 1s infinite alternate;
-}
+    <meta charset="utf-8" />
+    <title>Room 3 — Castigo Genético</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;}
 
-@@keyframes shake {
-  0% { transform: translate(0px, 0px); }
-  25% { transform: translate(-1px, 1px); }
-  50% { transform: translate(1px, -1px); }
-  75% { transform: translate(-1px, -1px); }
-  100% { transform: translate(1px, 1px); }
-}
+        #rickGif {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 130px;
+            z-index: 5;
+        }
 
-@@keyframes flash {
-  from { background-color: #000; }
-  to { background-color: #111; }
-}
+        header.console {
+            width: 100%;
+            max-width: 1100px;
+            padding: 30px;
+            padding-top: 40px;
+            box-sizing: border-box;
+            text-align: left;
+            animation: flashIn 1s ease-in-out;
+        }
 
-.terminal {
-  white-space: pre-wrap;
-  font-size: 16px;
-  line-height: 1.5;
-  margin-bottom: 20px;
-}
+        .grid-container {
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 20px 10px 20px;
+            box-sizing: border-box;
+        }
 
-.code-zone, .drop-zone {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+        .dna-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            justify-content: center;
+            font-size: 22px;
+            animation: pulse 3s infinite;
+        }
 
-.block {
-  background: #002200;
-  border: 1px solid #00ff00;
-  padding: 10px;
-  cursor: move;
-  user-select: none;
-  color: #00ff00;
-}
+        .cell {
+            background: #111;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #00ff00;
+            transition: 0.2s;
+        }
 
-.slot {
-  border: 1px dashed #00ff00;
-  min-height: 40px;
-  padding: 10px;
-  color: #00ff00;
-  background: rgba(0, 50, 0, 0.3);
-}
+        .cell:hover {
+            background: #003300;
+            transform: scale(1.07);
+            cursor: pointer;
+        }
 
-.timer {
-  font-size: 20px;
-  color: red;
-  margin-top: 10px;
-}
+        .cell.clicked {
+            background-color: #00ff00 !important;
+            color: black;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
 
-#universos {
-  display: none;
-  flex-wrap: wrap;
-  margin-top: 40px;
-  gap: 4px;
-}
+        .input-section {
+            width: 100%;
+            max-width: 800px;
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-.universo {
-  background: white;
-  color: black;
-  font-size: 10px;
-  width: calc(100% / 9 - 6px);
-  height: 80px;
-  overflow: hidden;
-  padding: 4px;
-  border: 1px solid black;
+        input {
+            background: black;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            font-family: monospace;
+            padding: 12px;
+            font-size: 18px;
+            width: 300px;
+            text-align: center;
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 12px 18px;
+            font-size: 16px;
+            background: #00ff00;
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @@keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            25% { transform: translate(-1px, 2px); }
+            50% { transform: translate(2px, -1px); }
+            75% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
+        .glitch-attack {
+            animation: eyeAttack 0.4s infinite;
+        }
+
+        @@keyframes eyeAttack {
+            0%, 100% { background-color: black; }
+            25% { background-color: #111; }
+            50% { background-color: white; }
+            75% { background-color: #222; }
+        }
+
+        .success { color: #00ffff; }
+        .fail { color: red; }
+
+        .glitch-text {
+            text-shadow: 1px 1px red, -1px -1px cyan;
+            animation: blink 0.2s infinite alternate;
+        }
+
+        @@keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff00; }
+        }
+    @@keyframes blinkOut {
+    0% { background-color: #fff; }
+    50% { background-color: red; }
+    100% { background-color: #fff; }
 }
 </style>
 </head>
 <body>
-<audio id="bgMusic" autoplay loop></audio>
+
+<audio autoplay loop>
+    <source src="~/audio/rick-theme.mp3" type="audio/mpeg" />
+</audio>
+<img src="~/img/rickgif.gif" id="rickGif" />
+
+<div id="introText" class="typewriter" style="white-space: pre-wrap; font-size: 20px; line-height: 1.6; text-align: left; max-width: 900px; margin-top: 40px;"></div>
+
+<div class="grid-container" id="grid" style="display: none; flex-direction: column; align-items: center;">
+    <div class="dna-grid">
+        @{
+            var grid = ViewBag.Grid as List<List<char>>;
+            for (int row = 0; row < 10; row++)
+            {
+                for (int col = 0; col < 10; col++)
+                {
+                    <div class="cell">@grid[row][col]</div>
+                }
+            }
+        }
+    </div>
+</div>
+
+<div class="input-section" id="inputSec" style="text-align:center; display:none; margin-top: 20px;">
+    <p><strong>Rick:</strong> “Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran columnas de código genético...”</p>
+    <p>Ingresá la secuencia estable (10 letras):</p>
+    <input id="respuesta" maxlength="10" />
+    <br />
+    <button onclick="verificar()">Verificar</button>
+</div>
+
+<div id="resultado" style="text-align:center; margin-top: 20px;"></div>
+
 <script>
-const bgMusic = document.getElementById("bgMusic");
-const parts = [
-  "/img/rick-theme.mp3#t=0,20",
-  "/img/rick-theme.mp3#t=20,40",
-  "/img/rick-theme.mp3#t=40,60",
-  "/img/rick-theme.mp3#t=60,80",
-  "/img/rick-theme.mp3#t=80,100"
-];
-function playRandomPart() {
-  const part = parts[Math.floor(Math.random() * parts.length)];
-  bgMusic.src = part;
-  bgMusic.play();
-}
-bgMusic.onended = playRandomPart;
-playRandomPart();
-</script>
-<div class="terminal" id="terminal"></div>
-<div class="timer" id="timer"></div>
-<ul>
-  <li>📌 using System; debe ir primero.</li>
-  <li>📌 Después la clase <strong>Portal</strong>.</li>
-  <li>📌 Luego el método <strong>Salir</strong>.</li>
-  <li>📌 Luego la validación y acción si es verdadera.</li>
-  <li>📌 Después el método <strong>Validar</strong>.</li>
-  <li>📌 Finalmente el método <strong>Abrir</strong> y la llave final.</li>
-</ul>
-<div class="code-zone" id="codeZone"></div>
-<div class="drop-zone" id="dropZone"></div>
-<div id="universos"></div>
-<script>
-const terminal = document.getElementById("terminal");
-const codeZone = document.getElementById("codeZone");
-const dropZone = document.getElementById("dropZone");
-const timer = document.getElementById("timer");
-const universos = document.getElementById("universos");
+let errores = 0;
+const correcto = "@secuenciaCorrecta";
+let secondsLeft = 60;
+let timerStarted = false;
+let interval;
 
-const bloques = [
-  "using System;",
-  "public class Portal {",
-  "    public void Salir() {",
-  "        if (Validar()) { Abrir(); }",
-  "    }",
-  "    private bool Validar() => true;",
-  "    private void Abrir() => Console.WriteLine(\"Abierto\");",
-  "}"
-];
+const intro = `>>> CARGANDO SALA 3...
+>>> ERROR: Morty eligió el camino fácil en la Room2
+>>> ACTIVANDO CASTIGO GENÉTICO
+>>> Rick: ¡¿QUÉ HICISTE, MORTY?!
+>>> La computadora ahora controla la realidad.
+>>> Buscá la única columna genética estable EN VERTICAL, Morty. No horizontal. COLUMNAS.`;
 
-const ordenCorrecto = [...bloques];
-let tiempo = 35;
-
-function iniciar() {
-    
-  terminal.innerText = "Rick: Morty, reconstruí este mini código o se fragmenta la realidad. Y no te equivoques... ya empieza a temblar todo.";
-  timer.innerText = `⏱ Tiempo: ${tiempo}s`;
-  bloques.sort(() => Math.random() - 0.5).forEach((linea, i) => {
-    const b = document.createElement("div");
-    b.className = "block";
-    b.textContent = linea;
-    b.draggable = true;
-    b.id = `bloque${i}`;
-    b.ondragstart = e => e.dataTransfer.setData("text", b.id);
-    codeZone.appendChild(b);
-  });
-
-  for (let i = 0; i < bloques.length; i++) {
-    const zona = document.createElement("div");
-    zona.className = "slot";
-    zona.ondragover = e => e.preventDefault();
-    zona.ondrop = e => {
-      const id = e.dataTransfer.getData("text");
-      const bloque = document.getElementById(id);
-      zona.innerText = bloque.textContent;
-      bloque.remove();
-      validar();
-    };
-    zona.onclick = () => {
-      if (zona.innerText) {
-        const devolver = document.createElement("div");
-        devolver.className = "block";
-        devolver.textContent = zona.innerText;
-        devolver.draggable = true;
-        devolver.ondragstart = e => e.dataTransfer.setData("text", devolver.id = Math.random());
-        codeZone.appendChild(devolver);
-        zona.innerText = "";
-      }
-    };
-    dropZone.appendChild(zona);
-  }
-  countdown();
-}
-
-function countdown() {
-  const t = setInterval(() => {
-    tiempo--;
-    timer.innerText = `⏱ Tiempo: ${tiempo}s`;
-    if (tiempo <= 0) {
-      clearInterval(t);
-      fallo();
+function escribirIntro() {
+    let i = 0;
+    function type() {
+        if (i < intro.length) {
+            document.getElementById("introText").innerHTML += intro.charAt(i);
+            i++;
+            setTimeout(type, 50);
+        } else {
+            document.getElementById("grid").style.display = "block";
+            const timer = document.createElement("div");
+            timer.id = "timerDisplay";
+            timer.style.cssText = "font-size: 22px; color: #00ff00; margin-bottom: 10px; margin-top: 10px; align-self: flex-end; margin-right: 40px; z-index: 10; background-color: black; padding: 4px 10px;";
+            timer.innerHTML = "Tiempo restante: <span id='timeLeft'>60</span>s";
+            const wrapper = document.createElement("div");
+            wrapper.style.display = "flex";
+            wrapper.style.justifyContent = "space-between";
+            wrapper.style.alignItems = "center";
+            wrapper.style.width = "100%";
+            wrapper.appendChild(timer);
+            document.getElementById("introText").insertAdjacentElement("afterend", wrapper);
+            document.getElementById("introText").style.display = "none";
+            document.getElementById("inputSec").style.display = "block";
+            if (!timerStarted) {
+                timerStarted = true;
+                startTimer();
+            }
+        }
     }
-  }, 1000);
+    type();
 }
 
-function validar() {
-  const actuales = Array.from(document.querySelectorAll(".slot")).map(z => z.innerText);
-  if (actuales.every(Boolean) && actuales.join() === ordenCorrecto.join()) {
-    terminal.innerText = "✅ ¡Código restaurado! Saltando a la siguiente dimensión...";
-    setTimeout(() => window.location.href = "/Home/Room4", 3000);
-  }
+function verificar() {
+    const input = document.getElementById("respuesta").value.toUpperCase();
+    if (input === correcto) {
+        document.getElementById("resultado").innerHTML = "<p class='success'>✔ ¡Secuencia válida! Rick abre el portal...</p>";
+        document.body.classList.remove("glitch-attack");
+        document.body.style.transition = "0.3s";
+        document.body.style.backgroundColor = "#88ff88";
+        setTimeout(() => {
+            document.body.style.backgroundColor = "black";
+            window.location.href = "/home/room4";
+        }, 1000);
+    } else {
+        errores++;
+        document.getElementById("resultado").innerHTML = `<p class='fail glitch-text'>✖ Mutación crítica. Intento ${errores}/6</p>`;
+        document.body.classList.add("shake");
+
+        if (errores === 3) {
+            document.getElementById("resultado").innerHTML += "<p class='fail'>¡Rick: Morty, el código genético se está desmoronando!</p>";
+            document.body.style.transition = "0.4s";
+            document.body.style.backgroundColor = "#440000";
+            setTimeout(() => {
+                document.body.style.backgroundColor = "black";
+            }, 1000);
+        }
+
+        if (errores >= 6) {
+            document.getElementById("resultado").innerHTML = "<p class='fail'>💥 ADN destruido. Reiniciando simulación...</p>";
+            setTimeout(() => window.location.href = "/home/room3", 3000);
+        }
+
+        setTimeout(() => document.body.classList.remove("shake"), 500);
+    }
 }
 
-function fallo() {
-  codeZone.innerHTML = "";
-  dropZone.innerHTML = "";
-  document.body.style.background = "white";
-  document.body.style.color = "black";
-  timer.style.display = "none";
-  terminal.innerText = "💥 El código falló. Multiverso en colapso...";
-  universos.style.display = "flex";
-  for (let i = 0; i < 81; i++) {
-    const div = document.createElement("div");
-    div.className = "universo";
-    const serie = series[Math.floor(Math.random() * series.length)];
-    div.innerHTML = `<strong>${i}</strong><br>${serie}<br><em>Rick:</em> ${rickFrase(serie)}<br><em>Morty:</em> ${mortyFrase(serie)}`;
-    universos.appendChild(div);
-  }
-  setTimeout(() => location.reload(), 20000);
+function startTimer() {
+    interval = setInterval(() => {
+        secondsLeft--;
+        document.getElementById('timeLeft').textContent = secondsLeft;
+
+        if (secondsLeft % 10 === 0 && secondsLeft > 0) {
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 500);
+        }
+
+        if (secondsLeft % 15 === 0 && secondsLeft < 60 && secondsLeft > 0) {
+            const grid = document.querySelector('.dna-grid');
+            const cells = Array.from(grid.children);
+            const columns = 10;
+            const rows = 10;
+            const columnsToRemove = [];
+
+            for (let c = 0; c < columns; c++) {
+                let columnSeq = '';
+                for (let r = 0; r < rows; r++) {
+                    const cellIndex = r * columns + c;
+                    columnSeq += cells[cellIndex].textContent.trim();
+                }
+                if (columnSeq !== correcto) columnsToRemove.push(c);
+            }
+
+            if (columnsToRemove.length > 0) {
+                const targetColIndex = columnsToRemove[Math.floor(Math.random() * columnsToRemove.length)];
+                for (let r = 0; r < rows; r++) {
+                    const cell = cells[r * columns + targetColIndex];
+                    cell.style.animation = 'blinkOut 0.2s alternate 5';
+                    setTimeout(() => {
+    cell.parentNode.removeChild(cell);
+}, 2000);
+                }
+            }
+        }
+
+        if (secondsLeft <= 0) {
+    clearInterval(interval);
+    document.body.style.transition = "0.5s";
+    document.body.style.backgroundColor = "darkred";
+    document.body.classList.add("glitch-attack");
+    document.getElementById("resultado").innerHTML = "<p class='fail glitch-text'>TIEMPO AGOTADO. COLUMNA COLAPSADA.</p>";
+    setTimeout(() => window.location.href = "/home/room3", 3000);
+        }
+    }, 1000);
 }
 
-const series = ["Breaking Bad", "The Office", "Evangelion", "Pokemon", "BoJack", "Gravity Falls", "Dragon Ball", "Star Wars", "Los Simpsons", "Futurama", "South Park", "Stranger Things"];
-function rickFrase(s) { return `Morty, en ${s} todo está más roto que en nuestra realidad.`; }
-function mortyFrase(s) { return `¿En serio Rick? ¿Otra vez ${s}?`; }
-
-iniciar();
+window.addEventListener("DOMContentLoaded", () => {
+    escribirIntro();
+    setTimeout(() => {
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.addEventListener("click", () => {
+                const input = document.getElementById("respuesta");
+                if (input.value.length < 10) {
+                    input.value += cell.textContent.trim();
+                    cell.classList.add("clicked");
+                    setTimeout(() => cell.classList.remove("clicked"), 300);
+                }
+            });
+            cell.addEventListener("contextmenu", e => {
+                e.preventDefault();
+                const input = document.getElementById("respuesta");
+                input.value = input.value.slice(0, -1);
+            });
+        });
+    }, 100);
+});
 </script>
-</body>
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
-<!-- MORTY LAS INSTRUCCIONES SON CLARAS, PENSAR RÁPIDO-->
 
+<!--
+Reglas del ADN válido:
+1. No hay más de 2 bases iguales seguidas
+2. No es un palíndromo
+3. Aprox 2A, 2T, 3G, 3C
+Se lee en VERTICAL (columnas)
+-->
+</body>
 </html>
