@@ -1,0 +1,195 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ESCAPE ROOM - FASE DE DEBUG</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+            background-color: black;
+            color: #00ff00;
+            overflow: hidden;
+            animation: backgroundChaos 1.3s infinite alternate;
+        }
+
+        @@keyframes backgroundChaos {
+            0%   { background-color: black; }
+            25%  { background-color: #111; }
+            50%  { background-color: darkred; color: white; }
+            75%  { background-color: black; }
+            100% { background-color: white; color: red; }
+        }
+
+        @@keyframes shake {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        @@keyframes glitchText {
+            0%   { text-shadow: 1px 0 red, -1px 0 blue; }
+            50%  { text-shadow: -2px 0 red, 2px 0 blue; }
+            100% { text-shadow: 1px 0 red, -1px 0 blue; }
+        }
+
+        .glitch {
+            animation: glitchText 0.25s infinite, shake 0.4s infinite;
+        }
+
+        #consola {
+            margin: 40px;
+            white-space: pre-wrap;
+            font-size: 20px;
+            line-height: 1.6;
+            animation: shake 0.5s infinite;
+        }
+
+        #acertijo {
+            display: none;
+            margin: 40px;
+            font-size: 18px;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 2px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 18px;
+            width: 300px;
+        }
+
+        a {
+            color: #00ffff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="consola" class="glitch"></div>
+
+    <div id="acertijo" class="glitch" style="animation: aparecer 1s ease-in-out forwards; display: none;">
+    <style>
+        @@keyframes aparecer {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .consola-linea {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .parpadeo {
+            animation: blink 1s step-start infinite;
+        }
+
+        @@keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .alerta {
+            background-color: #111;
+            padding: 15px;
+            border-left: 4px solid red;
+            margin-top: 15px;
+        }
+
+        .glow-input {
+            box-shadow: 0 0 5px #00ff00;
+        }
+    </style>
+
+    <div class="alerta">
+        <span class="consola-linea">> 📂 Archivo fuente corrompido:</span>
+        <span class="consola-linea parpadeo">> 🔗 Accediendo a repositorio remoto...</span>
+        <span class="consola-linea">
+            > <a href="https://github.com/theotrosman/BuggyLogic/blob/main/BuggyLogic.cs" target="_blank">
+                github.com/theotrosman/BuggyLogic/blob/main/BuggyLogic.cs
+            </a>
+        </span>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <span class="consola-linea">> Encontrá la línea exacta que contiene el bug lógico.</span>
+        <span class="consola-linea">> Ejemplo de respuesta válida: <i>línea 15</i></span>
+        <input type="text" id="respuesta" class="glow-input" placeholder="escribí acá y presioná Enter" onkeydown="verificar(event)" />
+        <p id="feedback"></p>
+    </div>
+</div>
+
+    <script>
+        const consola = document.getElementById("consola");
+        const acertijo = document.getElementById("acertijo");
+
+        const introTexto = [
+            "> ███ CONEXIÓN INESTABLE — REALIDAD MVC-C137 ███",
+            "> Rick: M-m-morty... algo no cuadra. Estamos dentro del código.",
+            "> Rick: No es una simulación, es una instancia corrompida del framework.",
+            "> [LOG] El repositorio fue manipulado... las funciones mutaron.",
+            "> [ERROR] El compilador... me está mirando, Morty.",
+            "> [RICK] Subí el escape a GitHub, pero algo... tomó control.",
+            "> [TRACE] Función BuggyLogic.cs en estado crítico.",
+            "> Tenés que rastrear el punto de falla lógica o el ciclo va a reiniciarse.",
+            "> El sistema entero se está reseteando... una línea a la vez.",
+            "> Morty, esta es tu única oportunidad para romper el bucle de compilación.",
+            "> Ayudame a salir, buscá el fallo... y escribilo acá abajo."
+        ];
+
+        let i = 0;
+        function escribirIntro() {
+            if (i < introTexto.length) {
+                consola.innerHTML += introTexto[i] + "\n";
+                i++;
+                setTimeout(escribirIntro, 900);
+            } else {
+                setTimeout(() => {
+                    consola.style.display = "none";
+                    acertijo.style.display = "block";
+                }, 2000);
+            }
+        }
+
+        setTimeout(escribirIntro, 1200);
+
+        function verificar(e) {
+    if (e.key === "Enter") {
+        const raw = document.getElementById("respuesta").value.trim().toLowerCase();
+        const r = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const feedback = document.getElementById("feedback");
+
+        if (r === "linea 32" || r === "line 32" || r === "32") {
+            feedback.innerText = "✔️ Validando...";
+            document.body.style.animation = "none";
+            document.body.style.backgroundColor = "black";
+            document.body.style.color = "lime";
+
+            setTimeout(() => {
+                feedback.innerText = "❌ ERROR 0xB00B135 — Lógica de escape no encontrada.";
+                document.body.classList.add("glitch");
+                setTimeout(() => {
+                    feedback.innerText = "🧠 Rick: Ehhh... espera... sí... sí funcionó Morty...";
+                    setTimeout(() => {
+                        feedback.innerText = "✔️ ¡Correcto! Portal dimensional estable...";
+                        setTimeout(() => {
+                            window.location.href = "/Home/Room2";
+                        }, 2000);
+                    }, 2500);
+                }, 2500);
+            }, 2000);
+        } else {
+            feedback.innerText = "❌ Esa no es la línea... el bug sigue reinfectando.";
+        }
+    }
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Head JS</title>
+    <script src="https://unpkg.com/ml5@0.12.2/dist/ml5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #2c3e50;
+            font-family: 'Arial', sans-serif;
+        }
+
+        #gameCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #status {
+            position: fixed;
+            top: 180px;
+            left: 20px;
+            padding: 10px;
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            font-weight: bold;
+            color: #00ff00;
+            box-shadow: 0 0 20px rgba(0,255,0,0.3);
+            z-index: 100;
+        }
+
+        .score-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px;
+            background-color: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            color: #00ff00;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        .game-title {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 72px;
+            font-weight: bold;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+            z-index: 101;
+            opacity: 0;
+            transition: opacity 0.5s;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .game-title.visible {
+            opacity: 1;
+        }
+
+        .start-message {
+            position: fixed;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 101;
+            opacity: 0;
+            transition: opacity 0.5s;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .start-message.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="status">Estado: Esperando...</div>
+    <div class="score-container">Score: <span id="score">0</span></div>
+    <div class="game-title" id="gameTitle">FLAPPY HEAD</div>
+    <div class="start-message" id="startMessage">Abre tu mano para comenzar</div>
+    <script src="~/js/game.js"></script>
+</body>
+</html>

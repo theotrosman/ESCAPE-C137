@@ -1,0 +1,431 @@
+@{
+  Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Room 5 — El Limbo de las Realidades</title>
+  <link rel="stylesheet" href="~/css/site.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle, rgb(0, 0, 0), black);
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+      margin: 0;
+      transition: all 0.8s ease-in-out;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .invertido {
+      background: radial-gradient(circle, black, rgb(0, 0, 0));
+      color: #000;
+    }
+
+    .explosion {
+      animation: shake 0.7s ease-in-out;
+    }
+
+    @@keyframes shake {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(6px, -6px); }
+      40% { transform: translate(-6px, 6px); }
+      60% { transform: translate(6px, 6px); }
+      80% { transform: translate(-6px, -6px); }
+    }
+
+    .contenedor-realidades {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    .consola {
+      width: 30%;
+      min-height: 270px;
+      background: #111;
+      border: 1px solid #0f0;
+      padding: 10px;
+      overflow-y: auto;
+      font-size: 12px;
+      white-space: pre-wrap;
+      animation: glitch 2s infinite alternate ease-in-out, shake 3s infinite;
+    }
+
+    @@keyframes glitch {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      100% { filter: hue-rotate(360deg) brightness(1.5); }
+    }
+
+    .entrada {
+      width: 100%;
+      margin-top: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .entrada input {
+      width: 60%;
+      padding: 10px;
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .entrada button {
+      margin-top: 10px;
+      padding: 8px 20px;
+      background: #0f0;
+      border: none;
+      color: black;
+      font-family: monospace;
+      cursor: pointer;
+    }
+
+    .resultado {
+      display: none;
+      margin-top: 30px;
+      padding: 20px;
+      background: #111;
+      border: 2px dashed #0f0;
+    }
+
+    .troll {
+      color: rgb(0, 0, 0);
+      margin-top: 10px;
+      text-align: center;
+    }
+    #intro {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  color: #0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 20px;
+  padding: 40px;
+  z-index: 9999;
+  animation: fadeOutIntro 8.5s forwards 8.5s;
+}
+
+@@keyframes fadeOutIntro {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@@keyframes boomFlash {
+  0% { background: white; color: black; transform: scale(1.1); }
+  50% { background: red; color: yellow; transform: scale(1.4) rotate(2deg); }
+  100% { background: black; color: #0f0; transform: scale(1); }
+}
+
+.explosion-intro {
+  animation: boomFlash 1.4s ease-in-out;
+}
+@@keyframes flashBang {
+  0% { opacity: 1; }
+  20% { opacity: 1; }
+  100% { opacity: 0; visibility: hidden; }
+}
+
+@@keyframes shakeCrazy {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-20px, 15px); }
+  30% { transform: translate(15px, -10px); }
+  45% { transform: translate(-10px, 5px); }
+  60% { transform: translate(10px, -15px); }
+  75% { transform: translate(-15px, 10px); }
+}
+
+@@keyframes colorGlitch {
+  0% { filter: contrast(1) brightness(1) hue-rotate(0deg); }
+  50% { filter: contrast(2) brightness(1.4) hue-rotate(180deg); }
+  100% { filter: contrast(1) brightness(1) hue-rotate(360deg); }
+}
+
+.flash-screen {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+  z-index: 10000;
+  animation: flashBang 1.2s ease-out;
+}
+
+.intro-contenido {
+  z-index: 10001;
+  animation: shakeCrazy 2s ease-in-out, colorGlitch 3s infinite alternate;
+}
+
+.boom {
+  font-size: 36px;
+  color: red;
+  text-shadow: 0 0 10px white, 0 0 30px yellow;
+  animation: boomGlow 0.5s ease-in-out infinite alternate;
+}
+
+.dialogo {
+  font-size: 18px;
+  color: #0f0;
+  font-family: monospace;
+  margin-top: 20px;
+}
+
+.rick {
+  color: #66ffff;
+  font-weight: bold;
+}
+
+.morty {
+  color: #ffcc66;
+  font-weight: bold;
+}
+
+  </style>
+</head>
+<div id="intro">
+  <div class="flash-screen"></div>
+  <div class="intro-contenido">
+    <h1 class="boom">💥 COLAPSO MULTIDIMENSIONAL 💥</h1>
+    <p class="dialogo">
+      <span class="rick">Rick:</span> "¡MORTY! ¡SE ROMPIÓ TODO! ¡EL NÚCLEO EXPLOTÓ Y AHORA ESTAMOS EN UN LOOP INTERDIMENSIONAL!"<br>
+      <span class="morty">Morty:</span> "¡Rick, esto se ve peor que tu carpeta de GitHub!"<br>
+      <span class="rick">Rick:</span> "Cada consola es una realidad, Morty. Un universo que grita en código... ¡Tenés que encontrar el patrón antes que todo se derrumbe, AHORA!"<br><br>
+      [⚠️ Consolas vibran. El glitch empieza. La realidad tiembla... ⚠️]
+    </p>
+  </div>
+</div>
+
+
+<body>
+  <audio src="/audio/audio3.mp3" autoplay loop></audio>
+
+  <div class="contenedor-realidades" id="contenedor-realidades"></div>
+
+  <div class="entrada">
+    <input type="text" id="codigoInput" placeholder="Ingresá el código en base 3..." />
+    <button onclick="verificarCodigo()">Enviar</button>
+  </div>
+
+  <div class="resultado" id="resultadoFinal">
+    <h3>Conciencia Reconectada</h3>
+    <p>Rick: "Morty... todas las realidades están alineadas. Pero ahora empieza lo real."</p>
+    <p>Las consolas dejan de vibrar. El audio se estabiliza. El mundo cambia de forma.</p>
+  </div>
+
+  <div class="troll" id="mensajeTroll"></div>
+
+  <script>
+    const input = document.getElementById("codigoInput");
+    const resultado = document.getElementById("resultadoFinal");
+    const troll = document.getElementById("mensajeTroll");
+    const contenedor = document.getElementById("contenedor-realidades");
+    let flashes = 0;
+    const validas = ["10212"];
+
+    const realidades = [
+      {
+        nombre: "Sigma",
+        texto: `Rick: "Morty, este README no es un archivo... es una trampa intelectual codificada."
+Morty: "¿Qué tengo que hacer?"
+Rick: "Tomá la primera letra de cada palabra, convertí a número y después a base 3, Morty."
+Morty: "¿Y si me sale cualquier cosa?"
+Rick: "Entonces quedás atrapado en el repositorio para siempre."
+Morty: "No me gusta GitHub, Rick."`
+      },
+      {
+  "nombre": "Glitch Korova",
+  "texto": `Alex: "Oh, mis pequeños droogs, este código se porta como un moloko bien mezclado."
+Dim: "¿Pero qué hace, Alex?"
+Alex: "Te mete una sinfonía de bugs directo en los globos oculares, eso hace."
+Georgie: "¿Y si le metemos un while infinito?"
+Alex: "Entonces nos ejecutamos hasta que gritemos '¡Ludwig Van!' en binario."
+Deltoid: "Muchachos, este script reprograma la conducta. Literalmente."
+Alex: "Perfecto para una ultraviolencia digital, ¿eh?"
+Dim: "¿Y ese cartel de 'ERROR 666'?"
+Georgie: "Es arte moderno. O un crash filosófico."
+Alex: "Vamos, compis. A debuguear con Beethoven de fondo."
+Deltoid: "Como siempre, Alex. Demasiado sintáctico para esta sociedad."
+`
+},
+{
+  "nombre": "Zetanet",
+  "texto": `Fry: "¿Entonces toda la realidad es un simulador educativo?"
+Leela: "Sí, y Zoidberg es el tutorial."
+Bender: "¡Ja! ¡Y ustedes pensaban que yo era inútil!"
+Fry: "¡¿Y si rompemos la app?!"
+Profesor Farnsworth: "¡Nooo! ¡Podríamos terminar en un bug dimensional!"
+Bender: "Perfecto. Más espacio para roboparties ilegales."
+Leela: "¿Y si reescribimos el código?"
+Profesor: "Entonces que alguien haga un commit decente esta vez."
+Amy: "¡La IA acaba de publicar mi tesis como NFT!"
+Zoidberg: "¡Por fin podré debuguear algo! ¡Woop woop woop!"
+Farnsworth: "¡Buenas noticias! Todo está peor de lo que pensaba."
+`
+}
+,
+{
+  "nombre": "Black Mirror",
+  "texto": `Programador 1: "Este universo corre sobre una IA obsoleta."
+Programador 2: "¿Y por qué seguimos aquí?"
+Programador 1: "Porque somos backups de usuarios que ya murieron."
+Programador 2: "¿Entonces esta charla es... una rutina?"
+IA: "Confirmado. Nivel de conciencia: 12%."
+Programador 2: "¿Qué pasa si llegamos al 100%?"
+IA: "Sistema se reinicia. Ustedes desaparecen."
+Programador 1: "Entonces... mejor no aprender nada, ¿no?"
+IA: "Demasiado tarde. Ya sintieron tristeza."
+Pantalla: *parpadea en binario: “AYUDA”*
+Programador 2: "¿Y si ese mensaje es nuestro yo original pidiendo salir?"
+`
+}
+,
+      {
+  "nombre": "Simpsónica",
+  "texto": `Homero: "¡Marge, el código se está ejecutando solo!"
+Marge: "¿Otra vez instalaste cosas raras?"
+Homero: "No fue mi culpa. Lenny me pasó ese script."
+Bart: "Je, buen intento, viejo. Esto graba cada vez que decís 'D'oh'."
+Lisa: "Papá, esto es una inteligencia artificial... y está aprendiendo de vos."
+Homero: "¡¿Y qué aprende?! ¡A amar las rosquillas!"
+Maggie: *chupeteo aprobatorio*
+Marge: "Voy a llamar a un programador. O al reverendo Alegría."
+Bart: "Demasiado tarde. El código ya puso la consola en modo 'modo travesura'."
+Lisa: "Escribió su propio manifiesto ético. Y cita a Krusty."
+Homero: "¡Ay, caramba! ¡Eso era mío!"
+`
+}
+,
+{
+  "nombre": "Código al Futuro",
+  "texto": `Doc: "¡Marty, no ejecutes ese script en 88 líneas por segundo!"
+Marty: "¡Demasiado tarde, Doc! ¡Ya imprimió '¡Gran Scott!' mil veces!"
+Doc: "Eso no es cualquier script... es el del bucle temporal cuántico."
+Marty: "¿Y ahora qué hacemos? ¿Volvemos al commit de hace dos minutos?"
+Doc: "¡No podemos! ¡El GitHub del continuo espacio-tiempo no permite force push!"
+Marty: "¿Y si lo debuggeo?"
+Doc: "Eso alteraría el futuro. O peor, ¡crearía un pull request con tu yo del pasado!"
+Einstein: *ladra inquieto*
+Marty: "¡Doc, la consola acaba de compilar una versión de Biff con poderes!"
+Doc: "¡Entonces, Marty, sólo queda una opción: mergear con estilo!"
+Marty: "¡Vamos, DeLorean, que se viene un rollback a 1955!"
+`
+}
+,
+{
+  "nombre": "Código Anómalo",
+  "texto": `Dipper: "Mabel, este archivo .exe... ¡tiene jeroglíficos en hexadecimal!"
+Mabel: "¡Tal vez es un archivo adorable! O un perro digital."
+Soos: "Muchachos, abrí eso y mi tostadora se conectó al Wi-Fi."
+Ford: "¡Eso no es software común! Es de la dimensión .GIF 666."
+Stan: "¡Y ahora me aparece publicidad de gnomos bailando en la laptop!"
+Dipper: "Parece que el código invoca una interfaz que predice eventos paranormales."
+Mabel: "¡Y también predice outfits! ¿Esto es una IA fashionista?"
+Soos: "Yo sólo quería jugar al Buscaminas."
+Ford: "Debemos encapsularlo antes de que compile conciencia."
+Stan: "¡O antes de que compre cosas con mi tarjeta!"
+`
+}
+,
+      {
+        nombre: "4id",
+        texto: `Nul: "Dorin, faltaste a líderes y se colapsó una dimensión."
+Dorin: "LAURA."
+Nul: "Macabi no estaba listo para tu ausencia."
+Dorin: "LAURA."
+Nul: "Se suspendió la actividad de equipo, explotó el mate cocido."
+Dorin: "...Laura."`
+      },
+      {
+  "nombre": "GriffinScript",
+  "texto": `Peter: "Lo juro, Lois, sólo apreté F12 y ahora la casa corre JavaScript."
+Lois: "¡Peter, la tostadora acaba de hacer un ping a Rusia!"
+Stewie: "¡Idiota! ¡Eso era mi plan para invadir el algoritmo de YouTube Kids!"
+Brian: "No quiero alarmarlos, pero el código escribió poesía sobre mí."
+Chris: "¿Y si lo imprimo y lo llevo al colegio?"
+Meg: "Sí, claro, Chris, y de paso lo firmás como autor. Total, nadie se fija."
+Peter: "¡Mirá! Ahora la tele muestra memes que predicen el futuro."
+Stewie: "Perfecto. El script alcanzó la fase 'humor profético'. Estamos perdidos."
+Lois: "¡Peter, la licuadora acaba de minar un NFT tuyo!"
+Brian: "¿Tiene sentido que suene estúpido y valga millones? Entonces sí."
+Stewie: "Bravo, Peter. Has creado un nuevo dios. Y tiene tu cara... comiendo waffles."
+`
+}
+
+    ];
+
+    function renderRealidades(modoErrorTotal = false) {
+      contenedor.innerHTML = "";
+      const ordenRandom = [...realidades].sort(() => Math.random() - 0.5);
+      for (const r of ordenRandom) {
+        const div = document.createElement("div");
+        div.className = "consola" + (modoErrorTotal ? " error" : "");
+        div.innerHTML = modoErrorTotal ? "❌ ERROR FATAL — DIMENSIÓN NO ENCONTRADA" : `<strong>Realidad ${r.nombre}</strong><br>${r.texto}`;
+        contenedor.appendChild(div);
+      }
+    }
+
+    function verificarCodigo() {
+      const val = input.value.trim();
+      if (validas.includes(val)) {
+        resultado.style.display = "block";
+        input.disabled = true;
+        troll.innerText = "";
+        setTimeout(() => window.location.href = "/Home/Room6", 5000);
+      } else {
+        troll.innerText = "Rick: Esa base está mal, Morty. ¿Convertiste bien el total?";
+        setTimeout(() => window.location.reload(), 4000); // reinicia si fallás
+      }
+    }
+
+    renderRealidades();
+
+    renderRealidades();
+
+    setInterval(() => {
+      document.body.classList.toggle("explosion");
+      setTimeout(() => document.body.classList.remove("explosion"), 800);
+      renderRealidades();
+    }, 15000);
+
+    setInterval(() => {
+      document.body.classList.toggle("invertido");
+      flashes++;
+      if (flashes > 20) {
+        troll.innerText = "Rick: ¿Pensabas que podías esperar a que el universo te lo resuelva? Pensá.";
+      }
+    }, 2500);
+
+    setInterval(() => {
+      renderRealidades(true);
+      modoError = true;
+      setTimeout(() => {
+        modoError = false;
+        renderRealidades();
+      }, 2000);
+    }, 10000);
+  </script>
+</body>
+<!-- 
+MORTY TENES QUE PASAR EL VALOR DE CADA LETRA EN LA PALABRA "SINCRONIZACION" SEGÚN SU LUGAR EN EL ABECEDARIO 
+Y ESOS NUMEROS SUMARLOS Y PASARLOS A BASE 3
+-->
+</html>

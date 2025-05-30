@@ -1,0 +1,217 @@
+﻿@@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>INICIO // ESCAPE ROOM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: black;
+      --fg: #0f0;
+      --glitch1: #ff00c8;
+      --glitch2: #00ffff;
+      --err: red;
+      --flash: white;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'VT323', monospace;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    #intro-video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+
+    #overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      opacity: 0;
+      animation: fadeIn 4s 4s forwards;
+    }
+
+    .console-text {
+      font-size: 24px;
+      white-space: pre;
+      color: var(--fg);
+      text-shadow: 0 0 2px #0f0;
+      animation: flicker 0.15s infinite alternate, colorShift 0.5s infinite alternate;
+    }
+
+    .ascii-button {
+      background: black;
+      border: 2px solid var(--fg);
+      color: var(--fg);
+      padding: 12px 24px;
+      font-size: 20px;
+      margin-top: 20px;
+      cursor: pointer;
+      font-family: 'VT323', monospace;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: scale(0.8);
+      animation: none;
+      transition: all 0.5s ease;
+    }
+
+    .ascii-button.show {
+      opacity: 1;
+      transform: scale(1);
+      animation: glitch 1s infinite;
+    }
+
+    .ascii-button:hover {
+      border-color: var(--glitch1);
+      color: var(--glitch1);
+    }
+
+    @@keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @@keyframes glitch {
+      0% { text-shadow: 2px 0 var(--glitch1), -2px 0 var(--glitch2); }
+      50% { text-shadow: -2px 0 var(--glitch2), 2px 0 var(--glitch1); }
+      100% { text-shadow: 2px 0 var(--glitch1), -2px 0 var(--glitch2); }
+    }
+
+    @@keyframes flicker {
+      0% { opacity: 1; }
+      100% { opacity: 0.85; }
+    }
+
+    @@keyframes colorShift {
+      0% { color: #0f0; }
+      100% { color: #fff; }
+    }
+
+    @@keyframes explosion {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.5); filter: brightness(3); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    .explosive {
+      animation: explosion 0.7s ease;
+    }
+  </style>
+</head>
+<body>
+  <video id="intro-video" autoplay muted playsinline>
+    <source src="/img/adultswimintro.mp4" type="video/mp4">
+  </video>
+  <audio id="intro-audio">
+    <source src="/img/adultswimintro.mp3" type="audio/mp3">
+  </audio>
+
+  <div id="overlay">
+    <div class="console-text" id="typewriter"></div>
+    <button class="ascii-button" id="btn-juego" onclick="entrarJuego()">> ACCEDER AL CÓDIGO FUENTE <</button>
+    <button class="ascii-button tutorial-button" id="btn-tuto" onclick="verTutorial()">> VER TUTORIAL <</button>
+  </div>
+
+  <script>
+    const audio = document.getElementById("intro-audio");
+    window.addEventListener('load', () => {
+      audio.volume = 1;
+      audio.play().catch(e => console.warn("Reproducción bloqueada por el navegador", e));
+    });
+
+    const lines = [
+      ">>> INICIANDO CONEXIÓN...",
+      ">>> TRANSMISIÓN DESDE DIMENSIÓN 137...",
+      ">>> RICK Y MORTY HAN SIDO CAPTURADOS EN UN BUCLE DE CÓDIGO MVC...",
+      ">>> INTENTARON HACKEAR EL FRAMEWORK PARA ESCAPAR DEL MULTIVERSO...",
+      ">>> PERO EL SISTEMA LOS DETECTÓ Y LOS ENJAULÓ ENTRE CONTROLADORES Y VISTAS...",
+      ">>> CADA SALA ES UNA CAPA DIFERENTE DE LA REALIDAD...",
+      ">>> SINTONIZANDO LÍNEAS DE CÓDIGO...",
+      ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA",
+      ">>> [SISTEMA REACTIVÁNDOSE...]",
+      ">>> LOCALIZACIÓN PARCIAL DE SALIDA DETECTADA EN: /HOME/ESCAPE",
+      ">>> ACCESO PARCIAL CONCEDIDO.\n"
+    ];
+
+    let currentLine = 0;
+    const typewriter = document.getElementById("typewriter");
+    const body = document.body;
+
+    function flashBackground() {
+      body.style.background = 'white';
+      setTimeout(() => { body.style.background = 'black'; }, 150);
+    }
+
+    function typeLine() {
+      if (currentLine < lines.length) {
+        let line = lines[currentLine];
+        let i = 0;
+        let interval = setInterval(() => {
+          if (line === ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA") {
+            typewriter.innerHTML += `<span style='color: var(--err)'>${line}</span>`;
+            flashBackground();
+            clearInterval(interval);
+            typewriter.innerHTML += '\n';
+            currentLine++;
+            setTimeout(typeLine, 1000);
+            return;
+          }
+          typewriter.textContent += line[i];
+          i++;
+          if (i === line.length) {
+            clearInterval(interval);
+            typewriter.textContent += '\n';
+            currentLine++;
+            setTimeout(typeLine, 700);
+          }
+        }, 50 + Math.random() * 100);
+      } else {
+        triggerEpicReveal();
+      }
+    }
+
+    function triggerEpicReveal() {
+      const btn1 = document.getElementById("btn-juego");
+      const btn2 = document.getElementById("btn-tuto");
+      btn1.classList.add("show", "explosive");
+      btn2.classList.add("show", "explosive");
+      setTimeout(() => {
+        btn1.classList.remove("explosive");
+        btn2.classList.remove("explosive");
+      }, 700);
+    }
+
+    setTimeout(() => {
+      document.getElementById("intro-video").pause();
+      typeLine();
+    }, 6000);
+
+    function entrarJuego() {
+      window.location.href = "/Home/Room1";
+    }
+
+    function verTutorial() {
+      window.location.href = "/Home/Tutorial";
+    }
+  </script>
+</body>
+</html>

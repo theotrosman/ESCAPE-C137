@@ -1,0 +1,206 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    background: black;
+    font-family: 'Courier New', monospace;
+    color: #00ff00;
+    overflow: hidden;
+}
+
+.matrix-effect::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background-image: url('https://i.imgur.com/oYz1H0C.gif');
+    background-size: cover;
+    opacity: 0.2;
+    z-index: 0;
+    animation: slowScroll 60s linear infinite;
+}
+
+@keyframes slowScroll {
+    from { transform: translateY(0); }
+    to { transform: translateY(-50%); }
+}
+
+.terminal-screen {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding-top: 80px;
+}
+
+.ascii-title-glitch {
+    font-family: monospace;
+    color: #00ff00;
+    display: inline-block;
+    text-align: left;
+    animation: flicker 3s infinite;
+}
+
+.glitch-line {
+    position: relative;
+    display: block;
+    font-size: 14px;
+    white-space: pre;
+}
+
+.glitch-line::before,
+.glitch-line::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    z-index: -1;
+    opacity: 0.3;
+}
+
+.glitch-line::before {
+    top: -1px;
+    color: #00ffff;
+    animation: glitchTop 1s infinite linear alternate;
+}
+
+.glitch-line::after {
+    top: 1px;
+    color: #00ff99;
+    animation: glitchBottom 1.5s infinite linear alternate;
+}
+
+@keyframes glitchTop {
+    0%   { clip-path: inset(0% 0% 85% 0); transform: translateX(-1px); }
+    50%  { clip-path: inset(0% 0% 70% 0); transform: translateX(2px); }
+    100% { clip-path: inset(0% 0% 90% 0); transform: translateX(-2px); }
+}
+
+@keyframes glitchBottom {
+    0%   { clip-path: inset(90% 0% 0% 0); transform: translateX(1px); }
+    50%  { clip-path: inset(85% 0% 0% 0); transform: translateX(-1px); }
+    100% { clip-path: inset(80% 0% 0% 0); transform: translateX(2px); }
+}
+
+.glitch-subtext {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #00ff99;
+    animation: flicker 2s infinite;
+}
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        opacity: 1;
+    }
+    20%, 24%, 56% {
+        opacity: 0.2;
+    }
+}
+
+.ascii-button {
+    margin-top: 30px;
+    font-size: 20px;
+    padding: 15px 40px;
+    background: black;
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: monospace;
+    transition: 0.2s ease-in-out;
+    z-index: 2;
+}
+
+.ascii-button:hover {
+    background: #00ff00;
+    color: black;
+    transform: scale(1.1);
+}
+
+#rick-gif {
+    position: fixed;
+    bottom: 1px;
+    left: 10px;
+    width: 300px;
+    z-index: 5;
+}
+.escape-error-screen {
+    background-color: black;
+    color: #00ff00;
+    font-family: Consolas, monospace;
+    padding: 30px;
+}
+
+.main-error-box, .glitched-error {
+    margin-bottom: 20px;
+}
+
+.glitched-error {
+    display: none;
+    font-weight: bold;
+    color: lime;
+    animation: glitchShake 0.3s infinite;
+}
+
+@keyframes glitchShake {
+    0% { transform: translate(0, 0); }
+    20% { transform: translate(-1px, 1px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-1px, 2px); }
+    80% { transform: translate(1px, -1px); }
+    100% { transform: translate(0, 0); }
+}
+
+#rick-gif {
+    display: none;
+    position: fixed;
+    bottom: 1px;
+    left: 10px;
+    width: 250px;
+    z-index: 100;
+}
+.final-error {
+    display: none;
+    background-color: #111;
+    color: #ff4444;
+    padding: 20px;
+    margin-top: 20px;
+    border: 1px solid red;
+    animation: shake 0.3s infinite;
+    font-family: Consolas, monospace;
+}
+
+.mensaje-ayuda {
+    display: none;
+    background-color: black;
+    color: #00ff00;
+    text-align: center;
+    padding: 40px;
+    font-size: 22px;
+    animation: flicker 2s infinite;
+}
+
+.mensaje-ayuda button {
+    margin-top: 20px;
+    padding: 12px 25px;
+    font-size: 16px;
+    background: #00ff00;
+    border: none;
+    color: black;
+    font-family: monospace;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.mensaje-ayuda button:hover {
+    background: black;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+}

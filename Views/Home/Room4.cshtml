@@ -1,0 +1,691 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Room 4 - Memory Collapse</title>
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #39ff14;
+            --accent: rgba(57, 255, 20, 0.1);
+            --border: 1px solid var(--fg);
+            --font: 'Courier New', monospace;
+            --transition: 0.2s;
+        }
+
+        @@keyframes flashUniverse {
+            0% {
+                background-color: black;
+                color: lime;
+            }
+
+            50% {
+                background-color: #111;
+                color: #00ffcc;
+            }
+
+            100% {
+                background-color: black;
+                color: lime;
+            }
+        }
+
+        @@keyframes shiftHue {
+            0% {
+                filter: hue-rotate(0deg);
+            }
+
+            100% {
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: var(--font);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        #matrixOverlay {
+            position: fixed;
+            inset: 0;
+            margin: 0%;
+            padding: 0%;
+            background: transparent;
+            opacity: 40%;
+            width: 100%;
+        }
+
+        #introContainer {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20;
+            text-align: center;
+        }
+
+        #introText {
+            max-width: 80vw;
+            font-size: 2vw;
+            line-height: 1.4;
+            margin-bottom: 3vh;
+        }
+
+        .typewriter-line {
+            overflow: hidden;
+            border-right: 2px solid var(--fg);
+            white-space: nowrap;
+            animation: typing 2s steps(40, end) forwards, blink 0.8s step-end infinite;
+        }
+
+        @@keyframes typing {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        @@keyframes blink {
+
+            0%,
+            100% {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: var(--fg);
+            }
+        }
+
+        #gameContainer {
+            display: none;
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            padding: 2vh 2vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        #timer {
+            font-size: 2vw;
+            margin: 2vh 0;
+        }
+
+        .console {
+            background: var(--accent);
+            border: var(--border);
+            width: 80vw;
+            max-width: 800px;
+            padding: 2vh 2vw;
+            font-size: 1vw;
+            margin-bottom: 2vh;
+            white-space: pre-line;
+            box-shadow: 0 0 10px var(--fg);
+            z-index: 2;
+        }
+
+        .memory-dump {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(8vw, 1fr));
+            gap: 1vw;
+            width: 80vw;
+            max-width: 800px;
+            margin-bottom: 2vh;
+            z-index: 2;
+        }
+
+        .cell {
+            background-color: #000;
+
+            border: var(--border);
+            padding: 1vh 0;
+            font-size: 1.5vw;
+            text-align: center;
+            cursor: pointer;
+            transform: scale(0);
+            animation: cellPop 0.4s ease-out forwards;
+            z-index: 2;
+        }
+
+        @@keyframes cellPop {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .cell:hover {
+            background: black;
+        }
+
+        #sequence {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1vw;
+            margin-bottom: 2vh;
+            z-index: 2;
+        }
+
+        .slot {
+            background-color: #000;
+            border: 1px dashed var(--fg);
+            width: 8vw;
+            height: 5vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2vw;
+            transition: background var(--transition);
+            z-index: 2;
+        }
+
+        .slot.over {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        #gitSection {
+            display: none;
+            width: 80vw;
+            max-width: 600px;
+            text-align: center;
+            animation: gitFadeIn 1s ease-out forwards;
+            z-index: 2;
+        }
+
+        @@keyframes gitFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        #gitSection input {
+            background: var(--bg);
+            border: var(--border);
+            color: var(--fg);
+            font-family: var(--font);
+            font-size: 1vw;
+            width: calc(100% - 2vw);
+            margin: 1vh auto;
+            padding: 1vh 1vw;
+            z-index: 2;
+        }
+
+        #gitSection button {
+            background: var(--fg);
+            color: var(--bg);
+            font-family: var(--font);
+            font-size: 1.5vw;
+            padding: 1vh 2vw;
+            border: none;
+            cursor: pointer;
+            transition: transform var(--transition);
+            margin-top: 1vh;
+            z-index: 2;
+        }
+
+        #gitSection button:hover {
+            transform: scale(1.05);
+        }
+
+        #error {
+            color: red;
+            font-weight: bold;
+            display: none;
+            margin-top: 1vh;
+            z-index: 2;
+        }
+
+        @@keyframes victoryFlash {
+
+            0%,
+            100% {
+                background: var(--bg);
+            }
+
+            50% {
+                background: lime;
+            }
+        }
+
+        @@keyframes defeatFlash {
+
+            0%,
+            100% {
+                background: var(--bg);
+            }
+
+            50% {
+                background: red;
+            }
+        }
+
+        .victory-flash {
+            animation: victoryFlash 0.3s ease-in-out 5;
+        }
+
+        .defeat-flash {
+            animation: defeatFlash 0.3s ease-in-out 5;
+        }
+
+        @@keyframes alertFlash {
+            0% {
+                background-color: white;
+            }
+
+            25% {
+                background-color: red;
+            }
+
+            50% {
+                background-color: white;
+            }
+
+            75% {
+                background-color: red;
+            }
+
+            100% {
+                background-color: white;
+            }
+        }
+
+        .alert-flash {
+            animation: alertFlash 0.3s infinite;
+        }
+
+        @@keyframes endPulse {
+            0% {
+                background-color: black;
+                color: white;
+            }
+
+            50% {
+                background-color: white;
+                color: black;
+            }
+
+            100% {
+                background-color: black;
+                color: white;
+            }
+        }
+
+        .endgame-pulse {
+            animation: endPulse 0.6s infinite;
+            font-size: 2.2vw;
+            font-weight: bold;
+            padding: 3vh 2vw;
+            border: 2px solid lime;
+            text-align: center;
+            margin-top: 5vh;
+        }
+
+        @@keyframes glitch {
+            0% {
+                transform: skew(0.5deg);
+            }
+
+            50% {
+                transform: translateX(-2px) scale(1.02);
+                color: #00ffff;
+            }
+
+            100% {
+                transform: skew(-0.5deg);
+            }
+        }
+
+        @@keyframes shakeFinal {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(2px, -2px);
+            }
+
+            50% {
+                transform: translate(-2px, 2px);
+            }
+
+            75% {
+                transform: translate(2px, 2px);
+            }
+
+            100% {
+                transform: translate(-2px, -2px);
+            }
+        }
+
+        @@keyframes explodeOut {
+            0% {
+                box-shadow: 0 0 10px lime;
+            }
+
+            100% {
+                box-shadow: 0 0 50px #39ff14;
+            }
+        }
+
+        @@keyframes flicker {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideWarp {
+            0% {
+                transform: scaleX(1) rotate(0deg);
+            }
+
+            100% {
+                transform: scaleX(1.2) rotate(-1deg);
+            }
+    @@keyframes glitch {
+  0% { transform: skew(0.5deg); }
+  50% { transform: translateX(-2px) scale(1.02); color: #00ffff; }
+  100% { transform: skew(-0.5deg); }
+}
+
+@@keyframes glitchHeavy {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-4px, 2px); }
+  50% { transform: translate(3px, -3px); color: #ff00ff; }
+  75% { transform: translate(-5px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@@keyframes shakeFinal {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(2px, 2px); }
+  100% { transform: translate(-2px, -2px); }
+}
+
+@@keyframes explodeOut {
+  0% { box-shadow: 0 0 10px lime; }
+  100% { box-shadow: 0 0 50px #39ff14; }
+}
+
+@@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+@@keyframes slideWarp {
+  0% { transform: scaleX(1) rotate(0deg); }
+  100% { transform: scaleX(1.2) rotate(-1deg); }
+}
+
+@@keyframes invertFlash {
+  0%, 100% { filter: invert(0); }
+  50% { filter: invert(1); }
+    </style>
+</head>
+
+<body>
+    <audio autoplay loop>
+        <source src="/img/karmapolice.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="matrixOverlay"></div>
+
+    <div id="introContainer">
+        <div id="introText"></div>
+    </div>
+
+    <div id="gameContainer">
+        <div id="timer">Tiempo restante: <span id="countdown">60</span>s</div>
+        <div class="console" id="console">
+            [Rick]: Morty... escuchá, este código está lleno de bugs.
+            [Rick]: Estoy atrapado en la RAM. Hay bloques de memoria rotos...
+            [Rick]: Tenés que arrastrarlos en este orden exacto:
+            [Rick]: T-R-A-S-C-E-N-D-E-R-_-R-E-A-L-I-D-A-D
+            [Rick]: Si lo hacés bien, después vas a tener que ejecutar los comandos de git...
+            [Rick]: El commit debe ser: "upload rick"
+            [Rick]: ¡Si te equivocás, el multiverso colapsa, Morty!
+
+        </div>
+        <div class="memory-dump" id="dump"></div>
+        <div id="sequence"></div>
+        <div id="gitSection">
+            <h2>COMANDOS GIT:</h2>
+            <input id="cmd1" placeholder="Agregar cambios" />
+            <input id="cmd2" placeholder="Crear Commit (Hacele caso a Rick)" />
+            <input id="cmd3" placeholder="Pushear al repo" />
+            <button onclick="checkGit()">⬆️ UPLOAD REALITY</button>
+            <div id="error">¡Fallo crítico! Reiniciando...</div>
+        </div>
+    </div>
+
+    <script>
+        function matrixRain() {
+            const overlay = document.getElementById('matrixOverlay');
+            const cols = Math.floor(window.innerWidth / 1);
+            setInterval(() => {
+                let s = '';
+                for (let y = 0; y < 50; y++) {
+                    for (let x = 0; x < cols; x++) {
+                        s += Math.random() > 0.975
+                            ? String.fromCharCode(0x30A0 + Math.random() * 96)
+                            : ' ';
+                    }
+                    s += '\n';
+                }
+                overlay.textContent = s;
+            }, 50);
+        }
+
+        const introLines = [
+            '[INICIO ROOM 4: MEMORIA COLAPSADA]',
+            '[Rick]: Morty... abrimos un portal muy profundo.',
+            '[Rick]: Esta RAM está corrupta.',
+            '[Rick]: Ordená bloques o todo se desintegra.',
+            '[Morty]: ¿Y si fallo?',
+            '[Rick]: Entonces no existimos Morty...',
+        ];
+        let idx = 0;
+        const introDiv = document.getElementById('introText');
+        function showLine() {
+            if (idx < introLines.length) {
+                const d = document.createElement('div');
+                d.className = 'typewriter-line';
+                d.textContent = introLines[idx++];
+                introDiv.appendChild(d);
+                setTimeout(showLine, 2000);
+            } else {
+                setTimeout(endIntro, 1000);
+            }
+        }
+        function endIntro() {
+            document.getElementById('introContainer').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'flex';
+            document.body.classList.add('victory-flash');
+            setTimeout(() => document.body.classList.remove('victory-flash'), 1000);
+            startGame();
+        }
+        window.onload = () => { matrixRain(); showLine(); };
+
+        let dragged;
+        const order = ["TR", "A", "S", "C", "E", "ND", "ER", "_", "RE", "AL", "ID", "AD"];
+        const dumpEl = document.getElementById('dump');
+        const seqEl = document.getElementById('sequence');
+        const cons = document.getElementById('console');
+        const glitch = new Audio('/audio-glitch.mp3');
+
+        function startGame() {
+            
+            shuffle();
+            setInterval(shuffle, 10000);
+            let tiempo = 60;
+const countdownEl = document.getElementById('countdown');
+
+setInterval(() => {
+  if (tiempo > 0) {
+    tiempo--;
+    countdownEl.textContent = tiempo;
+  } else {
+    document.body.classList.add('defeat-flash');
+    document.getElementById('console').textContent = "[SYSTEM]: TIMEOUT — El proceso se quedó sin RAM.";
+    setTimeout(() => location.reload(), 4000);
+  }
+}, 1000);
+
+        }
+        function shuffle() {
+            dumpEl.innerHTML = '';
+            [...order].sort(() => Math.random() - 0.5).forEach(t => {
+                const c = document.createElement('div');
+                c.className = 'cell'; c.textContent = t;
+                c.draggable = true;
+                c.addEventListener('dragstart', e => dragged = e.target);
+                dumpEl.appendChild(c);
+            });
+        }
+        order.forEach(() => {
+            const slot = document.createElement('div');
+            slot.className = 'slot';
+            slot.ondragover = e => { e.preventDefault(); slot.classList.add('over'); };
+            slot.ondragleave = () => slot.classList.remove('over');
+            slot.ondrop = e => {
+                e.preventDefault(); slot.classList.remove('over');
+                if (!slot.textContent) {
+                    slot.textContent = dragged.textContent;
+                    dragged.remove(); checkOrder();
+                } else glitch.play();
+            };
+            seqEl.appendChild(slot);
+        });
+        function checkOrder() {
+            const cur = [...document.querySelectorAll('.slot')].map(s => s.textContent);
+            if (cur.includes('')) return;
+            if (cur.every((v, i) => v === order[i])) {
+                cons.textContent += '\n[Rick]: Bien Morty... Git time.';
+                document.getElementById('gitSection').style.display = 'block';
+            } else {
+                cons.textContent = '[SYSTEM] CORRUPCIÓN CRÍTICA';
+                document.body.classList.add('defeat-flash');
+                setTimeout(() => location.reload(), 3000);
+            }
+        }
+        function checkGit() {
+  const c1 = document.getElementById('cmd1').value.trim().toLowerCase();
+  const c2 = document.getElementById('cmd2').value.trim();
+  const c3 = document.getElementById('cmd3').value.trim().toLowerCase();
+  const cons = document.getElementById('console');
+
+  const validC1 = c1 === 'git add .' || c1 === 'git add ./' || (c1.includes('add') && c1.includes('.'));
+  const commitRegex = /^git commit -m ['"]upload rick['"]$/i;
+  const validC2 = commitRegex.test(c2);
+  const validC3 = c3 === 'git push' || c3 === 'git push origin main' || c3.includes('push');
+
+  if (validC1 && validC2 && validC3) {
+    cons.innerHTML = '';
+
+    const fx = document.createElement('div');
+    fx.style.position = 'fixed';
+    fx.style.inset = '0';
+    fx.style.zIndex = '999';
+    fx.style.background = 'black';
+    fx.style.color = '#39ff14';
+    fx.style.fontFamily = 'monospace';
+    fx.style.fontSize = '2vw';
+    fx.style.display = 'flex';
+    fx.style.flexDirection = 'column';
+    fx.style.alignItems = 'center';
+    fx.style.justifyContent = 'center';
+    fx.style.animation = 'explodeOut 0.15s infinite alternate';
+
+    fx.innerHTML = `
+      <div style="margin-bottom: 2vh; animation: glitch 0.3s infinite alternate;">
+        [FINALIZACIÓN] Subida interdimensional completada
+      </div>
+      <div style="margin-bottom: 2vh; font-size: 1.4vw; animation: slideWarp 1.5s infinite alternate;">
+        Reescribiendo el multiverso en 9 líneas de tiempo divergentes...
+      </div>
+      <div style="font-size: 1vw; opacity: 0.8; animation: flicker 1s infinite alternate;">
+        [Rick]: Morty... acabás de romper la linealidad del tiempo.
+      </div>
+    `;
+
+    document.body.appendChild(fx);
+    document.body.style.animation = 'shakeFinal 0.4s infinite';
+
+    setTimeout(() => window.location.href = '/Home/Room5', 6000);
+  } else {
+    cons.innerHTML = '';
+    const fail = document.createElement('div');
+    fail.style.position = 'fixed';
+    fail.style.inset = '0';
+    fail.style.zIndex = '999';
+    fail.style.background = 'black';
+    fail.style.color = '#ff0000';
+    fail.style.fontFamily = 'monospace';
+    fail.style.fontSize = '2.5vw';
+    fail.style.display = 'flex';
+    fail.style.flexDirection = 'column';
+    fail.style.alignItems = 'center';
+    fail.style.justifyContent = 'center';
+    fail.style.textShadow = '0 0 10px crimson';
+    fail.style.animation = 'shakeFinal 0.15s infinite alternate, invertFlash 0.3s infinite';
+
+    fail.innerHTML = `
+      <div>[COLAPSO DEL SISTEMA]</div>
+      <div style="margin-top:2vh;font-size:2vw; animation: glitchHeavy 0.4s infinite alternate;">
+        Realidad corrompida. Multiverso inestable.
+      </div>
+      <div style="margin-top:1vh; font-size:1.2vw; animation: flicker 1s infinite alternate; opacity: 0.6;">
+        [Morty]: Rick... ¿por qué se pone todo negro?
+      </div>
+    `;
+
+    document.body.appendChild(fail);
+    setTimeout(() => location.reload(), 4000);
+  }
+}
+
+
+
+
+    </script>
+</body>
+
+</html>

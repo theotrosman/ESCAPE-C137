@@ -1,0 +1,183 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>ROOM 1 - NÚCLEO DE CÓDIGO</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        html, body {
+            background-color: black;
+            font-family: monospace;
+            margin: 0;
+            padding: 30px;
+            overflow: hidden;
+            animation: backgroundFlash 0.4s infinite;
+        }
+
+        @@keyframes backgroundFlash {
+            0% { background-color: black; }
+            25% { background-color: #111; }
+            50% { background-color: darkred; }
+            75% { background-color: black; }
+            100% { background-color: black; }
+        }
+
+        @@keyframes colorCycle {
+            0% { color: #00ff00; }
+            33% { color: white; }
+            66% { color: red; }
+            100% { color: #00ff00; }
+        }
+
+        @@keyframes shake {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, -2px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 2px); }
+        }
+
+        .glitch {
+            animation: shake 0.2s infinite, colorCycle 1s infinite;
+        }
+
+        #terminal {
+            white-space: pre-wrap;
+            font-size: 16px;
+            line-height: 1.5;
+            min-height: 400px;
+            animation: colorCycle 3s infinite;
+        }
+
+        #input-line {
+            display: none;
+            margin-top: 20px;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            width: 50px;
+        }
+
+       
+
+        #error-mode {
+            display: none;
+            background-color: red;
+            color: black;
+            font-family: monospace;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            font-size: 18px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="terminal"></div>
+
+    <div id="input-line">
+        > ¿Entendiste? (y/n): <input id="respuesta" maxlength="1" autofocus />
+    </div>
+
+    <div id="error-mode"></div>
+
+    <script>
+        const terminal = document.getElementById("terminal");
+        const inputLine = document.getElementById("input-line");
+        const input = document.getElementById("respuesta");
+        const errorMode = document.getElementById("error-mode");
+
+        const texto = [
+            "[SISTEMA] Inicializando núcleo de conciencia...",
+            "[BOOTLOADER] Realidad: MVC-137",
+            "[RICK] m-m-morty... we're in the code...",
+            "[ALERTA] Protocolo de autoconciencia activado.",
+            "[ERROR 0xD3AD] El controlador empezó a escribir su propio código.",
+            "[LOG] --> injecting controller@SelfAwareMode.cs...",
+            "[SECURITY BREACH] Controlador intentando reescribir rutas.",
+            "[ATAQUE] Bit sequence infiltrated: 01100111 01101100 01101001 01110100 01100011 01101000",
+            "Tu misión:",
+            "- Infiltrar la pipeline.",
+            "- Depurar el núcleo Razor.",
+            "- Romper la cuarta pared.",
+            "[RICK] Esto no es un juego Morty, es una fucking intervención cósmica.",
+            "¿Entendiste? (y/n)"
+        ];
+
+        let i = 0;
+        function escribirLinea() {
+            if (i < texto.length) {
+                const span = document.createElement("span");
+                span.textContent = texto[i] + "\n";
+                if (texto[i].includes("ERROR") || texto[i].includes("ATAQUE") || texto[i].includes("SECURITY")) {
+                    span.classList.add("glitch");
+                }
+                terminal.appendChild(span);
+
+                
+
+                i++;
+                setTimeout(escribirLinea, 1000);
+            } else {
+                inputLine.style.display = "block";
+                input.focus();
+            }
+        }
+
+        function mostrarErrorRick() {
+            inputLine.style.display = "none";
+            errorMode.style.display = "block";
+            errorMode.innerHTML = "";
+            const frase = "Rick: ¿N-no entendés, Morty?!\nESTAMOS EN EL MALDITO CÓDIGO MORTY.\n¡Esto no es una simulación de consola, esto es una PRISIÓN DE FRAMEWORKS!\nPoné 'y', Morty. Ponelo YA.";
+            let j = 0;
+            function typeText() {
+                if (j < frase.length) {
+                    errorMode.innerHTML += frase[j];
+                    j++;
+                    setTimeout(typeText, 40);
+                } else {
+                    setTimeout(() => {
+                        errorMode.style.display = "none";
+                        terminal.innerHTML += "\nINTENTÁ DE NUEVO...\n\n";
+                        input.value = "";
+                        inputLine.style.display = "block";
+                        input.focus();
+                    }, 1000);
+                }
+            }
+            typeText();
+        }
+
+        escribirLinea();
+
+        input.addEventListener("input", function () {
+            const val = input.value.toLowerCase();
+            if (val === "y") {
+                terminal.innerHTML = "";
+                inputLine.style.display = "none";
+                setTimeout(() => {
+                    window.location.href = "/Home/GameStart";
+                }, 500);
+            } else if (val === "n") {
+                mostrarErrorRick();
+            } else {
+                input.value = "";
+            }
+        });
+    </script>
+</body>
+</html>

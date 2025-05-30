@@ -1,0 +1,888 @@
+@{
+    Layout = null;
+    var secuenciaCorrecta = ViewBag.SecuenciaCorrecta as string;
+    var grid = ViewBag.Grid as List<List<char>>;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Room 3 — Castigo Genético</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            overflow-x: hidden;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        #rickGif {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            width: 130px;
+            z-index: 5;
+        }
+
+        .grid-container {
+            width: 100%;
+            max-width: 960px;
+            padding: 20px 20px 10px 20px;
+            box-sizing: border-box;
+        }
+
+        .dna-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 5px;
+            justify-content: center;
+            font-size: 22px;
+            animation: pulse 3s infinite;
+        }
+
+        @@keyframes pulse {
+            0% {
+                box-shadow: 0 0 10px #00ff00;
+            }
+
+            50% {
+                box-shadow: 0 0 20px #00ff00;
+            }
+
+            100% {
+                box-shadow: 0 0 10px #00ff00;
+            }
+        }
+
+        .popup-ad {
+            position: fixed;
+            z-index: 9999;
+            background-color: transparent;
+            animation: fadeOutAd 1.5s forwards;
+        }
+
+        @@keyframes fadeOutAd {
+            0% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        .cell {
+            background: #111;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #00ff00;
+            transition: 0.2s;
+        }
+
+        .cell:hover {
+            background: #003300;
+            transform: scale(1.07);
+            cursor: pointer;
+        }
+
+        .cell.clicked {
+            background-color: #00ff00 !important;
+            color: black;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        .input-section {
+            width: 100%;
+            max-width: 800px;
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input {
+            background: black;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            font-family: monospace;
+            padding: 12px;
+            font-size: 18px;
+            width: 300px;
+            text-align: center;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+
+        input:focus {
+            box-shadow: 0 0 10px #00ff00;
+            transform: scale(1.05);
+        }
+
+        button {
+            margin-left: 10px;
+            padding: 12px 18px;
+            font-size: 16px;
+            background: #00ff00;
+            color: black;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        .success {
+            color: #00ffff;
+            font-weight: bold;
+        }
+
+        .fail {
+            color: red;
+            font-weight: bold;
+        }
+
+        .shake {
+            animation: shake 0.4s;
+        }
+
+        @@keyframes shake {
+            0% {
+                transform: translate(1px, 1px);
+            }
+
+            25% {
+                transform: translate(-1px, 2px);
+            }
+
+            50% {
+                transform: translate(2px, -1px);
+            }
+
+            75% {
+                transform: translate(-1px, -1px);
+            }
+
+            100% {
+                transform: translate(1px, 1px);
+            }
+        }
+
+        .glitch-attack {
+            animation: eyeAttack 0.1s infinite;
+        }
+
+        @@keyframes eyeAttack {
+            0% {
+                background-color: black;
+            }
+
+            20% {
+                background-color: white;
+            }
+
+            40% {
+                background-color: #00ff00;
+            }
+
+            60% {
+                background-color: red;
+            }
+
+            80% {
+                background-color: #ff00ff;
+            }
+
+            100% {
+                background-color: black;
+            }
+        }
+
+        .glitch-text {
+            text-shadow: 1px 1px red, -1px -1px cyan;
+            animation: blink 0.2s infinite alternate;
+        }
+
+        @@keyframes blink {
+
+            from,
+            to {
+                border-color: transparent;
+            }
+
+            50% {
+                border-color: #00ff00;
+            }
+        }
+
+        @@keyframes blinkOut {
+            0% {
+                background-color: #fff;
+            }
+
+            50% {
+                background-color: red;
+            }
+
+            100% {
+                background-color: #fff;
+            }
+        }
+
+        #finalDialog {
+            display: none;
+            max-width: 900px;
+            text-align: left;
+            white-space: pre-wrap;
+            font-size: 18px;
+            margin-top: 20px;
+            background-color: white;
+            color: black;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 0 30px black;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        #timerDisplay {
+            font-size: 28px;
+            padding: 12px 30px;
+            background: radial-gradient(circle, #111 0%, #000 100%);
+            color: #00ff00;
+            font-weight: bold;
+            border: 2px dashed lime;
+            animation: flashTimer 0.8s infinite alternate, shake 0.2s infinite;
+            box-shadow: 0 0 15px lime, inset 0 0 5px #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        @@keyframes flashTimer {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .flash-white {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 1000;
+            animation: whiteFlash 1.5s forwards;
+        }
+
+        @@keyframes whiteFlash {
+            0% {
+                opacity: 0;
+            }
+
+            30% {
+                opacity: 1;
+            }
+
+            70% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        #consoleFinal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 18px;
+            padding: 40px;
+            white-space: pre-wrap;
+            display: none;
+            z-index: 2000;
+        }
+
+        .typewriter-line {
+            overflow: hidden;
+            border-right: .15em solid #00ff00;
+            white-space: nowrap;
+            animation: typing 1.5s steps(30, end), blink-caret .75s step-end infinite;
+        }
+
+        @@keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @@keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: #00ff00;
+            }
+        }
+
+        body.error-2 .cell {
+            filter: blur(0.5px);
+        }
+
+        body.error-3 .cell {
+            filter: blur(1px) contrast(1.1);
+        }
+
+        body.error-4 .cell {
+            filter: blur(2px) contrast(1.2) saturate(1.3);
+        }
+
+        body.error-5 .cell {
+            filter: blur(3px) contrast(1.4) saturate(2) invert(0.2);
+        }
+
+        body.error-6 .cell {
+            animation: shake 0.5s infinite alternate, eyeAttack 0.2s infinite;
+        }
+
+        @@keyframes gridShake {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            20% {
+                transform: translate(-3px, 2px) scale(1.05);
+            }
+
+            40% {
+                transform: translate(3px, -2px) scale(1.1);
+            }
+
+            60% {
+                transform: translate(-2px, -3px) scale(1.08);
+            }
+
+            80% {
+                transform: translate(2px, 3px) scale(1.05);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        @@keyframes auraCycle {
+            0% {
+                box-shadow: 0 0 300px 150px red;
+            }
+
+            33% {
+                box-shadow: 0 0 300px 150px white;
+            }
+
+            66% {
+                box-shadow: 0 0 300px 150px lime;
+            }
+
+            100% {
+                box-shadow: 0 0 300px 150px red;
+            }
+        }
+
+        .dna-grid.shake {
+            animation: gridShake 0.6s ease-in-out;
+        }
+
+        #introText.color-cycle {
+            animation: colorCycle 0.8s infinite alternate;
+        }
+
+        @@keyframes colorCycle {
+            0% {
+                color: #00ff00;
+            }
+
+            100% {
+                color: rgb(255, 255, 255);
+            }
+        }
+
+        .popup-ad {
+            position: fixed;
+            z-index: 9999;
+            background: transparent;
+            animation: fadeOutAd 4s forwards;
+            border: none !important;
+            box-shadow: none !important;
+            transition: transform 0.4s ease;
+        }
+
+        @@keyframes fadeOutAd {
+            0% {
+                opacity: 0.8;
+            }
+
+            90% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
+        .popup-shake {
+            animation: subtleShake 0.4s ease;
+        }
+
+        @@keyframes subtleShake {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            25% {
+                transform: translate(2px, -1px);
+            }
+
+            50% {
+                transform: translate(-1px, 2px);
+            }
+
+            75% {
+                transform: translate(1px, -2px);
+            }
+
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+
+        @@keyframes blinkRed {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+    </style>
+</head>
+
+<body class="" onload="activarErrores();">
+
+    <div id="explosion"
+        style="position: fixed; inset: 0; z-index: 9999; background: radial-gradient(circle, red, orange, yellow, white); opacity: 0; pointer-events: none; transition: opacity 0.3s ease;">
+    </div>
+
+    <div id="flash" class="flash-white" style="display:none;"></div>
+    <div id="consoleFinal"></div>
+
+    <audio autoplay loop>
+        <source src="~/audio/rick-theme.mp3" type="audio/mpeg" />
+    </audio>
+
+    <div id="introText" class="typewriter"
+        style="white-space: pre-wrap; font-size: 20px; line-height: 1.6; text-align: left; max-width: 900px; margin-top: 40px;">
+    </div>
+
+    <div class="grid-container" id="grid" style="display: none; flex-direction: column; align-items: center;">
+        <div class="dna-grid">
+            @for (int row = 0; row < 10; row++)
+            {
+                for (int col = 0; col < 10; col++)
+                {
+                    <div class="cell">@grid[row][col]</div>
+                }
+            }
+        </div>
+    </div>
+
+    <div class="input-section" id="inputSec" style="text-align:center; display:none; margin-top: 20px;">
+        <p><strong>Rick:</strong> "Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran
+            columnas de código genético..."</p>
+        <p>Ingresá la secuencia estable (10 letras):</p>
+        <input id="respuesta" maxlength="10" />
+        <br />
+        <button onclick="verificar()">Verificar</button>
+    </div>
+
+    <div id="resultado" style="text-align:center; margin-top: 20px;"></div>
+
+    <script>
+        let errores = 0;
+        const correcto = "@secuenciaCorrecta";
+        let secondsLeft = 60;
+        let timerStarted = false;
+        let interval;
+
+        const intro = `>>> CARGANDO SALA 3...\n>>> ERROR: Morty eligió el camino fácil en la Room2\n>>> ACTIVANDO CASTIGO GENÉTICO\n>>> Rick: ¡¿QUÉ HICISTE, MORTY?!\n>>> La computadora ahora controla la realidad.\n>>> Buscá la única columna genética estable EN VERTICAL, Morty. No horizontal. COLUMNAS.`;
+
+        // Definir el sonido de typing al inicio
+        const typeSound = new Audio('/img/sfxtype.mp3');
+        typeSound.volume = 0.15;
+
+        function calculateTypingDuration(text) {
+            return (text.length / 30) * 1000;
+        }
+
+        function playTypingSound(duration) {
+            typeSound.currentTime = 0;
+            typeSound.play();
+            
+            const interval = setInterval(() => {
+                if (typeSound.currentTime >= typeSound.duration) {
+                    typeSound.currentTime = 0;
+                    typeSound.play();
+                }
+            }, 100);
+
+            setTimeout(() => {
+                typeSound.pause();
+                clearInterval(interval);
+            }, duration);
+        }
+
+        function mostrarGridYTimer() {
+            document.getElementById("grid").style.display = "flex";
+            document.getElementById("inputSec").style.display = "block";
+            
+            const timerDiv = document.createElement("div");
+            timerDiv.id = "timerDisplay";
+            timerDiv.innerHTML = `Tiempo restante: <span id="timeLeft">${secondsLeft}</span>s`;
+            document.getElementById("inputSec").prepend(timerDiv);
+            
+            startTimer();
+        }
+
+        function escribirIntro() {
+            const introLines = [
+                ">>> INICIANDO SALA 3: Castigo Genético...",
+                ">>> ANALIZANDO TRAZAS DE DECISIONES EN ROOM 2...",
+                ">>> ERROR: Elección subóptima detectada.",
+                ">>> Rick: Morty... lo que hiciste alteró la cadena principal del universo...",
+                ">>> Morty: ¡¿Qué?! ¡¿Cómo?!",
+                ">>> Rick: Todo está codificado genéticamente en el Multiverso-137...",
+                ">>> Rick: Si un eslabón muta... la realidad se vuelve inestable.",
+                ">>> Rick: Y adiviná qué... sos el eslabón.",
+                ">>> Morty: N-no entiendo...",
+                ">>> Rick: Estamos atrapados en una simulación genética.",
+                ">>> Rick: Hay solo UNA secuencia válida en este ADN corrompido...",
+                ">>> Rick: Si no la encontrás, la simulación nos va a borrar. Literalmente.",
+                ">>> ⚠ INESTABILIDAD DETECTADA ⚠",
+                ">>> ⚠⚠⚠ CARGANDO PATRÓN DE REPARACIÓN ⚠⚠⚠",
+                ">>> Morty: RICK... ¡¡EL CÓDIGO GENÉTICO SE ESTÁ ROMPIENDO!!",
+                ">>> Rick: Buscá en las COLUMNAS... no las filas, Morty.",
+                ">>> Rick: Pensá como una proteína buscando sentido en medio del caos."
+            ];
+
+            let i = 0;
+            const introDiv = document.getElementById("introText");
+            introDiv.classList.add("color-cycle");
+
+            function typeLine(line, charIndex = 0, p = null) {
+                if (!p) {
+                    p = document.createElement("div");
+                    p.style.marginBottom = "8px";
+                    introDiv.appendChild(p);
+                    const duration = calculateTypingDuration(line);
+                    playTypingSound(duration);
+                }
+
+                if (charIndex < line.length) {
+                    p.textContent += line.charAt(charIndex);
+
+                    if (Math.random() < 0.015) lanzarPopUp();
+                    setTimeout(() => typeLine(line, charIndex + 1, p), 30);
+                } else {
+                    if (line.includes("⚠")) {
+                        document.body.classList.add("glitch-attack");
+                        setTimeout(() => document.body.classList.remove("glitch-attack"), 800);
+                    }
+
+                    i++;
+                    setTimeout(() => {
+                        if (i < introLines.length) {
+                            typeLine(introLines[i]);
+                        } else {
+                            setTimeout(() => mostrarGridYTimer(), 2000);
+                        }
+                    }, 600);
+                }
+            }
+
+            const flash = document.getElementById("flash");
+            flash.style.display = "block";
+            setTimeout(() => {
+                flash.style.display = "none";
+                typeLine(introLines[0]);
+            }, 1500);
+        }
+
+        function triggerExplosion() {
+            const explosion = document.getElementById("explosion");
+            explosion.style.opacity = 1;
+            setTimeout(() => {
+                explosion.style.opacity = 0;
+            }, 500);
+        }
+
+        function verificar() {
+            const input = document.getElementById("respuesta").value.toUpperCase();
+            if (input === correcto) {
+                document.getElementById("resultado").innerHTML = "<p class='success'>✔ ¡Secuencia válida! Rick abre el portal...</p>";
+                document.body.classList.remove("glitch-attack");
+                document.body.style.transition = "0.3s";
+                document.body.style.backgroundColor = "#88ff88";
+                setTimeout(() => mostrarFinalEpico(), 1000);
+            } else {
+                errores++;
+                document.getElementById("resultado").innerHTML = `<p class='fail glitch-text'>✖ Mutación crítica. Intento ${errores}/6</p>`;
+                document.body.classList.add("shake");
+                document.body.classList.add(`error-${errores}`);
+
+                if (errores >= 3) {
+                    document.getElementById("resultado").innerHTML += "<p class='fail'>¡Rick: Morty, el código genético se está desmoronando!</p>";
+                    document.body.style.transition = "0.4s";
+                    document.body.style.backgroundColor = "#440000";
+                    document.getElementById("respuesta").style.border = "4px solid red";
+
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = "black";
+                    }, 1000);
+                }
+
+                if (errores >= 6) {
+                    document.getElementById("resultado").innerHTML = "<p class='fail'>💥 ADN destruido. Reiniciando simulación...</p>";
+                    setTimeout(() => window.location.href = "/home/room3", 3000);
+                }
+
+                setTimeout(() => document.body.classList.remove("shake"), 500);
+            }
+        }
+
+        function startTimer() {
+            interval = setInterval(() => {
+                secondsLeft--;
+                document.getElementById('timeLeft').textContent = secondsLeft;
+
+                if (secondsLeft <= 0) {
+                    clearInterval(interval);
+                    document.body.style.transition = "0.5s";
+                    document.body.style.backgroundColor = "darkred";
+                    document.body.classList.add("glitch-attack");
+                    document.getElementById("resultado").innerHTML = "<p class='fail glitch-text'>TIEMPO AGOTADO. COLUMNA COLAPSADA.</p>";
+                    setTimeout(() => window.location.href = "/home/room3", 3000);
+                }
+            }, 1000);
+        }
+
+        function mostrarFinalEpico() {
+            document.getElementById('flash').style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('flash').style.display = 'none';
+                const consola = document.getElementById('consoleFinal');
+                consola.style.display = 'block';
+
+                const dialogo = [
+                    '>>> Morty: Rick... lo logré. Lo logré de verdad.',
+                    '>>> Rick: No es tiempo para festejos Morty...',
+                    '>>> Rick: Lo que abriste no fue un portal... fue un mensaje de advertencia.',
+                    '>>> Morty: ¿Advertencia de qué?',
+                    '>>> Rick: De que alguien... nos está mirando.',
+                ];
+
+                let i = 0;
+                function escribirLinea() {
+                    if (i < dialogo.length) {
+                        const p = document.createElement('div');
+                        p.classList.add('typewriter-line');
+                        p.textContent = dialogo[i];
+                        consola.appendChild(p);
+                        i++;
+                        setTimeout(escribirLinea, 2200);
+                    } else {
+                        setTimeout(() => {
+                            desencadenarFinalInterdimensional();
+                        }, 2000);
+                    }
+                }
+
+                escribirLinea();
+            }, 1500);
+        }
+        function desencadenarFinalInterdimensional() {
+            const consola = document.getElementById('consoleFinal');
+
+            const glitchMsg = document.createElement('div');
+            glitchMsg.textContent = '>>> ---INTRUSIÓN DETECTADA---';
+            glitchMsg.style.color = 'red';
+            glitchMsg.style.fontWeight = 'bold';
+            glitchMsg.style.fontSize = '20px';
+            glitchMsg.style.textShadow = '1px 1px cyan, -1px -1px magenta';
+            glitchMsg.style.animation = 'blinkRed 1s infinite alternate';
+            consola.appendChild(glitchMsg);
+
+            document.body.classList.add('glitch-attack');
+
+            setTimeout(() => {
+                const corrompido = document.createElement('div');
+                corrompido.innerHTML = '⛓ CONEXIÓN CORTADA<br>⚠ Rick comprometido<br>⚠ Realidad inestable';
+                corrompido.style.color = '#ff5555';
+                corrompido.style.fontSize = '18px';
+                corrompido.style.marginTop = '20px';
+                corrompido.style.fontFamily = 'monospace';
+                corrompido.style.textShadow = '0 0 5px red';
+                consola.appendChild(corrompido);
+            }, 2000);
+
+            setTimeout(() => {
+                const entidad = document.createElement('div');
+                entidad.textContent = '>>> ∆ QUIEN SEA QUE ESTÉS JUGANDO... NOS VEMOS EN LA ROOM 4';
+                entidad.style.color = '#00ffff';
+                entidad.style.fontSize = '20px';
+                entidad.style.marginTop = '30px';
+                entidad.style.fontWeight = 'bold';
+                entidad.style.textShadow = '0 0 10px #00ffff';
+                consola.appendChild(entidad);
+            }, 4000);
+
+            setTimeout(() => {
+                window.location.href = '/home/room4';
+            }, 7000);
+        }
+
+        function lanzarPopUp() {
+            if (document.querySelectorAll(".popup-ad").length >= 1) return;
+
+            const ad = document.createElement("img");
+            ad.src = "/img/anuncio9.gif";
+            ad.className = "popup-ad";
+
+            let top = 0, left = 0;
+            do {
+                top = Math.random() * 90;
+                left = Math.random() * 90;
+            } while ((top > 35 && top < 70) && (left > 15 && left < 85));
+
+            ad.style.top = `${top}%`;
+            ad.style.left = `${left}%`;
+            ad.style.transform = `rotate(${Math.random() * 2 - 1}deg)`;
+            ad.style.pointerEvents = "none";
+            ad.style.width = "140px";
+            ad.style.opacity = "0.8";
+
+            document.body.appendChild(ad);
+
+            document.body.classList.add("popup-shake");
+            setTimeout(() => document.body.classList.remove("popup-shake"), 500);
+
+            setTimeout(() => {
+                ad.remove();
+            }, 4000);
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            escribirIntro();
+
+            setTimeout(() => {
+                asignarListeners();
+
+                setInterval(() => {
+                    const cells = document.querySelectorAll(".cell");
+                    const originalText = Array.from(cells).map(cell => cell.textContent);
+
+                    cells.forEach(cell => cell.textContent = "?");
+
+                    setTimeout(() => {
+                        cells.forEach((cell, i) => {
+                            cell.textContent = originalText[i];
+                        });
+                    }, 2000);
+                }, 10000);
+
+            }, 100);
+        });
+
+        function asignarListeners() {
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.addEventListener("click", () => {
+                    const input = document.getElementById("respuesta");
+                    if (input.value.length < 10) {
+                        input.value += cell.textContent.trim();
+                        cell.classList.add("clicked");
+                        setTimeout(() => cell.classList.remove("clicked"), 300);
+                    }
+                });
+                cell.addEventListener("contextmenu", e => {
+                    e.preventDefault();
+                    const input = document.getElementById("respuesta");
+                    input.value = input.value.slice(0, -1);
+                });
+            });
+        }
+    </script>
+</body>
+<!-- 
+Morty, prestá atención... solo una de las columnas del grid tiene una secuencia genética *estable*
+
+    Condiciones para que sea válida:
+    - Debe tener exactamente 10 caracteres, uno por fila.
+    - Leé **en vertical**, no horizontal.
+    - Solo una columna forma la secuencia correcta, sin mutaciones.
+    - Condiciones de ADN válido:
+    1. No hay más de 2 bases iguales seguidas
+    2. No es un palíndromo
+    3. Aprox 2A, 2T, 3G, 3C
+    - Las demás columnas tienen al menos una letra alterada.
+
+    Morty: "¿Y si están todas mezcladas?"
+    Rick: "¡No lo están, Morty! Esta es la única parte estable del multiverso, no me hagas dudar de la física genética lógica computacional ficticia."
+
+    Consejito: Si te equivocás más de 6 veces... el ADN explota y morimos Morty
+-->
+
+</html>

@@ -1,0 +1,157 @@
+@@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Room 7 - Escape Matrix</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        :root {
+            --bg: black;
+            --fg: #00ffcc;
+            --alert: #ff0066;
+            --glitch1: #ff00c8;
+            --glitch2: #00ffff;
+            --red: #ff0033;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: radial-gradient(var(--bg), #111);
+            color: var(--fg);
+            font-family: monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: black;
+            z-index: 100;
+        }
+        #overlay video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain;
+            background-color: black;
+        }
+        #overlay.fadeout {
+            animation: fadeOut 3s ease forwards;
+        }
+        @@keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        .typeout {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            padding: 20px;
+            font-family: monospace;
+            font-size: 17px;
+            white-space: pre-wrap;
+            z-index: 1000;
+            color: var(--fg);
+            background: none;
+            text-shadow: 0 0 5px var(--glitch2);
+        }
+        .typeout.blink {
+            animation: blinkColor 0.2s alternate infinite;
+        }
+        @@keyframes blinkColor {
+            0% { color: var(--fg); text-shadow: 0 0 6px var(--fg); }
+            100% { color: var(--red); text-shadow: 0 0 6px var(--red); }
+        }
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            opacity: 0;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .matrixRain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 2;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(
+                180deg,
+                var(--glitch2) 0px,
+                transparent 2px,
+                var(--glitch1) 4px,
+                transparent 6px,
+                var(--red) 8px,
+                transparent 10px
+            );
+            mix-blend-mode: screen;
+            animation: scrollMatrix 0.3s linear infinite;
+            opacity: 0.06;
+        }
+        @@keyframes scrollMatrix {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="matrixRain"></div>
+    <div id="overlay">
+        <video id="escapeVideo">
+            <source src="~/img/escapematrix.mp4" type="video/mp4">
+        </video>
+        <audio id="escapeAudio">
+            <source src="~/img/escapematrix.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <div id="textOut" class="typeout blink"></div>
+    <div id="flash" class="flash"></div>
+
+    <script>
+        const video = document.getElementById('escapeVideo');
+        const overlay = document.getElementById('overlay');
+        const audio = document.getElementById('escapeAudio');
+        const textOut = document.getElementById('textOut');
+        const flash = document.getElementById('flash');
+
+        const lore = `ERROR 0x0FA0 - FRACTURA DE REALIDAD DETECTADA\nRick: ¡Morty, no escapamos, fuimos reiniciados!\nMorty: ¿Q-q-q-qué? ¿Entonces seguimos atrapados?\nRick: Sí. Pero ahora en un nivel más profundo... una sub-matriz experimental.\nRick: Esta simulación... está aprendiendo de nosotros, Morty.\nRick: Cometí un error. Dejé un log abierto. Nos están observando.\nRick: Si no desciframos el cód-- el codig--- gltch//ERROR///.exe\nMorty: ¿Rick...? ¿Estás...?\nRick: ---\n\n[PROCESO DE INYECCIÓN: ROOM7CODEX INICIADO]\n[CONEXIÓN TEMPORAL ABIERTA — TIEMPO LIMITADO]`;
+
+        let i = 0;
+        function typeOut() {
+            if (i < lore.length) {
+                textOut.innerText += lore.charAt(i);
+                i++;
+                if (Math.random() < 0.07) {
+                    flash.style.opacity = 1;
+                    setTimeout(() => flash.style.opacity = 0, 80);
+                }
+                setTimeout(typeOut, 45 + Math.random() * 60);
+            } else {
+                setTimeout(() => window.location.href = '/Home/Room7Codex', 7000);
+            }
+        }
+
+        video.play();
+        audio.play();
+        video.addEventListener('ended', () => {
+            overlay.classList.add('fadeout');
+            setTimeout(typeOut, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Room 2 - Parche Binario</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        body {
+            background: black;
+            color: #00ff00;
+            font-family: monospace;
+            padding: 40px;
+            animation: flickerRoom2 0.8s infinite alternate;
+        }
+
+        @@keyframes flickerRoom2 {
+            0% { background-color: black; }
+            20% { background-color: #111; }
+            50% { background-color: darkgreen; }
+            80% { background-color: black; }
+            100% { background-color: #200; }
+        }
+
+        #tablero {
+            display: grid;
+            grid-template-columns: repeat(8, 40px);
+            gap: 2px;
+            margin-bottom: 30px;
+        }
+
+        .celda {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #00ff00;
+        }
+
+        .blanco {
+            background-color: white;
+        }
+
+        .negro {
+            background-color: black;
+        }
+
+        .destacado {
+            box-shadow: 0 0 4px 2px lime;
+        }
+
+        input {
+            background: black;
+            border: none;
+            border-bottom: 1px solid #00ff00;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 10px 25px;
+            font-family: monospace;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .mensaje {
+            margin-top: 15px;
+        }
+
+        #rick-gif {
+            display: none;
+            position: fixed;
+            bottom: 1px;
+            left: 10px;
+            width: 200px;
+        }
+
+        .portal {
+            position: fixed;
+            animation: portalShake 0.4s infinite, portalFade 3s forwards;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        @@keyframes portalShake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-1px, -1px); }
+        }
+
+        @@keyframes portalFade {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .rick-console-hint::after {
+            content: "Rick: M-morty... si nada funciona... fijate si la consola te responde algo...";
+            color: #ff0000;
+            font-size: 14px;
+            animation: blinkHint 1s infinite;
+            display: block;
+            margin-top: 15px;
+        }
+
+        @@keyframes blinkHint {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <audio id="audio7" src="~/img/audio7.mp3" preload="auto"></audio>
+    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
+
+<h1 id="titulo-room2" style="color:#00ff00; font-family: monospace; font-size: 20px; text-shadow: 0 0 3px lime;"></h1>    <p><strong>Instrucción:</strong> leé los <span style="color:lime">cuadrados verdes</span> como bits, en orden <strong>de izquierda a derecha y de arriba hacia abajo</strong>. Las celdas blancas valen 1, las negras 0.</p>
+
+    <div id="tablero"></div>
+
+    <p>Convertí ese binario a decimal y escribilo abajo:</p>
+    <input type="text" id="respuesta" placeholder="ej: 280" />
+    <br />
+    <button onclick="verificar()">DECODIFICAR</button>
+    <div class="mensaje" id="mensaje"></div>
+
+    <div id="portales"></div>
+
+    <script>
+        const tablero = document.getElementById("tablero");
+        const mensaje = document.getElementById("mensaje");
+        const audio = document.getElementById("audio7");
+        const gif = document.getElementById("rick-gif");
+
+        const binarioFijo = "111011111"; // DECIMAL = 479
+        const binArray = binarioFijo.split("");
+
+        for (let i = 0; i < 64; i++) {
+            const celda = document.createElement("div");
+            celda.className = "celda";
+
+            if (i >= 0 && i < binArray.length) {
+                celda.classList.add(binArray[i] === "1" ? "blanco" : "negro");
+                celda.classList.add("destacado");
+            } else {
+                const esBlanco = Math.random() > 0.5;
+                celda.classList.add(esBlanco ? "blanco" : "negro");
+            }
+
+            tablero.appendChild(celda);
+        }
+
+        setTimeout(() => {
+            gif.style.display = "block";
+            audio.play().then(() => {
+                audio.onended = () => {
+                    gif.style.display = "none";
+                };
+            }).catch(() => {});
+        }, 1500);
+
+        function verificar() {
+            const input = document.getElementById("respuesta").value.trim();
+            const valorDecimal = parseInt(binarioFijo, 2); // 479
+
+            if (input === valorDecimal.toString()) {
+                mensaje.innerText = "✔️ ¡Perfecto Morty! Decodificaste el parche.";
+                mensaje.style.color = "#00ff00";
+                setTimeout(() => {
+                    window.location.href = "/Home/Room3";
+                }, 2500);
+            } else {
+                mensaje.innerText = "❌ Nah Morty... ese número no desbloquea nada.";
+                mensaje.style.color = "red";
+            }
+        }
+
+        function generarPortalAnimado() {
+    const portales = [
+        `<pre class="portal" style="color:#00ff00">
+    ░░░░░░░░░░░░░░░░
+   ░░░░░░▓▓▓▓▓▓░░░░
+  ░░░░▓▓████████▓▓░░
+ ░░▓▓████████████▓▓░░
+ ░▓████████████████▓░
+ ░▓████████████████▓░
+ ░░▓▓████████████▓▓░░
+  ░░░▓▓████████▓▓░░░
+   ░░░░▓▓▓▓▓▓░░░░░░
+    ░░░░░░░░░░░░░░
+</pre>`,
+        `<pre class="portal" style="color:#00ffff">
+    ████████████████
+   ██▓▓▓▓▓▓▓▓▓▓▓▓▓▓██
+  ██▓████████████▓██
+ ██▓▓████████████▓▓██
+ ██▓██████████████▓██
+ ██▓▓████████████▓▓██
+  ██▓▓██████████▓▓██
+   ██▓▓▓▓▓▓▓▓▓▓▓▓██
+    ██████████████
+</pre>`,
+        `<pre class="portal" style="color:#ff00ff">
+    ░░░░░░░░░░░░░░░░
+   ░░░░▓▓▓▓▓▓▓▓▓▓░░░░
+  ░░▓▓████████████▓▓░░
+ ░▓██████████████████▓
+ ░▓██████████████████▓
+ ░▓██████████████████▓
+ ░▓██████████████████▓
+  ░▓▓██████████████▓▓
+   ░░▓▓▓▓▓▓▓▓▓▓▓▓░░
+    ░░░░░░░░░░░░░░
+</pre>`
+    ];
+
+
+
+            const portalDiv = document.createElement("div");
+            portalDiv.className = "portal";
+            portalDiv.style.left = Math.floor(Math.random() * 80) + "vw";
+            portalDiv.style.top = Math.floor(Math.random() * 70) + "vh";
+            portalDiv.innerHTML = portales[Math.floor(Math.random() * portales.length)];
+
+            document.body.appendChild(portalDiv);
+
+            setTimeout(() => {
+                portalDiv.remove();
+            }, 3000);
+        }
+
+        setInterval(generarPortalAnimado, 1000);
+
+        console.log("%c[RICK DEBUG]", "color: lime; font-weight: bold");
+        console.log("%cMorty... presioná F12 si no sabés qué hacer...", "color: red; font-style: italic");
+        console.log("%cTal vez el bug no está en la pantalla... sino en tu cabeza, Morty.", "color: #00ffff");
+
+        setTimeout(() => {
+            document.querySelector(".mensaje").classList.add("rick-console-hint");
+        }, 6000);
+    </script>
+    <div id="rick-pistas" style="margin-top: 40px; font-size: 14px; color: #888; white-space: pre-wrap;"></div>
+
+<script>
+    const pistasRick = [
+        "Rick: mmm... este binario me suena... lo vi en algún *source* antes...",
+        "Rick: hay cosas que no están en la pantalla, Morty...",
+        "Rick: ¿Nunca pensaste que la respuesta podía estar en el código HTML?",
+        "Rick: si tan solo existiera una tecla para ver el detrás de escena...",
+        "Rick: algunos bugs se resuelven con F12, Morty.",
+        "Rick: los comentarios no siempre son solo para los programadores..."
+    ];
+
+    let indexRick = 0;
+    function mostrarPistaRick() {
+    if (indexRick < pistasRick.length) {
+        document.getElementById("rick-pistas").innerText = pistasRick[indexRick];
+        indexRick++;
+        setTimeout(mostrarPistaRick, 9000);
+    } else {
+        setTimeout(() => {
+            document.getElementById("rick-pistas").style.transition = "opacity 1s";
+            document.getElementById("rick-pistas").style.opacity = "0";
+        }, 9000);
+    }
+}
+    setTimeout(mostrarPistaRick, 5000);
+</script>
+<script>
+    const titulos = [
+        "D:\\EscapeC137\\Rooms\\Room2",
+        "Room 2: Parche Binario",
+        "Parche Binario"
+    ];
+
+    let iTitulo = 0;
+    function cambiarTituloGlitch() {
+        const h1 = document.getElementById("titulo-room2");
+        h1.innerText = titulos[iTitulo];
+        h1.style.opacity = "0";
+        h1.style.transition = "opacity 0.2s";
+        setTimeout(() => {
+            h1.style.opacity = "1";
+        }, 100);
+
+        iTitulo = (iTitulo + 1) % titulos.length;
+        setTimeout(cambiarTituloGlitch, 1300);
+    }
+
+    cambiarTituloGlitch();
+</script>
+
+</body>
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+<!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
+</html>

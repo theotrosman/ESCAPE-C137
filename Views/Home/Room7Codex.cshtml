@@ -1,0 +1,2641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Room 7 - Balatro Codex</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      overflow: hidden;
+      background: linear-gradient(145deg, #123, #081c17);
+      font-family: 'Courier New', monospace;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(0,255,0,0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,0,255,0.1) 0%, transparent 40%);
+      pointer-events: none;
+      animation: ambientGlow 10s infinite alternate;
+    }
+
+    #hud, #acciones, #console {
+      position: absolute;
+      z-index: 2;
+      color: lime;
+      text-shadow: 0 0 5px lime;
+    }
+
+    #hud {
+      top: 10px;
+      left: 10px;
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      font-size: 18px;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 10px lime,
+        inset 0 0 20px rgba(0,255,0,0.3);
+      border: 1px solid rgba(0,255,0,0.3);
+      animation: hudPulse 2s infinite;
+    }
+
+    #console {
+      bottom: 100px;
+      left: 10px;
+      width: 400px;
+      height: 150px;
+      background: rgba(0,0,0,0.8);
+      overflow-y: auto;
+      font-size: 14px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 15px rgba(0,255,0,0.5),
+        inset 0 0 30px rgba(0,255,0,0.2);
+      border: 1px solid rgba(0,255,0,0.3);
+      animation: consolePulse 4s infinite;
+    }
+
+    #console::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #console::-webkit-scrollbar-track {
+      background: rgba(0,255,0,0.1);
+    }
+
+    #console::-webkit-scrollbar-thumb {
+      background: rgba(0,255,0,0.5);
+      border-radius: 4px;
+    }
+
+    #acciones {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+    }
+
+    button {
+      background: rgba(0,0,0,0.8);
+      color: lime;
+      border: 2px solid lime;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px lime;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(transparent, rgba(0,255,0,0.2), transparent);
+      animation: buttonGlow 2s infinite;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        0 0 20px lime,
+        inset 0 0 20px lime;
+      animation: buttonHover 0.5s infinite;
+    }
+
+    canvas {
+      position: relative;
+      z-index: 1;
+      border-radius: 15px;
+      box-shadow: 
+        0 0 50px rgba(0,255,0,0.3),
+        0 0 100px rgba(0,255,0,0.1);
+      animation: canvasPulse 4s infinite;
+    }
+
+    /* New Animations */
+    @@keyframes ambientGlow {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+
+    @@keyframes hudPulse {
+      0%, 100% { box-shadow: 0 0 10px lime; }
+      50% { box-shadow: 0 0 20px lime; }
+    }
+
+    @@keyframes consolePulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(0,255,0,0.5); }
+      50% { box-shadow: 0 0 25px rgba(0,255,0,0.7); }
+    }
+
+    @@keyframes buttonGlow {
+      0% { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    @@keyframes buttonHover {
+      0%, 100% { text-shadow: 0 0 5px lime; }
+      50% { text-shadow: 0 0 15px lime; }
+    }
+
+    @@keyframes canvasPulse {
+      0%, 100% { box-shadow: 0 0 50px rgba(0,255,0,0.3); }
+      50% { box-shadow: 0 0 70px rgba(0,255,0,0.5); }
+    }
+
+    @@keyframes matrixRain {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    @@keyframes dimensionalRift {
+      0% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.2) rotate(180deg); filter: hue-rotate(180deg); }
+      100% { transform: scale(1) rotate(360deg); filter: hue-rotate(360deg); }
+    }
+
+    @@keyframes realityGlitch {
+      0% { clip-path: inset(0 0 0 0); }
+      20% { clip-path: inset(20% 0 0 0); }
+      40% { clip-path: inset(0 20% 0 0); }
+      60% { clip-path: inset(0 0 20% 0); }
+      80% { clip-path: inset(0 0 0 20%); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+
+    .victory-effect {
+      animation: dimensionalRift 2s infinite;
+    }
+
+    .reality-break {
+      animation: realityGlitch 0.2s infinite;
+    }
+
+    .matrix-code {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.1;
+      background: linear-gradient(0deg, 
+        rgba(0,255,0,0) 0%,
+        rgba(0,255,0,0.2) 50%,
+        rgba(0,255,0,0) 100%);
+      animation: matrixRain 20s linear infinite;
+    }
+
+    /* Previous room references */
+    .memory-echo {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .memory-echo.show {
+      opacity: 0.3;
+    }
+
+    #room1-echo { top: 10%; left: 10%; }
+    #room2-echo { top: 10%; right: 10%; }
+    #room3-echo { bottom: 10%; left: 10%; }
+    #room4-echo { bottom: 10%; right: 10%; }
+
+    .card-special {
+      position: relative;
+    }
+
+    .card-special::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+      animation: cardSpecial 2s infinite;
+    }
+
+    @@keyframes cardSpecial {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @@keyframes glitchAnim {
+      0% { transform: translate(1px, -1px); }
+      25% { transform: translate(-1px, 1px); }
+      50% { transform: translate(1px, 1px); }
+      75% { transform: translate(-1px, -1px); }
+      100% { transform: translate(0); }
+    }
+
+    @@keyframes rainbowShift {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+
+    .glitch {
+      animation: glitchAnim 0.2s infinite;
+      color: red;
+    }
+
+    .rainbow {
+      animation: rainbowShift 2s linear infinite;
+    }
+
+    @@keyframes flashPulse {
+      0%, 100% { background-color: transparent; }
+      50% { background-color: white; }
+    }
+
+    @@keyframes cardPulse {
+      0%, 100% { box-shadow: 0 0 10px #0ff; }
+      50% { box-shadow: 0 0 30px #f0f; }
+    }
+
+    @@keyframes errorShake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      50% { transform: rotate(-2deg); }
+      75% { transform: rotate(1deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @@keyframes cardMorph {
+      0%, 100% { border-radius: 10px; transform: scale(1); }
+      50% { border-radius: 50%; transform: scale(1.2); }
+    }
+
+    @@keyframes portalAppear {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @@keyframes rotateCard {
+      0% { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
+
+    @@keyframes dimensionRipple {
+      0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.1); filter: hue-rotate(180deg); }
+    }
+
+    @@keyframes chaosOscillate {
+      0%, 100% { transform: skewX(0deg); }
+      25% { transform: skewX(10deg); }
+      75% { transform: skewX(-10deg); }
+    }
+
+    @@keyframes brokenReality {
+      0% { background-color: black; color: lime; }
+      50% { background-color: red; color: yellow; }
+      100% { background-color: black; color: lime; }
+    }
+
+    @@keyframes card3DShift {
+      0% { transform: perspective(500px) rotateX(0deg) rotateY(0deg); }
+      25% { transform: perspective(500px) rotateX(10deg) rotateY(15deg); }
+      50% { transform: perspective(500px) rotateX(-10deg) rotateY(-15deg); }
+      75% { transform: perspective(500px) rotateX(5deg) rotateY(10deg); }
+      100% { transform: perspective(500px) rotateX(0deg) rotateY(0deg); }
+    }
+
+    @@keyframes consoleExplode {
+      0% { transform: scale(1); filter: brightness(1); }
+      25% { transform: scale(1.1); filter: brightness(2); }
+      50% { transform: scale(0.9); filter: brightness(0.5); }
+      75% { transform: scale(1.2); filter: brightness(3); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    @@keyframes asciiLaugh {
+      0%, 100% { opacity: 1; transform: translateX(0); }
+      50% { opacity: 0.5; transform: translateX(10px); }
+    }
+
+    @@keyframes groundShake {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-2px, -2px); }
+      80% { transform: translate(2px, 2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* Estilos mejorados para las cartas */
+    .carta {
+      position: relative;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      cursor: pointer;
+      width: 150px;
+      height: 210px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 3px solid rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
+      background: linear-gradient(135deg, 
+        rgba(20, 20, 20, 0.9),
+        rgba(40, 40, 40, 0.9)
+      );
+    }
+
+    /* Patrones geométricos de fondo */
+    .carta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        repeating-linear-gradient(45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.05) 10px,
+          rgba(255, 255, 255, 0.05) 20px
+        ),
+        repeating-linear-gradient(-45deg,
+          transparent,
+          transparent 10px,
+          rgba(0, 255, 0, 0.03) 10px,
+          rgba(0, 255, 0, 0.03) 20px
+        );
+      border-radius: 10px;
+      z-index: -1;
+    }
+
+    /* Efecto de reflejo casino */
+    .carta::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        transparent,
+        rgba(255, 255, 255, 0) 35%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 65%,
+        transparent
+      );
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      animation: casinoReflection 2s linear infinite;
+      z-index: 2;
+    }
+
+    /* Textos verticales en los bordes */
+    .carta .card-text-left,
+    .carta .card-text-right {
+      position: absolute;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 10px 2px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transform: translateZ(20px);
+      pointer-events: none;
+    }
+
+    .carta .card-text-left {
+      left: 2px;
+      top: 0;
+      bottom: 0;
+    }
+
+    .carta .card-text-right {
+      right: 2px;
+      top: 0;
+      bottom: 0;
+      transform: translateZ(20px) rotate(180deg);
+    }
+
+    /* Sombra base */
+    .carta {
+      box-shadow: 
+        0 10px 20px rgba(0, 0, 0, 0.3),
+        0 5px 15px rgba(0, 255, 0, 0.1);
+      transition: 
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Estado hover */
+    .carta:hover {
+      border-color: rgba(255, 255, 255, 1);
+      box-shadow: 
+        0 20px 30px rgba(0, 0, 0, 0.4),
+        0 15px 25px rgba(0, 255, 0, 0.2),
+        0 0 20px rgba(255, 255, 255, 0.3);
+      transform: 
+        scale(1.1)
+        perspective(1000px)
+        rotateX(var(--rotateX, 0deg))
+        rotateY(var(--rotateY, 0deg))
+        translateZ(20px);
+    }
+
+    .carta:hover::after {
+      opacity: 1;
+    }
+
+    /* Animaciones */
+    @@keyframes casinoReflection {
+      0% {
+        background-position: -200% -200%;
+      }
+      100% {
+        background-position: 200% 200%;
+      }
+    }
+
+    /* Efecto de brillo en el borde */
+    .carta-glow {
+      position: absolute;
+      inset: -2px;
+      border-radius: 14px;
+      background: linear-gradient(45deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.3),
+        rgba(255, 255, 255, 0.1)
+      );
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .carta:hover .carta-glow {
+      opacity: 1;
+      animation: borderGlow 2s linear infinite;
+    }
+
+    @@keyframes borderGlow {
+      0%, 100% {
+        filter: brightness(1);
+      }
+      50% {
+        filter: brightness(1.5);
+      }
+    }
+
+    /* Mejoras en la clase Carta para manejar el tilt effect */
+    class Carta {
+      constructor(idx, tx, index) {
+        // ... código existente ...
+        this.rotateX = 0;
+        this.rotateY = 0;
+        this.isHovered = false;
+        this.element = null;
+      }
+
+      update() {
+        this.x = lerp(this.x, this.tx, 0.1);
+        this.y = lerp(this.y, this.ty, 0.1);
+        
+        if (this.element) {
+          const rect = this.element.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          if (this.isHovered) {
+            const mouseX = mouseX - centerX;
+            const mouseY = mouseY - centerY;
+            
+            // Calcular rotación basada en la posición del mouse
+            this.rotateX = map(mouseY, -rect.height/2, rect.height/2, 10, -10);
+            this.rotateY = map(mouseX, -rect.width/2, rect.width/2, -10, 10);
+          } else {
+            // Suavizar el retorno a la posición normal
+            this.rotateX = lerp(this.rotateX, 0, 0.1);
+            this.rotateY = lerp(this.rotateY, 0, 0.1);
+          }
+          
+          this.element.style.setProperty('--rotateX', `${this.rotateX}deg`);
+          this.element.style.setProperty('--rotateY', `${this.rotateY}deg`);
+        }
+
+        let targetHover = this.hover ? 1 : 0;
+        this.hoverEffect = lerp(this.hoverEffect, targetHover, 0.1);
+        this.flipProgress = lerp(this.flipProgress, this.targetFlip, 0.1);
+        this.y += sin(frameCount * 0.05 + this.index) * 2;
+        
+        // Actualizar estado de hover
+        const prevHover = this.hover;
+        this.hover = dist(mouseX - width/2, mouseY - height/2, this.x, this.y) < 70 && !this.volteada;
+        
+        if (this.hover !== prevHover) {
+          this.isHovered = this.hover;
+          if (this.element) {
+            if (this.hover) {
+              this.element.classList.add('hovered');
+            } else {
+              this.element.classList.remove('hovered');
+            }
+          }
+        }
+      }
+
+      draw() {
+        push();
+        translate(this.x, this.y);
+        
+        // Aplicar transformaciones 3D
+        if (this.isHovered) {
+          rotateX(this.rotateX * PI/180);
+          rotateY(this.rotateY * PI/180);
+        }
+        
+        scale(1 + this.hoverEffect * 0.1);
+        
+        // ... resto del código de draw() ...
+        
+        pop();
+      }
+    }
+
+    // Función para crear elementos DOM de las cartas
+    function createCardElement(carta) {
+      const element = document.createElement('div');
+      element.className = 'carta';
+      
+      // Agregar textos verticales
+      const textLeft = document.createElement('div');
+      textLeft.className = 'card-text-left';
+      textLeft.textContent = 'BALATRO';
+      element.appendChild(textLeft);
+      
+      const textRight = document.createElement('div');
+      textRight.className = 'card-text-right';
+      textRight.textContent = 'CODEX';
+      element.appendChild(textRight);
+      
+      // Agregar elemento de brillo
+      const glow = document.createElement('div');
+      glow.className = 'carta-glow';
+      element.appendChild(glow);
+      
+      return element;
+    }
+
+    // Modificar inicializarCartas para crear los elementos DOM
+    function inicializarCartas() {
+      // ... código existente ...
+      
+      for (let i = 0; i < N; i++) {
+        let tx = -320 + i * 160;
+        let carta = new Carta(idx=seleccionadas[i], tx, i);
+        carta.element = createCardElement(carta);
+        document.body.appendChild(carta.element);
+        cartas.push(carta);
+      }
+    }
+
+    /* Partículas brillantes */
+    .carta .particles {
+      position: absolute;
+      inset: -20px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .carta:hover .particles {
+      opacity: 1;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      animation: particleFloat 1s linear infinite;
+    }
+
+    /* Efecto de distorsión de fondo */
+    .carta::before {
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    /* Sombra dinámica */
+    .carta {
+      box-shadow: 
+        0 0 0 rgba(0,0,0,0),
+        0 0 0 rgba(255,255,255,0);
+      transition: all 0.2s;
+    }
+
+    .carta:hover {
+      box-shadow: 
+        0 15px 30px rgba(0,0,0,0.3),
+        0 0 20px rgba(255,255,255,0.5),
+        0 0 40px rgba(0,255,0,0.3);
+    }
+
+    /* Animaciones */
+    @@keyframes gradientBorder {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @@keyframes particleFloat {
+      0% { 
+        transform: translateY(0) rotate(0deg); 
+        opacity: 0;
+      }
+      50% { 
+        transform: translateY(-10px) rotate(180deg);
+        opacity: 1;
+      }
+      100% { 
+        transform: translateY(-20px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Mejoras en el efecto de hover */
+    .carta:hover {
+      animation: cardHover 0.2s ease-out forwards;
+    }
+
+    @@keyframes cardHover {
+      0% { transform: scale(1) rotateX(0) rotateY(0); }
+      100% { 
+        transform: 
+          scale(1.15) 
+          rotateX(5deg) 
+          rotateY(5deg) 
+          translateZ(20px);
+      }
+    }
+
+    /* Efecto de brillo en el borde */
+    .carta::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.8) 45%,
+        rgba(255, 255, 255, 0.9) 50%,
+        rgba(255, 255, 255, 0.8) 55%,
+        transparent 60%
+      );
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      animation: borderGlow 2s linear infinite;
+    }
+
+    @@keyframes borderGlow {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Efecto de distorsión de fondo */
+    .carta::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255,255,255,0.1) 0%,
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.2s;
+      filter: blur(5px);
+    }
+
+    .carta:hover::before,
+    .carta:hover::after {
+      opacity: 1;
+    }
+
+    /* Partículas dinámicas */
+    @@keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    .carta .sparkle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .carta:hover .sparkle {
+      animation: sparkle 0.8s linear infinite;
+    }
+
+    /* Efecto de vidrio */
+    .carta {
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Mejora en la transición general */
+    .carta {
+      transition: 
+        transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+        background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Efecto de brillo al pasar el mouse */
+    .carta:hover {
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.2) 0%,
+        rgba(255,255,255,0.05) 50%,
+        rgba(255,255,255,0.2) 100%
+      );
+    }
+
+    /* Sombra dinámica mejorada */
+    .carta:hover {
+      box-shadow:
+        0 15px 30px rgba(0,0,0,0.3),
+        0 0 20px rgba(255,255,255,0.5),
+        0 0 40px rgba(0,255,0,0.3),
+        inset 0 0 15px rgba(255,255,255,0.2);
+    }
+
+    /* Efectos especiales para cartas 13-18 */
+    .carta[data-special="13"] {
+      overflow: visible;
+    }
+
+    .carta[data-special="13"]::before {
+      content: '';
+      position: absolute;
+      inset: -20px;
+      background: conic-gradient(from 0deg at 50% 50%,
+        transparent 0deg,
+        rgba(0, 255, 0, 0.2) 90deg,
+        transparent 180deg,
+        rgba(0, 255, 0, 0.2) 270deg,
+        transparent 360deg
+      );
+      border-radius: 50%;
+      animation: portalSpin 3s linear infinite;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .carta[data-special="13"]:hover::before {
+      opacity: 1;
+    }
+
+    .carta[data-special="14"] {
+      transition: all 0.3s;
+    }
+
+    .carta[data-special="14"]:hover {
+      animation: glitchEffect 0.3s infinite;
+    }
+
+    .carta[data-special="14"]::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 0, 0.2) 1px,
+        transparent 2px
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .carta[data-special="14"]:hover::before {
+      opacity: 1;
+      animation: glitchLines 0.2s infinite;
+    }
+
+    .carta[data-special="15"] {
+      overflow: visible;
+    }
+
+    .carta[data-special="15"]::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 15px;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(0, 255, 0, 0.5),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .carta[data-special="15"]:hover::before {
+      opacity: 1;
+      animation: quantumPulse 2s infinite;
+    }
+
+    .carta[data-special="16"] {
+      position: relative;
+      overflow: visible;
+    }
+
+    .carta[data-special="16"]::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg,
+        transparent 40%,
+        rgba(0, 255, 0, 0.5) 45%,
+        transparent 50%
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .carta[data-special="16"]:hover {
+      animation: timewarpCard 3s infinite;
+    }
+
+    .carta[data-special="16"]:hover::before {
+      opacity: 1;
+      animation: timewarpEffect 2s infinite;
+    }
+
+    .carta[data-special="17"] {
+      overflow: visible;
+    }
+
+    .carta[data-special="17"]::before {
+      content: '';
+      position: absolute;
+      inset: -15px;
+      background: radial-gradient(circle at 50% 50%,
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 255, 0, 0.5) 30%,
+        transparent 60%
+      );
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .carta[data-special="17"]:hover::before {
+      opacity: 1;
+      animation: blackholeEffect 3s infinite;
+    }
+
+    .carta[data-special="18"] {
+      overflow: visible;
+    }
+
+    .carta[data-special="18"]::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(0, 255, 0, 0.5),
+        transparent
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .carta[data-special="18"]:hover::before {
+      opacity: 1;
+      animation: energyFlow 2s infinite;
+    }
+
+    /* Nuevas animaciones */
+    @@keyframes borderGlow {
+      0%, 100% { border-color: rgba(0, 255, 0, 0.5); }
+      50% { border-color: rgba(0, 255, 0, 1); }
+    }
+
+    @@keyframes portalSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @@keyframes glitchEffect {
+      0% { transform: translate(0); }
+      25% { transform: translate(-5px, 2px); }
+      50% { transform: translate(5px, -2px); }
+      75% { transform: translate(-3px, -3px); }
+      100% { transform: translate(0); }
+    }
+
+    @@keyframes glitchLines {
+      0% { transform: translateX(0); }
+      50% { transform: translateX(2px); }
+      100% { transform: translateX(-2px); }
+    }
+
+    @@keyframes quantumPulse {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.3); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+
+    @@keyframes timewarpCard {
+      0% { transform: perspective(1000px) rotateY(0deg); }
+      50% { transform: perspective(1000px) rotateY(180deg); }
+      100% { transform: perspective(1000px) rotateY(360deg); }
+    }
+
+    @@keyframes timewarpEffect {
+      0% { opacity: 0.3; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.7; transform: scale(1.2) rotate(180deg); }
+      100% { opacity: 0.3; transform: scale(1) rotate(360deg); }
+    }
+
+    @@keyframes blackholeEffect {
+      0% { transform: scale(0.8) rotate(0deg); opacity: 0.5; }
+      50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
+      100% { transform: scale(0.8) rotate(360deg); opacity: 0.5; }
+    }
+
+    @@keyframes energyFlow {
+      0% { transform: translateX(-100%) scaleX(0); opacity: 0; }
+      50% { transform: translateX(0) scaleX(1); opacity: 1; }
+      100% { transform: translateX(100%) scaleX(0); opacity: 0; }
+    }
+
+    /* Mejoras en el efecto de mezcla */
+    .carta.shuffling {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carta.shuffling::before {
+      opacity: 1;
+      background-size: 150%;
+      animation: shuffleGlow 0.3s infinite alternate;
+    }
+
+    @@keyframes shuffleGlow {
+      0% { opacity: 0.3; --angle: 135deg; }
+      100% { opacity: 1; --angle: 225deg; }
+    }
+
+    /* Instrucciones del juego */
+    .game-instructions {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #0f0;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+      z-index: 4;
+      box-shadow: 
+        0 0 20px rgba(0,255,0,0.2),
+        inset 0 0 10px rgba(0,255,0,0.2);
+    }
+
+    .game-instructions.show {
+      opacity: 1;
+    }
+
+    .game-instructions h2 {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #0f0;
+    }
+
+    .game-instructions ul {
+      list-style: none;
+      padding: 0;
+      text-align: left;
+    }
+
+    .game-instructions li {
+      margin: 5px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .game-instructions li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: #0f0;
+      animation: blink 1s infinite;
+    }
+
+    @@keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Mejoras en los botones */
+    button {
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px #0f0;
+      position: relative;
+      overflow: hidden;
+      margin: 0 10px;
+      min-width: 120px;
+      box-shadow: 
+        0 0 15px rgba(0,255,0,0.2),
+        inset 0 0 10px rgba(0,255,0,0.1);
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        transparent,
+        rgba(0,255,0,0.2),
+        transparent
+      );
+      animation: buttonGlow 2s infinite;
+    }
+
+    button:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        0 0 30px rgba(0,255,0,0.4),
+        inset 0 0 20px rgba(0,255,0,0.2);
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    /* Efectos de victoria/derrota mejorados */
+    .victory-effect {
+      animation: victoryPulse 2s infinite;
+    }
+
+    .defeat-effect {
+      animation: defeatGlitch 0.2s infinite;
+    }
+
+    @@keyframes victoryPulse {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      50% { filter: hue-rotate(180deg) brightness(1.5); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+
+    @@keyframes defeatGlitch {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      25% { transform: translate(5px, -5px); filter: hue-rotate(90deg); }
+      50% { transform: translate(-5px, 5px); filter: hue-rotate(180deg); }
+      75% { transform: translate(5px, 5px); filter: hue-rotate(270deg); }
+      100% { transform: translate(0); filter: hue-rotate(360deg); }
+    }
+
+    /* Mejoras en la consola */
+    #console {
+      font-family: 'Courier New', monospace;
+      line-height: 1.4;
+      padding: 15px;
+      background: rgba(0,0,0,0.9);
+      border: 2px solid #0f0;
+      box-shadow: 
+        0 0 20px rgba(0,255,0,0.2),
+        inset 0 0 15px rgba(0,255,0,0.1);
+    }
+
+    #console div {
+      margin: 5px 0;
+      padding: 5px;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+
+    #console div:hover {
+      background: rgba(0,255,0,0.1);
+      transform: translateX(5px);
+    }
+
+    /* Efectos de memoria */
+    .memory-echo {
+      text-shadow: 0 0 10px #0f0;
+      animation: memoryPulse 4s infinite;
+    }
+
+    @@keyframes memoryPulse {
+      0%, 100% { opacity: 0.3; filter: blur(1px); }
+      50% { opacity: 0.7; filter: blur(2px); }
+    }
+
+    /* Animaciones de victoria/derrota */
+    .money-change {
+      position: fixed;
+      color: lime;
+      font-size: 24px;
+      font-family: 'Courier New', monospace;
+      pointer-events: none;
+      animation: moneyFloat 1.5s ease-out forwards;
+      text-shadow: 0 0 10px lime;
+      z-index: 1000;
+    }
+
+    @@keyframes moneyFloat {
+      0% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+    }
+
+    .card-correct {
+      animation: correctCard 0.5s ease-out;
+    }
+
+    .card-wrong {
+      animation: wrongCard 0.5s ease-out;
+    }
+
+    @@keyframes correctCard {
+      0% { transform: scale(1); }
+      50% { 
+        transform: scale(1.2);
+        box-shadow: 0 0 50px lime;
+      }
+      100% { transform: scale(1); }
+    }
+
+    @@keyframes wrongCard {
+      0% { transform: scale(1); }
+      25% { transform: translate(-10px, 0); }
+      50% { transform: translate(10px, 0); }
+      75% { transform: translate(-10px, 0); }
+      100% { transform: scale(1); }
+    }
+
+    /* --- Animaciones de ganar/perder plata --- */
+    .money-popup {
+      position: fixed;
+      left: 50%;
+      font-size: 2rem;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 5;
+      text-shadow: 0 0 10px currentColor, 0 0 30px currentColor;
+      opacity: 0.95;
+      animation: moneyPopupAnim 1.2s forwards;
+    }
+    .money-popup.gain {
+      color: #00ff00;
+      animation-name: moneyPopupGain;
+    }
+    .money-popup.loss {
+      color: #ff3333;
+      animation-name: moneyPopupLoss;
+    }
+    @@keyframes moneyPopupGain {
+      0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+      60% { transform: translate(-50%, -60px) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -100px) scale(1); opacity: 0; }
+    }
+    @@keyframes moneyPopupLoss {
+      0% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+      60% { transform: translate(-50%, 60px) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, 100px) scale(1); opacity: 0; }
+    }
+
+    /* --- Círculo de combo arriba derecha --- */
+    #combo-circle {
+      position: fixed;
+      top: 30px;
+      right: 40px;
+      width: 110px;
+      height: 110px;
+      background: radial-gradient(circle at 60% 40%, #222 60%, #111 100%);
+      border-radius: 50%;
+      border: 3px solid #0f0;
+      box-shadow: 0 0 30px #0f05, 0 0 60px #0f03;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      transition: box-shadow 0.3s, border 0.3s;
+      overflow: visible;
+    }
+    #combo-circle.fire {
+      border: 3px solid #ff0;
+      box-shadow: 0 0 40px #ff0a, 0 0 80px #f00a, 0 0 120px #ff0a;
+      animation: firePulse 0.7s infinite alternate;
+    }
+    @@keyframes firePulse {
+      0% { box-shadow: 0 0 40px #ff0a, 0 0 80px #f00a; }
+      100% { box-shadow: 0 0 80px #ff0, 0 0 120px #f00; }
+    }
+    #combo-circle .combo-label {
+      color: #fff;
+      font-size: 1.1rem;
+      margin-bottom: 2px;
+      text-shadow: 0 0 8px #0f0;
+    }
+    #combo-circle .combo-value {
+      color: #ff0;
+      font-size: 2.2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff0, 0 0 20px #f00;
+    }
+
+    /* --- Fondo Game of Life --- */
+    #life-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.12; /* Reducido de 0.18 */
+      filter: saturate(1.2) contrast(1.3); /* Más contraste y saturación */
+    }
+
+    /* Animaciones únicas para cada carta */
+    .carta {
+      position: relative;
+      transition: transform 0.5s;
+    }
+
+    .carta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 6;
+    }
+
+    /* Carta 1: Efecto de energía eléctrica */
+    .carta:nth-child(1)::before {
+      background: linear-gradient(45deg, transparent 45%, rgba(0, 255, 255, 0.5) 50%, transparent 55%);
+      animation: electricShock 2s infinite;
+    }
+
+    /* Carta 2: Efecto de portal dimensional */
+    .carta:nth-child(2)::before {
+      background: conic-gradient(from 0deg, transparent, rgba(255, 0, 255, 0.5), transparent);
+      animation: portalSpin 3s infinite linear;
+    }
+
+    /* Carta 3: Efecto de distorsión de realidad */
+    .carta:nth-child(3)::before {
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0, 255, 0, 0.3) 10px,
+        rgba(0, 255, 0, 0.3) 20px
+      );
+      animation: realityWarp 4s infinite linear;
+    }
+
+    /* Carta 4: Efecto de llamas cuánticas */
+    .carta:nth-child(4)::before {
+      background: linear-gradient(0deg, transparent 50%, rgba(255, 165, 0, 0.5));
+      animation: quantumFlame 2s infinite;
+    }
+
+    /* Carta 5: Efecto de ondas temporales */
+    .carta:nth-child(5)::before {
+      background: radial-gradient(circle at center, transparent 30%, rgba(0, 191, 255, 0.5) 70%, transparent);
+      animation: timeWaves 3s infinite;
+    }
+
+    /* Carta 6: Efecto de cristalización */
+    .carta:nth-child(6)::before {
+      background: linear-gradient(135deg, transparent 20%, rgba(255, 255, 255, 0.4) 50%, transparent 80%);
+      animation: crystallize 4s infinite;
+    }
+
+    /* Carta 7: Efecto de pulso nuclear */
+    .carta:nth-child(7)::before {
+      background: radial-gradient(circle at center, rgba(255, 255, 0, 0), rgba(255, 0, 0, 0.3));
+      animation: nuclearPulse 2.5s infinite;
+    }
+
+    /* Carta 8: Efecto de campo de fuerza */
+    .carta:nth-child(8)::before {
+      border: 2px solid rgba(0, 255, 255, 0.5);
+      animation: forceField 2s infinite;
+    }
+
+    /* Carta 9: Efecto de teletransportación */
+    .carta:nth-child(9)::before {
+      background: linear-gradient(90deg, transparent, rgba(128, 0, 128, 0.5), transparent);
+      animation: teleport 3s infinite;
+    }
+
+    /* Carta 10: Efecto de fragmentación */
+    .carta:nth-child(10)::before {
+      background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.5) 50%, transparent 55%);
+      animation: shatter 2s infinite;
+    }
+
+    /* Carta 11: Efecto de agujero negro */
+    .carta:nth-child(11)::before {
+      background: radial-gradient(circle at center, black, rgba(0, 255, 0, 0.5) 70%);
+      animation: blackHole 3s infinite;
+    }
+
+    /* Carta 12: Efecto de matriz digital */
+    .carta:nth-child(12)::before {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 255, 0, 0.2) 1px,
+        transparent 2px
+      );
+      animation: matrixCode 2s infinite;
+    }
+
+    /* Carta 13: Efecto de vórtice dimensional */
+    .carta:nth-child(13)::before {
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        rgba(0, 255, 0, 0),
+        rgba(0, 255, 0, 0.8),
+        rgba(0, 255, 0, 0)
+      );
+      animation: vortexSpin 3s infinite linear;
+    }
+
+    /* Carta 14: Efecto de corrupción digital */
+    .carta:nth-child(14)::before {
+      background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 0, 0, 0.5) 1px,
+        transparent 2px
+      );
+      animation: digitalCorruption 2s infinite;
+    }
+
+    /* Carta 15: Efecto de resonancia cuántica */
+    .carta:nth-child(15)::before {
+      background: radial-gradient(
+        circle at 50% 50%,
+        rgba(0, 255, 255, 0.8),
+        transparent 40%,
+        rgba(0, 255, 255, 0.4) 60%,
+        transparent
+      );
+      animation: quantumResonance 4s infinite;
+    }
+
+    /* Carta 16: Efecto de paradoja temporal */
+    .carta:nth-child(16)::before {
+      background: 
+        linear-gradient(45deg, transparent 40%, rgba(255, 0, 255, 0.5) 45%, transparent 50%),
+        linear-gradient(-45deg, transparent 40%, rgba(0, 255, 255, 0.5) 45%, transparent 50%);
+      animation: timeParadox 3s infinite;
+    }
+
+    /* Carta 17: Efecto de singularidad */
+    .carta:nth-child(17)::before {
+      background: radial-gradient(
+        circle at 50% 50%,
+        black,
+        rgba(255, 0, 255, 0.8) 20%,
+        transparent 30%
+      );
+      animation: singularity 3s infinite;
+    }
+
+    /* Carta 18: Efecto de fusión molecular */
+    .carta:nth-child(18)::before {
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 0, 0.5),
+        transparent
+      );
+      animation: molecularFusion 2.5s infinite;
+    }
+
+    /* Definición de las animaciones */
+    @@keyframes electricShock {
+      0%, 100% { opacity: 0.3; transform: scale(1); filter: hue-rotate(0deg); }
+      50% { opacity: 0.7; transform: scale(1.05); filter: hue-rotate(180deg); }
+    }
+
+    @@keyframes portalSpin {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @@keyframes realityWarp {
+      0% { background-position: 0 0; filter: hue-rotate(0deg); }
+      100% { background-position: 50px 50px; filter: hue-rotate(360deg); }
+    }
+
+    @@keyframes quantumFlame {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; filter: brightness(1); }
+      50% { transform: translateY(-10px) scale(1.1); opacity: 0.8; filter: brightness(1.5); }
+    }
+
+    @@keyframes timeWaves {
+      0% { transform: scale(0.8) rotate(0deg); opacity: 0; }
+      50% { transform: scale(1.1) rotate(180deg); opacity: 0.5; }
+      100% { transform: scale(0.8) rotate(360deg); opacity: 0; }
+    }
+
+    @@keyframes crystallize {
+      0% { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+      50% { clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%); }
+      100% { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+    }
+
+    @@keyframes nuclearPulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.3; filter: hue-rotate(0deg); }
+      50% { transform: scale(1.2); opacity: 0.7; filter: hue-rotate(180deg); }
+    }
+
+    @@keyframes forceField {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); transform: scale(1); }
+      50% { box-shadow: 0 0 30px rgba(0, 255, 255, 0.8); transform: scale(1.1); }
+      100% { box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); transform: scale(1); }
+    }
+
+    @@keyframes teleport {
+      0%, 100% { transform: translateX(-50%) scale(0.9); opacity: 0; }
+      50% { transform: translateX(0) scale(1.1); opacity: 1; }
+    }
+
+    @@keyframes shatter {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.1) rotate(5deg); }
+      50% { transform: scale(0.9) rotate(-5deg); }
+      75% { transform: scale(1.05) rotate(3deg); }
+      100% { transform: scale(1); }
+    }
+
+    @@keyframes blackHole {
+      0% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+      50% { transform: scale(1.3) rotate(180deg); opacity: 0.8; }
+      100% { transform: scale(1) rotate(360deg); opacity: 0.5; }
+    }
+
+    @@keyframes matrixCode {
+      0% { background-position: 0 0; opacity: 0.3; }
+      50% { background-position: 20px 0; opacity: 0.7; }
+      100% { background-position: 40px 0; opacity: 0.3; }
+    }
+
+    @@keyframes vortexSpin {
+      0% { transform: rotate(0deg) scale(1); filter: hue-rotate(0deg); }
+      50% { transform: rotate(180deg) scale(1.2); filter: hue-rotate(180deg); }
+      100% { transform: rotate(360deg) scale(1); filter: hue-rotate(360deg); }
+    }
+
+    @@keyframes digitalCorruption {
+      0% { transform: skew(0deg); filter: hue-rotate(0deg); }
+      25% { transform: skew(10deg); filter: hue-rotate(90deg); }
+      75% { transform: skew(-10deg); filter: hue-rotate(270deg); }
+      100% { transform: skew(0deg); filter: hue-rotate(360deg); }
+    }
+
+    @@keyframes quantumResonance {
+      0% { transform: scale(1); opacity: 0.5; filter: blur(0px); }
+      25% { transform: scale(1.1); opacity: 0.8; filter: blur(1px); }
+      50% { transform: scale(0.9); opacity: 0.3; filter: blur(2px); }
+      75% { transform: scale(1.2); opacity: 0.7; filter: blur(1px); }
+      100% { transform: scale(1); opacity: 0.5; filter: blur(0px); }
+    }
+
+    @@keyframes timeParadox {
+      0% { transform: skew(0deg); filter: hue-rotate(0deg) brightness(1); }
+      50% { transform: skew(10deg); filter: hue-rotate(180deg) brightness(1.5); }
+      100% { transform: skew(0deg); filter: hue-rotate(360deg) brightness(1); }
+    }
+
+    @@keyframes singularity {
+      0% { transform: scale(0.8) rotate(0deg); filter: brightness(0.5); }
+      50% { transform: scale(1.2) rotate(180deg); filter: brightness(1.5); }
+      100% { transform: scale(0.8) rotate(360deg); filter: brightness(0.5); }
+    }
+
+    @@keyframes molecularFusion {
+      0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; filter: hue-rotate(0deg); }
+      50% { transform: translateX(0) scaleX(1.2); opacity: 1; filter: hue-rotate(180deg); }
+      100% { transform: translateX(100%) scaleX(0.5); opacity: 0; filter: hue-rotate(360deg); }
+    }
+
+    /* Mejorar el efecto hover de las cartas */
+    .carta:hover {
+      transform: 
+        scale(1.15) 
+        perspective(1000px)
+        rotateX(var(--rotateX, 0deg))
+        rotateY(var(--rotateY, 0deg))
+        translateZ(50px);
+      box-shadow: 
+        0 25px 50px rgba(0,0,0,0.5),
+        0 0 30px rgba(0,255,0,0.3),
+        inset 0 0 20px rgba(0,255,0,0.2);
+      z-index: 10;
+    }
+
+    .carta:hover::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(45deg,
+        transparent,
+        rgba(0, 255, 0, 0.3),
+        transparent
+      );
+      border-radius: 12px;
+      animation: cardGlow 2s infinite;
+    }
+
+    @@keyframes cardGlow {
+      0%, 100% { opacity: 0.3; transform: rotate(0deg); }
+      50% { opacity: 0.7; transform: rotate(180deg); }
+    }
+
+    /* Mejorar el efecto de mezcla */
+    .carta.shuffling {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: shuffleEffect 0.3s infinite alternate;
+    }
+
+    @@keyframes shuffleEffect {
+      0% { transform: rotate(-5deg) translateY(-5px); }
+      100% { transform: rotate(5deg) translateY(5px); }
+    }
+
+    /* Estilo para el dorso de las cartas */
+    .carta img[src*="dorsocard"] {
+      filter: brightness(0.5) contrast(1.2) saturate(0.7);
+      opacity: 0.85;
+      mix-blend-mode: color-burn;
+      box-shadow: 
+        inset 0 0 20px rgba(0,255,0,0.2),
+        0 0 15px rgba(0,0,0,0.5);
+    }
+
+    /* Efecto hover para el dorso */
+    .carta:hover img[src*="dorsocard"] {
+      filter: brightness(0.8) contrast(1) saturate(0.9);
+      opacity: 1;
+    }
+
+    .carta.volteada img[src*="dorsocard"] {
+      filter: brightness(0.6) contrast(0.85) saturate(0.75);
+    }
+
+    .reality-glitch {
+      position: fixed;
+      color: #0f0;
+      font-family: monospace;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 9999;
+      text-shadow: 
+        2px 2px #f00,
+        -2px -2px #0ff;
+      animation: glitchText 0.3s infinite;
+    }
+
+    .quantum-particle {
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      filter: blur(2px);
+    }
+
+    .dimensional-shift {
+      animation: dimensionalShift 1s infinite;
+    }
+
+    .reality-collapse {
+      animation: realityCollapse 2s forwards;
+    }
+
+    .dimensional-breach {
+      animation: dimensionalBreach 3s infinite;
+    }
+
+    @@keyframes glitchText {
+      0%, 100% { transform: translate(0); }
+      25% { transform: translate(5px, -5px); }
+      50% { transform: translate(-5px, 5px); }
+      75% { transform: translate(5px, 5px); }
+    }
+
+    @@keyframes dimensionalShift {
+      0%, 100% { transform: scale(1) skew(0deg); }
+      25% { transform: scale(1.1) skew(5deg); }
+      50% { transform: scale(0.9) skew(-5deg); }
+      75% { transform: scale(1.05) skew(3deg); }
+    }
+
+    @@keyframes realityCollapse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.5); filter: brightness(2); }
+      100% { transform: scale(0); filter: brightness(0); }
+    }
+
+    @@keyframes dimensionalBreach {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      50% { filter: hue-rotate(180deg) brightness(1.5); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+  </style>
+</head>
+<body>
+<div class="matrix-code"></div>
+<div class="memory-echo" id="room1-echo">Room 1</div>
+<div class="memory-echo" id="room2-echo">Room 2</div>
+<div class="memory-echo" id="room3-echo">Room 3</div>
+<div class="memory-echo" id="room4-echo">Room 4</div>
+
+<!-- Instrucciones del juego -->
+<div class="game-instructions" id="gameInstructions">
+  <h2>🃏 BALATRO CODEX C-137 🃏</h2>
+  <ul>
+    <li>Encuentra la carta correcta entre las opciones</li>
+    <li>Acumula $2200 para escapar de esta realidad</li>
+    <li>Encadena combos para multiplicar tus ganancias</li>
+    <li>Cuidado con las cartas glitch y las anomalías</li>
+
+  </ul>
+  <div class="key-controls">
+    <span>ESPACIO: Mostrar/Ocultar instrucciones</span>
+  </div>
+</div>
+
+<div id="hud">Cargando...</div>
+<div id="console"></div>
+<div id="acciones">
+  <button onclick="apostar(100)" class="bet-button">Apostar $100</button>
+  <button onclick="apostar(250)" class="bet-button">Apostar $250</button>
+  <button onclick="apostar(500)" class="bet-button">Apostar $500</button>
+</div>
+<script>
+// Mover las definiciones al inicio del script, antes de cualquier uso
+const typeSound = new Audio('/img/sfxtype.mp3');
+typeSound.volume = 0.15;
+
+function calculateTypingDuration(text) {
+  return (text.length / 30) * 1000;
+}
+
+function playTypingSound(duration) {
+  typeSound.currentTime = 0;
+  typeSound.play();
+  
+  const interval = setInterval(() => {
+    if (typeSound.currentTime >= typeSound.duration) {
+      typeSound.currentTime = 0;
+      typeSound.play();
+    }
+  }, 100);
+
+  setTimeout(() => {
+    typeSound.pause();
+    clearInterval(interval);
+  }, duration);
+}
+
+function log(msg, type = 'normal') {
+  const consoleDiv = document.getElementById("console");
+  const className = type === 'error' ? 'glitch' : 
+                    type === 'success' ? 'rainbow' : 
+                    type === 'warning' ? 'reality-break' : '';
+  
+  const duration = calculateTypingDuration(msg);
+  playTypingSound(duration);
+  
+  const div = document.createElement('div');
+  div.className = className;
+  div.style.opacity = '0';
+  consoleDiv.appendChild(div);
+  
+  let currentText = '';
+  const chars = msg.split('');
+  const charInterval = duration / chars.length;
+  
+  chars.forEach((char, i) => {
+    setTimeout(() => {
+      currentText += char;
+      div.textContent = `> ${currentText}`;
+      div.style.opacity = '1';
+    }, i * charInterval);
+  });
+  
+  consoleDiv.scrollTop = consoleDiv.scrollHeight;
+  return duration; // Retornar la duración para secuencias
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const consoleDiv = document.getElementById('console');
+  const instructions = document.getElementById('gameInstructions');
+  
+  setTimeout(() => {
+    instructions.classList.add('show');
+  }, 1000);
+  
+  setTimeout(() => {
+    instructions.classList.remove('show');
+  }, 5000);
+  
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      instructions.classList.toggle('show');
+    }
+  });
+
+  let i = 0;
+  function writeNextIntro() {
+    if (i < intro.length) {
+      const className = i === 7 ? 'rainbow' : 
+                       i === 3 ? 'warning' :
+                       i === 8 ? 'reality-break' : '';
+      
+      const duration = log(intro[i], className === '' ? 'normal' : className);
+      
+      if (i === 3) {
+        document.body.classList.add('reality-break');
+        setTimeout(() => document.body.classList.remove('reality-break'), 500);
+      }
+      if (i === 7) {
+        showMemoryEchoes();
+      }
+      i++;
+      setTimeout(writeNextIntro, duration + 500);
+    } else {
+      startAmbientEffects();
+      enableButtons();
+    }
+  }
+  
+  writeNextIntro();
+});
+
+// Modificar efectoCartaRara para usar la nueva función log
+function efectoCartaRara() {
+  const glitchPhrases = [
+    "[RICK] ¡ESA ES, MORTY! ¡UNA GRIETA EN LA REALIDAD!",
+    "[SISTEMA] ALERTA: ANOMALÍA DIMENSIONAL DETECTADA",
+    "[PC] ERROR: CARD_REALITY_BREACH_IN_PROGRESS",
+    "[RICK] *burp* ¡ESTÁ FUNCIONANDO! ¡EL SISTEMA SE DEBILITA!",
+    "[MORTY] ¡OH DIOS MÍO RICK, LA CARTA ESTÁ GLITCHEANDO!",
+    "[SISTEMA] ADVERTENCIA: INTEGRIDAD DIMENSIONAL COMPROMETIDA"
+  ];
+
+  document.body.classList.add('reality-break', 'dimensional-shift');
+  document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+  
+  log(random(glitchPhrases), 'warning');
+  
+  // ... resto del código de efectoCartaRara ...
+}
+
+// Modificar gameOver para usar la nueva función log
+function gameOver() {
+  const gameOverSequence = [
+    "[SISTEMA] SECUENCIA DE TERMINACIÓN INICIADA",
+    "[RICK] M-morty... la cagaste... *burp* ...otra vez.",
+    "[MORTY] ¡OH JEEZ OH NO OH JEEZ!",
+    "[PC] REINICIANDO SIMULACIÓN...",
+    "[RICK] ¡AQUÍ VAMOS DE NUEV-"
+  ];
+
+  function playSequence(index) {
+    if (index < gameOverSequence.length) {
+      const duration = log(gameOverSequence[index], 'error');
+      
+      if (index === gameOverSequence.length - 1) {
+        setTimeout(() => {
+          document.body.classList.add('reality-collapse');
+          setTimeout(() => {
+            alert("Te quedaste sin dinero. Reiniciando sala...");
+            window.location.href = "/Home/Room7codex";
+          }, 1000);
+        }, duration);
+      } else {
+        setTimeout(() => playSequence(index + 1), duration + 500);
+      }
+    }
+  }
+  
+  playSequence(0);
+}
+
+// Modificar celebrarVictoria para usar la nueva función log
+function celebrarVictoria() {
+  const victorySequence = [
+    "[RICK] ¡WUBBA LUBBA DUB DUB! ¡LO LOGRAMOS MORTY!",
+    "[MORTY] ¿En-enserio lo hicimos, Rick?",
+    "[RICK] ¡HACKEE EL SISTEMA, BABY! *burp*",
+    "[PC] ERROR: SIMULACIÓN COMPROMETIDA",
+    "[SISTEMA] ALERTA: PRISIONERO C-137 HA ESCAPADO",
+    "[RICK] ¡HASTA NUNCA, IDIOTAS!",
+    "[SISTEMA] INICIANDO PROTOCOLOS DE CONTINGENCIA...",
+    "[RICK] ¡DEMASIADO TARDE! ¡VÁMONOS MORTY!"
+  ];
+
+  function playSequence(index) {
+    if (index < victorySequence.length) {
+      const duration = log(victorySequence[index], index % 2 === 0 ? 'success' : 'rainbow');
+      
+      if (index === victorySequence.length - 1) {
+        setTimeout(() => {
+          document.body.classList.add('victory-effect', 'dimensional-breach');
+          setTimeout(() => {
+            alert("¡Felicitaciones! Has vencido al Balatro Codex.\nPasando a Room 8...");
+            window.location.href = "/Home/Room8";
+          }, 2000);
+        }, duration);
+      } else {
+        setTimeout(() => playSequence(index + 1), duration + 500);
+      }
+    }
+  }
+  
+  playSequence(0);
+}
+
+// ... resto del código existente ...
+
+function enableButtons() {
+  const buttons = document.querySelectorAll('.bet-button');
+  buttons.forEach(btn => {
+    btn.classList.add('active');
+    // Efecto de hover con partículas
+    btn.addEventListener('mouseover', () => {
+      createButtonParticles(btn);
+    });
+  });
+}
+
+function createButtonParticles(button) {
+  const rect = button.getBoundingClientRect();
+  const particles = 5;
+  
+  for (let i = 0; i < particles; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = rect.left + rect.width * Math.random() + 'px';
+    particle.style.top = rect.top + rect.height * Math.random() + 'px';
+    document.body.appendChild(particle);
+    
+    // Animación y limpieza
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
+
+function showMemoryEchoes() {
+  const echoes = document.querySelectorAll('.memory-echo');
+  echoes.forEach((echo, index) => {
+    setTimeout(() => {
+      echo.classList.add('show');
+      setTimeout(() => echo.classList.remove('show'), 3000);
+    }, index * 1000);
+  });
+}
+
+function startAmbientEffects() {
+  setInterval(() => {
+    if (Math.random() < 0.1) {
+      document.body.classList.add('reality-break');
+      setTimeout(() => document.body.classList.remove('reality-break'), 200);
+    }
+  }, 5000);
+}
+
+let cartas = [];
+let dinero = 1000;
+let aciertos = 0;
+let estado = "cargando";
+let apuesta = 0;
+let ganadora = -1;
+const N = 5;
+let glitchTimer = 0;
+let combo = 0;
+let deckCards = []; // Array para las cartas del mazo inicial
+let dealingInitialCards = false; // Flag para la animación inicial
+let initialDealProgress = 0; // Progreso de la animación inicial
+
+let cartaLabels = ["A", "K", "Q", "J", "10"];
+let cartaPalos = ["♠", "♥", "♦", "♣", "★"];
+
+// --- NUEVO: Cargar imágenes de cartas reales ---
+let cartaImgs = [];
+let cartaRaras = [10, 11, 13, 15, 17]; // Añadimos las cartas 13, 15 y 17 como raras
+let cartaRarasProb = 0.07; // 7% de probabilidad para cada rara
+let cartaNormales = Array.from({length: 18}, (_, i) => i).filter(i => !cartaRaras.includes(i));
+
+function log(msg, type = 'normal') {
+  const consoleDiv = document.getElementById("console");
+  const className = type === 'error' ? 'glitch' : 
+                    type === 'success' ? 'rainbow' : 
+                    type === 'warning' ? 'reality-break' : '';
+  consoleDiv.innerHTML += `<div class="${className}">> ${msg}</div>`;
+  consoleDiv.scrollTop = consoleDiv.scrollHeight;
+}
+
+function createCardImage(label, palo, isRainbow = false, isGold = false) {
+  let g = createGraphics(100, 140);
+  if (isRainbow) {
+    g.colorMode(HSB);
+    g.background(frameCount % 360, 255, 255);
+  } else if (isGold) {
+    g.background(255, 215, 0);
+  } else {
+    g.background(255);
+  }
+  g.fill(0);
+  g.noStroke();
+  g.textSize(20);
+  g.textAlign(CENTER, CENTER);
+  g.text(label + " " + palo, 50, 70);
+  
+  if (isGold || isRainbow) {
+    g.strokeWeight(2);
+    g.stroke(isGold ? '#DAA520' : '#FFF');
+    g.noFill();
+    g.rect(5, 5, 90, 130);
+  }
+  
+  return g;
+}
+
+function preload() {
+  cartaImgs = [];
+  for (let i = 1; i <= 18; i++) {
+    // Cargar imágenes .webp para las cartas 13-18
+    if (i >= 13) {
+      cartaImgs.push(loadImage(`/img/carta${i}.webp`));
+    } else {
+      cartaImgs.push(loadImage(`/img/carta${i}.png`));
+    }
+  }
+  // Cargar el nuevo dorso de carta
+  backImg = loadImage('/img/dorsocard.jfif');
+}
+
+class Carta {
+  constructor(idx, tx, index) {
+    this.idx = idx;
+    this.img = cartaImgs[idx];
+    this.tx = tx;
+    this.ty = 0;
+    this.x = tx;
+    this.y = 0;
+    this.w = 150; // Aumentado de 100
+    this.h = 210; // Aumentado de 140
+    this.index = index;
+    this.volteada = false;
+    this.scale = 1;
+    this.rotation = 0;
+    this.flipProgress = 0;
+    this.targetFlip = 0;
+    this.correct = false;
+    this.wrong = false;
+    this.hoverEffect = 0;
+    this.rara = cartaRaras.includes(idx);
+    
+    // Añadir atributo data-special para cartas especiales
+    if (idx >= 12) {
+      this.element = document.createElement('div');
+      this.element.setAttribute('data-special', (idx + 1).toString());
+    }
+  }
+
+  update() {
+    this.x = lerp(this.x, this.tx, 0.1);
+    this.y = lerp(this.y, this.ty, 0.1);
+    
+    // Actualizar rotación 3D basada en la posición del mouse
+    if (this.element && !this.volteada) {
+      const rect = this.element.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const rotateY = ((mouseX - centerX) / rect.width) * 20;
+      const rotateX = ((mouseY - centerY) / rect.height) * 20;
+      this.element.style.setProperty('--rotateX', -rotateX + 'deg');
+      this.element.style.setProperty('--rotateY', rotateY + 'deg');
+    }
+
+    let targetHover = this.hover ? 1 : 0;
+    this.hoverEffect = lerp(this.hoverEffect, targetHover, 0.1);
+    this.flipProgress = lerp(this.flipProgress, this.targetFlip, 0.1);
+    this.y += sin(frameCount * 0.05 + this.index) * 2;
+    this.hover = dist(mouseX - width/2, mouseY - height/2, this.x, this.y) < 70 && !this.volteada;
+  }
+
+  draw() {
+    push();
+    translate(this.x, this.y);
+    scale(1 + this.hoverEffect * 0.1);
+    let flipRotation = this.flipProgress * PI;
+    rotateY(flipRotation);
+    if (this.correct) {
+      stroke(0, 255, 0, 100);
+      strokeWeight(3);
+    }
+    if (this.wrong) {
+      stroke(255, 0, 0, 100);
+      strokeWeight(3);
+      translate(random(-2, 2), random(-2, 2));
+    }
+    imageMode(CENTER);
+    if (flipRotation < PI/2) {
+      image(this.img, 0, 0, this.w, this.h);
+    } else {
+      scale(-1, 1);
+      image(backImg, 0, 0, this.w, this.h);
+    }
+    if (this.hoverEffect > 0) {
+      noFill();
+      stroke(0, 255, 0, this.hoverEffect * 100);
+      strokeWeight(2);
+      rect(-this.w/2, -this.h/2, this.w, this.h);
+    }
+    pop();
+  }
+
+  flip(toBack) {
+    this.targetFlip = toBack ? 1 : 0;
+    this.volteada = toBack;
+  }
+
+  contiene(px, py) {
+    return dist(px - width/2, py - height/2, this.x, this.y) < 70;
+  }
+}
+
+function createDeckCard(x, y, rotation) {
+  return {
+    x: x,
+    y: y,
+    targetX: x,
+    targetY: y,
+    rotation: rotation,
+    scale: 1,
+    opacity: 1,
+    width: 150, // Aumentado de 100
+    height: 210 // Aumentado de 140
+  };
+}
+
+function initializeDeck() {
+  deckCards = [];
+  // Crear 52 cartas para el mazo inicial
+  for(let i = 0; i < 52; i++) {
+    deckCards.push(createDeckCard(
+      random(-2, 2), // Posición relativa al centro
+      random(-2, 2), // Posición relativa al centro
+      random(-0.1, 0.1)
+    ));
+  }
+  estado = "barajando_inicial";
+  shuffleDeckAnimation();
+}
+
+function shuffleDeckAnimation() {
+  let shuffleCount = 0;
+  let maxShuffles = 15;
+  
+  function doShuffle() {
+    if(shuffleCount >= maxShuffles) {
+      dealInitialCards();
+      return;
+    }
+    
+    // Dividir el mazo en dos y mezclar
+    let mid = Math.floor(deckCards.length / 2);
+    for(let i = 0; i < mid; i++) {
+      let card = deckCards[i];
+      card.targetX = -200 + random(-5, 5); // Ajustado para cartas más grandes
+      card.targetY = random(-5, 5);
+    }
+    for(let i = mid; i < deckCards.length; i++) {
+      let card = deckCards[i];
+      card.targetX = 200 + random(-5, 5); // Ajustado para cartas más grandes
+      card.targetY = random(-5, 5);
+    }
+    
+    setTimeout(() => {
+      // Juntar las cartas de nuevo
+      deckCards.forEach(card => {
+        card.targetX = random(-2, 2);
+        card.targetY = random(-2, 2);
+      });
+      shuffleCount++;
+      setTimeout(doShuffle, 100); // Reducido de 150 a 100
+    }, 100); // Reducido de 150 a 100
+  }
+  
+  doShuffle();
+}
+
+function dealInitialCards() {
+  estado = "repartiendo_inicial";
+  dealingInitialCards = true;
+  initialDealProgress = 0;
+  
+  // Mover el mazo hacia arriba
+  deckCards.forEach(card => {
+    card.targetY = -250; // Ajustado para cartas más grandes
+    card.targetX = 0;
+  });
+  
+  setTimeout(() => {
+    // Repartir las 5 cartas
+    for(let i = 0; i < N; i++) {
+      let card = deckCards[i];
+      card.targetX = -320 + i * 160; // Ajustado para cartas más grandes
+      card.targetY = 0;
+      card.rotation = 0;
+    }
+    
+    // Desvanecer el resto del mazo
+    for(let i = N; i < deckCards.length; i++) {
+      deckCards[i].opacity = 0;
+    }
+    
+    setTimeout(() => {
+      inicializarCartas();
+      estado = "esperando";
+      dealingInitialCards = false;
+      actualizarHUD();
+    }, 1000);
+  }, 1000);
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  initializeDeck(); // Reemplazar inicializarCartas() por initializeDeck()
+  actualizarHUD();
+  log(">>> Bienvenido al Balatro Codex...", 'rainbow');
+}
+
+function inicializarCartas() {
+  cartas = [];
+  let seleccionadas = [];
+  cartaRaras = [10, 11, 13, 15, 17];
+  cartaNormales = Array.from({length: 18}, (_, i) => i).filter(i => !cartaRaras.includes(i));
+  
+  while (seleccionadas.length < N) {
+    let isRara = Math.random() < cartaRarasProb;
+    let idx;
+    if (isRara && !seleccionadas.some(i => cartaRaras.includes(i))) {
+      idx = random(cartaRaras);
+    } else {
+      idx = random(cartaNormales);
+    }
+    if (!seleccionadas.includes(idx)) seleccionadas.push(idx);
+  }
+  for (let i = 0; i < N; i++) {
+    let tx = -320 + i * 160; // Ajustado para cartas más grandes
+    cartas.push(new Carta(idx=seleccionadas[i], tx, i));
+  }
+}
+
+function draw() {
+  clear();
+  
+  // Matrix effect
+  push();
+  noFill();
+  stroke(0, 255, 0, 20);
+  for (let i = 0; i < 50; i++) {
+    let x = sin(frameCount * 0.01 + i) * width/2;
+    let y = (frameCount + i * 20) % height - height/2;
+    text(random(['0', '1']), x, y);
+  }
+  pop();
+  
+  // Reality distortion
+  if (frameCount % 180 < 5) {
+    translate(random(-5, 5), random(-5, 5));
+    scale(1 + sin(frameCount * 0.1) * 0.02);
+  }
+  
+  if(dealingInitialCards || estado === "barajando_inicial" || estado === "repartiendo_inicial") {
+    // Dibujar el mazo inicial
+    push();
+    translate(0, 0);
+    for(let card of deckCards) {
+      if(card.opacity <= 0) continue;
+      
+      card.x = lerp(card.x, card.targetX, 0.1);
+      card.y = lerp(card.y, card.targetY, 0.1);
+      
+      push();
+      translate(card.x, card.y);
+      rotate(card.rotation);
+      scale(card.scale);
+      tint(255, card.opacity * 255);
+      imageMode(CENTER);
+      image(backImg, 0, 0, card.width, card.height); // Usar dimensiones de la carta
+      pop();
+    }
+    pop();
+  } else {
+    // Dibujar las cartas del juego normal
+    for (let c of cartas) {
+      c.update();
+      c.draw();
+    }
+  }
+  
+  // Ambient glow
+  ambientLight(100);
+  pointLight(0, 255, 0, sin(frameCount * 0.02) * 200, cos(frameCount * 0.02) * 200, 100);
+}
+
+function apostar(cantidad) {
+  if (estado !== "esperando") {
+    log("[ERROR] No puedes apostar en este momento", 'error');
+    return;
+  }
+  
+  // Verificar si tiene suficiente dinero para apostar
+  if (dinero < cantidad) {
+    log("[ERROR] No tienes suficiente dinero para esta apuesta", 'error');
+    return;
+  }
+  
+  apuesta = cantidad;
+  dinero -= cantidad;
+  estado = "mezclando"; // Cambiar estado antes de actualizar HUD
+  actualizarHUD();
+  
+  // Efecto visual de apuesta
+  document.body.classList.add('reality-break');
+  setTimeout(() => document.body.classList.remove('reality-break'), 300);
+  
+  // Voltear todas las cartas
+  cartas.forEach(c => c.flip(true));
+  
+  // Seleccionar carta ganadora
+  ganadora = floor(random(N));
+  
+  // Si es all-in, mostrar mensaje especial
+  if (dinero === 0) {
+    log("[ALL-IN] ¡Última oportunidad! La realidad pende de un hilo...", 'warning');
+  } else {
+    log(`[APUESTA] $${cantidad} en juego. Mezclando realidades...`, 'warning');
+  }
+  
+  showMemoryEchoes();
+  
+  // Iniciar mezcla después de voltear
+  setTimeout(() => {
+    mezclarCartas(8, () => {
+      estado = "esperandoClick";
+      cartas.forEach(c => c.flip(false));
+    });
+  }, 600);
+}
+
+function mezclarCartas(veces, callback) {
+  let count = 0;
+  let delay = 300; // Increased delay for more epic effect
+  
+  function hacerMezcla() {
+    if (count >= veces) {
+      callback();
+      return;
+    }
+    
+    // Intercambiar dos cartas aleatorias con efectos más épicos
+    let i = floor(random(N));
+    let j = floor(random(N));
+    if (i !== j) {
+      let tempTx = cartas[i].tx;
+      cartas[i].tx = cartas[j].tx;
+      cartas[j].tx = tempTx;
+      [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
+      
+      // Efectos visuales mejorados
+      cartas[i].scale = 1.3;
+      cartas[j].scale = 1.3;
+      cartas[i].rotation = random(-PI/4, PI/4);
+      cartas[j].rotation = random(-PI/4, PI/4);
+      
+      // Efecto de destello
+      const flash = document.createElement('div');
+      flash.style.cssText = `
+        position: fixed;
+        left: ${mouseX}px;
+        top: ${mouseY}px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(0,255,0,0.5) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 1000;
+        transform: translate(-50%, -50%);
+      `;
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), delay/2);
+      
+      setTimeout(() => {
+        cartas[i].scale = 1;
+        cartas[j].scale = 1;
+        cartas[i].rotation = 0;
+        cartas[j].rotation = 0;
+      }, delay/2);
+    }
+    
+    // Efecto de distorsión de realidad
+    document.body.classList.add('reality-break');
+    setTimeout(() => document.body.classList.remove('reality-break'), delay/4);
+    
+    count++;
+    setTimeout(hacerMezcla, delay);
+  }
+  
+  hacerMezcla();
+}
+
+function mousePressed() {
+  if (estado !== "esperandoClick") return;
+  for (let i = 0; i < cartas.length; i++) {
+    if (cartas[i].contiene(mouseX, mouseY) && !cartas[i].volteada) {
+      estado = "revelando";
+      cartas[i].flip(true);
+      setTimeout(() => {
+        if (cartas[i].rara) {
+          efectoCartaRara();
+        }
+        if (i === ganadora) {
+          combo++;
+          aciertos++;
+          let multiplicador = 2 + (combo * 0.5);
+          let ganancia = Math.floor(apuesta * multiplicador);
+          mostrarMoneyPopup(`+$${ganancia}`, true);
+          const moneyPopup = document.createElement('div');
+          moneyPopup.className = 'money-change';
+          moneyPopup.textContent = `+$${ganancia}`;
+          moneyPopup.style.left = `${mouseX}px`;
+          moneyPopup.style.top = `${mouseY}px`;
+          document.body.appendChild(moneyPopup);
+          cartas[i].correct = true;
+          document.body.classList.add('victory-effect');
+          setTimeout(() => {
+            moneyPopup.remove();
+            cartas[i].correct = false;
+            document.body.classList.remove('victory-effect');
+            cartas[i].flip(false);
+            estado = "esperando";
+            actualizarHUD(); // Actualizar HUD después de establecer el estado
+          }, 1500);
+          dinero += ganancia;
+          log(`[VICTORIA] ¡COMBO x${combo}! Ganancia: $${ganancia}`, 'success');
+          if (dinero >= 2200) {
+            celebrarVictoria();
+          }
+        } else {
+          combo = 0;
+          mostrarMoneyPopup(`-$${apuesta}`, false);
+          cartas[i].wrong = true;
+          document.body.classList.add('reality-break');
+          setTimeout(() => {
+            cartas[i].wrong = false;
+            document.body.classList.remove('reality-break');
+            cartas[i].flip(false);
+            estado = "esperando";
+            // Solo verificar game over después de que la mano termine completamente
+            if (dinero < 100) {
+              log("[GAME OVER] Te quedaste sin dinero suficiente para seguir...", 'error');
+              setTimeout(() => gameOver(), 1000); // Dar tiempo para ver el resultado
+            }
+            actualizarHUD(); // Actualizar HUD después de establecer el estado
+          }, 1000);
+          log("[DERROTA] Carta incorrecta", 'error');
+        }
+      }, 500);
+      break;
+    }
+  }
+}
+
+function celebrarVictoria() {
+  log("[VICTORIA FINAL] ¡Has dominado el Balatro Codex!", 'rainbow');
+  log("[RICK] ¡Wubba Lubba Dub Dub! ¡Lo logramos Morty!", 'success');
+  
+  // Epic victory effects
+  document.body.classList.add('victory-effect');
+  showMemoryEchoes();
+  
+  setTimeout(() => {
+    alert("¡Felicitaciones! Has vencido al Balatro Codex.\nPasando a Room 8...");
+    window.location.href = "/Home/Room8";
+  }, 3000);
+}
+
+function gameOver() {
+  log("[GAME OVER] La realidad se desmorona...", 'error');
+  log("[RICK] M-morty, la cagaste... *burp* ...otra vez.", 'error');
+  
+  // Game over effects
+  document.body.classList.add('reality-break');
+  
+  setTimeout(() => {
+    alert("Te quedaste sin dinero. Reiniciando sala...");
+    window.location.href = "/Home/Room7codex";
+  }, 2000);
+}
+
+function actualizarHUD() {
+  document.getElementById("hud").innerHTML = `
+    <div>Dinero: $${dinero}</div>
+    <div>Aciertos: ${aciertos}</div>
+    <div>Combo: x${combo}</div>
+  `;
+  actualizarComboCircle();
+  
+  // Solo verificar game over si:
+  // 1. No hay una apuesta en curso (estado === "esperando")
+  // 2. El dinero es menor a 100
+  // 3. No estamos en medio de una mano (estado !== "mezclando" && estado !== "esperandoClick" && estado !== "revelando")
+  if (estado === "esperando" && dinero < 100 && 
+      estado !== "mezclando" && estado !== "esperandoClick" && estado !== "revelando") {
+    log("[ADVERTENCIA] No tienes suficiente dinero para seguir jugando...", 'warning');
+    setTimeout(() => {
+      gameOver();
+    }, 1000);
+  }
+}
+
+// --- NUEVO: Efecto loco para carta rara ---
+function efectoCartaRara() {
+  // Glitch + invertir colores + lluvia de partículas
+  document.body.classList.add('reality-break');
+  document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.position = 'fixed';
+      p.style.left = Math.random() * window.innerWidth + 'px';
+      p.style.top = Math.random() * window.innerHeight + 'px';
+      p.style.width = p.style.height = (6 + Math.random() * 8) + 'px';
+      p.style.background = `hsl(${Math.random()*360},100%,60%)`;
+      p.style.borderRadius = '50%';
+      p.style.zIndex = 9999;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1200);
+    }, Math.random() * 400);
+  }
+  setTimeout(() => {
+    document.body.classList.remove('reality-break');
+    document.body.style.filter = '';
+  }, 1200);
+}
+
+// --- GAME OF LIFE FONDO ---
+function startGameOfLifeBG() {
+  const canvas = document.getElementById('life-bg');
+  const ctx = canvas.getContext('2d');
+  let w = window.innerWidth, h = window.innerHeight;
+  let cell = 6;
+  let cols = Math.floor(w / cell), rows = Math.floor(h / cell);
+  let grid = Array.from({length: rows}, () => Array.from({length: cols}, () => Math.random() > 0.8 ? 1 : 0));
+  function resize() {
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w; canvas.height = h;
+    cols = Math.floor(w / cell); rows = Math.floor(h / cell);
+    if (grid.length !== rows || grid[0].length !== cols) {
+      grid = Array.from({length: rows}, () => Array.from({length: cols}, () => Math.random() > 0.8 ? 1 : 0));
+    }
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  function nextGen() {
+    let newGrid = grid.map(arr => arr.slice());
+    for (let y = 0; y < rows; y++) {
+      for (let x = 0; x < cols; x++) {
+        let sum = 0;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+          if (dx === 0 && dy === 0) continue;
+          let ny = (y + dy + rows) % rows, nx = (x + dx + cols) % cols;
+          sum += grid[ny][nx];
+        }
+        if (grid[y][x] === 1 && (sum < 2 || sum > 3)) newGrid[y][x] = 0;
+        else if (grid[y][x] === 0 && sum === 3) newGrid[y][x] = 1;
+      }
+    }
+    grid = newGrid;
+  }
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = '#0f0';
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      if (grid[y][x]) ctx.fillRect(x * cell, y * cell, cell, cell);
+    }
+  }
+  function loop() {
+    nextGen();
+    draw();
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// --- AGREGAR CÍRCULO DE COMBO ---
+window.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('combo-circle')) {
+    const comboDiv = document.createElement('div');
+    comboDiv.id = 'combo-circle';
+    comboDiv.innerHTML = `<div class="combo-label">Combo</div><div class="combo-value">x0</div>`;
+    document.body.appendChild(comboDiv);
+  }
+});
+
+function actualizarComboCircle() {
+  const comboDiv = document.getElementById('combo-circle');
+  if (!comboDiv) return;
+  comboDiv.querySelector('.combo-value').textContent = `x${combo}`;
+  if (combo >= 3) comboDiv.classList.add('fire');
+  else comboDiv.classList.remove('fire');
+}
+
+// --- FUNCION PARA MOSTRAR POPUP DE GANAR/PERDER PLATA ---
+function mostrarMoneyPopup(text, isGain) {
+  const popup = document.createElement('div');
+  popup.className = 'money-popup ' + (isGain ? 'gain' : 'loss');
+  popup.textContent = text;
+  popup.style.top = isGain ? '60%' : '40%';
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 1200);
+}
+
+// ... resto del código existente ...
+</script>
+</body>
+</html>
