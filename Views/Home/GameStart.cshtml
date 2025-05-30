@@ -180,8 +180,8 @@
                     setTimeout(() => {
                         feedback.innerText = "✔️ ¡Correcto! Portal dimensional estable...";
                         
-                        // Marcar Room2 como desbloqueada y completar GameStart
-                        fetch('/Home/CompleteRoom/2', {
+                        // Marcar GameStart como completado
+                        fetch('/Home/CompleteGameStart', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -189,7 +189,7 @@
                         }).then(response => response.json())
                           .then(data => {
                             if (data.success) {
-                                // Esperar un momento antes de redirigir para que se vean los efectos
+                                // Esperar un momento antes de redirigir
                                 setTimeout(() => {
                                     window.location.href = "/Home/Room2";
                                 }, 2000);

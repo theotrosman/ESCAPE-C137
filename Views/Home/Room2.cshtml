@@ -8,295 +8,766 @@
     <title>Room 2 - Parche Binario</title>
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
-        body {
-            background: black;
-            color: #00ff00;
-            font-family: monospace;
-            padding: 40px;
-            animation: flickerRoom2 0.8s infinite alternate;
+        :root {
+            --neon-green: #00ff00;
+            --neon-blue: #00ffff;
+            --neon-red: #ff0000;
+            --neon-purple: #ff00ff;
+            --matrix-bg: #001100;
         }
 
-        @@keyframes flickerRoom2 {
-            0% { background-color: black; }
-            20% { background-color: #111; }
-            50% { background-color: darkgreen; }
-            80% { background-color: black; }
-            100% { background-color: #200; }
+        body {
+            background: black;
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            padding: 40px;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .matrix-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.15;
+        }
+
+        .glitch-container {
+            position: relative;
+        }
+
+        .glitch-text {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 var(--neon-red);
+            clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 var(--neon-blue);
+            clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim2 2.5s infinite linear alternate-reverse;
+        }
+
+        @@keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+
+        @@keyframes glitch-anim {
+            0% { clip: rect(51px, 9999px, 28px, 0); }
+            20% { clip: rect(41px, 9999px, 76px, 0); }
+            40% { clip: rect(16px, 9999px, 33px, 0); }
+            60% { clip: rect(89px, 9999px, 11px, 0); }
+            80% { clip: rect(71px, 9999px, 98px, 0); }
+            100% { clip: rect(6px, 9999px, 46px, 0); }
+        }
+
+        @@keyframes glitch-anim2 {
+            0% { clip: rect(65px, 9999px, 99px, 0); }
+            20% { clip: rect(34px, 9999px, 12px, 0); }
+            40% { clip: rect(87px, 9999px, 54px, 0); }
+            60% { clip: rect(22px, 9999px, 91px, 0); }
+            80% { clip: rect(45px, 9999px, 78px, 0); }
+            100% { clip: rect(18px, 9999px, 67px, 0); }
         }
 
         #tablero {
             display: grid;
-            grid-template-columns: repeat(8, 40px);
-            gap: 2px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(8, minmax(40px, 1fr));
+            gap: 4px;
+            margin: 30px auto;
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(0, 20, 0, 0.3);
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        #tablero::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(0,255,0,0.2) 45%, 
+                rgba(0,255,0,0.8) 50%,
+                rgba(0,255,0,0.2) 55%,
+                transparent 100%
+            );
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @@keyframes borderGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .celda {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #00ff00;
+            width: 100%;
+            aspect-ratio: 1;
+            border: 1px solid var(--neon-green);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .celda::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: currentColor;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .celda:hover::before {
+            opacity: 0.2;
         }
 
         .blanco {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
         .negro {
-            background-color: black;
+            background-color: rgba(0, 0, 0, 0.9);
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
         }
 
         .destacado {
-            box-shadow: 0 0 4px 2px lime;
+            animation: highlightPulse 2s infinite;
+        }
+
+        @@keyframes highlightPulse {
+            0% { box-shadow: 0 0 5px var(--neon-green); }
+            50% { box-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-blue); }
+            100% { box-shadow: 0 0 5px var(--neon-green); }
+        }
+
+        .input-container {
+            position: relative;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(0, 20, 0, 0.2);
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            border-radius: 5px;
+            transform: scale(0.9); /* Asegura que se vea bien sin necesidad de zoom out */
+        }
+
+        .input-container p {
+            margin: 0 0 15px 0;
+            color: var(--neon-green);
+            font-size: 16px;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
         input {
-            background: black;
+            width: 100%;
+            background: transparent;
             border: none;
-            border-bottom: 1px solid #00ff00;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 16px;
-            width: 300px;
+            border-bottom: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            padding: 10px 5px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-bottom-color: var(--neon-blue);
+            box-shadow: 0 5px 15px rgba(0, 255, 255, 0.2);
+        }
+
+        .input-container::before {
+            content: '>';
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--neon-green);
+            animation: blink 1s infinite;
+        }
+
+        @@keyframes blink {
+            50% { opacity: 0; }
         }
 
         button {
-            background: #00ff00;
-            color: black;
-            border: none;
-            padding: 10px 25px;
-            font-family: monospace;
+            background: transparent;
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 12px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
             cursor: pointer;
-            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 20px 0;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(0, 255, 0, 0.2),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: buttonShine 3s infinite;
+        }
+
+        @@keyframes buttonShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        button:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
         }
 
         .mensaje {
-            margin-top: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        #rick-gif {
-            display: none;
+        .mensaje.show {
+            opacity: 1;
+        }
+
+        .portal-container {
             position: fixed;
-            bottom: 1px;
-            left: 10px;
-            width: 200px;
+            pointer-events: none;
+            z-index: 100;
         }
 
         .portal {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                var(--neon-green),
+                var(--neon-blue),
+                var(--neon-purple),
+                var(--neon-green)
+            );
+            filter: blur(10px);
+            animation: portalPulse 2s infinite;
+        }
+
+        @@keyframes portalPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .portal::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            background: black;
+            filter: blur(5px);
+        }
+
+        .rick-console-hint {
             position: fixed;
-            animation: portalShake 0.4s infinite, portalFade 3s forwards;
-            font-size: 13px;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        @@keyframes portalShake {
-            0%, 100% { transform: translate(0, 0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-1px, -1px); }
-        }
-
-        @@keyframes portalFade {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        .rick-console-hint::after {
-            content: "Rick: M-morty... si nada funciona... fijate si la consola te responde algo...";
-            color: #ff0000;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
             font-size: 14px;
-            animation: blinkHint 1s infinite;
-            display: block;
-            margin-top: 15px;
+            max-width: 300px;
+            animation: hintPulse 2s infinite;
         }
 
-        @@keyframes blinkHint {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+        @@keyframes hintPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #rick-gif {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.5));
+            transform: scaleX(-1);
+            display: none;
+        }
+
+        .binary-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        #rick-pistas {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            font-size: 14px;
+            color: var(--neon-green);
+            max-width: 300px;
+            text-align: right;
+            transition: all 0.3s;
         }
     </style>
 </head>
 <body>
+    <canvas class="binary-rain" id="binaryRain"></canvas>
     <audio id="audio7" src="~/img/audio7.mp3" preload="auto"></audio>
     <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
 
-<h1 id="titulo-room2" style="color:#00ff00; font-family: monospace; font-size: 20px; text-shadow: 0 0 3px lime;"></h1>    <p><strong>Instrucción:</strong> leé los <span style="color:lime">cuadrados verdes</span> como bits, en orden <strong>de izquierda a derecha y de arriba hacia abajo</strong>. Las celdas blancas valen 1, las negras 0.</p>
+    <div class="glitch-container">
+        <h1 id="titulo-room2" class="glitch-text" data-text="Room 2: Parche Binario"></h1>
+    </div>
 
-    <div id="tablero"></div>
+    <div class="container">
+        <p class="glitch-text" data-text="Instrucción:">
+            Leé los <span style="color:lime">cuadrados verdes</span> como bits, en orden 
+            <strong>de izquierda a derecha y de arriba hacia abajo</strong>. 
+            Las celdas blancas valen 1, las negras 0.
+        </p>
 
-    <p>Convertí ese binario a decimal y escribilo abajo:</p>
-    <input type="text" id="respuesta" placeholder="ej: 280" />
-    <br />
-    <button onclick="verificar()">DECODIFICAR</button>
-    <div class="mensaje" id="mensaje"></div>
+        <div id="tablero"></div>
+
+        <div class="input-container">
+            <p>Convertí ese binario a decimal:</p>
+            <input type="text" id="respuesta" placeholder="ej: 280" autocomplete="off" />
+            <button onclick="verificar()">DECODIFICAR</button>
+        </div>
+
+        <div class="mensaje" id="mensaje"></div>
+    </div>
 
     <div id="portales"></div>
+    <div id="rick-pistas"></div>
+
+    <div class="rick-console-hint">
+        Rick: M-morty... si nada funciona... fijate si la consola te responde algo...
+    </div>
 
     <script>
-        const tablero = document.getElementById("tablero");
-        const mensaje = document.getElementById("mensaje");
-        const audio = document.getElementById("audio7");
-        const gif = document.getElementById("rick-gif");
+        // Matrix Rain Effect
+        const canvas = document.querySelector('.binary-rain');
+        const ctx = canvas.getContext('2d');
 
-        const binarioFijo = "111011111"; // DECIMAL = 479
-        const binArray = binarioFijo.split("");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        for (let i = 0; i < 64; i++) {
-            const celda = document.createElement("div");
-            celda.className = "celda";
+        const binary = '10';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
 
-            if (i >= 0 && i < binArray.length) {
-                celda.classList.add(binArray[i] === "1" ? "blanco" : "negro");
-                celda.classList.add("destacado");
-            } else {
-                const esBlanco = Math.random() > 0.5;
-                celda.classList.add(esBlanco ? "blanco" : "negro");
-            }
-
-            tablero.appendChild(celda);
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
         }
 
-        setTimeout(() => {
-            gif.style.display = "block";
-            audio.play().then(() => {
-                audio.onended = () => {
-                    gif.style.display = "none";
-                };
-            }).catch(() => {});
-        }, 1500);
+        function drawBinaryRain() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = binary[Math.floor(Math.random() * binary.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Game State
+        const gameState = {
+            binarioFijo: "111011111", // DECIMAL = 479
+            intentos: 0,
+            maxIntentos: 3,
+            completed: false,
+            portalActivo: false
+        };
+
+        // DOM Elements
+        const elements = {
+            tablero: document.getElementById("tablero"),
+            mensaje: document.getElementById("mensaje"),
+            audio: document.getElementById("audio7"),
+            gif: document.getElementById("rick-gif"),
+            titulo: document.getElementById("titulo-room2"),
+            input: document.getElementById("respuesta"),
+            rickPistas: document.getElementById("rick-pistas")
+        };
+
+        // Inicializar tablero con efectos mejorados
+        function initializeTablero() {
+            const binArray = gameState.binarioFijo.split("");
+            
+            for (let i = 0; i < 64; i++) {
+                const celda = document.createElement("div");
+                celda.className = "celda";
+
+                if (i >= 0 && i < binArray.length) {
+                    celda.classList.add(binArray[i] === "1" ? "blanco" : "negro");
+                    celda.classList.add("destacado");
+                    
+                    // Añadir efecto de hover con información
+                    celda.setAttribute('data-position', i + 1);
+                    celda.setAttribute('data-value', binArray[i]);
+                } else {
+                    const esBlanco = Math.random() > 0.5;
+                    celda.classList.add(esBlanco ? "blanco" : "negro");
+                }
+
+                // Efecto de rotación 3D al hover
+                celda.addEventListener('mouseover', () => {
+                    celda.style.transform = 'rotateX(10deg) rotateY(10deg)';
+                    showGlitch();
+                });
+
+                celda.addEventListener('mouseout', () => {
+                    celda.style.transform = 'none';
+                });
+
+                elements.tablero.appendChild(celda);
+            }
+        }
+
+        // Efectos visuales mejorados
+        function showGlitch(duration = 200) {
+            const glitch = document.createElement('div');
+            glitch.style.position = 'fixed';
+            glitch.style.top = Math.random() * window.innerHeight + 'px';
+            glitch.style.left = Math.random() * window.innerWidth + 'px';
+            glitch.style.width = '100px';
+            glitch.style.height = '2px';
+            glitch.style.background = '#00ff00';
+            glitch.style.opacity = '0.7';
+            glitch.style.zIndex = '1000';
+            glitch.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            document.body.appendChild(glitch);
+            
+            setTimeout(() => glitch.remove(), duration);
+        }
+
+        // Sistema de portales mejorado
+        function createPortal() {
+            const portal = document.createElement('div');
+            portal.className = 'portal-container';
+            
+            const innerPortal = document.createElement('div');
+            innerPortal.className = 'portal';
+            
+            portal.appendChild(innerPortal);
+            
+            // Posición aleatoria
+            portal.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+            portal.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+            
+            document.body.appendChild(portal);
+            
+            // Efecto de sonido del portal
+            const portalSound = new Audio('/sounds/portal.mp3');
+            portalSound.volume = 0.3;
+            portalSound.play().catch(() => {});
+            
+            setTimeout(() => {
+                portal.style.transition = 'all 0.5s';
+                portal.style.opacity = '0';
+                setTimeout(() => portal.remove(), 500);
+            }, 2000);
+        }
+
+        // Sistema de verificación mejorado
         function verificar() {
-            const input = document.getElementById("respuesta").value.trim();
-            const valorDecimal = parseInt(binarioFijo, 2); // 479
+            const input = elements.input.value.trim();
+            const valorDecimal = parseInt(gameState.binarioFijo, 2); // 479
+
+            if (gameState.completed) return;
+
+            showGlitch(500);
+            gameState.intentos++;
 
             if (input === valorDecimal.toString()) {
-                mensaje.innerText = "✔️ ¡Perfecto Morty! Decodificaste el parche.";
-                mensaje.style.color = "#00ff00";
+                gameState.completed = true;
+                
+                // Efectos de victoria
+                elements.mensaje.innerHTML = `
+                    <span style="color: #00ff00; font-size: 1.2em;">
+                        ✔️ ¡Perfecto Morty! Decodificaste el parche.
+                    </span>`;
+                elements.mensaje.classList.add('show');
+                
+                // Activar portal grande
+                const portalFinal = document.createElement('div');
+                portalFinal.className = 'portal-container';
+                portalFinal.style.left = '50%';
+                portalFinal.style.top = '50%';
+                portalFinal.style.transform = 'translate(-50%, -50%)';
+                
+                const innerPortalFinal = document.createElement('div');
+                innerPortalFinal.className = 'portal';
+                innerPortalFinal.style.width = '300px';
+                innerPortalFinal.style.height = '300px';
+                
+                portalFinal.appendChild(innerPortalFinal);
+                document.body.appendChild(portalFinal);
+                
+                // Efectos adicionales
+                showVictoryEffects();
+                
+                // Redirección
                 setTimeout(() => {
                     window.location.href = "/Home/Room3";
-                }, 2500);
+                }, 3000);
             } else {
-                mensaje.innerText = "❌ Nah Morty... ese número no desbloquea nada.";
-                mensaje.style.color = "red";
+                // Efectos de error
+                elements.mensaje.innerHTML = `
+                    <span style="color: #ff0000;">
+                        ❌ Nah Morty... ese número no desbloquea nada.
+                        ${gameState.intentos >= gameState.maxIntentos ? 
+                          '<br>Tal vez deberías revisar la consola...' : ''}
+                    </span>`;
+                elements.mensaje.classList.add('show');
+                
+                showErrorEffects();
             }
         }
 
-        function generarPortalAnimado() {
-    const portales = [
-        `<pre class="portal" style="color:#00ff00">
-    ░░░░░░░░░░░░░░░░
-   ░░░░░░▓▓▓▓▓▓░░░░
-  ░░░░▓▓████████▓▓░░
- ░░▓▓████████████▓▓░░
- ░▓████████████████▓░
- ░▓████████████████▓░
- ░░▓▓████████████▓▓░░
-  ░░░▓▓████████▓▓░░░
-   ░░░░▓▓▓▓▓▓░░░░░░
-    ░░░░░░░░░░░░░░
-</pre>`,
-        `<pre class="portal" style="color:#00ffff">
-    ████████████████
-   ██▓▓▓▓▓▓▓▓▓▓▓▓▓▓██
-  ██▓████████████▓██
- ██▓▓████████████▓▓██
- ██▓██████████████▓██
- ██▓▓████████████▓▓██
-  ██▓▓██████████▓▓██
-   ██▓▓▓▓▓▓▓▓▓▓▓▓██
-    ██████████████
-</pre>`,
-        `<pre class="portal" style="color:#ff00ff">
-    ░░░░░░░░░░░░░░░░
-   ░░░░▓▓▓▓▓▓▓▓▓▓░░░░
-  ░░▓▓████████████▓▓░░
- ░▓██████████████████▓
- ░▓██████████████████▓
- ░▓██████████████████▓
- ░▓██████████████████▓
-  ░▓▓██████████████▓▓
-   ░░▓▓▓▓▓▓▓▓▓▓▓▓░░
-    ░░░░░░░░░░░░░░
-</pre>`
-    ];
-
-
-
-            const portalDiv = document.createElement("div");
-            portalDiv.className = "portal";
-            portalDiv.style.left = Math.floor(Math.random() * 80) + "vw";
-            portalDiv.style.top = Math.floor(Math.random() * 70) + "vh";
-            portalDiv.innerHTML = portales[Math.floor(Math.random() * portales.length)];
-
-            document.body.appendChild(portalDiv);
-
-            setTimeout(() => {
-                portalDiv.remove();
-            }, 3000);
+        // Efectos de victoria
+        function showVictoryEffects() {
+            // Lluvia de números binarios
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const num = document.createElement('div');
+                    num.style.position = 'fixed';
+                    num.style.color = '#00ff00';
+                    num.style.top = '-20px';
+                    num.style.left = Math.random() * window.innerWidth + 'px';
+                    num.style.fontSize = '20px';
+                    num.style.zIndex = '1000';
+                    num.innerText = Math.random() > 0.5 ? '1' : '0';
+                    
+                    document.body.appendChild(num);
+                    
+                    let pos = -20;
+                    const fall = setInterval(() => {
+                        pos += 2;
+                        num.style.top = pos + 'px';
+                        
+                        if (pos > window.innerHeight) {
+                            clearInterval(fall);
+                            num.remove();
+                        }
+                    }, 10);
+                }, i * 100);
+            }
+            
+            // Sonido de victoria
+            const victorySound = new Audio('/sounds/victory.mp3');
+            victorySound.volume = 0.5;
+            victorySound.play().catch(() => {});
         }
 
-        setInterval(generarPortalAnimado, 1000);
+        // Efectos de error
+        function showErrorEffects() {
+            // Shake effect
+            elements.tablero.style.animation = 'none';
+            elements.tablero.offsetHeight;
+            elements.tablero.style.animation = 'shake 0.5s';
+            
+            // Glitch effect
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => showGlitch(100), i * 100);
+            }
+            
+            // Error sound
+            const errorSound = new Audio('/sounds/error.mp3');
+            errorSound.volume = 0.3;
+            errorSound.play().catch(() => {});
+        }
 
-        console.log("%c[RICK DEBUG]", "color: lime; font-weight: bold");
-        console.log("%cMorty... presioná F12 si no sabés qué hacer...", "color: red; font-style: italic");
-        console.log("%cTal vez el bug no está en la pantalla... sino en tu cabeza, Morty.", "color: #00ffff");
+        // Rick's hints system
+        const pistasRick = [
+            "Rick: mmm... este binario me suena... lo vi en algún *source* antes...",
+            "Rick: hay cosas que no están en la pantalla, Morty...",
+            "Rick: ¿Nunca pensaste que la respuesta podía estar en el código HTML?",
+            "Rick: si tan solo existiera una tecla para ver el detrás de escena...",
+            "Rick: algunos bugs se resuelven con F12, Morty.",
+            "Rick: los comentarios no siempre son solo para los programadores..."
+        ];
 
-        setTimeout(() => {
-            document.querySelector(".mensaje").classList.add("rick-console-hint");
-        }, 6000);
+        let pistaIndex = 0;
+        function showNextHint() {
+            if (pistaIndex < pistasRick.length) {
+                elements.rickPistas.style.opacity = '0';
+                
+                setTimeout(() => {
+                    elements.rickPistas.innerText = pistasRick[pistaIndex];
+                    elements.rickPistas.style.opacity = '1';
+                    pistaIndex++;
+                    
+                    if (pistaIndex < pistasRick.length) {
+                        setTimeout(showNextHint, 9000);
+                    }
+                }, 500);
+            }
+        }
+
+        // Console messages mejorados
+        console.clear(); // Limpia la consola primero
+        
+        // Estilo base para todos los mensajes
+        const baseStyle = "padding: 10px; margin: 5px; border-radius: 5px; font-family: 'Courier New', monospace;";
+        
+        // Logo de Rick and Morty en ASCII art
+        console.log(`%c
+        ╔═══════════════════════════════════════╗
+        ║  ╦═╗╦╔═╗╦╔═  ╔═╗╔╗╔╔╦╗  ╔╦╗╔═╗╦═╗╔╦╗╦ ╦  ║
+        ║  ╠╦╝║║  ╠╩╗  ╠═╣║║║ ║║   ║║║ ║╠╦╝ ║ ╚╦╝  ║
+        ║  ╩╚═╩╚═╝╩ ╩  ╩ ╩╝╚╝═╩╝  ═╩╝╚═╝╩╚═ ╩  ╩   ║
+        ╚═══════════════════════════════════════╝
+        `, `color: #00ff00; font-family: monospace; text-shadow: 0 0 5px #00ff00; ${baseStyle}`);
+
+        // Mensaje principal con estilo neón
+        console.log("%c[SISTEMA DE DEPURACIÓN DIMENSIONAL C-137]", 
+            `color: #00ff00; 
+             font-size: 16px; 
+             font-weight: bold; 
+             text-shadow: 0 0 10px #00ff00;
+             background: #001100;
+             ${baseStyle}`
+        );
+
+        // Mensaje de Rick con efecto glitch
+        console.log("%c[MENSAJE INTERCEPTADO DE RICK]", 
+            `color: #00ffff; 
+             font-size: 14px; 
+             font-weight: bold;
+             background: #001122;
+             border-left: 3px solid #00ffff;
+             ${baseStyle}`
+        );
+
+        console.log("%cMorty... *burp* ...la respuesta está en el código fuente... *burp* ...¡usa F12!", 
+            `color: #ff3366; 
+             font-style: italic;
+             background: #110011;
+             border-left: 3px solid #ff3366;
+             ${baseStyle}`
+        );
+
+        // Mensaje críptico
+        console.log("%c[DATOS ENCRIPTADOS DETECTADOS]", 
+            `color: #ffff00; 
+             font-size: 12px;
+             background: #111100;
+             border-left: 3px solid #ffff00;
+             ${baseStyle}`
+        );
+
+        // Initialization
+        window.addEventListener('load', () => {
+            initializeTablero();
+            showNextHint();
+            
+            // Start binary rain animation
+            setInterval(drawBinaryRain, 33);
+            
+            // Start portal generation
+            setInterval(createPortal, 3000);
+        });
+
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
-    <div id="rick-pistas" style="margin-top: 40px; font-size: 14px; color: #888; white-space: pre-wrap;"></div>
 
-<script>
-    const pistasRick = [
-        "Rick: mmm... este binario me suena... lo vi en algún *source* antes...",
-        "Rick: hay cosas que no están en la pantalla, Morty...",
-        "Rick: ¿Nunca pensaste que la respuesta podía estar en el código HTML?",
-        "Rick: si tan solo existiera una tecla para ver el detrás de escena...",
-        "Rick: algunos bugs se resuelven con F12, Morty.",
-        "Rick: los comentarios no siempre son solo para los programadores..."
-    ];
+    <script>
+        const titulos = [
+            "D:\\EscapeC137\\Rooms\\Room2",
+            "Room 2: Parche Binario",
+            "Parche Binario"
+        ];
 
-    let indexRick = 0;
-    function mostrarPistaRick() {
-    if (indexRick < pistasRick.length) {
-        document.getElementById("rick-pistas").innerText = pistasRick[indexRick];
-        indexRick++;
-        setTimeout(mostrarPistaRick, 9000);
-    } else {
-        setTimeout(() => {
-            document.getElementById("rick-pistas").style.transition = "opacity 1s";
-            document.getElementById("rick-pistas").style.opacity = "0";
-        }, 9000);
-    }
-}
-    setTimeout(mostrarPistaRick, 5000);
-</script>
-<script>
-    const titulos = [
-        "D:\\EscapeC137\\Rooms\\Room2",
-        "Room 2: Parche Binario",
-        "Parche Binario"
-    ];
+        let iTitulo = 0;
+        function cambiarTituloGlitch() {
+            const h1 = document.getElementById("titulo-room2");
+            h1.innerText = titulos[iTitulo];
+            h1.style.opacity = "0";
+            h1.style.transition = "opacity 0.2s";
+            setTimeout(() => {
+                h1.style.opacity = "1";
+            }, 100);
 
-    let iTitulo = 0;
-    function cambiarTituloGlitch() {
-        const h1 = document.getElementById("titulo-room2");
-        h1.innerText = titulos[iTitulo];
-        h1.style.opacity = "0";
-        h1.style.transition = "opacity 0.2s";
-        setTimeout(() => {
-            h1.style.opacity = "1";
-        }, 100);
+            iTitulo = (iTitulo + 1) % titulos.length;
+            setTimeout(cambiarTituloGlitch, 1300);
+        }
 
-        iTitulo = (iTitulo + 1) % titulos.length;
-        setTimeout(cambiarTituloGlitch, 1300);
-    }
-
-    cambiarTituloGlitch();
-</script>
-
+        cambiarTituloGlitch();
+    </script>
 </body>
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->

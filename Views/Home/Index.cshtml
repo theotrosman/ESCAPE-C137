@@ -1,6 +1,5 @@
 ﻿@{
     Layout = null;
-    var skipAnimation = @ViewBag.SkipAnimation;
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -227,19 +226,6 @@
     }
 
     function typeLine() {
-      if (@skipAnimation) {
-        // Si ya se vio la animación, mostrar todo el texto de una vez
-        lines.forEach(line => {
-          if (line === ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA") {
-            typewriter.innerHTML += `<span style='color: var(--err)'>${line}</span>\n`;
-          } else {
-            typewriter.textContent += line + '\n';
-          }
-        });
-        triggerEpicReveal();
-        return;
-      }
-
       if (currentLine < lines.length) {
         let line = lines[currentLine];
         let i = 0;

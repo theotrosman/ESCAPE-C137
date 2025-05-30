@@ -1,6 +1,7 @@
 @{
     Layout = null;
     var roomNumber = ViewBag.RoomNumber;
+    var roomName = ViewBag.RoomName ?? $"Room{roomNumber}";
 }
 
 <!DOCTYPE html>
@@ -66,6 +67,51 @@
             font-size: 18px;
             text-shadow: 0 0 5px #ff0000;
         }
+
+        .admin-section {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px dashed var(--fg);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+
+        .admin-section:hover {
+            opacity: 1;
+        }
+
+        .admin-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--fg);
+            color: var(--fg);
+            font-family: 'VT323', monospace;
+            font-size: 18px;
+            padding: 5px;
+            margin-right: 10px;
+            outline: none;
+        }
+
+        .admin-input::placeholder {
+            color: rgba(0, 255, 0, 0.5);
+        }
+
+        #adminMessage {
+            color: var(--fg);
+            margin-top: 10px;
+            font-size: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .loading {
+            animation: blink 1s infinite;
+        }
+
+        @@keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
     </style>
 </head>
 <body>
@@ -84,19 +130,75 @@
 
     <div class="message">
         ACCESO DENEGADO<br>
-        Room @roomNumber bloqueada
+        @(roomName == "Room7Codex" ? "Room7Codex" : $"Room {roomNumber}") bloqueada
     </div>
 
     <div class="error-message">
         @TempData["ErrorMessage"]
     </div>
 
-    <button class="back-button" onclick="window.location.href='/Home/Room@(roomNumber-1)'">
-        VOLVER A ROOM @(roomNumber-1)
+    <div class="admin-section">
+        <input type="password" id="adminPass" class="admin-input" placeholder="Código de administrador" onkeydown="checkAdmin(event)">
+        <div id="adminMessage"></div>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='@(roomNumber > 1 ? $"/Home/Room{roomNumber-1}" : "/")'">
+        @(roomNumber > 1 ? $"VOLVER A ROOM {roomNumber-1}" : "IR AL INICIO")
     </button>
 
     <button class="back-button" onclick="window.location.href='/'" style="margin-left: 10px;">
         IR AL INICIO
     </button>
+
+    <script>
+        function showMessage(message, isLoading = false) {
+            const msgElement = document.getElementById('adminMessage');
+            msgElement.textContent = message;
+            msgElement.style.opacity = '1';
+            if (isLoading) {
+                msgElement.classList.add('loading');
+            } else {
+                msgElement.classList.remove('loading');
+            }
+        }
+
+        function checkAdmin(e) {
+            if (e.key === 'Enter') {
+                const pass = document.getElementById('adminPass').value;
+                if (pass === 'adminmvc') {
+                    showMessage('Verificando acceso...', true);
+                    
+                    fetch('/Home/AdminUnlock?roomNumber=@roomNumber&roomName=@roomName', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error en la respuesta del servidor');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            showMessage('Acceso concedido. Redirigiendo...');
+                            setTimeout(() => {
+                                window.location.href = data.redirectTo;
+                            }, 1000);
+                        } else {
+                            showMessage('Error: ' + (data.message || 'No se pudo desbloquear la room'));
+                        }
+                    })
+                    .catch(error => {
+                        showMessage('Error: ' + error.message);
+                        console.error('Error:', error);
+                    });
+                } else {
+                    showMessage('Código incorrecto');
+                }
+            }
+        }
+    </script>
 </body>
 </html> 
