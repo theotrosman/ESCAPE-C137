@@ -179,9 +179,22 @@
                     feedback.innerText = "🧠 Rick: Ehhh... espera... sí... sí funcionó Morty...";
                     setTimeout(() => {
                         feedback.innerText = "✔️ ¡Correcto! Portal dimensional estable...";
-                        setTimeout(() => {
-                            window.location.href = "/Home/Room2";
-                        }, 2000);
+                        
+                        // Marcar Room2 como desbloqueada y completar GameStart
+                        fetch('/Home/CompleteRoom/2', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json())
+                          .then(data => {
+                            if (data.success) {
+                                // Esperar un momento antes de redirigir para que se vean los efectos
+                                setTimeout(() => {
+                                    window.location.href = "/Home/Room2";
+                                }, 2000);
+                            }
+                        });
                     }, 2500);
                 }, 2500);
             }, 2000);

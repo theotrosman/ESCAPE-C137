@@ -1,0 +1,102 @@
+@{
+    Layout = null;
+    var roomNumber = ViewBag.RoomNumber;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Room @roomNumber Bloqueada</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000;
+            --fg: #0f0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'VT323', monospace;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .ascii-lock {
+            white-space: pre;
+            font-size: 14px;
+            line-height: 1;
+            margin-bottom: 30px;
+            text-shadow: 0 0 5px var(--fg);
+        }
+
+        .message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px var(--fg);
+        }
+
+        .back-button {
+            background: transparent;
+            border: 2px solid var(--fg);
+            color: var(--fg);
+            padding: 10px 20px;
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background: var(--fg);
+            color: var(--bg);
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-top: 20px;
+            font-size: 18px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="ascii-lock">
+  +-----------------+
+  |    ________     |
+  |   /        \\    |
+  |  |   ||  |  |   |
+  |  |   ||  |  |   |
+  |  |   ||  |  |   |
+  |  |   ||  |  |   |
+  |   \\________/    |
+  |                 |
+  +-----------------+
+    </div>
+
+    <div class="message">
+        ACCESO DENEGADO<br>
+        Room @roomNumber bloqueada
+    </div>
+
+    <div class="error-message">
+        @TempData["ErrorMessage"]
+    </div>
+
+    <button class="back-button" onclick="window.location.href='/Home/Room@(roomNumber-1)'">
+        VOLVER A ROOM @(roomNumber-1)
+    </button>
+
+    <button class="back-button" onclick="window.location.href='/'" style="margin-left: 10px;">
+        IR AL INICIO
+    </button>
+</body>
+</html> 

@@ -499,6 +499,21 @@
             }
         }
 
+        @@keyframes fadeOutAd {
+            0% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+                display: none;
+            }
+        }
+
         @@keyframes blinkRed {
             0% {
                 opacity: 1;
@@ -541,8 +556,8 @@
     </div>
 
     <div class="input-section" id="inputSec" style="text-align:center; display:none; margin-top: 20px;">
-        <p><strong>Rick:</strong> "Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran
-            columnas de código genético..."</p>
+        <p><strong>Rick:</strong> “Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran
+            columnas de código genético...”</p>
         <p>Ingresá la secuencia estable (10 letras):</p>
         <input id="respuesta" maxlength="10" />
         <br />
@@ -560,45 +575,8 @@
 
         const intro = `>>> CARGANDO SALA 3...\n>>> ERROR: Morty eligió el camino fácil en la Room2\n>>> ACTIVANDO CASTIGO GENÉTICO\n>>> Rick: ¡¿QUÉ HICISTE, MORTY?!\n>>> La computadora ahora controla la realidad.\n>>> Buscá la única columna genética estable EN VERTICAL, Morty. No horizontal. COLUMNAS.`;
 
-        // Definir el sonido de typing al inicio
-        const typeSound = new Audio('/img/sfxtype.mp3');
-        typeSound.volume = 0.15;
-
-        function calculateTypingDuration(text) {
-            return (text.length / 30) * 1000;
-        }
-
-        function playTypingSound(duration) {
-            typeSound.currentTime = 0;
-            typeSound.play();
-            
-            const interval = setInterval(() => {
-                if (typeSound.currentTime >= typeSound.duration) {
-                    typeSound.currentTime = 0;
-                    typeSound.play();
-                }
-            }, 100);
-
-            setTimeout(() => {
-                typeSound.pause();
-                clearInterval(interval);
-            }, duration);
-        }
-
-        function mostrarGridYTimer() {
-            document.getElementById("grid").style.display = "flex";
-            document.getElementById("inputSec").style.display = "block";
-            
-            const timerDiv = document.createElement("div");
-            timerDiv.id = "timerDisplay";
-            timerDiv.innerHTML = `Tiempo restante: <span id="timeLeft">${secondsLeft}</span>s`;
-            document.getElementById("inputSec").prepend(timerDiv);
-            
-            startTimer();
-        }
-
         function escribirIntro() {
-            const introLines = [
+            const intro = [
                 ">>> INICIANDO SALA 3: Castigo Genético...",
                 ">>> ANALIZANDO TRAZAS DE DECISIONES EN ROOM 2...",
                 ">>> ERROR: Elección subóptima detectada.",
@@ -615,7 +593,7 @@
                 ">>> ⚠⚠⚠ CARGANDO PATRÓN DE REPARACIÓN ⚠⚠⚠",
                 ">>> Morty: RICK... ¡¡EL CÓDIGO GENÉTICO SE ESTÁ ROMPIENDO!!",
                 ">>> Rick: Buscá en las COLUMNAS... no las filas, Morty.",
-                ">>> Rick: Pensá como una proteína buscando sentido en medio del caos."
+                ">>> Rick: Pensá como una proteína buscando sentido en medio del caos.",
             ];
 
             let i = 0;
@@ -627,8 +605,6 @@
                     p = document.createElement("div");
                     p.style.marginBottom = "8px";
                     introDiv.appendChild(p);
-                    const duration = calculateTypingDuration(line);
-                    playTypingSound(duration);
                 }
 
                 if (charIndex < line.length) {
@@ -644,12 +620,37 @@
 
                     i++;
                     setTimeout(() => {
-                        if (i < introLines.length) {
-                            typeLine(introLines[i]);
+                        if (i < intro.length) {
+                            typeLine(intro[i]);
                         } else {
-                            setTimeout(() => mostrarGridYTimer(), 2000);
+                            setTimeout(() => mostrarGridYTimer(), 3000); // pausa final AFK
                         }
                     }, 600);
+                }
+            }
+
+            function mostrarGridYTimer() {
+                introDiv.classList.remove("color-cycle");
+                document.getElementById("grid").style.display = "block";
+
+                const timer = document.createElement("div");
+                timer.id = "timerDisplay";
+                timer.innerHTML = "🧬 Tiempo restante: <span id='timeLeft'>60</span>s";
+
+                const wrapper = document.createElement("div");
+                wrapper.style.display = "flex";
+                wrapper.style.justifyContent = "center";
+                wrapper.style.alignItems = "center";
+                wrapper.style.marginTop = "15px";
+                wrapper.appendChild(timer);
+
+                introDiv.insertAdjacentElement("afterend", wrapper);
+                introDiv.style.display = "none";
+                document.getElementById("inputSec").style.display = "block";
+
+                if (!timerStarted) {
+                    timerStarted = true;
+                    startTimer();
                 }
             }
 
@@ -657,7 +658,7 @@
             flash.style.display = "block";
             setTimeout(() => {
                 flash.style.display = "none";
-                typeLine(introLines[0]);
+                typeLine(intro[i]);
             }, 1500);
         }
 

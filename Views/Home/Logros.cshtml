@@ -1,0 +1,275 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sala de Trofeos - C-137</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000810;
+            --fg: #0f0;
+            --gold: #ffd700;
+            --locked: rgba(0,0,0,0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            min-height: 100%;
+            background: #000;
+            color: var(--fg);
+            font-family: 'VT323', monospace;
+        }
+
+        body {
+            overflow-y: scroll;
+            padding: 20px 0 60px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 48px;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .subtitle {
+            font-size: 24px;
+            color: var(--fg);
+            opacity: 0.8;
+        }
+
+        .trophies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .trophy-card {
+            position: relative;
+            aspect-ratio: 16/9;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .trophy-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+            filter: brightness(0.9) contrast(1.1);
+        }
+
+        .trophy-card.locked::before {
+            content: '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⣤⣤⣤⣤⣤⣤⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣶⣿⣿⣿⣿⠿⠿⠿⠿⣿⣿⣿⣶⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣶⣿⣿⡿⠛⠉⠁⠀⢀⣀⣀⢀⠀⠈⠉⠛⢿⣿⣿⣶⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣾⣿⡿⠋⠁⢀⣠⣴⣶⣾⣿⣿⣾⣶⣦⣄⡀⠈⠙⢿⣿⣿⣄⠀⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣿⠏⠀⢀⣴⣿⣿⡿⠟⠛⠋⠙⠛⠛⠿⣿⣿⣦⡀⠀⠹⣿⣿⣧⠀⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⠏⠀⢠⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹⣿⣿⡆⠀⢹⣿⣿⠀⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⡇⠀⣸⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣇⠀⢸⣿⣿⡇⠀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣸⣿⣿⣇⣀⣻⣿⣿⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣿⣿⣿⣀⣸⣿⣿⣇⡀⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⣤⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⠀⠀\A⠀⠀⠀⠀⠀⠀⣼⣿⣿⠋⣁⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣤⣌⠙⣿⣿⣧⠀\A⠀⠀⠀⠀⠀⢸⡿⠿⠧⠼⠿⠿⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⠿⠿⠧⠼⠿⣿⡇\A⠀⠀⠀⠀⠀⢿⣅⣀⣀⣀⣀⣀⣀⣀⣨⣿⣿⣿⣿⡿⠛⠉⠁⠀⠀⡀⠀⠈⠉⠛⢿⣿⣿⣿⣿⣇⣀⣀⣀⣀⣀⣀⣀⣨⡿\A⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠛⠁⢀⣠⣴⣶⣶⣷⣶⣦⣄⡀⠈⠙⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇\A⠀⠀⠀⠀⠀⣾⡏⠉⠉⠉⠉⢹⣿⣿⣿⣿⡟⠁⢀⣴⣿⡿⠟⠛⠉⠉⠙⠻⢿⣿⣦⡀⠈⢻⣿⣿⣿⣿⡏⠉⠉⠉⠉⠹⣷\A⠀⠀⠀⠀⠀⢹⣷⣶⣶⣶⣶⣾⣿⣿⣿⡿⠁⠀⣾⣿⡟⠀⠀⣤⣶⣶⣤⠀⠀⠻⣿⣷⡀⠀⢿⣿⣿⣿⣷⣶⣶⣶⣶⣾⡏\A⠀⠀⠀⠀⠀⣼⡟⠛⠛⠛⠛⢻⣿⣿⣿⡇⠀⢸⣿⣿⠀⠀⢸⣿⣿⣿⣿⡇⠀⠀⢻⣿⡇⠀⢸⣿⣿⣿⡟⠛⠛⠛⠛⠻⣧\A⠀⠀⠀⠀⠀⢻⣧⣤⣤⣤⣤⣼⣿⣿⣿⡇⠀⢸⣿⣿⠀⠀⠀⣿⣿⣿⣿⠀⠀⠀⣾⣿⡇⠀⢸⣿⣿⣿⣧⣤⣤⣤⣤⣼⡟\A⠀⠀⠀⠀⠀⣸⡿⠿⠿⠿⠿⢿⣿⣿⣿⣿⡀⠀⢻⣿⣧⠀⢰⣿⡏⢹⣿⡆⠀⣼⣿⡟⠀⢀⣾⣿⣿⣿⡿⠿⠿⠿⠿⢿⣇\A⠀⠀⠀⠀⠀⢿⣦⣀⣀⣀⣀⣼⣿⣿⣿⣿⣷⡀⠀⠻⠏⠀⣾⣿⣁⣀⣿⣷⠀⠹⠟⠀⢀⣾⣿⣿⣿⣿⣧⣀⣀⣀⣀⣴⡿\A⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀⠛⠿⠿⠿⠿⠛⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇\A⠀⠀⠀⠀⠀⢿⣅⡀⡀⣀⠀⣀⠀⣀⣨⣿⣿⣿⣿⣿⣷⣦⣤⣀⣀⣀⣀⣤⣴⣾⣿⣿⣿⣿⣿⣅⡀⣀⠀⣀⠀⣀⢀⣨⡿\A⠀⠀⠀⠀⠀⠘⣿⣿⣯⠹⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡏⣹⣿⣿⠃\A⠀⠀⠀⠀⠀⠀⢻⣿⣿⣄⡻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⣡⣿⣿⡟⠀\A⠀⠀⠀⠀⠀⠀⠀⠻⢿⣿⣿⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⡿⠟⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠉⠀⠀⠀⠀\A⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀';
+            white-space: pre;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            color: var(--fg);
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            text-align: center;
+            font-family: monospace;
+            text-shadow: 0 0 5px var(--fg);
+            line-height: 1;
+            padding: 0;
+            margin: 0;
+        }
+
+        .trophy-card.locked::after {
+            content: 'ROOM BLOQUEADA';
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--fg);
+            font-size: 24px;
+            text-shadow: 0 0 5px var(--fg);
+            z-index: 2;
+        }
+
+        .trophy-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .trophy-card:not(.locked):hover .trophy-info {
+            transform: translateY(0);
+        }
+
+        .trophy-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .trophy-desc {
+            font-size: 16px;
+            line-height: 1.4;
+            opacity: 0.9;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .trophy-details {
+            font-size: 14px;
+            color: #888;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+            margin-top: 10px;
+            white-space: pre-line;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #000;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background: var(--gold);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-button">&lt; VOLVER</a>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">SALA DE TROFEOS C-137</h1>
+            <p class="subtitle">Logros desbloqueados en el multiverso</p>
+        </div>
+
+        <div class="trophies-grid">
+            @{
+                var roomsCompletadas = new bool[8];
+                for (int i = 1; i <= 8; i++) {
+                    roomsCompletadas[i-1] = Context.Session.GetString($"Room{i}Completed") == "true";
+                }
+                
+                for (int i = 1; i <= 8; i++) {
+                    var isLocked = !roomsCompletadas[i-1];
+                    <div class="trophy-card @(isLocked ? "locked" : "")" onclick="@(isLocked ? "" : $"showRoomDetails({i})")">
+                        <img src="/img/postal@(i).png" alt="Room @i Trophy">
+                        <div class="trophy-info">
+                            <h3 class="trophy-title">Room @i</h3>
+                            <p class="trophy-desc">@GetRoomDescription(i)</p>
+                            @if (!isLocked) {
+                                <div class="trophy-details">@GetRoomDetails(i)</div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <script>
+        function showRoomDetails(roomNumber) {
+            console.log(`Mostrando detalles de Room ${roomNumber}`);
+        }
+    </script>
+</body>
+</html>
+
+@functions {
+    string GetRoomDescription(int roomNumber) {
+        switch (roomNumber) {
+            case 1:
+                return "El Inicio del Caos - La primera grieta en el sistema MVC. Aquí descubriste que estabas atrapado en un bucle de código y tuviste que hackear la consola para iniciar tu escape.";
+            case 2:
+                return "La Paradoja del Tiempo - Enfrentaste un laberinto de bucles temporales. Manipulaste el tiempo mismo para resolver puzzles que desafiaban la lógica lineal.";
+            case 3:
+                return "El Laberinto Cuántico - Te adentraste en una matriz de ADN digital. Decodificaste secuencias genéticas para encontrar la combinación correcta y avanzar.";
+            case 4:
+                return "La Matriz Neural - Hackeaste una red neuronal corrupta. Tuviste que reprogramar patrones sinápticos mientras evitabas ser detectado por el sistema.";
+            case 5:
+                return "El Vórtice Digital - Navegaste a través de un torbellino de datos. Estabilizaste el núcleo del sistema mientras todo se desmoronaba a tu alrededor.";
+            case 6:
+                return "La Singularidad - Te enfrentaste al colapso dimensional. Manipulaste la realidad misma para evitar que el multiverso implosionara.";
+            case 7:
+                return "El Codex Balatro - Dominaste el juego de cartas interdimensional. Venciste a la IA en su propio juego, usando estrategia y suerte para ganar.";
+            case 8:
+                return "La Fuga Final - El último desafío. Reuniste todos tus conocimientos y habilidades para escapar definitivamente del sistema MVC.";
+            default:
+                return "Room desconocida";
+        }
+    }
+
+    string GetRoomDetails(int roomNumber) {
+        switch (roomNumber) {
+            case 1:
+                return "Objetivo: Hackear la consola inicial\nHerramientas: Manipulación de código binario\nDificultad: ★☆☆☆☆";
+            case 2:
+                return "Objetivo: Sincronizar bucles temporales\nHerramientas: Control temporal, debugging\nDificultad: ★★☆☆☆";
+            case 3:
+                return "Objetivo: Decodificar secuencia ADN\nHerramientas: Análisis de patrones, lógica binaria\nDificultad: ★★★☆☆";
+            case 4:
+                return "Objetivo: Reprogramar red neuronal\nHerramientas: Machine learning, evasión de sistemas\nDificultad: ★★★☆☆";
+            case 5:
+                return "Objetivo: Estabilizar el núcleo\nHerramientas: Control de flujo, gestión de memoria\nDificultad: ★★★★☆";
+            case 6:
+                return "Objetivo: Prevenir colapso dimensional\nHerramientas: Manipulación cuántica\nDificultad: ★★★★☆";
+            case 7:
+                return "Objetivo: Vencer al Balatro Codex\nHerramientas: Estrategia, probabilidad\nDificultad: ★★★★★";
+            case 8:
+                return "Objetivo: Escape definitivo\nHerramientas: Todas las anteriores\nDificultad: ★★★★★";
+            default:
+                return "";
+        }
+    }
+} 

@@ -169,9 +169,21 @@
             if (val === "y") {
                 terminal.innerHTML = "";
                 inputLine.style.display = "none";
-                setTimeout(() => {
-                    window.location.href = "/Home/GameStart";
-                }, 500);
+                
+                // Marcar Room1 como completada
+                fetch('/Home/CompleteRoom/1', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => response.json())
+                  .then(data => {
+                    if (data.success) {
+                        setTimeout(() => {
+                            window.location.href = "/Home/GameStart";
+                        }, 500);
+                    }
+                });
             } else if (val === "n") {
                 mostrarErrorRick();
             } else {

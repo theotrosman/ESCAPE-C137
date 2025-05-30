@@ -140,7 +140,7 @@
   <h2>⚠️ Room 6: Caos del Núcleo</h2>
   <p>Rick: Morty, estamos en el núcleo caótico de la realidad. La física no responde. Los bugs están vivos. Y el código... se genera solo.</p>
   <p><strong>OBJETIVO:</strong> Tenés 60 segundos para hacer clic en los <span style="color:#ff66cc">CUADRADOS ACTIVOS</span> que parpadean al azar. Cada clic correcto suma +1. Cada clic fallado resta -1.</p>
-  <p>Lográ <strong>20 puntos</strong> y Rick desbloqueará el núcleo para acceder a la siguiente sala.</p>
+  <p>Lográ <strong>15 puntos</strong> y Rick desbloqueará el núcleo para acceder a la siguiente sala.</p>
 </div>
 <div class="grid" id="grid"></div>
 <div id="score">Puntaje: 0</div>
@@ -242,7 +242,7 @@ function activarRandom() {
 
 function actualizar() {
   scoreDisplay.innerText = `Puntaje: ${score}`;
-  if (score >= 1 && !finalizado) {
+  if (score >= 15 && !finalizado) {
     finalizado = true;
     clearInterval(intervalo);
     document.body.innerHTML = `<div id="finalConsola" style="color: #00ff00; font-family: monospace; padding: 40px; font-size: 16px; white-space: pre-wrap;">

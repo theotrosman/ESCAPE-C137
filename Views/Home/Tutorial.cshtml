@@ -2,64 +2,464 @@
     ViewData["Title"] = "Tutorial";
 }
 
-<div class="tutorial-container">
-    <h1 class="glitch-title" data-text="MANUAL DE ESCAPE MULTIVERSAL">MANUAL DE ESCAPE MULTIVERSAL</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tutorial C-137</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="matrix-bg"></div>
+    <div class="tutorial-container">
+        <div class="rick-portal" onclick="activatePortal(this)">
+            <div class="portal-inner"></div>
+        </div>
+        
+        <h1 class="glitch-title" data-text="MANUAL DE ESCAPE MULTIVERSAL">MANUAL DE ESCAPE MULTIVERSAL</h1>
+        
+        <div class="morty-panic" id="mortyPanic">
+            "Ohh jeez Rick, ¿estás seguro de que deberíamos mostrarles todo esto?"
+        </div>
 
-    <ul class="tutorial-list">
-        <li><span class="bullet">➤</span> Usá los audios de Rick como pistas. Cada uno desbloquea un nuevo nivel lógico.</li>
-        <li><span class="bullet">➤</span> Prestá atención a los bugs: no son errores... son *huecos en el código*.</li>
-        <li><span class="bullet">➤</span> Si ves algo glitcheado, hacé clic. Puede ser un portal oculto.</li>
-        <li><span class="bullet">➤</span> Si el sistema crashea, no te asustes... Rick lo hizo a propósito.</li>
-        <li><span class="bullet">➤</span> El objetivo: escapar del universo MVC y llegar al verdadero C-137.</li>
-    </ul>
+        <ul class="tutorial-list">
+            <li class="tutorial-item" onmouseover="playRickBurp()">
+                <span class="bullet">➤</span> 
+                Usá los audios de Rick como pistas. Cada uno desbloquea un nuevo nivel lógico.
+                <span class="rick-tip">"*burp* Es obvio, Morty!"</span>
+            </li>
+            <li class="tutorial-item" onclick="glitchEffect(this)">
+                <span class="bullet">➤</span> 
+                Prestá atención a los bugs: no son errores... son *huecos en el código*.
+                <div class="hidden-bug">01001000 01001001!</div>
+            </li>
+            <li class="tutorial-item" onmouseover="showPortal(this)">
+                <span class="bullet">➤</span> 
+                Si ves algo glitcheado, hacé clic. Puede ser un portal oculto.
+                <div class="mini-portal"></div>
+            </li>
+            <li class="tutorial-item" onclick="fakeCrash()">
+                <span class="bullet">➤</span> 
+                Si el sistema crashea, no te asustes... Rick lo hizo a propósito.
+                <span class="crash-trigger">[TEST CRASH]</span>
+            </li>
+            <li class="tutorial-item" id="secretKonami">
+                <span class="bullet">➤</span> 
+                El objetivo: escapar del universo MVC y llegar al verdadero C-137.
+                <span class="secret-text">¿Conocés el código Konami? ↑↑↓↓←→←→BA</span>
+            </li>
+        </ul>
 
-    <a href="/Home/Index" class="ascii-button">← VOLVER AL INICIO</a>
-</div>
+        <div class="plumbus-container" onclick="plumbusInfo()">
+            <div class="plumbus">?</div>
+            <div class="plumbus-tooltip">Todo hogar multiversal necesita un Plumbus</div>
+        </div>
 
-@section Styles {
+        <a href="/Home/Index" class="ascii-button" onmouseover="buttonHover(this)">← VOLVER AL INICIO</a>
+        
+        <div id="blueScreen" class="blue-screen">
+            <pre class="bsod-text">
+                MULTIVERSAL_KERNEL_PANIC
+                Error Code: R1CK-M0RTY-137
+                * Attempting to gather entropy from parallel universes...
+                * Restoring quantum state...
+                * Reticulating dimensional splines...
+                Press ANY key to continue (or don't, I'm not your boss)
+            </pre>
+        </div>
+    </div>
+
+    <audio id="burpSound" src="/sounds/rick-burp.mp3" preload="auto"></audio>
+    <audio id="portalSound" src="/sounds/portal-open.mp3" preload="auto"></audio>
+
     <style>
+        :root {
+            --portal-color: #66ff00;
+            --rick-blue: #97DFFC;
+            --morty-yellow: #F8D90F;
+        }
+
+        body {
+            margin: 0;
+            background: #000;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)),
+                        repeating-linear-gradient(0deg, transparent 0, transparent 2px, rgba(0,255,0,0.1) 2px, rgba(0,255,0,0.1) 4px);
+            pointer-events: none;
+            animation: scrollMatrix 20s linear infinite;
+            z-index: 0;
+        }
+
         .tutorial-container {
+            position: relative;
             padding: 60px 20px;
             text-align: center;
-            color: #00ff00;
-            font-family: monospace;
+            z-index: 1;
+        }
+
+        .rick-portal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .portal-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, var(--portal-color) 0%, transparent 70%);
+            animation: portalPulse 2s infinite;
+        }
+
+        .rick-portal:hover {
+            transform: scale(1.2);
         }
 
         .glitch-title {
-            font-size: 28px;
-            animation: flicker 2s infinite;
+            font-size: 36px;
+            position: relative;
+            text-shadow: 2px 2px var(--rick-blue);
+            margin-bottom: 40px;
+        }
+
+        .glitch-title::before,
+        .glitch-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-title::before {
+            left: 2px;
+            text-shadow: -2px 0 red;
+            animation: glitch-1 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-title::after {
+            left: -2px;
+            text-shadow: 2px 0 blue;
+            animation: glitch-2 3s infinite linear alternate-reverse;
+        }
+
+        .morty-panic {
+            color: var(--morty-yellow);
+            font-style: italic;
             margin-bottom: 30px;
+            transform: rotate(-1deg);
+            animation: mortyShake 0.5s infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .tutorial-list {
             text-align: left;
-            max-width: 600px;
+            max-width: 800px;
             margin: auto;
-            font-size: 18px;
-            line-height: 1.8;
+            font-size: 20px;
+            line-height: 2;
+            list-style: none;
+            padding: 0;
+        }
+
+        .tutorial-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tutorial-item:hover {
+            border-color: var(--portal-color);
+            background: rgba(0,255,0,0.1);
+            transform: translateX(10px);
         }
 
         .bullet {
-            color: #00ffcc;
-            margin-right: 8px;
+            color: var(--rick-blue);
+            margin-right: 12px;
+            display: inline-block;
+            transform: scale(1.2);
+        }
+
+        .rick-tip {
+            position: absolute;
+            right: 20px;
+            color: var(--rick-blue);
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tutorial-item:hover .rick-tip {
+            opacity: 1;
+        }
+
+        .hidden-bug {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: monospace;
+            color: red;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tutorial-item:hover .hidden-bug {
+            opacity: 0.7;
+        }
+
+        .mini-portal {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, var(--portal-color), transparent);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .tutorial-item:hover .mini-portal {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.5);
+        }
+
+        .crash-trigger {
+            color: red;
+            margin-left: 10px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+
+        .secret-text {
+            position: absolute;
+            right: 20px;
+            color: rgba(0,255,0,0.3);
+            font-size: 0.8em;
+        }
+
+        .plumbus-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            cursor: pointer;
+        }
+
+        .plumbus {
+            width: 40px;
+            height: 40px;
+            background: pink;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #000;
+            transition: transform 0.3s;
+        }
+
+        .plumbus:hover {
+            transform: rotate(360deg);
+        }
+
+        .plumbus-tooltip {
+            position: absolute;
+            right: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+
+        .plumbus-container:hover .plumbus-tooltip {
+            opacity: 1;
         }
 
         .ascii-button {
+            display: inline-block;
             margin-top: 40px;
-            font-size: 18px;
-            padding: 12px 30px;
-            background: black;
-            color: #00ff00;
-            border: 1px solid #00ff00;
-            font-family: monospace;
+            font-size: 20px;
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--portal-color);
+            border: 2px solid var(--portal-color);
+            font-family: 'VT323', monospace;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ascii-button::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,255,0,0.2), transparent);
+            transition: transform 0.5s;
+        }
+
+        .ascii-button:hover::before {
+            transform: translateY(200%);
         }
 
         .ascii-button:hover {
-            background: #00ff00;
+            background: var(--portal-color);
             color: black;
+            transform: scale(1.1);
+            text-shadow: none;
+        }
+
+        .blue-screen {
+            position: fixed;
+            inset: 0;
+            background: #000084;
+            color: #fff;
+            padding: 50px;
+            font-family: monospace;
+            font-size: 20px;
+            z-index: 1000;
+            display: none;
+        }
+
+        @@keyframes scrollMatrix {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 1000px; }
+        }
+
+        @@keyframes portalPulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        @@keyframes glitch-1 {
+            0% { clip-path: inset(20% 0 30% 0); }
+            100% { clip-path: inset(50% 0 70% 0); }
+        }
+
+        @@keyframes glitch-2 {
+            0% { clip-path: inset(40% 0 60% 0); }
+            100% { clip-path: inset(10% 0 90% 0); }
+        }
+
+        @@keyframes mortyShake {
+            0% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+            100% { transform: rotate(-1deg); }
         }
     </style>
-}
+
+    <script>
+        // Konami Code
+        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    activateKonamiCode();
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
+        function activateKonamiCode() {
+            document.body.style.animation = 'rainbow 2s infinite';
+            const morty = document.getElementById('mortyPanic');
+            morty.style.opacity = '1';
+            morty.textContent = "WUBBA LUBBA DUB DUB!";
+        }
+
+        function playRickBurp() {
+            const audio = document.getElementById('burpSound');
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        }
+
+        function glitchEffect(element) {
+            element.style.animation = 'glitch-1 0.5s infinite';
+            setTimeout(() => {
+                element.style.animation = '';
+            }, 1000);
+        }
+
+        function showPortal(element) {
+            const portal = element.querySelector('.mini-portal');
+            portal.style.opacity = '1';
+            const audio = document.getElementById('portalSound');
+            audio.currentTime = 0;
+            audio.play().catch(() => {});
+        }
+
+        function fakeCrash() {
+            const blueScreen = document.getElementById('blueScreen');
+            blueScreen.style.display = 'block';
+            setTimeout(() => {
+                blueScreen.style.display = 'none';
+            }, 3000);
+        }
+
+        function plumbusInfo() {
+            alert('Todos tienen un Plumbus en casa. Primero, toman el dinglebop y lo suavizan con un montón de fleeb...');
+        }
+
+        function buttonHover(button) {
+            button.style.setProperty('--portal-color', `hsl(${Math.random() * 360}, 100%, 50%)`);
+        }
+
+        function activatePortal(portal) {
+            portal.style.transform = 'scale(20)';
+            portal.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = '/Home/Index';
+            }, 1000);
+        }
+
+        // Easter egg: Konami code indicator
+        let secretText = document.querySelector('.secret-text');
+        secretText.style.opacity = '0';
+        document.getElementById('secretKonami').addEventListener('mouseover', () => {
+            secretText.style.opacity = '0.3';
+        });
+        document.getElementById('secretKonami').addEventListener('mouseout', () => {
+            secretText.style.opacity = '0';
+        });
+    </script>
+</body>
+</html>

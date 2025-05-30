@@ -444,29 +444,38 @@ function checkCollision(rect1, rect2) {
 
 // Funciones de actualización del juego
 function updatePipes(timestamp) {
+    if (!isGameRunning) return;
+
+    // Eliminar tubos fuera de la pantalla
+    pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > 0);
+
+    // Generar nuevos tubos
     if (timestamp - lastPipeSpawn > PIPE_SPAWN_INTERVAL) {
         pipes.push(new Pipe());
         lastPipeSpawn = timestamp;
     }
 
-    pipes.forEach(pipe => pipe.update());
-
-    // Actualizar puntuación y efectos
-    pipes = pipes.filter(pipe => {
-        if (pipe.x + PIPE_WIDTH < 0) {
-            return false;
-        }
-        
-        // Verificar si el pájaro ha pasado el tubo
-        if (!pipe.passed && pipe.x + PIPE_WIDTH < bird.x) {
-            pipe.passed = true;
+    // Actualizar tubos y verificar puntuación
+    pipes.forEach(pipe => {
+        pipe.update();
+        if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x) {
+            pipe.scored = true;
             score++;
             scoreSpan.textContent = score;
-            
-            // Efectos visuales al puntuar
             createScoreEffects();
+            
+            // Activar glitches a los 5 puntos
+            if (score === 5) {
+                console.log('%c🌀 REALITY DISTORTION DETECTED', 'color: #ff0000; font-size: 20px;');
+                glitchActive = true;
+                createGlitchEffect();
+            }
+            
+            // Victoria a los 15 puntos
+            if (score >= 15) {
+                gameWon();
+            }
         }
-        return true;
     });
 }
 
@@ -603,24 +612,22 @@ function gameOver() {
 // Add gameWon function
 function gameWon() {
     isGameRunning = false;
-    gameTitle.textContent = "¡NIVEL COMPLETADO!";
-    gameTitle.classList.add('visible');
-    startMessage.textContent = "¡Has escapado de la simulación!";
-    startMessage.classList.add('visible');
+    console.log('%c🎉 VICTORY ACHIEVED', 'color: #00ff00; font-size: 20px; font-weight: bold;');
     
-    // Create celebration particles
-    for (let i = 0; i < 50; i++) {
-        particles.push(new Particle(
-            Math.random() * canvas.width,
-            Math.random() * canvas.height,
-            glitchColors[Math.floor(Math.random() * glitchColors.length)]
-        ));
-    }
-
-    // Redirect to next level after a delay
-    setTimeout(() => {
-        window.location.href = '/Home/Room9';
-    }, 3000);
+    // Marcar Room8 como completada
+    fetch('/Home/CompleteRoom/8', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                window.location.href = "/Home/Room9";
+            }, 3000);
+        }
+    });
 }
 
 // Iniciar juego

@@ -1741,73 +1741,21 @@
   <button onclick="apostar(500)" class="bet-button">Apostar $500</button>
 </div>
 <script>
-// Mover las definiciones al inicio del script, antes de cualquier uso
-const typeSound = new Audio('/img/sfxtype.mp3');
-typeSound.volume = 0.15;
-
-function calculateTypingDuration(text) {
-  return (text.length / 30) * 1000;
-}
-
-function playTypingSound(duration) {
-  typeSound.currentTime = 0;
-  typeSound.play();
-  
-  const interval = setInterval(() => {
-    if (typeSound.currentTime >= typeSound.duration) {
-      typeSound.currentTime = 0;
-      typeSound.play();
-    }
-  }, 100);
-
-  setTimeout(() => {
-    typeSound.pause();
-    clearInterval(interval);
-  }, duration);
-}
-
-function log(msg, type = 'normal') {
-  const consoleDiv = document.getElementById("console");
-  const className = type === 'error' ? 'glitch' : 
-                    type === 'success' ? 'rainbow' : 
-                    type === 'warning' ? 'reality-break' : '';
-  
-  const duration = calculateTypingDuration(msg);
-  playTypingSound(duration);
-  
-  const div = document.createElement('div');
-  div.className = className;
-  div.style.opacity = '0';
-  consoleDiv.appendChild(div);
-  
-  let currentText = '';
-  const chars = msg.split('');
-  const charInterval = duration / chars.length;
-  
-  chars.forEach((char, i) => {
-    setTimeout(() => {
-      currentText += char;
-      div.textContent = `> ${currentText}`;
-      div.style.opacity = '1';
-    }, i * charInterval);
-  });
-  
-  consoleDiv.scrollTop = consoleDiv.scrollHeight;
-  return duration; // Retornar la duración para secuencias
-}
-
 window.addEventListener('DOMContentLoaded', () => {
   const consoleDiv = document.getElementById('console');
   const instructions = document.getElementById('gameInstructions');
   
+  // Mostrar instrucciones inicialmente
   setTimeout(() => {
     instructions.classList.add('show');
   }, 1000);
   
+  // Ocultar instrucciones después de un tiempo
   setTimeout(() => {
     instructions.classList.remove('show');
   }, 5000);
   
+  // Toggle instrucciones con ESPACIO
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
       e.preventDefault();
@@ -1815,15 +1763,38 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const intro = [
+    "[C137_CONSOLE] Iniciando simulación...",
+    "[RICK] *burp* M-morty... ¿Sabes qué es peor que estar atrapado en un bucle temporal?",
+    "[MORTY] Ohh jeez Rick, ¿q-qué cosa?",
+    "[RICK] Estar atrapado en un JUEGO DE CARTAS INTERDIMENSIONAL, Morty!",
+    "[SISTEMA] ERROR: Detección de anomalía C-137 en el tejido espacio-temporal",
+    "[RICK] Algún idiota convirtió nuestra realidad en un mazo de cartas, Morty.",
+    "[RICK] Y no cualquier idiota, Morty. Fue el CONSEJO DE RICKS.",
+    "[MORTY] P-pero Rick, ¿por qué harían eso?",
+    "[RICK] Porque son unos burócratas aburridos, Morty! *burp* Crearon el BALATRO CODEX.",
+    "[RICK] Un sistema para contener Ricks problemáticos en bucles de juegos de cartas.",
+    "[PC] Probabilidad de escape: 0.0137%",
+    "[RICK] ¡CÁLLATE MÁQUINA ESTÚPIDA! *burp* Morty, necesitamos $2200 para hackear el sistema.",
+    "[PC] ERROR: INTENTO DE OVERRIDE DETECTADO",
+    "[RICK] Cada carta es un fragmento de realidad cristalizada, Morty.",
+    "[RICK] Las cartas raras son grietas en la matriz... podemos usarlas.",
+    "[SISTEMA] ADVERTENCIA: INTEGRIDAD DE LA SIMULACIÓN AL 78% Y DESCENDIENDO",
+    "[MEMORIA] Ecos de las salas anteriores resuenan en el espacio-tiempo...",
+    "[RICK] ¡VAMOS MORTY! ¡ELIGE BIEN O NOS QUEDAREMOS AQUÍ PARA SIEMPRE!",
+    "[C137_CONSOLE] Iniciando protocolo de contención... Buena suerte."
+  ];
+
   let i = 0;
-  function writeNextIntro() {
+  const escribirIntro = setInterval(() => {
     if (i < intro.length) {
       const className = i === 7 ? 'rainbow' : 
                        i === 3 ? 'warning' :
                        i === 8 ? 'reality-break' : '';
+      consoleDiv.innerHTML += `<div class="${className}">> ${intro[i]}</div>`;
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
       
-      const duration = log(intro[i], className === '' ? 'normal' : className);
-      
+      // Efectos especiales para ciertos mensajes
       if (i === 3) {
         document.body.classList.add('reality-break');
         setTimeout(() => document.body.classList.remove('reality-break'), 500);
@@ -1832,101 +1803,223 @@ window.addEventListener('DOMContentLoaded', () => {
         showMemoryEchoes();
       }
       i++;
-      setTimeout(writeNextIntro, duration + 500);
     } else {
+      clearInterval(escribirIntro);
       startAmbientEffects();
       enableButtons();
     }
+  }, 1500);
+
+  if (!document.getElementById('life-bg')) {
+    const lifeCanvas = document.createElement('canvas');
+    lifeCanvas.id = 'life-bg';
+    document.body.prepend(lifeCanvas);
+    startGameOfLifeBG();
   }
-  
-  writeNextIntro();
-});
 
-// Modificar efectoCartaRara para usar la nueva función log
-function efectoCartaRara() {
-  const glitchPhrases = [
-    "[RICK] ¡ESA ES, MORTY! ¡UNA GRIETA EN LA REALIDAD!",
-    "[SISTEMA] ALERTA: ANOMALÍA DIMENSIONAL DETECTADA",
-    "[PC] ERROR: CARD_REALITY_BREACH_IN_PROGRESS",
-    "[RICK] *burp* ¡ESTÁ FUNCIONANDO! ¡EL SISTEMA SE DEBILITA!",
-    "[MORTY] ¡OH DIOS MÍO RICK, LA CARTA ESTÁ GLITCHEANDO!",
-    "[SISTEMA] ADVERTENCIA: INTEGRIDAD DIMENSIONAL COMPROMETIDA"
-  ];
+  // Agregar efectos glitch aleatorios
+  function addGlitchEffects() {
+    const glitchMessages = [
+      "ERR0R: REALITY_BREACH_DETECTED",
+      "WARN1NG: DIMENSIONAL_COLLAPSE_IMMINENT",
+      "CRITICAL: TIMELINE_CORRUPTION_AT_87%",
+      "ALERT: RICK_SANCHEZ_CONTAINMENT_FAILING",
+      "ERROR: QUANTUM_CARBURETOR_OVERFLOW",
+      "WARN: MORTY_WAVES_EXCEEDING_LIMITS",
+      "FATAL: PORTAL_GUN_INTERFERENCE_DETECTED"
+    ];
 
-  document.body.classList.add('reality-break', 'dimensional-shift');
-  document.body.style.filter = 'invert(1) hue-rotate(180deg)';
-  
-  log(random(glitchPhrases), 'warning');
-  
-  // ... resto del código de efectoCartaRara ...
-}
-
-// Modificar gameOver para usar la nueva función log
-function gameOver() {
-  const gameOverSequence = [
-    "[SISTEMA] SECUENCIA DE TERMINACIÓN INICIADA",
-    "[RICK] M-morty... la cagaste... *burp* ...otra vez.",
-    "[MORTY] ¡OH JEEZ OH NO OH JEEZ!",
-    "[PC] REINICIANDO SIMULACIÓN...",
-    "[RICK] ¡AQUÍ VAMOS DE NUEV-"
-  ];
-
-  function playSequence(index) {
-    if (index < gameOverSequence.length) {
-      const duration = log(gameOverSequence[index], 'error');
-      
-      if (index === gameOverSequence.length - 1) {
+    setInterval(() => {
+      if (Math.random() < 0.1) { // 10% chance cada intervalo
+        const glitch = document.createElement('div');
+        glitch.className = 'reality-glitch';
+        glitch.textContent = random(glitchMessages);
+        document.body.appendChild(glitch);
+        
+        // Efecto visual de distorsión
+        document.body.classList.add('reality-break');
         setTimeout(() => {
+          document.body.classList.remove('reality-break');
+          glitch.remove();
+        }, 500);
+        
+        // Mensaje en consola
+        log(glitch.textContent, 'error');
+      }
+    }, 5000);
+  }
+
+  // Mejorar los efectos de carta rara
+  function efectoCartaRara() {
+    const glitchPhrases = [
+      "[RICK] ¡ESA ES, MORTY! ¡UNA GRIETA EN LA REALIDAD!",
+      "[SISTEMA] ALERTA: ANOMALÍA DIMENSIONAL DETECTADA",
+      "[PC] ERROR: CARD_REALITY_BREACH_IN_PROGRESS",
+      "[RICK] *burp* ¡ESTÁ FUNCIONANDO! ¡EL SISTEMA SE DEBILITA!",
+      "[MORTY] ¡OH DIOS MÍO RICK, LA CARTA ESTÁ GLITCHEANDO!",
+      "[SISTEMA] ADVERTENCIA: INTEGRIDAD DIMENSIONAL COMPROMETIDA"
+    ];
+
+    // Efectos visuales intensificados
+    document.body.classList.add('reality-break', 'dimensional-shift');
+    document.body.style.filter = 'invert(1) hue-rotate(180deg)';
+    
+    // Mensaje aleatorio del lore
+    log(random(glitchPhrases), 'warning');
+    
+    // Más partículas y efectos
+    for (let i = 0; i < 120; i++) {
+      setTimeout(() => {
+        const p = document.createElement('div');
+        p.className = 'quantum-particle';
+        p.style.position = 'fixed';
+        p.style.left = Math.random() * window.innerWidth + 'px';
+        p.style.top = Math.random() * window.innerHeight + 'px';
+        p.style.width = p.style.height = (4 + Math.random() * 8) + 'px';
+        p.style.background = `hsl(${Math.random()*360},100%,60%)`;
+        p.style.borderRadius = '50%';
+        p.style.zIndex = 9999;
+        document.body.appendChild(p);
+        
+        // Animación de partículas más caótica
+        p.animate([
+          { transform: 'translate(0) rotate(0deg) scale(1)', opacity: 1 },
+          { transform: `translate(${Math.random()*200-100}px, ${Math.random()*200-100}px) rotate(${Math.random()*720}deg) scale(0)`, opacity: 0 }
+        ], {
+          duration: 1000 + Math.random() * 1000,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        }).onfinish = () => p.remove();
+      }, Math.random() * 1000);
+    }
+
+    setTimeout(() => {
+      document.body.classList.remove('reality-break', 'dimensional-shift');
+      document.body.style.filter = '';
+    }, 1500);
+  }
+
+  // Mejorar el game over con más drama
+  function gameOver() {
+    const gameOverSequence = [
+      "[SISTEMA] SECUENCIA DE TERMINACIÓN INICIADA",
+      "[RICK] M-morty... la cagaste... *burp* ...otra vez.",
+      "[MORTY] ¡OH JEEZ OH NO OH JEEZ!",
+      "[PC] REINICIANDO SIMULACIÓN...",
+      "[RICK] ¡AQUÍ VAMOS DE NUEV-"
+    ];
+
+    gameOverSequence.forEach((msg, i) => {
+      setTimeout(() => {
+        log(msg, 'error');
+        if (i === gameOverSequence.length - 1) {
           document.body.classList.add('reality-collapse');
           setTimeout(() => {
             alert("Te quedaste sin dinero. Reiniciando sala...");
             window.location.href = "/Home/Room7codex";
           }, 1000);
-        }, duration);
-      } else {
-        setTimeout(() => playSequence(index + 1), duration + 500);
-      }
-    }
+        }
+      }, i * 800);
+    });
   }
-  
-  playSequence(0);
-}
 
-// Modificar celebrarVictoria para usar la nueva función log
-function celebrarVictoria() {
-  const victorySequence = [
-    "[RICK] ¡WUBBA LUBBA DUB DUB! ¡LO LOGRAMOS MORTY!",
-    "[MORTY] ¿En-enserio lo hicimos, Rick?",
-    "[RICK] ¡HACKEE EL SISTEMA, BABY! *burp*",
-    "[PC] ERROR: SIMULACIÓN COMPROMETIDA",
-    "[SISTEMA] ALERTA: PRISIONERO C-137 HA ESCAPADO",
-    "[RICK] ¡HASTA NUNCA, IDIOTAS!",
-    "[SISTEMA] INICIANDO PROTOCOLOS DE CONTINGENCIA...",
-    "[RICK] ¡DEMASIADO TARDE! ¡VÁMONOS MORTY!"
-  ];
-
-  function playSequence(index) {
-    if (index < victorySequence.length) {
-      const duration = log(victorySequence[index], index % 2 === 0 ? 'success' : 'rainbow');
-      
-      if (index === victorySequence.length - 1) {
-        setTimeout(() => {
-          document.body.classList.add('victory-effect', 'dimensional-breach');
-          setTimeout(() => {
-            alert("¡Felicitaciones! Has vencido al Balatro Codex.\nPasando a Room 8...");
-            window.location.href = "/Home/Room8";
-          }, 2000);
-        }, duration);
-      } else {
-        setTimeout(() => playSequence(index + 1), duration + 500);
-      }
-    }
+  // Mejorar la celebración de victoria
+  function celebrarVictoria() {
+    log("[VICTORIA FINAL] ¡Has dominado el Balatro Codex!", 'rainbow');
+    log("[RICK] ¡Wubba Lubba Dub Dub! ¡Lo logramos Morty!", 'success');
+    
+    // Epic victory effects
+    document.body.classList.add('victory-effect');
+    showMemoryEchoes();
+    
+    // Marcar Room7 como completada
+    fetch('/Home/CompleteRoom/7', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                alert("¡Felicitaciones! Has vencido al Balatro Codex.\nPasando a Room 8...");
+                window.location.href = "/Home/Room8";
+            }, 3000);
+        }
+    });
   }
-  
-  playSequence(0);
-}
 
-// ... resto del código existente ...
+  // Estilos adicionales para los nuevos efectos
+  const newStyles = `
+    .reality-glitch {
+      position: fixed;
+      color: #0f0;
+      font-family: monospace;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 9999;
+      text-shadow: 
+        2px 2px #f00,
+        -2px -2px #0ff;
+      animation: glitchText 0.3s infinite;
+    }
+
+    .quantum-particle {
+      position: absolute;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      filter: blur(2px);
+    }
+
+    .dimensional-shift {
+      animation: dimensionalShift 1s infinite;
+    }
+
+    .reality-collapse {
+      animation: realityCollapse 2s forwards;
+    }
+
+    .dimensional-breach {
+      animation: dimensionalBreach 3s infinite;
+    }
+
+    @@keyframes glitchText {
+      0%, 100% { transform: translate(0); }
+      25% { transform: translate(5px, -5px); }
+      50% { transform: translate(-5px, 5px); }
+      75% { transform: translate(5px, 5px); }
+    }
+
+    @@keyframes dimensionalShift {
+      0%, 100% { transform: scale(1) skew(0deg); }
+      25% { transform: scale(1.1) skew(5deg); }
+      50% { transform: scale(0.9) skew(-5deg); }
+      75% { transform: scale(1.05) skew(3deg); }
+    }
+
+    @@keyframes realityCollapse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.5); filter: brightness(2); }
+      100% { transform: scale(0); filter: brightness(0); }
+    }
+
+    @@keyframes dimensionalBreach {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      50% { filter: hue-rotate(180deg) brightness(1.5); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+  `;
+
+  // Agregar los nuevos estilos al documento
+  const styleSheet = document.createElement("style");
+  styleSheet.textContent = newStyles;
+  document.head.appendChild(styleSheet);
+
+  // Iniciar efectos glitch cuando carga la página
+  window.addEventListener('DOMContentLoaded', () => {
+    addGlitchEffects();
+    // ... resto del código de inicialización ...
+  });
+});
 
 function enableButtons() {
   const buttons = document.querySelectorAll('.bet-button');
@@ -2634,8 +2727,6 @@ function mostrarMoneyPopup(text, isGain) {
   document.body.appendChild(popup);
   setTimeout(() => popup.remove(), 1200);
 }
-
-// ... resto del código existente ...
 </script>
 </body>
 </html>
