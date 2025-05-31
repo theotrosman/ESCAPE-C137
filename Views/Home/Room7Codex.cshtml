@@ -3003,136 +3003,6 @@
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
-    @@keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .wildcard {
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    .wildcard:hover:not(.used) {
-      transform: scale(1.1) !important;
-    }
-    
-    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
-    .glow-blue { box-shadow: 0 0 20px #00ffff; }
-    .glow-gold { box-shadow: 0 0 20px #ffd700; }
-    .glow-green { box-shadow: 0 0 20px #00ff00; }
-    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
-    .glow-red { box-shadow: 0 0 20px #ff0000; }
-    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
-    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
-    
-    .wildcard.used {
-      filter: grayscale(1);
-      transform: scale(0.9);
-      opacity: 0.5;
-    }
-    
-    @@keyframes useEffect {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.5); opacity: 0.5; }
-      100% { transform: scale(1); opacity: 0.5; }
-    }
-
-    @@keyframes float {
-      0% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-      100% { transform: translateY(0px); }
-    }
-    
-    .wildcard {
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    .wildcard:hover:not(.used) {
-      transform: scale(1.1) !important;
-    }
-    
-    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
-    .glow-blue { box-shadow: 0 0 20px #00ffff; }
-    .glow-gold { box-shadow: 0 0 20px #ffd700; }
-    .glow-green { box-shadow: 0 0 20px #00ff00; }
-    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
-    .glow-red { box-shadow: 0 0 20px #ff0000; }
-    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
-    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
-    
-    .wildcard.used {
-      filter: grayscale(1);
-      transform: scale(0.9);
-      opacity: 0.5;
-    }
-    
-    @@keyframes useEffect {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.5); opacity: 0.5; }
-      100% { transform: scale(1); opacity: 0.5; }
-    }
-
-    @@keyframes shake {
-      0%, 100% { transform: translate(0, 0); }
-      25% { transform: translate(5px, 5px); }
-      50% { transform: translate(-5px, -5px); }
-      75% { transform: translate(-5px, 5px); }
-    }
-
-    @@keyframes drunk {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(5deg); }
-      75% { transform: rotate(-5deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    .wildcard {
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    .wildcard.troll {
-      animation: float 3s ease-in-out infinite, shake 0.5s ease-in-out infinite;
-    }
-
-    .card-drunk {
-      animation: drunk 3s ease-in-out infinite;
-    }
-
-    .wildcard:hover:not(.used) {
-      transform: scale(1.1) !important;
-    }
-    
-    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
-    .glow-blue { box-shadow: 0 0 20px #00ffff; }
-    .glow-gold { box-shadow: 0 0 20px #ffd700; }
-    .glow-green { box-shadow: 0 0 20px #00ff00; }
-    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
-    .glow-red { box-shadow: 0 0 20px #ff0000; }
-    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
-    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
-    .glow-pink { box-shadow: 0 0 20px #ff69b4; }
-    .glow-brown { box-shadow: 0 0 20px #8b4513; }
-    .glow-gray { box-shadow: 0 0 20px #808080; }
-    
-    .wildcard.used {
-      filter: grayscale(1);
-      transform: scale(0.9);
-      opacity: 0.5;
-    }
-    
-    .card-highlight {
-      box-shadow: 0 0 20px #ff0000;
-      transform: scale(1.1);
-      transition: all 0.3s ease;
-    }
-    
-    .card-correct-highlight {
-      box-shadow: 0 0 20px #00ff00;
-      transform: scale(1.1);
-      transition: all 0.3s ease;
-    }
   </style>
 </head>
 <body>
@@ -3182,7 +3052,11 @@ const songs = [
   '/img/pokerface.mp3',
   '/img/karmapolice.mp3',
   '/img/balatrotheme.mp3',
-  '/img/yuugensong.mp3'  // Fixed filename
+  '/img/yuugensong.mp3',
+   '/img/cemetrygates.mp3',
+    '/img/domogenesis.mp3',
+     '/img/americanboy.mp3',
+      '/img/touchthesky.mp3'  // Fixed filename
 ];
 
 let currentSong = null;
@@ -3816,8 +3690,8 @@ function dealInitialCards() {
     }
     
     setTimeout(() => {
-      inicializarCartas();
-      estado = "esperando";
+  inicializarCartas();
+  estado = "esperando";
       dealingInitialCards = false;
       actualizarHUD();
     }, 1000);
@@ -3979,7 +3853,7 @@ function apostar(cantidad) {
   if (dinero === 0) {
     log("[ALL-IN] ¡Última oportunidad! La realidad pende de un hilo...", 'warning');
   } else {
-    log(`[APUESTA] $${cantidad} en juego. Mezclando realidades...`, 'warning');
+  log(`[APUESTA] $${cantidad} en juego. Mezclando realidades...`, 'warning');
   }
   
   showMemoryEchoes();
@@ -4058,146 +3932,66 @@ function mezclar() {
 
 function mousePressed() {
   if (estado !== "esperandoClick") return;
-  
   for (let i = 0; i < cartas.length; i++) {
     if (cartas[i].contiene(mouseX, mouseY) && !cartas[i].volteada) {
       estado = "revelando";
-      cartas[i].flip(true);
-      
+      cartas[i].flip(true); // Initial flip when clicked
       setTimeout(() => {
         if (cartas[i].rara) {
           efectoCartaRara();
         }
-        
-        const cartasVolteadas = cartas.filter(c => c.volteada).length;
-        const isFirstCard = cartasVolteadas === 1;
-        
-        if (cartas[i].correcta && !cartas[i].revealedByWildcard) {
+        if (cartas[i].correcta) {
           combo++;
           aciertos++;
+          let multiplicador = 2 + (combo * 0.5);
+          let ganancia = Math.floor(apuesta * multiplicador);
+          mostrarMoneyPopup(`+$${ganancia}`, true);
+          const moneyPopup = document.createElement('div');
+          moneyPopup.className = 'money-change';
+          moneyPopup.textContent = `+$${ganancia}`;
+          moneyPopup.style.left = `${mouseX}px`;
+          moneyPopup.style.top = `${mouseY}px`;
+          document.body.appendChild(moneyPopup);
+          setTimeout(() => moneyPopup.remove(), 1000);
+          dinero += ganancia;
+          cartas[i].correct = true;
+          cartas[i].volteada = true; // Ensure card stays flipped
           
-          if (isFirstCard) {
-            log("[ACIERTO] ¡Primera carta correcta!", 'success');
-            cartas[i].correct = true;
-            cartas[i].volteada = true;
-            estado = "esperandoClick";
-          } else {
-            let multiplicador = 2;
-            if (cartas.find(c => c.volteada && c.correcta && c !== cartas[i])) {
-              multiplicador = 3.5; // 2 * 1.5x bonus
-            }
-            
-            if (doubleActive) {
-              multiplicador *= 2;
-              doubleActive = false;
-            }
-            
-            let ganancia = Math.floor(apuesta * multiplicador);
-            mostrarMoneyPopup(`+$${ganancia}`, true);
-            dinero += ganancia;
-            cartas[i].correct = true;
-            cartas[i].volteada = true;
-            
-            log(`[VICTORIA] ¡Ganaste $${ganancia}!`, 'success');
-            
-            setTimeout(() => {
-              cartas.forEach(c => {
-                c.flip(true);
-                c.volteada = true;
-              });
-              
-              setTimeout(() => {
-                cartas.forEach(c => {
-                  c.flip(false);
-                  c.volteada = false;
-                  c.correct = false;
-                  c.wrong = false;
-                  c.revealedByWildcard = false;
-                });
-                estado = "esperando";
-              }, 1500);
-            }, 1000);
+          // Verificar si encontró las dos cartas correctas
+          const cartasCorrectasEncontradas = cartas.filter(c => c.volteada && c.correcta).length;
+          if (cartasCorrectasEncontradas === NUM_CARTAS_CORRECTAS) {
+            // Bono por encontrar ambas cartas
+            const bonusGanancia = Math.floor(apuesta * (combo + 1));
+            dinero += bonusGanancia;
+            mostrarMoneyPopup(`+$${bonusGanancia} ¡BONUS!`, true);
+            log(`[BONUS] ¡Has encontrado las dos cartas! Bonus: $${bonusGanancia}`, 'success');
+          }
+          
+          if (dinero >= 3100) {
+            celebrarVictoria();
           }
         } else {
-          if (cartas[i].revealedByWildcard) {
-            log("[REVEAL] Esta carta fue revelada por el comodín", 'warning');
-            cartas[i].flip(false);
-            estado = "esperandoClick";
-            return;
-          }
-          
           combo = 0;
           cartas[i].wrong = true;
-          cartas[i].volteada = true;
-          
-          let perdida;
-          if (isFirstCard) {
-            perdida = Math.floor(apuesta * 0.5);
-            if (shieldActive) {
-              shieldActive = false;
-              log("[SHIELD] ¡El escudo te protegió de la pérdida!", 'success');
-              perdida = 0;
-            } else if (safeActive) {
-              perdida = Math.floor(perdida * 0.5);
-              log("[SAFE] ¡Pérdida reducida al 50%!", 'success');
+          cartas[i].volteada = true; // Ensure card stays flipped
+          mostrarMoneyPopup(`-$${apuesta}`, false);
+          log("[FALLO] Carta incorrecta", 'error');
+          document.body.classList.add('reality-break');
+          setTimeout(() => {
+            cartas.forEach(c => {
+              c.wrong = false;
+              c.flip(false);
+              c.volteada = false;
+            });
+            document.body.classList.remove('reality-break');
+            estado = "esperando";
+            if (dinero < 100 && estado === "esperando") {
+              log("[GAME OVER] Te quedaste sin dinero suficiente para seguir...", 'error');
+              setTimeout(() => gameOver(), 1000);
             }
-            if (perdida > 0) {
-              mostrarMoneyPopup(`-$${perdida}`, false);
-              dinero -= perdida;
-              log("[FALLO] Primera carta incorrecta. Perdiste 50%", 'error');
-            }
-            estado = "esperandoClick";
-          } else {
-            if (cartas.find(c => c.volteada && c.correcta && c !== cartas[i])) {
-              perdida = Math.floor(apuesta * 0.25);
-              log("[FALLO] Segunda carta incorrecta, pero la primera fue correcta. Pérdida reducida.", 'warning');
-            } else {
-              perdida = Math.floor(apuesta * 0.5);
-              log("[FALLO] Segunda carta incorrecta.", 'error');
-            }
-            
-            if (shieldActive) {
-              shieldActive = false;
-              log("[SHIELD] ¡El escudo te protegió de la pérdida!", 'success');
-              perdida = 0;
-            } else if (safeActive) {
-              perdida = Math.floor(perdida * 0.5);
-              log("[SAFE] ¡Pérdida reducida al 50%!", 'success');
-            }
-            
-            if (perdida > 0) {
-              mostrarMoneyPopup(`-$${perdida}`, false);
-              dinero -= perdida;
-            }
-            
-            setTimeout(() => {
-              cartas.forEach(c => {
-                c.flip(true);
-                c.volteada = true;
-              });
-              
-              setTimeout(() => {
-                cartas.forEach(c => {
-                  c.flip(false);
-                  c.volteada = false;
-                  c.wrong = false;
-                  c.revealedByWildcard = false;
-                });
-                estado = "esperando";
-                
-                if (dinero < 100) {
-                  log("[GAME OVER] Te quedaste sin dinero suficiente para seguir...", 'error');
-                  setTimeout(() => gameOver(), 1000);
-                }
-              }, 1500);
-            }, 1000);
+          }, 1000);
           }
-        }
-        
-        if (dinero >= 3100) {
-          celebrarVictoria();
-        }
-        
+        verificarCartas();
         actualizarHUD();
       }, 500);
       break;
@@ -4206,20 +4000,74 @@ function mousePressed() {
 }
 
 function verificarCartas() {
-  const cartasCorrectasVolteadas = cartas.filter(c => c.volteada && c.correcta).length;
-  const cartasIncorrectasVolteadas = cartas.filter(c => c.volteada && !c.correcta).length;
+  const cartasVolteadas = cartas.filter(c => c.volteada);
+  const cartasCorrectasVolteadas = cartasVolteadas.filter(c => c.correcta).length;
+  const cartasIncorrectasVolteadas = cartasVolteadas.filter(c => !c.correcta).length;
   
-  if (cartasCorrectasVolteadas === NUM_CARTAS_CORRECTAS) {
-    // Victoria - encontró las dos cartas correctas
+  // Primera carta
+  if (cartasVolteadas.length === 1) {
+    const primeraCarta = cartasVolteadas[0];
+    if (!primeraCarta.correcta) {
+      // Erró la primera carta - pierde 50% de la apuesta
+      primeraCarta.wrong = true;
+      dinero -= Math.floor(apuestaActual * 0.5);
+      log("[PRIMERA CARTA] Incorrecta. Pierdes 50% de la apuesta.", 'error');
+      mostrarMoneyPopup(`-$${Math.floor(apuestaActual * 0.5)}`, false);
+    } else {
+      // Acertó la primera carta
+      primeraCarta.correct = true;
+      log("[PRIMERA CARTA] ¡Correcta! Continúa con la segunda carta.", 'success');
+    }
+    estado = "esperandoClick"; // Siempre continuar a la segunda carta
+    return;
+  }
+
+  // Segunda carta
+  if (cartasVolteadas.length === 2) {
+    const primeraCarta = cartasVolteadas[0];
+    const segundaCarta = cartasVolteadas[1];
+    
+    if (primeraCarta.correcta) {
+      // Primera carta fue correcta
+      if (segundaCarta.correcta) {
+        // ¡Ambas cartas correctas! Gana 1.5x más en la segunda
+        segundaCarta.correct = true;
+        const bonusGanancia = Math.floor(apuestaActual * 1.5);
+        dinero += apuestaActual + bonusGanancia;
+        combo++;
+        log("[VICTORIA] ¡Encontraste ambas cartas! Bonus de 1.5x en la segunda.", 'success');
+        mostrarMoneyPopup(`+$${apuestaActual + bonusGanancia}`, true);
+      } else {
+        // Primera bien, segunda mal - pierde solo 0.25x
+        segundaCarta.wrong = true;
+        const penalizacionReducida = Math.floor(apuestaActual * 0.25);
+        dinero -= penalizacionReducida;
+        combo = 0;
+        log("[SEGUNDA CARTA] Incorrecta. Pierdes solo 25% de la apuesta.", 'warning');
+        mostrarMoneyPopup(`-$${penalizacionReducida}`, false);
+      }
+    } else {
+      // Primera carta fue incorrecta
+      if (segundaCarta.correcta) {
+        segundaCarta.correct = true;
+        log("[SEGUNDA CARTA] ¡Correcta! Pero ya perdiste 50% por la primera.", 'warning');
+      } else {
+        // Ambas incorrectas - pierde el 50% restante
+        segundaCarta.wrong = true;
+        dinero -= Math.floor(apuestaActual * 0.5);
+        combo = 0;
+        log("[DERROTA] Ambas cartas incorrectas. Pierdes el 50% restante.", 'error');
+        mostrarMoneyPopup(`-$${Math.floor(apuestaActual * 0.5)}`, false);
+      }
+    }
+
+    // Mostrar todas las cartas y preparar siguiente ronda
     setTimeout(() => {
-      log("[VICTORIA] ¡Has encontrado las dos cartas correctas!", 'success');
-      // Mostrar todas las cartas antes de reiniciar
       cartas.forEach(c => {
         c.flip(true);
         c.volteada = true;
       });
       
-      // Esperar a que se vean todas las cartas y luego reiniciar
       setTimeout(() => {
         cartas.forEach(c => {
           c.flip(false);
@@ -4231,33 +4079,9 @@ function verificarCartas() {
         });
         estado = "esperando";
         inicializarCartas();
+        actualizarHUD();
       }, 1500);
     }, 1000);
-  } else if (cartasIncorrectasVolteadas > 0) {
-    // Derrota - volteó una carta incorrecta
-    setTimeout(() => {
-      // Mostrar todas las cartas antes de reiniciar
-      cartas.forEach(c => {
-        c.flip(true);
-        c.volteada = true;
-      });
-      
-      // Esperar a que se vean todas las cartas y luego reiniciar
-      setTimeout(() => {
-        cartas.forEach(c => {
-          c.flip(false);
-          c.volteada = false;
-          c.flipProgress = 0;
-          c.targetFlip = 0;
-          c.correct = false;
-          c.wrong = false;
-        });
-        estado = "esperando";
-      }, 1000);
-    }, 500);
-  } else {
-    // Continuar jugando - aún no ha encontrado todas las cartas correctas
-    estado = "esperandoClick";
   }
 }
 
@@ -4609,233 +4433,6 @@ function apostarTodo() {
   log("[ALL-IN] ¡Apostando todo! La realidad pende de un hilo...", 'warning');
   apostar(dinero);
 }
-
-// Wildcard variables
-const possibleWildcards = [
-  { name: 'Reveal', emoji: '👁️', description: 'Revela una carta correcta', effect: 'glow-purple' },
-  { name: 'Shield', emoji: '🛡️', description: 'Protege contra una pérdida', effect: 'glow-blue' },
-  { name: 'Double', emoji: '✨', description: 'Duplica la próxima ganancia', effect: 'glow-gold' },
-  { name: 'Skip', emoji: '⏭️', description: 'Salta a la siguiente ronda', effect: 'glow-green' },
-  { name: 'Shuffle', emoji: '🔄', description: 'Reordena todas las cartas', effect: 'glow-orange' },
-  { name: 'ShowBoth', emoji: '🎯', description: 'Marca las dos cartas correctas', effect: 'glow-pink' },
-  { name: 'Cash', emoji: '💰', description: '+500$ instantáneos', effect: 'glow-yellow' },
-  // Comodines troll
-  { name: 'Reverse', emoji: '🔄', description: 'Invierte los controles', effect: 'glow-red', troll: true },
-  { name: 'Drunk', emoji: '🍺', description: 'Las cartas se mueven solas', effect: 'glow-brown', troll: true },
-  { name: 'Chaos', emoji: '🌪️', description: '???', effect: 'glow-purple', troll: true },
-  { name: 'Fake', emoji: '🎭', description: 'Comodín falso', effect: 'glow-gray', troll: true }
-];
-
-// Seleccionar 3 wildcards aleatorios al inicio
-let wildcards = [];
-const usedIndices = new Set();
-while (wildcards.length < 3) {
-  const index = Math.floor(Math.random() * possibleWildcards.length);
-  if (!usedIndices.has(index)) {
-    usedIndices.add(index);
-    wildcards.push({...possibleWildcards[index], used: false});
-  }
-}
-
-// Add wildcard UI
-const wildcardContainer = document.createElement('div');
-wildcardContainer.id = 'wildcard-container';
-wildcardContainer.style.cssText = `
-  position: fixed;
-  top: 50%;
-  right: 20px;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  z-index: 1000;
-`;
-
-// Add CSS for glow effects
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-  }
-  
-  .wildcard {
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  .wildcard:hover:not(.used) {
-    transform: scale(1.1) !important;
-  }
-  
-  .glow-purple { box-shadow: 0 0 20px #ff00ff; }
-  .glow-blue { box-shadow: 0 0 20px #00ffff; }
-  .glow-gold { box-shadow: 0 0 20px #ffd700; }
-  .glow-green { box-shadow: 0 0 20px #00ff00; }
-  .glow-orange { box-shadow: 0 0 20px #ff8c00; }
-  .glow-red { box-shadow: 0 0 20px #ff0000; }
-  .glow-cyan { box-shadow: 0 0 20px #00ffff; }
-  .glow-yellow { box-shadow: 0 0 20px #ffff00; }
-  .glow-pink { box-shadow: 0 0 20px #ff69b4; }
-  .glow-brown { box-shadow: 0 0 20px #8b4513; }
-  .glow-gray { box-shadow: 0 0 20px #808080; }
-  
-  .wildcard.used {
-    filter: grayscale(1);
-    transform: scale(0.9);
-    opacity: 0.5;
-  }
-  
-  .card-highlight {
-    box-shadow: 0 0 20px #ff0000;
-    transform: scale(1.1);
-    transition: all 0.3s ease;
-  }
-  
-  .card-correct-highlight {
-    box-shadow: 0 0 20px #00ff00;
-    transform: scale(1.1);
-    transition: all 0.3s ease;
-  }
-`;
-document.head.appendChild(styleSheet);
-
-wildcards.forEach((card, index) => {
-  const wildcardElement = document.createElement('div');
-  wildcardElement.className = `wildcard ${card.effect}`;
-  wildcardElement.style.cssText = `
-    width: 80px;
-    height: 120px;
-    background: linear-gradient(45deg, #1a1a1a, #4a4a4a);
-    border: 2px solid #00ff00;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #00ff00;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    opacity: ${card.used ? 0.5 : 1};
-    position: relative;
-    animation-delay: ${index * 0.2}s;
-  `;
-  
-  wildcardElement.innerHTML = `
-    <div style="font-size: 32px; margin-bottom: 5px;">${card.emoji}</div>
-    <div style="font-weight: bold; margin-bottom: 5px;">${card.name}</div>
-    <div style="font-size: 12px; text-align: center; padding: 0 5px;">${card.description}</div>
-  `;
-  
-  wildcardElement.addEventListener('click', () => useWildcard(index));
-  
-  wildcardContainer.appendChild(wildcardElement);
-});
-
-document.body.appendChild(wildcardContainer);
-
-// Wildcard usage function
-function useWildcard(index) {
-  if (estado !== "esperandoClick" || wildcards[index].used) return;
-  
-  const wildcard = wildcards[index];
-  wildcard.used = true;
-  const element = document.querySelectorAll('.wildcard')[index];
-  element.classList.add('used');
-  
-  if (wildcard.troll) {
-    element.classList.add('troll');
-  }
-  
-  switch(wildcard.name) {
-    case 'Reveal':
-      const correctCards = cartas.filter(c => c.correcta && !c.volteada);
-      if (correctCards.length > 0) {
-        const randomCorrect = correctCards[Math.floor(Math.random() * correctCards.length)];
-        randomCorrect.element.classList.add('card-correct-highlight');
-        setTimeout(() => {
-          randomCorrect.element.classList.remove('card-correct-highlight');
-        }, 1000);
-        log("[REVEAL] ¡Carta correcta marcada!", 'success');
-      }
-      break;
-    case 'Shield':
-      shieldActive = true;
-      log("[SHIELD] Protección activada para la próxima pérdida", 'success');
-      break;
-    case 'Double':
-      doubleActive = true;
-      log("[DOUBLE] Próxima ganancia duplicada", 'success');
-      break;
-    case 'Skip':
-      estado = "esperando";
-      cartas.forEach(c => {
-        c.flip(true);
-        setTimeout(() => {
-          c.flip(false);
-          c.volteada = false;
-        }, 1000);
-      });
-      log("[SKIP] Saltando a la siguiente ronda", 'warning');
-      break;
-    case 'Shuffle':
-      mezclar();
-      log("[SHUFFLE] ¡Cartas reordenadas!", 'warning');
-      break;
-    case 'ShowBoth':
-      const correctOnes = cartas.filter(c => c.correcta);
-      correctOnes.forEach(c => {
-        c.element.classList.add('card-correct-highlight');
-      });
-      setTimeout(() => {
-        correctOnes.forEach(c => {
-          c.element.classList.remove('card-correct-highlight');
-        });
-      }, 500);
-      log("[SHOWBOTH] ¡Marcando las cartas correctas!", 'success');
-      break;
-    case 'Cash':
-      dinero += 500;
-      actualizarHUD();
-      mostrarMoneyPopup("+$500", true);
-      log("[CASH] ¡+500$ instantáneos!", 'success');
-      break;
-    // Comodines troll
-    case 'Reverse':
-      document.body.style.transform = 'scale(-1, 1)';
-      setTimeout(() => {
-        document.body.style.transform = '';
-      }, 10000);
-      log("[TROLL] ¡Controles invertidos por 10 segundos!", 'warning');
-      break;
-    case 'Drunk':
-      cartas.forEach(c => c.element.classList.add('card-drunk'));
-      setTimeout(() => {
-        cartas.forEach(c => c.element.classList.remove('card-drunk'));
-      }, 15000);
-      log("[TROLL] ¡Las cartas están borrachas por 15 segundos!", 'warning');
-      break;
-    case 'Chaos':
-      // Efecto caótico: mezcla cartas, invierte controles y hace que se muevan
-      mezclar();
-      cartas.forEach(c => c.element.classList.add('card-drunk'));
-      document.body.style.transform = 'scale(-1, 1)';
-      setTimeout(() => {
-        cartas.forEach(c => c.element.classList.remove('card-drunk'));
-        document.body.style.transform = '';
-      }, 5000);
-      log("[CHAOS] ¡CAOS TOTAL!", 'error');
-      break;
-    case 'Fake':
-      log("[FAKE] Este comodín no hace nada... ¡Te engañé!", 'warning');
-      break;
-  }
-}
-
-let shieldActive = false;
-let doubleActive = false;
-let safeActive = false;
 </script>
 </body>
 </html>
