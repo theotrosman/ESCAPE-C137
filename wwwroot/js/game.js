@@ -950,4 +950,177 @@ function drawHand(predictions) {
             handCtx.fill();
         });
     }
+}
+
+function preload() {
+    cartaImgs = [];
+    for (let i = 1; i <= 33; i++) {  // Aumentado a 33 cartas
+        cartaImgs.push(loadImage(`/img/carta${i}.png`));
+    }
+    backImg = loadImage('/img/dorsocard.jfif');
+}
+
+class Carta {
+    constructor(idx, tx, index) {
+        this.idx = idx;
+        this.img = cartaImgs[idx];
+        this.tx = tx;
+        this.ty = 0;
+        this.x = tx;
+        this.y = 0;
+        this.w = 150;
+        this.h = 210;
+        this.index = index;
+        this.volteada = false;
+        this.scale = 1;
+        this.rotation = 0;
+        this.flipProgress = 0;
+        this.targetFlip = 0;
+        this.correct = false;
+        this.wrong = false;
+        this.hoverEffect = 0;
+        this.rara = cartaRaras.includes(idx);
+        
+        // Efectos especiales para las nuevas cartas
+        this.specialEffects = {
+            particles: [],
+            glowIntensity: 0,
+            hueRotation: 0
+        };
+        
+        // Añadir atributo data-card para efectos específicos
+        if (this.element) {
+            this.element.setAttribute('data-card', (idx + 1).toString());
+            
+            // Configurar color específico para cada carta
+            const cardColors = {
+                24: '0,255,255',  // Cyan para efecto cuántico
+                25: '255,255,0',  // Amarillo para relámpagos
+                26: '255,0,255',  // Magenta para efecto prismático
+                27: '0,255,0',    // Verde para ondas de pulso
+                28: '255,0,0',    // Rojo para división dimensional
+                29: '255,255,255',// Blanco para escáner
+                30: '128,0,128',  // Púrpura para vacío
+                31: '0,255,255',  // Cyan para cristal
+                32: '255,215,0',  // Dorado para datos
+                33: '255,0,0'     // Rojo para distorsión
+            };
+            
+            if (cardColors[idx + 1]) {
+                this.element.style.setProperty('--card-color', cardColors[idx + 1]);
+            }
+        }
+    }
+
+    update() {
+        // Actualización normal
+        this.x = lerp(this.x, this.tx, 0.1);
+        this.y = lerp(this.y, this.ty, 0.1);
+        
+        // Actualizar efectos especiales
+        if (this.idx >= 23) { // Para las nuevas cartas
+            this.updateSpecialEffects();
+        }
+        
+        // Actualizar rotación 3D basada en la posición del mouse
+        if (this.element && !this.volteada) {
+            const rect = this.element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const rotateY = ((mouseX - centerX) / rect.width) * 20;
+            const rotateX = ((mouseY - centerY) / rect.height) * 20;
+            
+            this.element.style.setProperty('--rotateX', -rotateX + 'deg');
+            this.element.style.setProperty('--rotateY', rotateY + 'deg');
+        }
+    }
+
+    updateSpecialEffects() {
+        // Actualizar partículas
+        for (let i = this.specialEffects.particles.length - 1; i >= 0; i--) {
+            const particle = this.specialEffects.particles[i];
+            particle.life -= 0.02;
+            particle.y += particle.vy;
+            particle.x += particle.vx;
+            
+            if (particle.life <= 0) {
+                this.specialEffects.particles.splice(i, 1);
+            }
+        }
+        
+        // Añadir nuevas partículas si es necesario
+        if (this.hover && Math.random() < 0.3) {
+            this.addParticle();
+        }
+        
+        // Actualizar efectos de brillo
+        this.specialEffects.glowIntensity = lerp(
+            this.specialEffects.glowIntensity,
+            this.hover ? 1 : 0,
+            0.1
+        );
+        
+        // Actualizar rotación de matiz
+        this.specialEffects.hueRotation += 2;
+        if (this.specialEffects.hueRotation >= 360) {
+            this.specialEffects.hueRotation = 0;
+        }
+    }
+
+    addParticle() {
+        const particle = {
+            x: random(this.x - this.w/2, this.x + this.w/2),
+            y: random(this.y - this.h/2, this.y + this.h/2),
+            vx: random(-1, 1),
+            vy: random(-2, -1),
+            life: 1,
+            color: color(random(200, 255), random(200, 255), random(200, 255))
+        };
+        this.specialEffects.particles.push(particle);
+    }
+
+    draw() {
+        push();
+        translate(this.x, this.y);
+        
+        // Aplicar efectos especiales para las nuevas cartas
+        if (this.idx >= 23) {
+            this.drawSpecialEffects();
+        }
+        
+        // Dibujo normal de la carta
+        if (this.isHovered) {
+            scale(1.1);
+            if (!this.volteada) {
+                rotate(sin(frameCount * 0.05) * 0.1);
+            }
+        }
+        
+        // ... resto del código de draw()
+        
+        pop();
+    }
+
+    drawSpecialEffects() {
+        // Dibujar partículas
+        for (const particle of this.specialEffects.particles) {
+            push();
+            noStroke();
+            fill(particle.color.levels[0], particle.color.levels[1], 
+                 particle.color.levels[2], particle.life * 255);
+            ellipse(particle.x - this.x, particle.y - this.y, 4, 4);
+            pop();
+        }
+        
+        // Efecto de brillo
+        if (this.specialEffects.glowIntensity > 0) {
+            push();
+            blendMode(ADD);
+            noFill();
+            strokeWeight(2);
+            stroke(0, 255, 0, this.specialEffects.glowIntensity * 100);
+            rect(-this.w/2 - 5, -this.h/2 - 5, this.w + 10, this.h + 10);
+            pop();
+        }
+    }
 } 
