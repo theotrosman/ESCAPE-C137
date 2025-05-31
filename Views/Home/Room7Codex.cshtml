@@ -358,26 +358,99 @@
       width: 120px;
       height: 180px;
       margin: 10px;
-      perspective: 1000px;
+      perspective: 1500px;
       cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
-      transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) scale(1);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: transform 150ms ease-in-out,
-                  box-shadow 150ms ease-in-out,
-                  filter 150ms ease-in-out;
-      border-radius: 12px;  /* Added base border radius to match */
+      border-radius: 16px;
+      overflow: visible;
+    }
+
+    .carta::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(
+        45deg,
+        rgba(255, 215, 0, 0.8),
+        rgba(32, 184, 255, 0.9),
+        rgba(255, 215, 0, 0.8)
+      );
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      filter: blur(8px);
     }
 
     .carta:hover {
-      transform: translate3d(0, -32px, 0) rotateX(8deg) rotateY(15deg) scale(1.15);
+      animation: floatCard 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .carta:hover::before {
+      opacity: 1;
+      animation: cardGlow 2s ease-in-out infinite;
+    }
+
+    .carta img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      backface-visibility: hidden;
+    }
+
+    .carta:hover img {
+      animation: cardPulse 2s ease-in-out infinite;
+    }
+
+    /* Shuffling animation */
+    .carta.shuffling {
+      animation: shuffleCard 1s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+
+    /* Special effects for rare cards */
+    .carta[data-rare="true"] {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .carta[data-rare="true"]:hover {
       box-shadow: 
-        0 32px 64px -16px rgba(0, 0, 0, 0.5),
-        0 16px 32px -8px rgba(0, 0, 0, 0.4);
-      filter: brightness(1.2);
-      transition: transform 200ms ease-out,
-                  box-shadow 200ms ease-out,
-                  filter 200ms ease-out;
+        0 0 30px rgba(255, 215, 0, 0.6),
+        0 0 60px rgba(255, 215, 0, 0.3);
+    }
+
+    .carta[data-rare="true"]::before {
+      background: linear-gradient(
+        45deg,
+        rgba(255, 215, 0, 0.9),
+        rgba(255, 128, 0, 0.9),
+        rgba(255, 215, 0, 0.9)
+      );
+    }
+
+    /* Victory effects */
+    @@keyframes victoryPulse {
+      0% { transform: scale(1); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.1); filter: hue-rotate(180deg); }
+      100% { transform: scale(1); filter: hue-rotate(360deg); }
+    }
+
+    .carta.victory {
+      animation: victoryPulse 1.5s ease-in-out infinite;
+    }
+
+    /* Wrong card effects */
+    @@keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px) rotate(-5deg); }
+      75% { transform: translateX(10px) rotate(5deg); }
+    }
+
+    .carta.wrong {
+      animation: wrongShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
     }
 
     @@keyframes glowFlash {
@@ -2680,6 +2753,386 @@
         50% { transform: translateY(-10px) scale(1.1); opacity: 0.6; }
         100% { transform: translateY(0) scale(1); opacity: 0.4; }
     }
+
+    .bet-button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-family: 'VT323', monospace;
+      font-size: 18px;
+      background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bet-button:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: linear-gradient(45deg, #2a2a2a, #3a3a3a);
+      border-color: #00ff88;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+      box-shadow: 
+        0 0 20px rgba(0, 255, 136, 0.4),
+        0 0 40px rgba(0, 255, 136, 0.2);
+    }
+
+    .bet-button:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .bet-button::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+      transform: scale(0);
+      transition: transform 0.3s ease-out;
+    }
+
+    .bet-button:hover::before {
+      transform: scale(1);
+    }
+
+    /* Base card styles and animations */
+    @@keyframes floatCard {
+      0% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
+      50% { transform: translate3d(0, -32px, 20px) rotateX(8deg) rotateY(15deg) scale(1.15); }
+      100% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
+    }
+
+    @@keyframes cardGlow {
+      0% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.6), 0 0 60px rgba(0, 255, 136, 0.4); }
+      100% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.2); }
+    }
+
+    @@keyframes cardPulse {
+      0% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.02); filter: brightness(1.2); }
+      100% { transform: scale(1); filter: brightness(1); }
+    }
+
+    @@keyframes shuffleCard {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+      25% { transform: translate3d(100px, -50px, 50px) rotate(180deg); }
+      50% { transform: translate3d(0, -100px, 100px) rotate(360deg); }
+      75% { transform: translate3d(-100px, -50px, 50px) rotate(540deg); }
+      100% { transform: translate3d(0, 0, 0) rotate(720deg); }
+    }
+
+    .carta {
+      position: relative;
+      width: 120px;
+      height: 180px;
+      margin: 10px;
+      perspective: 1500px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      border-radius: 16px;
+      overflow: visible;
+    }
+
+    .carta::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(
+        45deg,
+        rgba(255, 215, 0, 0.8),
+        rgba(32, 184, 255, 0.9),
+        rgba(255, 215, 0, 0.8)
+      );
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+      filter: blur(8px);
+    }
+
+    .carta:hover {
+      animation: floatCard 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    .carta:hover::before {
+      opacity: 1;
+      animation: cardGlow 2s ease-in-out infinite;
+    }
+
+    .carta img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+      backface-visibility: hidden;
+    }
+
+    .carta:hover img {
+      animation: cardPulse 2s ease-in-out infinite;
+    }
+
+    /* Shuffling animation */
+    .carta.shuffling {
+      animation: shuffleCard 1s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+
+    /* Special effects for rare cards */
+    .carta[data-rare="true"] {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .carta[data-rare="true"]:hover {
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.6),
+        0 0 60px rgba(255, 215, 0, 0.3);
+    }
+
+    .carta[data-rare="true"]::before {
+      background: linear-gradient(
+        45deg,
+        rgba(255, 215, 0, 0.9),
+        rgba(255, 128, 0, 0.9),
+        rgba(255, 215, 0, 0.9)
+      );
+    }
+
+    /* Victory effects */
+    @@keyframes victoryPulse {
+      0% { transform: scale(1); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.1); filter: hue-rotate(180deg); }
+      100% { transform: scale(1); filter: hue-rotate(360deg); }
+    }
+
+    .carta.victory {
+      animation: victoryPulse 1.5s ease-in-out infinite;
+    }
+
+    /* Wrong card effects */
+    @@keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px) rotate(-5deg); }
+      75% { transform: translateX(10px) rotate(5deg); }
+    }
+
+    .carta.wrong {
+      animation: wrongShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    /* Music player styles */
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+
+    .music-btn {
+      background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+      border: 2px solid #00ff00;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+    }
+
+    .music-btn:hover {
+      transform: scale(1.1);
+      border-color: #00ff88;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 136, 0.4),
+        0 0 40px rgba(0, 255, 136, 0.2);
+    }
+
+    .music-btn i {
+      color: #00ff00;
+      font-size: 24px;
+      transition: all 0.3s ease;
+    }
+
+    .music-btn:hover i {
+      color: #00ff88;
+    }
+
+    .music-btn.playing {
+      animation: musicPulse 2s infinite;
+    }
+
+    @@keyframes musicPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .bet-button.all-in {
+      background: linear-gradient(45deg, #ff0000, #ff6600);
+      border: 2px solid #ff3300;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+      box-shadow: 
+        0 0 20px rgba(255, 0, 0, 0.4),
+        0 0 40px rgba(255, 0, 0, 0.2);
+      animation: pulseAllIn 2s infinite;
+    }
+
+    .bet-button.all-in:hover {
+      background: linear-gradient(45deg, #ff3300, #ff9900);
+      transform: translateY(-3px) scale(1.1);
+      box-shadow: 
+        0 0 30px rgba(255, 0, 0, 0.6),
+        0 0 60px rgba(255, 0, 0, 0.3);
+    }
+
+    @@keyframes pulseAllIn {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    @@keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .wildcard {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .wildcard:hover:not(.used) {
+      transform: scale(1.1) !important;
+    }
+    
+    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
+    .glow-blue { box-shadow: 0 0 20px #00ffff; }
+    .glow-gold { box-shadow: 0 0 20px #ffd700; }
+    .glow-green { box-shadow: 0 0 20px #00ff00; }
+    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
+    .glow-red { box-shadow: 0 0 20px #ff0000; }
+    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
+    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
+    
+    .wildcard.used {
+      filter: grayscale(1);
+      transform: scale(0.9);
+      opacity: 0.5;
+    }
+    
+    @@keyframes useEffect {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+
+    @@keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+    
+    .wildcard {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .wildcard:hover:not(.used) {
+      transform: scale(1.1) !important;
+    }
+    
+    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
+    .glow-blue { box-shadow: 0 0 20px #00ffff; }
+    .glow-gold { box-shadow: 0 0 20px #ffd700; }
+    .glow-green { box-shadow: 0 0 20px #00ff00; }
+    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
+    .glow-red { box-shadow: 0 0 20px #ff0000; }
+    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
+    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
+    
+    .wildcard.used {
+      filter: grayscale(1);
+      transform: scale(0.9);
+      opacity: 0.5;
+    }
+    
+    @@keyframes useEffect {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+
+    @@keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(5px, 5px); }
+      50% { transform: translate(-5px, -5px); }
+      75% { transform: translate(-5px, 5px); }
+    }
+
+    @@keyframes drunk {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .wildcard {
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .wildcard.troll {
+      animation: float 3s ease-in-out infinite, shake 0.5s ease-in-out infinite;
+    }
+
+    .card-drunk {
+      animation: drunk 3s ease-in-out infinite;
+    }
+
+    .wildcard:hover:not(.used) {
+      transform: scale(1.1) !important;
+    }
+    
+    .glow-purple { box-shadow: 0 0 20px #ff00ff; }
+    .glow-blue { box-shadow: 0 0 20px #00ffff; }
+    .glow-gold { box-shadow: 0 0 20px #ffd700; }
+    .glow-green { box-shadow: 0 0 20px #00ff00; }
+    .glow-orange { box-shadow: 0 0 20px #ff8c00; }
+    .glow-red { box-shadow: 0 0 20px #ff0000; }
+    .glow-cyan { box-shadow: 0 0 20px #00ffff; }
+    .glow-yellow { box-shadow: 0 0 20px #ffff00; }
+    .glow-pink { box-shadow: 0 0 20px #ff69b4; }
+    .glow-brown { box-shadow: 0 0 20px #8b4513; }
+    .glow-gray { box-shadow: 0 0 20px #808080; }
+    
+    .wildcard.used {
+      filter: grayscale(1);
+      transform: scale(0.9);
+      opacity: 0.5;
+    }
+    
+    .card-highlight {
+      box-shadow: 0 0 20px #ff0000;
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+    
+    .card-correct-highlight {
+      box-shadow: 0 0 20px #00ff00;
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 <body>
@@ -2693,11 +3146,10 @@
 <div class="game-instructions" id="gameInstructions">
   <h2>🃏 BALATRO CODEX C-137 🃏</h2>
   <ul>
-    <li>Encuentra la carta correcta entre las opciones</li>
+    <li>Encuentra las dos cartas correctas entre las opciones</li>
     <li>Acumula $3100 para escapar de esta realidad</li>
     <li>Encadena combos para multiplicar tus ganancias</li>
     <li>Cuidado con las cartas glitch y las anomalías</li>
-
   </ul>
   <div class="key-controls">
     <span>ESPACIO: Mostrar/Ocultar instrucciones</span>
@@ -2707,11 +3159,74 @@
 <div id="hud">Cargando...</div>
 <div id="console"></div>
 <div id="acciones">
-  <button onclick="apostar(100)" class="bet-button">Apostar $100</button>
-  <button onclick="apostar(250)" class="bet-button">Apostar $250</button>
-  <button onclick="apostar(500)" class="bet-button">Apostar $500</button>
+  <button class="bet-button" onclick="apostar(100)">Apostar $100</button>
+  <button class="bet-button" onclick="apostar(250)">Apostar $250</button>
+  <button class="bet-button" onclick="apostar(500)">Apostar $500</button>
+  <button class="bet-button" onclick="apostar(1000)">Apostar $1000</button>
+  <button class="bet-button all-in" onclick="apostarTodo()">¡ALL IN!</button>
 </div>
+
+<div class="music-player">
+  <button class="music-btn" onclick="toggleMusic()" title="Reproducir/Pausar Música">
+    <i class="fas fa-play" id="musicIcon"></i>
+  </button>
+</div>
+
+<audio id="bgMusic" loop></audio>
+
 <script>
+// Add this at the beginning of your script section
+const songs = [
+  '/img/celestesong.mp3',
+  '/img/nightcall.mp3',
+  '/img/pokerface.mp3',
+  '/img/karmapolice.mp3',
+  '/img/balatrotheme.mp3',
+  '/img/yuugensong.mp3'  // Fixed filename
+];
+
+let currentSong = null;
+const audioElement = document.getElementById('bgMusic');
+const musicIcon = document.getElementById('musicIcon');
+const musicBtn = document.querySelector('.music-btn');
+
+function getRandomSong() {
+  const randomIndex = Math.floor(Math.random() * songs.length);
+  return songs[randomIndex];
+}
+
+// Modify audio volume
+function toggleMusic() {
+  if (!currentSong) {
+    currentSong = getRandomSong();
+    audioElement.src = currentSong;
+    audioElement.volume = 0.17; // Reduced to 15%
+  }
+  
+  if (audioElement.paused) {
+    audioElement.play();
+    musicIcon.className = 'fas fa-pause';
+    musicBtn.classList.add('playing');
+  } else {
+    audioElement.pause();
+    musicIcon.className = 'fas fa-play';
+    musicBtn.classList.remove('playing');
+  }
+}
+
+// Stop music on game over
+const originalGameOver = gameOver;
+function gameOver() {
+  audioElement.pause();
+  musicIcon.className = 'fas fa-play';
+  musicBtn.classList.remove('playing');
+  currentSong = null;
+  originalGameOver();
+}
+
+// Add Font Awesome for icons
+document.head.innerHTML += '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">';
+
 window.addEventListener('DOMContentLoaded', () => {
   const consoleDiv = document.getElementById('console');
   const instructions = document.getElementById('gameInstructions');
@@ -3044,7 +3559,8 @@ let aciertos = 0;
 let estado = "cargando";
 let apuesta = 0;
 let ganadora = -1;
-const N = 5;
+const NUM_CARTAS = 8; // Cambiado de 5 a 8
+const NUM_CARTAS_CORRECTAS = 2; // Nueva constante para cartas correctas
 let glitchTimer = 0;
 let combo = 0;
 let deckCards = []; // Array para las cartas del mazo inicial
@@ -3097,28 +3613,37 @@ function createCardImage(label, palo, isRainbow = false, isGold = false) {
 
 function preload() {
   cartaImgs = [];
-  for (let i = 1; i <= 33; i++) {  // Aumentado a 33 cartas
-    // Cargar imágenes .webp para las cartas 13-18
+  // Cargar todas las cartas con sus extensiones correctas
+  for (let i = 1; i <= 33; i++) {
+    let path;
+    // Cartas 13-18 son webp, el resto son png
     if (i >= 13 && i <= 18) {
-      cartaImgs.push(loadImage(`/img/carta${i}.webp`));
+      path = `/img/carta${i}.webp`;
     } else {
-      cartaImgs.push(loadImage(`/img/carta${i}.png`));
+      path = `/img/carta${i}.png`;
     }
+    cartaImgs.push(loadImage(path));
   }
-  // Cargar el nuevo dorso de carta
-  backImg = loadImage('/img/dorsocard.jfif');
+  // Cargar el dorso de la carta con la extensión correcta
+  backImg = loadImage('/img/dorsocard.png');
 }
 
 class Carta {
   constructor(idx, tx, index) {
     this.idx = idx;
-    this.img = cartaImgs[idx];
+    // Asegurarse de que el índice esté en el rango correcto
+    if (idx < 0 || idx >= cartaImgs.length) {
+      console.error(`Índice de carta inválido: ${idx}`);
+      // Usar una carta por defecto si el índice es inválido
+      this.idx = 1;
+    }
+    this.img = cartaImgs[this.idx];
     this.tx = tx;
     this.ty = 0;
     this.x = tx;
     this.y = 0;
-    this.w = 150; // Aumentado de 100
-    this.h = 210; // Aumentado de 140
+    this.w = 150;
+    this.h = 210;
     this.index = index;
     this.volteada = false;
     this.scale = 1;
@@ -3128,12 +3653,12 @@ class Carta {
     this.correct = false;
     this.wrong = false;
     this.hoverEffect = 0;
-    this.rara = cartaRaras.includes(idx);
+    this.rara = cartaRaras.includes(this.idx);
     
     // Añadir atributo data-special para cartas especiales
-    if (idx >= 12) {
+    if (this.idx >= 12) {
       this.element = document.createElement('div');
-      this.element.setAttribute('data-special', (idx + 1).toString());
+      this.element.setAttribute('data-special', (this.idx + 1).toString());
     }
   }
 
@@ -3272,21 +3797,21 @@ function dealInitialCards() {
   
   // Mover el mazo hacia arriba
   deckCards.forEach(card => {
-    card.targetY = -250; // Ajustado para cartas más grandes
+    card.targetY = -250;
     card.targetX = 0;
   });
   
   setTimeout(() => {
-    // Repartir las 5 cartas
-    for(let i = 0; i < N; i++) {
+    // Repartir las 8 cartas (actualizado de 5)
+    for(let i = 0; i < NUM_CARTAS; i++) {
       let card = deckCards[i];
-      card.targetX = -320 + i * 160; // Ajustado para cartas más grandes
+      card.targetX = -560 + i * 160; // Ajustado para 8 cartas (-560 a 560)
       card.targetY = 0;
       card.rotation = 0;
     }
     
     // Desvanecer el resto del mazo
-    for(let i = N; i < deckCards.length; i++) {
+    for(let i = NUM_CARTAS; i < deckCards.length; i++) {
       deckCards[i].opacity = 0;
     }
     
@@ -3309,21 +3834,48 @@ function setup() {
 function inicializarCartas() {
   cartas = [];
   let seleccionadas = [];
+  let cartasCorrectas = new Set();
   
-  while (seleccionadas.length < N) {
+  // Seleccionar 2 cartas correctas
+  while (cartasCorrectas.size < NUM_CARTAS_CORRECTAS) {
     let isRara = Math.random() < cartaRarasProb;
     let idx;
     if (isRara && !seleccionadas.some(i => cartaRaras.includes(i))) {
-      idx = random(cartaRaras);
+      idx = Math.floor(random(cartaRaras.length));
+      idx = cartaRaras[idx];
     } else {
-      idx = random(cartaNormales);
+      idx = Math.floor(random(cartaNormales.length));
+      idx = cartaNormales[idx];
+    }
+    if (!seleccionadas.includes(idx)) {
+      seleccionadas.push(idx);
+      cartasCorrectas.add(seleccionadas.length - 1);
+    }
+  }
+  
+  // Seleccionar el resto de cartas incorrectas
+  while (seleccionadas.length < NUM_CARTAS) {
+    let isRara = Math.random() < cartaRarasProb;
+    let idx;
+    if (isRara && !seleccionadas.some(i => cartaRaras.includes(i))) {
+      idx = Math.floor(random(cartaRaras.length));
+      idx = cartaRaras[idx];
+    } else {
+      idx = Math.floor(random(cartaNormales.length));
+      idx = cartaNormales[idx];
     }
     if (!seleccionadas.includes(idx)) seleccionadas.push(idx);
   }
   
-  for (let i = 0; i < N; i++) {
-    let tx = -320 + i * 160;
-    let carta = new Carta(idx=seleccionadas[i], tx, i);
+  // Crear las cartas con el nuevo espaciado
+  const spacing = 160; // Espacio entre cartas
+  const totalWidth = (NUM_CARTAS - 1) * spacing; // Ancho total de todas las cartas
+  const startX = -totalWidth / 2; // Posición inicial para centrar
+  
+  for (let i = 0; i < NUM_CARTAS; i++) {
+    let tx = startX + (i * spacing);
+    let carta = new Carta(seleccionadas[i], tx, i);
+    carta.correcta = cartasCorrectas.has(i);
     
     // Agregar atributo data-card para efectos únicos
     carta.element = document.createElement('div');
@@ -3346,6 +3898,8 @@ function inicializarCartas() {
     
     cartas.push(carta);
   }
+  
+  estado = "esperando";
 }
 
 function draw() {
@@ -3390,9 +3944,9 @@ function draw() {
     pop();
   } else {
     // Dibujar las cartas del juego normal
-    for (let c of cartas) {
-      c.update();
-      c.draw();
+  for (let c of cartas) {
+    c.update();
+    c.draw();
     }
   }
   
@@ -3418,11 +3972,9 @@ function apostar(cantidad) {
   actualizarHUD();
   
   document.body.classList.add('reality-break');
-  setTimeout(() => document.body.classList.remove('reality-break'), 225); // Aumentado de 150 a 225ms (1.5x)
+  setTimeout(() => document.body.classList.remove('reality-break'), 225);
   
   cartas.forEach(c => c.flip(true));
-  
-  ganadora = floor(random(N));
   
   if (dinero === 0) {
     log("[ALL-IN] ¡Última oportunidad! La realidad pende de un hilo...", 'warning');
@@ -3433,33 +3985,37 @@ function apostar(cantidad) {
   showMemoryEchoes();
   
   setTimeout(() => {
-    mezclarCartas(8, () => {
-      estado = "esperandoClick";
-      cartas.forEach(c => c.flip(false));
-    });
-  }, 450); // Aumentado de 300 a 450ms (1.5x)
+    mezclar();
+  }, 450);
 }
 
-function mezclarCartas(veces, callback) {
+function mezclar() {
+  if (estado !== "mezclando") return;
+  
   let count = 0;
-  let delay = 225; // Aumentado de 150 a 225ms (1.5x)
+  const numMezclas = 12;
   
   function hacerMezcla() {
-    if (count >= veces) {
-      callback();
+    if (count >= numMezclas) {
+      cartas.forEach(c => c.flip(false)); // Voltear todas las cartas boca abajo
+      estado = "esperandoClick";
       return;
     }
     
-    // Intercambiar dos cartas aleatorias
-    let i = floor(random(N));
-    let j = floor(random(N));
-    if (i !== j) {
+    const delay = 150;
+    
+    for (let k = 0; k < 2; k++) {
+      let i = Math.floor(random(NUM_CARTAS));
+      let j = Math.floor(random(NUM_CARTAS));
+      if (i === j) continue;
+      
       let tempTx = cartas[i].tx;
       cartas[i].tx = cartas[j].tx;
       cartas[j].tx = tempTx;
+      
+      // Intercambiar las cartas en el array también
       [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
       
-      // Efectos visuales
       cartas[i].scale = 1.3;
       cartas[j].scale = 1.3;
       cartas[i].rotation = random(-PI/4, PI/4);
@@ -3502,63 +4058,206 @@ function mezclarCartas(veces, callback) {
 
 function mousePressed() {
   if (estado !== "esperandoClick") return;
+  
   for (let i = 0; i < cartas.length; i++) {
     if (cartas[i].contiene(mouseX, mouseY) && !cartas[i].volteada) {
       estado = "revelando";
       cartas[i].flip(true);
+      
       setTimeout(() => {
         if (cartas[i].rara) {
           efectoCartaRara();
         }
-        if (i === ganadora) {
+        
+        const cartasVolteadas = cartas.filter(c => c.volteada).length;
+        const isFirstCard = cartasVolteadas === 1;
+        
+        if (cartas[i].correcta && !cartas[i].revealedByWildcard) {
           combo++;
           aciertos++;
-          let multiplicador = 2 + (combo * 0.5);
-          let ganancia = Math.floor(apuesta * multiplicador);
-          mostrarMoneyPopup(`+$${ganancia}`, true);
-          const moneyPopup = document.createElement('div');
-          moneyPopup.className = 'money-change';
-          moneyPopup.textContent = `+$${ganancia}`;
-          moneyPopup.style.left = `${mouseX}px`;
-          moneyPopup.style.top = `${mouseY}px`;
-          document.body.appendChild(moneyPopup);
-          cartas[i].correct = true;
-          document.body.classList.add('victory-effect');
-          setTimeout(() => {
-            moneyPopup.remove();
-            cartas[i].correct = false;
-            document.body.classList.remove('victory-effect');
-            cartas[i].flip(false);
-            estado = "esperando";
-            actualizarHUD(); // Actualizar HUD después de establecer el estado
-          }, 1500);
-          dinero += ganancia;
-          log(`[VICTORIA] ¡COMBO x${combo}! Ganancia: $${ganancia}`, 'success');
-          if (dinero >= 3100) {
-            celebrarVictoria();
+          
+          if (isFirstCard) {
+            log("[ACIERTO] ¡Primera carta correcta!", 'success');
+            cartas[i].correct = true;
+            cartas[i].volteada = true;
+            estado = "esperandoClick";
+          } else {
+            let multiplicador = 2;
+            if (cartas.find(c => c.volteada && c.correcta && c !== cartas[i])) {
+              multiplicador = 3.5; // 2 * 1.5x bonus
+            }
+            
+            if (doubleActive) {
+              multiplicador *= 2;
+              doubleActive = false;
+            }
+            
+            let ganancia = Math.floor(apuesta * multiplicador);
+            mostrarMoneyPopup(`+$${ganancia}`, true);
+            dinero += ganancia;
+            cartas[i].correct = true;
+            cartas[i].volteada = true;
+            
+            log(`[VICTORIA] ¡Ganaste $${ganancia}!`, 'success');
+            
+            setTimeout(() => {
+              cartas.forEach(c => {
+                c.flip(true);
+                c.volteada = true;
+              });
+              
+              setTimeout(() => {
+                cartas.forEach(c => {
+                  c.flip(false);
+                  c.volteada = false;
+                  c.correct = false;
+                  c.wrong = false;
+                  c.revealedByWildcard = false;
+                });
+                estado = "esperando";
+              }, 1500);
+            }, 1000);
           }
         } else {
-          combo = 0;
-          mostrarMoneyPopup(`-$${apuesta}`, false);
-          cartas[i].wrong = true;
-          document.body.classList.add('reality-break');
-          setTimeout(() => {
-            cartas[i].wrong = false;
-            document.body.classList.remove('reality-break');
+          if (cartas[i].revealedByWildcard) {
+            log("[REVEAL] Esta carta fue revelada por el comodín", 'warning');
             cartas[i].flip(false);
-            estado = "esperando";
-            // Solo verificar game over después de que la mano termine completamente
-            if (dinero < 100) {
-              log("[GAME OVER] Te quedaste sin dinero suficiente para seguir...", 'error');
-              setTimeout(() => gameOver(), 1000); // Dar tiempo para ver el resultado
+            estado = "esperandoClick";
+            return;
+          }
+          
+          combo = 0;
+          cartas[i].wrong = true;
+          cartas[i].volteada = true;
+          
+          let perdida;
+          if (isFirstCard) {
+            perdida = Math.floor(apuesta * 0.5);
+            if (shieldActive) {
+              shieldActive = false;
+              log("[SHIELD] ¡El escudo te protegió de la pérdida!", 'success');
+              perdida = 0;
+            } else if (safeActive) {
+              perdida = Math.floor(perdida * 0.5);
+              log("[SAFE] ¡Pérdida reducida al 50%!", 'success');
             }
-            actualizarHUD(); // Actualizar HUD después de establecer el estado
-          }, 1000);
-          log("[DERROTA] Carta incorrecta", 'error');
+            if (perdida > 0) {
+              mostrarMoneyPopup(`-$${perdida}`, false);
+              dinero -= perdida;
+              log("[FALLO] Primera carta incorrecta. Perdiste 50%", 'error');
+            }
+            estado = "esperandoClick";
+          } else {
+            if (cartas.find(c => c.volteada && c.correcta && c !== cartas[i])) {
+              perdida = Math.floor(apuesta * 0.25);
+              log("[FALLO] Segunda carta incorrecta, pero la primera fue correcta. Pérdida reducida.", 'warning');
+            } else {
+              perdida = Math.floor(apuesta * 0.5);
+              log("[FALLO] Segunda carta incorrecta.", 'error');
+            }
+            
+            if (shieldActive) {
+              shieldActive = false;
+              log("[SHIELD] ¡El escudo te protegió de la pérdida!", 'success');
+              perdida = 0;
+            } else if (safeActive) {
+              perdida = Math.floor(perdida * 0.5);
+              log("[SAFE] ¡Pérdida reducida al 50%!", 'success');
+            }
+            
+            if (perdida > 0) {
+              mostrarMoneyPopup(`-$${perdida}`, false);
+              dinero -= perdida;
+            }
+            
+            setTimeout(() => {
+              cartas.forEach(c => {
+                c.flip(true);
+                c.volteada = true;
+              });
+              
+              setTimeout(() => {
+                cartas.forEach(c => {
+                  c.flip(false);
+                  c.volteada = false;
+                  c.wrong = false;
+                  c.revealedByWildcard = false;
+                });
+                estado = "esperando";
+                
+                if (dinero < 100) {
+                  log("[GAME OVER] Te quedaste sin dinero suficiente para seguir...", 'error');
+                  setTimeout(() => gameOver(), 1000);
+                }
+              }, 1500);
+            }, 1000);
+          }
         }
+        
+        if (dinero >= 3100) {
+          celebrarVictoria();
+        }
+        
+        actualizarHUD();
       }, 500);
       break;
     }
+  }
+}
+
+function verificarCartas() {
+  const cartasCorrectasVolteadas = cartas.filter(c => c.volteada && c.correcta).length;
+  const cartasIncorrectasVolteadas = cartas.filter(c => c.volteada && !c.correcta).length;
+  
+  if (cartasCorrectasVolteadas === NUM_CARTAS_CORRECTAS) {
+    // Victoria - encontró las dos cartas correctas
+    setTimeout(() => {
+      log("[VICTORIA] ¡Has encontrado las dos cartas correctas!", 'success');
+      // Mostrar todas las cartas antes de reiniciar
+      cartas.forEach(c => {
+        c.flip(true);
+        c.volteada = true;
+      });
+      
+      // Esperar a que se vean todas las cartas y luego reiniciar
+      setTimeout(() => {
+        cartas.forEach(c => {
+          c.flip(false);
+          c.volteada = false;
+          c.flipProgress = 0;
+          c.targetFlip = 0;
+          c.correct = false;
+          c.wrong = false;
+        });
+        estado = "esperando";
+        inicializarCartas();
+      }, 1500);
+    }, 1000);
+  } else if (cartasIncorrectasVolteadas > 0) {
+    // Derrota - volteó una carta incorrecta
+    setTimeout(() => {
+      // Mostrar todas las cartas antes de reiniciar
+      cartas.forEach(c => {
+        c.flip(true);
+        c.volteada = true;
+      });
+      
+      // Esperar a que se vean todas las cartas y luego reiniciar
+      setTimeout(() => {
+        cartas.forEach(c => {
+          c.flip(false);
+          c.volteada = false;
+          c.flipProgress = 0;
+          c.targetFlip = 0;
+          c.correct = false;
+          c.wrong = false;
+        });
+        estado = "esperando";
+      }, 1000);
+    }, 500);
+  } else {
+    // Continuar jugando - aún no ha encontrado todas las cartas correctas
+    estado = "esperandoClick";
   }
 }
 
@@ -3600,7 +4299,7 @@ function actualizarHUD() {
   // Solo verificar game over si:
   // 1. No hay una apuesta en curso (estado === "esperando")
   // 2. El dinero es menor a 100
-  // 3. No estamos en medio de una mano (estado !== "mezclando" && estado !== "esperandoClick" && estado !== "revelando")
+  // 3. No estamos en medio de una ronda
   if (estado === "esperando" && dinero < 100 && 
       estado !== "mezclando" && estado !== "esperandoClick" && estado !== "revelando") {
     log("[ADVERTENCIA] No tienes suficiente dinero para seguir jugando...", 'warning');
@@ -3743,6 +4442,400 @@ function showCriticalEffect(element) {
   element.classList.add('critical-hit');
   setTimeout(() => element.classList.remove('critical-hit'), 500);
 }
+
+function iniciarJuego() {
+  estado = "esperando";
+  cartas = [];
+  cartasVolteadas = 0;
+  combo = 0;
+  
+  // Seleccionar dos cartas correctas diferentes
+  const cartasCorrectas = new Set();
+  while (cartasCorrectas.size < NUM_CARTAS_CORRECTAS) {
+    cartasCorrectas.add(Math.floor(Math.random() * cartaImgs.length));
+  }
+  const arrayCartasCorrectas = Array.from(cartasCorrectas);
+  
+  // Crear array con todas las cartas
+  const todasLasCartas = [];
+  
+  // Agregar las 2 cartas correctas
+  for (let i = 0; i < NUM_CARTAS_CORRECTAS; i++) {
+    todasLasCartas.push({
+      id: arrayCartasCorrectas[i],
+      correcta: true
+    });
+  }
+  
+  // Agregar 6 cartas incorrectas
+  while (todasLasCartas.length < NUM_CARTAS) {
+    const randomCard = Math.floor(Math.random() * cartaImgs.length);
+    if (!cartasCorrectas.has(randomCard)) {
+      todasLasCartas.push({
+        id: randomCard,
+        correcta: false
+      });
+    }
+  }
+  
+  // Mezclar todas las cartas
+  shuffleArray(todasLasCartas);
+  
+  // Calcular el espaciado y posición inicial
+  const spacing = window.innerWidth * 0.09; // 9% del ancho de la ventana
+  const startX = (window.innerWidth - (NUM_CARTAS * spacing)) / 2;
+  
+  // Crear las cartas en sus posiciones
+  todasLasCartas.forEach((carta, i) => {
+    const nuevaCarta = new Carta(
+      startX + (i * spacing),
+      300,
+      carta.id
+    );
+    nuevaCarta.correcta = carta.correcta;
+    cartas.push(nuevaCarta);
+  });
+}
+
+function handleClick(x, y) {
+  if (estado !== "esperando") return;
+  
+  for (let carta of cartas) {
+    if (carta.contains(x, y) && !carta.flipped) {
+      carta.flip(true);
+      verificarCartas();
+      break;
+    }
+  }
+}
+
+// Función para mezclar array (Fisher-Yates shuffle)
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// Función para mezclar las cartas visualmente
+function shuffleCards() {
+  cartas.forEach((carta, i) => {
+    carta.shuffling = true;
+    setTimeout(() => {
+      carta.shuffling = false;
+    }, 500);
+  });
+}
+
+function mezclar() {
+  if (estado !== "mezclando") return;
+  
+  let count = 0;
+  const numMezclas = 12;
+  
+  function hacerMezcla() {
+    if (count >= numMezclas) {
+      cartas.forEach(c => c.flip(false)); // Voltear todas las cartas boca abajo
+      estado = "esperandoClick";
+      return;
+    }
+    
+    const delay = 150;
+    
+    for (let k = 0; k < 2; k++) {
+      let i = Math.floor(random(NUM_CARTAS));
+      let j = Math.floor(random(NUM_CARTAS));
+      if (i === j) continue;
+      
+      let tempTx = cartas[i].tx;
+      cartas[i].tx = cartas[j].tx;
+      cartas[j].tx = tempTx;
+      
+      // Intercambiar las cartas en el array también
+      [cartas[i], cartas[j]] = [cartas[j], cartas[i]];
+      
+      cartas[i].scale = 1.3;
+      cartas[j].scale = 1.3;
+      cartas[i].rotation = random(-PI/4, PI/4);
+      cartas[j].rotation = random(-PI/4, PI/4);
+      
+      // Efecto de destello
+      const flash = document.createElement('div');
+      flash.style.cssText = `
+        position: fixed;
+        left: ${mouseX}px;
+        top: ${mouseY}px;
+        width: 100px;
+        height: 100px;
+        background: radial-gradient(circle, rgba(0,255,0,0.5) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 1000;
+        transform: translate(-50%, -50%);
+      `;
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), delay/2);
+      
+      setTimeout(() => {
+        cartas[i].scale = 1;
+        cartas[j].scale = 1;
+        cartas[i].rotation = 0;
+        cartas[j].rotation = 0;
+      }, delay/2);
+    }
+    
+    // Efecto de distorsión de realidad
+    document.body.classList.add('reality-break');
+    setTimeout(() => document.body.classList.remove('reality-break'), delay/4);
+    
+    count++;
+    setTimeout(hacerMezcla, delay);
+  }
+  
+  hacerMezcla();
+}
+
+function apostarTodo() {
+  if (estado !== "esperando") {
+    log("[ERROR] No puedes apostar en este momento", 'error');
+    return;
+  }
+  
+  if (dinero < 100) {
+    log("[ERROR] No tienes suficiente dinero para apostar", 'error');
+    return;
+  }
+  
+  log("[ALL-IN] ¡Apostando todo! La realidad pende de un hilo...", 'warning');
+  apostar(dinero);
+}
+
+// Wildcard variables
+const possibleWildcards = [
+  { name: 'Reveal', emoji: '👁️', description: 'Revela una carta correcta', effect: 'glow-purple' },
+  { name: 'Shield', emoji: '🛡️', description: 'Protege contra una pérdida', effect: 'glow-blue' },
+  { name: 'Double', emoji: '✨', description: 'Duplica la próxima ganancia', effect: 'glow-gold' },
+  { name: 'Skip', emoji: '⏭️', description: 'Salta a la siguiente ronda', effect: 'glow-green' },
+  { name: 'Shuffle', emoji: '🔄', description: 'Reordena todas las cartas', effect: 'glow-orange' },
+  { name: 'ShowBoth', emoji: '🎯', description: 'Marca las dos cartas correctas', effect: 'glow-pink' },
+  { name: 'Cash', emoji: '💰', description: '+500$ instantáneos', effect: 'glow-yellow' },
+  // Comodines troll
+  { name: 'Reverse', emoji: '🔄', description: 'Invierte los controles', effect: 'glow-red', troll: true },
+  { name: 'Drunk', emoji: '🍺', description: 'Las cartas se mueven solas', effect: 'glow-brown', troll: true },
+  { name: 'Chaos', emoji: '🌪️', description: '???', effect: 'glow-purple', troll: true },
+  { name: 'Fake', emoji: '🎭', description: 'Comodín falso', effect: 'glow-gray', troll: true }
+];
+
+// Seleccionar 3 wildcards aleatorios al inicio
+let wildcards = [];
+const usedIndices = new Set();
+while (wildcards.length < 3) {
+  const index = Math.floor(Math.random() * possibleWildcards.length);
+  if (!usedIndices.has(index)) {
+    usedIndices.add(index);
+    wildcards.push({...possibleWildcards[index], used: false});
+  }
+}
+
+// Add wildcard UI
+const wildcardContainer = document.createElement('div');
+wildcardContainer.id = 'wildcard-container';
+wildcardContainer.style.cssText = `
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 1000;
+`;
+
+// Add CSS for glow effects
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+  @@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+  
+  .wildcard {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  .wildcard:hover:not(.used) {
+    transform: scale(1.1) !important;
+  }
+  
+  .glow-purple { box-shadow: 0 0 20px #ff00ff; }
+  .glow-blue { box-shadow: 0 0 20px #00ffff; }
+  .glow-gold { box-shadow: 0 0 20px #ffd700; }
+  .glow-green { box-shadow: 0 0 20px #00ff00; }
+  .glow-orange { box-shadow: 0 0 20px #ff8c00; }
+  .glow-red { box-shadow: 0 0 20px #ff0000; }
+  .glow-cyan { box-shadow: 0 0 20px #00ffff; }
+  .glow-yellow { box-shadow: 0 0 20px #ffff00; }
+  .glow-pink { box-shadow: 0 0 20px #ff69b4; }
+  .glow-brown { box-shadow: 0 0 20px #8b4513; }
+  .glow-gray { box-shadow: 0 0 20px #808080; }
+  
+  .wildcard.used {
+    filter: grayscale(1);
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+  
+  .card-highlight {
+    box-shadow: 0 0 20px #ff0000;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+  }
+  
+  .card-correct-highlight {
+    box-shadow: 0 0 20px #00ff00;
+    transform: scale(1.1);
+    transition: all 0.3s ease;
+  }
+`;
+document.head.appendChild(styleSheet);
+
+wildcards.forEach((card, index) => {
+  const wildcardElement = document.createElement('div');
+  wildcardElement.className = `wildcard ${card.effect}`;
+  wildcardElement.style.cssText = `
+    width: 80px;
+    height: 120px;
+    background: linear-gradient(45deg, #1a1a1a, #4a4a4a);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #00ff00;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    opacity: ${card.used ? 0.5 : 1};
+    position: relative;
+    animation-delay: ${index * 0.2}s;
+  `;
+  
+  wildcardElement.innerHTML = `
+    <div style="font-size: 32px; margin-bottom: 5px;">${card.emoji}</div>
+    <div style="font-weight: bold; margin-bottom: 5px;">${card.name}</div>
+    <div style="font-size: 12px; text-align: center; padding: 0 5px;">${card.description}</div>
+  `;
+  
+  wildcardElement.addEventListener('click', () => useWildcard(index));
+  
+  wildcardContainer.appendChild(wildcardElement);
+});
+
+document.body.appendChild(wildcardContainer);
+
+// Wildcard usage function
+function useWildcard(index) {
+  if (estado !== "esperandoClick" || wildcards[index].used) return;
+  
+  const wildcard = wildcards[index];
+  wildcard.used = true;
+  const element = document.querySelectorAll('.wildcard')[index];
+  element.classList.add('used');
+  
+  if (wildcard.troll) {
+    element.classList.add('troll');
+  }
+  
+  switch(wildcard.name) {
+    case 'Reveal':
+      const correctCards = cartas.filter(c => c.correcta && !c.volteada);
+      if (correctCards.length > 0) {
+        const randomCorrect = correctCards[Math.floor(Math.random() * correctCards.length)];
+        randomCorrect.element.classList.add('card-correct-highlight');
+        setTimeout(() => {
+          randomCorrect.element.classList.remove('card-correct-highlight');
+        }, 1000);
+        log("[REVEAL] ¡Carta correcta marcada!", 'success');
+      }
+      break;
+    case 'Shield':
+      shieldActive = true;
+      log("[SHIELD] Protección activada para la próxima pérdida", 'success');
+      break;
+    case 'Double':
+      doubleActive = true;
+      log("[DOUBLE] Próxima ganancia duplicada", 'success');
+      break;
+    case 'Skip':
+      estado = "esperando";
+      cartas.forEach(c => {
+        c.flip(true);
+        setTimeout(() => {
+          c.flip(false);
+          c.volteada = false;
+        }, 1000);
+      });
+      log("[SKIP] Saltando a la siguiente ronda", 'warning');
+      break;
+    case 'Shuffle':
+      mezclar();
+      log("[SHUFFLE] ¡Cartas reordenadas!", 'warning');
+      break;
+    case 'ShowBoth':
+      const correctOnes = cartas.filter(c => c.correcta);
+      correctOnes.forEach(c => {
+        c.element.classList.add('card-correct-highlight');
+      });
+      setTimeout(() => {
+        correctOnes.forEach(c => {
+          c.element.classList.remove('card-correct-highlight');
+        });
+      }, 500);
+      log("[SHOWBOTH] ¡Marcando las cartas correctas!", 'success');
+      break;
+    case 'Cash':
+      dinero += 500;
+      actualizarHUD();
+      mostrarMoneyPopup("+$500", true);
+      log("[CASH] ¡+500$ instantáneos!", 'success');
+      break;
+    // Comodines troll
+    case 'Reverse':
+      document.body.style.transform = 'scale(-1, 1)';
+      setTimeout(() => {
+        document.body.style.transform = '';
+      }, 10000);
+      log("[TROLL] ¡Controles invertidos por 10 segundos!", 'warning');
+      break;
+    case 'Drunk':
+      cartas.forEach(c => c.element.classList.add('card-drunk'));
+      setTimeout(() => {
+        cartas.forEach(c => c.element.classList.remove('card-drunk'));
+      }, 15000);
+      log("[TROLL] ¡Las cartas están borrachas por 15 segundos!", 'warning');
+      break;
+    case 'Chaos':
+      // Efecto caótico: mezcla cartas, invierte controles y hace que se muevan
+      mezclar();
+      cartas.forEach(c => c.element.classList.add('card-drunk'));
+      document.body.style.transform = 'scale(-1, 1)';
+      setTimeout(() => {
+        cartas.forEach(c => c.element.classList.remove('card-drunk'));
+        document.body.style.transform = '';
+      }, 5000);
+      log("[CHAOS] ¡CAOS TOTAL!", 'error');
+      break;
+    case 'Fake':
+      log("[FAKE] Este comodín no hace nada... ¡Te engañé!", 'warning');
+      break;
+  }
+}
+
+let shieldActive = false;
+let doubleActive = false;
+let safeActive = false;
 </script>
 </body>
 </html>
