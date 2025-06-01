@@ -963,164 +963,285 @@ function preload() {
 class Carta {
     constructor(idx, tx, index) {
         this.idx = idx;
-        this.img = cartaImgs[idx];
         this.tx = tx;
-        this.ty = 0;
-        this.x = tx;
-        this.y = 0;
-        this.w = 150;
-        this.h = 210;
         this.index = index;
-        this.volteada = false;
-        this.scale = 1;
-        this.rotation = 0;
-        this.flipProgress = 0;
-        this.targetFlip = 0;
+        this.x = 0;
+        this.y = 0;
+        this.width = 150;
+        this.height = 200;
+        this.selected = false;
         this.correct = false;
-        this.wrong = false;
+        this.incorrect = false;
+        this.transitioning = false;
+        this.particles = [];
+        this.glowIntensity = 0;
         this.hoverEffect = 0;
-        this.rara = cartaRaras.includes(idx);
-        
-        // Efectos especiales para las nuevas cartas
-        this.specialEffects = {
-            particles: [],
-            glowIntensity: 0,
-            hueRotation: 0
-        };
-        
-        // Añadir atributo data-card para efectos específicos
-        if (this.element) {
-            this.element.setAttribute('data-card', (idx + 1).toString());
-            
-            // Configurar color específico para cada carta
-            const cardColors = {
-                24: '0,255,255',  // Cyan para efecto cuántico
-                25: '255,255,0',  // Amarillo para relámpagos
-                26: '255,0,255',  // Magenta para efecto prismático
-                27: '0,255,0',    // Verde para ondas de pulso
-                28: '255,0,0',    // Rojo para división dimensional
-                29: '255,255,255',// Blanco para escáner
-                30: '128,0,128',  // Púrpura para vacío
-                31: '0,255,255',  // Cyan para cristal
-                32: '255,215,0',  // Dorado para datos
-                33: '255,0,0'     // Rojo para distorsión
-            };
-            
-            if (cardColors[idx + 1]) {
-                this.element.style.setProperty('--card-color', cardColors[idx + 1]);
-            }
-        }
     }
 
     update() {
-        // Actualización normal
-        this.x = lerp(this.x, this.tx, 0.1);
-        this.y = lerp(this.y, this.ty, 0.1);
-        
-        // Actualizar efectos especiales
-        if (this.idx >= 23) { // Para las nuevas cartas
-            this.updateSpecialEffects();
+        // Update particles
+        this.particles = this.particles.filter(p => p.alpha > 0);
+        this.particles.forEach(p => p.update());
+
+        // Update hover effect
+        if (this.hoverEffect > 0) {
+            this.hoverEffect -= 0.05;
         }
-        
-        // Actualizar rotación 3D basada en la posición del mouse
-        if (this.element && !this.volteada) {
-            const rect = this.element.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const rotateY = ((mouseX - centerX) / rect.width) * 20;
-            const rotateX = ((mouseY - centerY) / rect.height) * 20;
-            
-            this.element.style.setProperty('--rotateX', -rotateX + 'deg');
-            this.element.style.setProperty('--rotateY', rotateY + 'deg');
+
+        // Update glow intensity
+        if (this.correct) {
+            this.glowIntensity = Math.min(1, this.glowIntensity + 0.1);
+        } else if (this.incorrect) {
+            this.glowIntensity = Math.max(0, this.glowIntensity - 0.1);
+        }
+
+        // Add particles for correct/incorrect states
+        if (this.correct && Math.random() < 0.2) {
+            this.addParticle('#00ff00');
+        }
+        if (this.incorrect && Math.random() < 0.1) {
+            this.addParticle('#ff0000');
         }
     }
 
     updateSpecialEffects() {
-        // Actualizar partículas
-        for (let i = this.specialEffects.particles.length - 1; i >= 0; i--) {
-            const particle = this.specialEffects.particles[i];
-            particle.life -= 0.02;
-            particle.y += particle.vy;
-            particle.x += particle.vx;
+        if (this.correct) {
+            document.querySelector(`.card:nth-child(${this.index + 1})`).classList.add('card-correct');
+            this.createSuccessParticles();
+        } else if (this.incorrect) {
+            document.querySelector(`.card:nth-child(${this.index + 1})`).classList.add('card-incorrect');
+            this.createErrorParticles();
+        }
+
+        if (this.transitioning) {
+            document.querySelector(`.card:nth-child(${this.index + 1})`).classList.add('card-transition');
+        }
+    }
+
+    createSuccessParticles() {
+        for (let i = 0; i < 10; i++) {
+            const angle = (Math.PI * 2 * i) / 10;
+            const speed = 2 + Math.random() * 2;
+            const size = 3 + Math.random() * 3;
+            this.particles.push({
+                x: this.x + this.width / 2,
+                y: this.y + this.height / 2,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                alpha: 1,
+                color: '#00ff00',
+                size: size
+            });
+        }
+    }
+
+    createErrorParticles() {
+        for (let i = 0; i < 5; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 1 + Math.random() * 2;
+            this.particles.push({
+                x: this.x + this.width / 2,
+                y: this.y + this.height / 2,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                alpha: 1,
+                color: '#ff0000',
+                size: 2
+            });
+        }
+    }
+
+    addParticle(color) {
+        this.particles.push({
+            x: this.x + Math.random() * this.width,
+            y: this.y + Math.random() * this.height,
+            vx: (Math.random() - 0.5) * 2,
+            vy: (Math.random() - 0.5) * 2,
+            alpha: 1,
+            color: color,
+            size: 2 + Math.random() * 2
+        });
+    }
+
+    draw(ctx) {
+        ctx.save();
+        
+        // Draw card glow effect
+        if (this.glowIntensity > 0) {
+            ctx.shadowBlur = 20 * this.glowIntensity;
+            ctx.shadowColor = this.correct ? '#00ff00' : '#ff0000';
+        }
+
+        // Draw card with hover effect
+        if (this.hoverEffect > 0) {
+            ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+            ctx.scale(1 + this.hoverEffect * 0.1, 1 + this.hoverEffect * 0.1);
+            ctx.translate(-(this.x + this.width / 2), -(this.y + this.height / 2));
+        }
+
+        // Draw card background
+        ctx.fillStyle = '#2c3e50';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        // Draw card content
+        ctx.fillStyle = '#ecf0f1';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.tx, this.x + this.width / 2, this.y + this.height / 2);
+
+        // Draw particles
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.alpha;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
             
-            if (particle.life <= 0) {
-                this.specialEffects.particles.splice(i, 1);
+            // Update particle
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.02;
+        });
+
+        ctx.restore();
+    }
+
+    drawSpecialEffects(ctx) {
+        if (this.correct || this.incorrect) {
+            ctx.save();
+            ctx.globalAlpha = 0.5;
+            ctx.strokeStyle = this.correct ? '#00ff00' : '#ff0000';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(this.x - 5, this.y - 5, this.width + 10, this.height + 10);
+            ctx.restore();
+        }
+    }
+}
+
+function transitionToNextRoom() {
+    // Create transition element if it doesn't exist
+    let transitionEl = document.querySelector('.room-transition');
+    if (!transitionEl) {
+        transitionEl = document.createElement('div');
+        transitionEl.className = 'room-transition';
+        document.body.appendChild(transitionEl);
+    }
+
+    // Trigger transition animation
+    transitionEl.classList.add('active');
+
+    // Create success particles
+    const particles = [];
+    const numParticles = 50;
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+            angle: (Math.PI * 2 * i) / numParticles,
+            speed: 2 + Math.random() * 3,
+            size: 3 + Math.random() * 5,
+            life: 1
+        });
+    }
+
+    // Animate particles
+    function animateParticles() {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.zIndex = '999';
+        canvas.style.pointerEvents = 'none';
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        document.body.appendChild(canvas);
+        
+        const ctx = canvas.getContext('2d');
+        let animationFrame;
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let allDead = true;
+            particles.forEach(p => {
+                if (p.life > 0) {
+                    allDead = false;
+                    p.x += Math.cos(p.angle) * p.speed;
+                    p.y += Math.sin(p.angle) * p.speed;
+                    p.life -= 0.02;
+                    
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = '#00ff00';
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            });
+
+            if (!allDead) {
+                animationFrame = requestAnimationFrame(update);
+            } else {
+                cancelAnimationFrame(animationFrame);
+                canvas.remove();
+                // Navigate to next room
+                window.location.href = '/Home/Room8';
             }
         }
-        
-        // Añadir nuevas partículas si es necesario
-        if (this.hover && Math.random() < 0.3) {
-            this.addParticle();
-        }
-        
-        // Actualizar efectos de brillo
-        this.specialEffects.glowIntensity = lerp(
-            this.specialEffects.glowIntensity,
-            this.hover ? 1 : 0,
-            0.1
-        );
-        
-        // Actualizar rotación de matiz
-        this.specialEffects.hueRotation += 2;
-        if (this.specialEffects.hueRotation >= 360) {
-            this.specialEffects.hueRotation = 0;
-        }
+
+        update();
     }
 
-    addParticle() {
-        const particle = {
-            x: random(this.x - this.w/2, this.x + this.w/2),
-            y: random(this.y - this.h/2, this.y + this.h/2),
-            vx: random(-1, 1),
-            vy: random(-2, -1),
-            life: 1,
-            color: color(random(200, 255), random(200, 255), random(200, 255))
-        };
-        this.specialEffects.particles.push(particle);
-    }
+    // Start transition
+    setTimeout(() => {
+        animateParticles();
+    }, 1000);
+}
 
-    draw() {
-        push();
-        translate(this.x, this.y);
+function updateGameState() {
+    // Check if all cards are correctly matched
+    const allCardsMatched = cartas.every(card => card.correct);
+    
+    if (allCardsMatched) {
+        // Trigger success animation and room transition
+        cartas.forEach(card => {
+            card.transitioning = true;
+            card.updateSpecialEffects();
+        });
         
-        // Aplicar efectos especiales para las nuevas cartas
-        if (this.idx >= 23) {
-            this.drawSpecialEffects();
-        }
-        
-        // Dibujo normal de la carta
-        if (this.isHovered) {
-            scale(1.1);
-            if (!this.volteada) {
-                rotate(sin(frameCount * 0.05) * 0.1);
-            }
-        }
-        
-        // ... resto del código de draw()
-        
-        pop();
-    }
+        // Add victory effect to the screen
+        const victoryEl = document.createElement('div');
+        victoryEl.className = 'victory-effect';
+        victoryEl.style.position = 'fixed';
+        victoryEl.style.top = '50%';
+        victoryEl.style.left = '50%';
+        victoryEl.style.transform = 'translate(-50%, -50%)';
+        victoryEl.style.fontSize = '48px';
+        victoryEl.style.color = '#00ff00';
+        victoryEl.style.textShadow = '0 0 20px #00ff00';
+        victoryEl.textContent = '¡VICTORIA!';
+        document.body.appendChild(victoryEl);
 
-    drawSpecialEffects() {
-        // Dibujar partículas
-        for (const particle of this.specialEffects.particles) {
-            push();
-            noStroke();
-            fill(particle.color.levels[0], particle.color.levels[1], 
-                 particle.color.levels[2], particle.life * 255);
-            ellipse(particle.x - this.x, particle.y - this.y, 4, 4);
-            pop();
-        }
-        
-        // Efecto de brillo
-        if (this.specialEffects.glowIntensity > 0) {
-            push();
-            blendMode(ADD);
-            noFill();
-            strokeWeight(2);
-            stroke(0, 255, 0, this.specialEffects.glowIntensity * 100);
-            rect(-this.w/2 - 5, -this.h/2 - 5, this.w + 10, this.h + 10);
-            pop();
-        }
+        // Trigger room transition after victory animation
+        setTimeout(() => {
+            transitionToNextRoom();
+        }, 2000);
     }
+}
+
+// Update the game loop to include the new state management
+function gameLoop() {
+    // Update cards
+    cartas.forEach(card => {
+        card.update();
+        card.updateSpecialEffects();
+    });
+
+    // Update game state
+    updateGameState();
+
+    // Request next frame
+    requestAnimationFrame(gameLoop);
 } 
