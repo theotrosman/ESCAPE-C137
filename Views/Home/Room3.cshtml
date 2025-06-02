@@ -499,21 +499,6 @@
             }
         }
 
-        @@keyframes fadeOutAd {
-            0% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                display: none;
-            }
-        }
-
         @@keyframes blinkRed {
             0% {
                 opacity: 1;
@@ -522,6 +507,147 @@
             100% {
                 opacity: 0.3;
             }
+        }
+
+        /* DNA Helix Animation */
+        .dna-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            perspective: 1000px;
+        }
+
+        .dna-strand {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: rgba(0, 255, 0, 0.5);
+            transform-origin: center;
+            animation: dnaRotate 8s linear infinite;
+        }
+
+        @@keyframes dnaRotate {
+            0% { transform: rotateY(0deg) translateZ(20px); }
+            100% { transform: rotateY(360deg) translateZ(20px); }
+        }
+
+        /* Genetic Code Rain */
+        .genetic-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.2;
+        }
+
+        .genetic-particle {
+            position: absolute;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 14px;
+            animation: geneticFall linear infinite;
+        }
+
+        @@keyframes geneticFall {
+            0% { transform: translateY(-20px); opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        /* Enhanced Grid Cells */
+        .grid-cell {
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: visible;
+        }
+
+        .grid-cell::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, rgba(0,255,0,0.2), rgba(0,255,255,0.2));
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+            filter: blur(4px);
+        }
+
+        .grid-cell:hover::before {
+            opacity: 1;
+            animation: cellPulse 2s infinite;
+        }
+
+        .grid-cell.selected {
+            transform: scale(1.1);
+            box-shadow: 
+                0 0 20px rgba(0,255,0,0.4),
+                0 0 40px rgba(0,255,0,0.2);
+            animation: selectedCell 1s infinite;
+        }
+
+        @@keyframes cellPulse {
+            0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+            50% { transform: scale(1.1); filter: hue-rotate(180deg); }
+        }
+
+        @@keyframes selectedCell {
+            0%, 100% { box-shadow: 0 0 20px rgba(0,255,0,0.4); }
+            50% { box-shadow: 0 0 40px rgba(0,255,0,0.6); }
+        }
+
+        /* Mutation Effects */
+        .mutation-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,255,0,0.2);
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+            transition: opacity 0.2s;
+        }
+
+        .mutation-active {
+            animation: mutationPulse 0.5s;
+        }
+
+        @@keyframes mutationPulse {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Victory Sequence */
+        .victory-helix {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 400px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .victory-helix.active {
+            opacity: 1;
+            animation: helixAssemble 3s forwards;
+        }
+
+        @@keyframes helixAssemble {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.5) rotate(360deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
@@ -556,8 +682,8 @@
     </div>
 
     <div class="input-section" id="inputSec" style="text-align:center; display:none; margin-top: 20px;">
-        <p><strong>Rick:</strong> “Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran
-            columnas de código genético...”</p>
+        <p><strong>Rick:</strong> "Leé en vertical, Morty. Las columnas SON las cadenas genéticas... es como si fueran
+            columnas de código genético..."</p>
         <p>Ingresá la secuencia estable (10 letras):</p>
         <input id="respuesta" maxlength="10" />
         <br />
@@ -565,6 +691,11 @@
     </div>
 
     <div id="resultado" style="text-align:center; margin-top: 20px;"></div>
+
+    <div class="dna-container"></div>
+    <div class="genetic-rain"></div>
+    <div class="mutation-flash"></div>
+    <div class="victory-helix"></div>
 
     <script>
         let errores = 0;
@@ -864,6 +995,94 @@
                     input.value = input.value.slice(0, -1);
                 });
             });
+        }
+
+        // Create DNA helix
+        function createDNAHelix() {
+            const container = document.querySelector('.dna-container');
+            for (let i = 0; i < 50; i++) {
+                const strand = document.createElement('div');
+                strand.className = 'dna-strand';
+                strand.style.left = `${Math.random() * 100}%`;
+                strand.style.top = `${Math.random() * 100}%`;
+                strand.style.animationDelay = `${Math.random() * -8}s`;
+                container.appendChild(strand);
+            }
+        }
+
+        // Create genetic code rain
+        function createGeneticRain() {
+            const container = document.querySelector('.genetic-rain');
+            const bases = ['A', 'T', 'C', 'G'];
+            
+            setInterval(() => {
+                const particle = document.createElement('div');
+                particle.className = 'genetic-particle';
+                particle.textContent = bases[Math.floor(Math.random() * bases.length)];
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${2 + Math.random() * 3}s`;
+                container.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 5000);
+            }, 100);
+        }
+
+        // Mutation effect when wrong sequence
+        function showMutationEffect() {
+            const flash = document.querySelector('.mutation-flash');
+            flash.classList.add('mutation-active');
+            setTimeout(() => flash.classList.remove('mutation-active'), 500);
+        }
+
+        // Victory sequence
+        function showVictorySequence() {
+            const helix = document.querySelector('.victory-helix');
+            helix.classList.add('active');
+            
+            // Create DNA particles
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'genetic-particle';
+                    particle.textContent = ['A', 'T', 'C', 'G'][Math.floor(Math.random() * 4)];
+                    particle.style.position = 'fixed';
+                    particle.style.left = '50%';
+                    particle.style.top = '50%';
+                    particle.style.transform = 'translate(-50%, -50%)';
+                    document.body.appendChild(particle);
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 200 + Math.random() * 200;
+                    const duration = 1000 + Math.random() * 2000;
+                    
+                    particle.animate([
+                        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                        { 
+                            transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(0)`,
+                            opacity: 0 
+                        }
+                    ], {
+                        duration: duration,
+                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                    }).onfinish = () => particle.remove();
+                }, i * 20);
+            }
+        }
+
+        // Initialize effects
+        window.onload = () => {
+            createDNAHelix();
+            createGeneticRain();
+        };
+
+        // Add to your existing code where wrong sequences are detected
+        if (errores > 0) {
+            showMutationEffect();
+        }
+
+        // Add to your existing victory condition
+        if (errores === 0) {
+            showVictorySequence();
         }
     </script>
 </body>

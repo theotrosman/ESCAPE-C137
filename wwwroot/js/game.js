@@ -982,7 +982,7 @@ class Carta {
         // Update particles
         this.particles = this.particles.filter(p => p.alpha > 0);
         this.particles.forEach(p => p.update());
-
+        
         // Update hover effect
         if (this.hoverEffect > 0) {
             this.hoverEffect -= 0.05;
@@ -1048,8 +1048,8 @@ class Carta {
                 color: '#ff0000',
                 size: 2
             });
+            }
         }
-    }
 
     addParticle(color) {
         this.particles.push({
@@ -1071,7 +1071,7 @@ class Carta {
             ctx.shadowBlur = 20 * this.glowIntensity;
             ctx.shadowColor = this.correct ? '#00ff00' : '#ff0000';
         }
-
+        
         // Draw card with hover effect
         if (this.hoverEffect > 0) {
             ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
@@ -1105,7 +1105,7 @@ class Carta {
         });
 
         ctx.restore();
-    }
+            }
 
     drawSpecialEffects(ctx) {
         if (this.correct || this.incorrect) {
@@ -1126,7 +1126,7 @@ function transitionToNextRoom() {
         transitionEl = document.createElement('div');
         transitionEl.className = 'room-transition';
         document.body.appendChild(transitionEl);
-    }
+        }
 
     // Trigger transition animation
     transitionEl.classList.add('active');
@@ -1192,13 +1192,13 @@ function transitionToNextRoom() {
         }
 
         update();
-    }
-
+        }
+        
     // Start transition
     setTimeout(() => {
         animateParticles();
     }, 1000);
-}
+    }
 
 function updateGameState() {
     // Check if all cards are correctly matched

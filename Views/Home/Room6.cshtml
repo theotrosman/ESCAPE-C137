@@ -10,6 +10,9 @@
       --alert: #ff0066;
       --glitch1: #ff00c8;
       --glitch2: #00ffff;
+      --quantum1: #00ff88;
+      --quantum2: #ff00ff;
+      --portal: #66ff99;
     }
     * { box-sizing: border-box; }
     body {
@@ -104,6 +107,36 @@
       font-size: 20px;
       cursor: pointer;
       transition: 0.2s;
+      position: relative;
+      overflow: visible;
+    }
+    .cell::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(45deg, var(--quantum1), var(--quantum2));
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+      filter: blur(4px);
+    }
+    .cell:hover::before {
+      opacity: 0.5;
+      animation: cellGlow 2s infinite;
+    }
+    .cell.activo::before {
+      opacity: 1;
+      animation: activeCellPulse 1s infinite;
+    }
+    @@keyframes cellGlow {
+      0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+      50% { transform: scale(1.1); filter: hue-rotate(180deg); }
+    }
+    @@keyframes activeCellPulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
     }
     .cell.activo {
       animation: pulseLight 0.4s alternate infinite;
@@ -118,11 +151,132 @@
       font-size: 18px;
       margin-top: 10px;
       text-align: center;
+      position: relative;
+      text-shadow: 0 0 10px var(--fg);
+      animation: scorePulse 2s infinite;
+    }
+    @@keyframes scorePulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.1); filter: brightness(1.3); }
     }
     @@keyframes portalFlash {
   0% { filter: hue-rotate(0deg) brightness(1); }
   100% { filter: hue-rotate(180deg) brightness(1.4); }
 }
+    /* Quantum particles effect */
+    .quantum-field {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .quantum-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--quantum1);
+      border-radius: 50%;
+      filter: blur(2px);
+      animation: quantumFloat 4s infinite;
+    }
+
+    @@keyframes quantumFloat {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+      50% { transform: translate(var(--moveX), var(--moveY)) scale(1.5); opacity: 1; }
+      100% { transform: translate(calc(var(--moveX) * 2), calc(var(--moveY) * 2)) scale(1); opacity: 0; }
+    }
+
+    /* Reality distortion effect */
+    .reality-distortion {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0,255,0,0.1) 50%, transparent 100%);
+      mix-blend-mode: screen;
+      animation: realityPulse 8s infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @@keyframes realityPulse {
+      0%, 100% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.5); opacity: 0.7; }
+    }
+
+    /* Portal effects */
+    .portal-ring {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      border: 4px solid var(--portal);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      filter: blur(4px);
+      z-index: 2;
+    }
+
+    .portal-ring.active {
+      animation: portalOpen 3s forwards;
+    }
+
+    @@keyframes portalOpen {
+      0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.5) rotate(180deg); opacity: 0.8; }
+      100% { transform: translate(-50%, -50%) scale(0) rotate(360deg); opacity: 0; }
+    }
+
+    /* Enhanced terminal effects */
+    .terminal {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terminal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--fg);
+      animation: terminalScan 2s linear infinite;
+      opacity: 0.5;
+    }
+
+    @@keyframes terminalScan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(220px); }
+    }
+
+    /* Victory effects */
+    .victory-effect {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent, rgba(0,255,0,0.2));
+      pointer-events: none;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    .victory-effect.active {
+      animation: victoryPulse 3s forwards;
+    }
+
+    @@keyframes victoryPulse {
+      0% { opacity: 0; transform: scale(0); }
+      50% { opacity: 1; transform: scale(1.5); }
+      100% { opacity: 0; transform: scale(2); }
+    }
   </style>
 </head>
 <body>
@@ -145,6 +299,10 @@
 <div class="grid" id="grid"></div>
 <div id="score">Puntaje: 0</div>
 <div class="terminal" id="terminal"></div>
+<div class="quantum-field"></div>
+<div class="reality-distortion"></div>
+<div class="portal-ring"></div>
+<div class="victory-effect"></div>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const consoleDiv = document.getElementById('console');
@@ -395,6 +553,52 @@ setInterval(() => {
 setInterval(() => {
   if (Math.random() < 0.3) gridDualidad();
 }, 7000);
+
+function createQuantumParticles() {
+    const field = document.querySelector('.quantum-field');
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'quantum-particle';
+        particle.style.left = Math.random() * window.innerWidth + 'px';
+        particle.style.top = Math.random() * window.innerHeight + 'px';
+        particle.style.setProperty('--moveX', (Math.random() * 200 - 100) + 'px');
+        particle.style.setProperty('--moveY', (Math.random() * 200 - 100) + 'px');
+        field.appendChild(particle);
+        
+        // Remove particle after animation
+        particle.addEventListener('animationend', () => particle.remove());
+    }
+    setTimeout(createQuantumParticles, 2000);
+}
+
+function showVictoryEffects() {
+    const portal = document.querySelector('.portal-ring');
+    const victory = document.querySelector('.victory-effect');
+    portal.classList.add('active');
+    victory.classList.add('active');
+    
+    // Create extra quantum particles for victory
+    for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = 'quantum-particle';
+            particle.style.left = '50%';
+            particle.style.top = '50%';
+            particle.style.setProperty('--moveX', (Math.random() * 400 - 200) + 'px');
+            particle.style.setProperty('--moveY', (Math.random() * 400 - 200) + 'px');
+            document.querySelector('.quantum-field').appendChild(particle);
+        }, i * 50);
+    }
+}
+
+// Initialize quantum particles
+createQuantumParticles();
+
+// Add to your existing victory condition
+if (score >= 15) {
+    showVictoryEffects();
+    // ... rest of your victory code ...
+}
 </script>
 
 </body>

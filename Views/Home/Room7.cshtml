@@ -106,6 +106,76 @@
             0% { background-position: 0 0; }
             100% { background-position: 0 100%; }
         }
+        /* Enhanced visual effects */
+        .quantum-particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: #00ff88;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px);
+            z-index: 1000;
+        }
+
+        .reality-glitch {
+            position: fixed;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 9999;
+            text-shadow: 
+                2px 2px #f00,
+                -2px -2px #0ff;
+            animation: glitchText 0.3s infinite;
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.15;
+        }
+
+        .reality-break {
+            animation: realityBreak 0.5s infinite;
+        }
+
+        @@keyframes glitchText {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(5px, -5px); }
+            50% { transform: translate(-5px, 5px); }
+            75% { transform: translate(5px, 5px); }
+        }
+
+        @@keyframes realityBreak {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+            50% { filter: hue-rotate(180deg) brightness(1.5); }
+        }
+
+        #textOut {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9998;
+            transition: opacity 0.1s;
+        }
     </style>
 </head>
 <body>
@@ -129,29 +199,142 @@
         const textOut = document.getElementById('textOut');
         const flash = document.getElementById('flash');
 
-        const lore = `ERROR 0x0FA0 - FRACTURA DE REALIDAD DETECTADA\nRick: ¡Morty, no escapamos, fuimos reiniciados!\nMorty: ¿Q-q-q-qué? ¿Entonces seguimos atrapados?\nRick: Sí. Pero ahora en un nivel más profundo... una sub-matriz experimental.\nRick: Esta simulación... está aprendiendo de nosotros, Morty.\nRick: Cometí un error. Dejé un log abierto. Nos están observando.\nRick: Si no desciframos el cód-- el codig--- gltch//ERROR///.exe\nMorty: ¿Rick...? ¿Estás...?\nRick: ---\n\n[PROCESO DE INYECCIÓN: ROOM7CODEX INICIADO]\n[CONEXIÓN TEMPORAL ABIERTA — TIEMPO LIMITADO]`;
+        const lore = `[INICIANDO SECUENCIA DE HACKEO DIMENSIONAL...]
+[ADVERTENCIA: MÚLTIPLES ANOMALÍAS DETECTADAS]
+
+ERROR 0x0FA0 - FRACTURA DE REALIDAD DETECTADA
+
+Rick: ¡M-morty! *burp* ¡Esto es peor de lo que pensaba!
+Morty: ¿Q-q-qué está pasando Rick?
+Rick: No escapamos Morty... fuimos REINICIADOS.
+Morty: ¿Qué significa eso?
+Rick: Significa que estamos en una sub-matriz experimental... una simulación dentro de otra simulación.
+Rick: Y no cualquier simulación... es una que está APRENDIENDO de nosotros.
+Morty: Oh jeez Rick... ¿y ahora qué hacemos?
+Rick: Cometí un error garrafal Morty... dejé un log abierto.
+Rick: Alguien... o algo... nos está observando.
+Rick: Si no desciframos el cód-- el codig--- [ERROR_FATAL]
+Morty: ¿Rick...? ¡RICK!
+Rick: [SEÑAL_PERDIDA]
+
+[PROCESO DE INYECCIÓN: ROOM7CODEX INICIADO]
+[CONEXIÓN TEMPORAL ABIERTA — TIEMPO LIMITADO]
+[ADVERTENCIA: REALIDAD INESTABLE]`;
 
         let i = 0;
         function typeOut() {
             if (i < lore.length) {
-                textOut.innerText += lore.charAt(i);
-                i++;
-                if (Math.random() < 0.07) {
-                    flash.style.opacity = 1;
-                    setTimeout(() => flash.style.opacity = 0, 80);
+                const char = lore.charAt(i);
+                if (char === '\n') {
+                    textOut.innerHTML += '<br>';
+                } else {
+                    textOut.innerHTML += char;
                 }
+                i++;
+                
+                // Add glitch effect randomly
+                if (Math.random() < 0.1) {
+                    flash.style.opacity = 1;
+                    setTimeout(() => flash.style.opacity = 0, 50);
+                    
+                    // Add reality glitch text
+                    const glitch = document.createElement('div');
+                    glitch.className = 'reality-glitch';
+                    glitch.style.left = Math.random() * window.innerWidth + 'px';
+                    glitch.style.top = Math.random() * window.innerHeight + 'px';
+                    glitch.textContent = ['ERROR', 'GLITCH', 'VOID', 'NULL', '0x0FA0'][Math.floor(Math.random() * 5)];
+                    document.body.appendChild(glitch);
+                    setTimeout(() => glitch.remove(), 1000);
+                }
+                
+                // Add quantum particles during typing
+                if (Math.random() < 0.2) {
+                    createQuantumParticle();
+                }
+                
                 setTimeout(typeOut, 45 + Math.random() * 60);
             } else {
-                setTimeout(() => window.location.href = '/Home/Room7Codex', 7000);
+                // Final sequence
+                setTimeout(() => {
+                    flash.style.opacity = 1;
+                    document.body.classList.add('reality-break');
+                    
+                    // Create massive quantum burst
+                    for (let i = 0; i < 100; i++) {
+                        setTimeout(createQuantumParticle, i * 20);
+                    }
+                    
+                    setTimeout(() => {
+                        flash.style.opacity = 0;
+                        document.body.classList.remove('reality-break');
+                        window.location.href = '/Home/Room7Codex';
+                    }, 2000);
+                }, 2000);
             }
         }
 
-        video.play();
-        audio.play();
-        video.addEventListener('ended', () => {
-            overlay.classList.add('fadeout');
-            setTimeout(typeOut, 1000);
-        });
+        function createQuantumParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'quantum-particle';
+            particle.style.left = Math.random() * window.innerWidth + 'px';
+            particle.style.top = Math.random() * window.innerHeight + 'px';
+            document.body.appendChild(particle);
+            
+            // Animate particle
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 100 + Math.random() * 200;
+            const duration = 1000 + Math.random() * 2000;
+            
+            particle.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, opacity: 0 }
+            ], {
+                duration: duration,
+                easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+            }).onfinish = () => particle.remove();
+        }
+
+        // Matrix rain effect
+        function createMatrixRain() {
+            const canvas = document.createElement('canvas');
+            canvas.className = 'matrix-rain';
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const columns = canvas.width / 20;
+            const drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#0F0';
+                ctx.font = '15px monospace';
+
+                for (let i = 0; i < drops.length; i++) {
+                    const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+                    ctx.fillText(text, i * 20, drops[i] * 20);
+                    if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+
+            setInterval(draw, 33);
+        }
+
+        // Initialize effects
+        window.onload = () => {
+            createMatrixRain();
+            typeOut();
+        };
     </script>
 </body>
 </html>

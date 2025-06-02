@@ -167,7 +167,7 @@
         input.addEventListener("input", function () {
             const val = input.value.toLowerCase();
             if (val === "y") {
-                terminal.innerHTML = "";
+                terminal.innerHTML = "✔️ Iniciando secuencia de escape...";
                 inputLine.style.display = "none";
                 
                 // Marcar Room1 como completada
@@ -176,13 +176,29 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(response => response.json())
-                  .then(data => {
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     if (data.success) {
+                        terminal.innerHTML += "\n🌀 Portal estable detectado...";
                         setTimeout(() => {
                             window.location.href = "/Home/GameStart";
-                        }, 500);
+                        }, 1000);
+                    } else {
+                        throw new Error('Room completion failed');
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    terminal.innerHTML = "❌ ERROR: Fallo en la secuencia de escape. Reintentando...";
+                    setTimeout(() => {
+                            window.location.href = "/Home/GameStart";
+                    }, 2000);
                 });
             } else if (val === "n") {
                 mostrarErrorRick();
