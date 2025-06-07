@@ -41,15 +41,59 @@
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      font-size: 18px;
+      font-size: 24px;
       padding: 30px;
       z-index: 999;
-      animation: introFade 10s ease forwards;
+      animation: introFade 15s ease forwards;
+      text-shadow: 0 0 10px var(--fg);
     }
     @@keyframes introFade {
-      0% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { opacity: 0; pointer-events: none; }
+      0% { opacity: 1; background: black; }
+      10% { opacity: 1; background: #111; }
+      90% { opacity: 1; background: black; }
+      100% { opacity: 0; pointer-events: none; background: transparent; }
+    }
+    .intro-text {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: textReveal 0.8s forwards;
+      animation-delay: var(--delay);
+    }
+    @@keyframes textReveal {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .reality-break {
+      animation: realityGlitch 0.2s infinite;
+    }
+    @@keyframes realityGlitch {
+      0% { clip-path: inset(0 0 0 0); }
+      20% { clip-path: inset(20% 0 0 0); }
+      40% { clip-path: inset(0 20% 0 0); }
+      60% { clip-path: inset(0 0 20% 0); }
+      80% { clip-path: inset(0 0 0 20%); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+    .quantum-flash {
+      position: fixed;
+      inset: 0;
+      background: white;
+      mix-blend-mode: overlay;
+      opacity: 0;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    .warning-text {
+      color: var(--alert);
+      font-weight: bold;
+      animation: warningPulse 0.5s infinite alternate;
+    }
+    @@keyframes warningPulse {
+      from { text-shadow: 0 0 10px var(--alert); }
+      to { text-shadow: 0 0 20px var(--alert), 0 0 40px var(--alert); }
     }
     .glitch {
       animation: glitchFlash 0.3s infinite alternate;
@@ -280,16 +324,40 @@
   </style>
 </head>
 <body>
+<canvas id="ditherBG"></canvas>
+
 <audio id="bgAudio" src="/audio/rick-dubstep.mp3" autoplay loop></audio>
 <div class="flashOverlay"></div>
 <canvas id="matrix"></canvas>
-<div class="introLore">
-  <div class="glitch">>>> Cargando núcleo de la realidad...</div>
-  <div class="glitch">>>> Múltiples capas de código detectadas...</div>
-  <div class="glitch">>>> ERROR EN LA MATRIZ...</div>
-  <div class="glitch">>>> RICK: ¡Morty! Si el núcleo explota nos fragmentamos en líneas de código!</div>
-  <div class="glitch">>>> Preparate... esto se va al carajo.</div>
+<div class="introLore" id="introLore">
+  <div class="intro-text" style="--delay: 0s">
+    <h1 style="color: var(--quantum1);">[INICIANDO ROOM 6: NÚCLEO DEL CAOS]</h1>
+  </div>
+  <div class="intro-text" style="--delay: 2s">
+    <p class="warning-text">⚠️ ADVERTENCIA: ANOMALÍA CUÁNTICA DETECTADA ⚠️</p>
+    <p>Inestabilidad del núcleo al 89% y aumentando...</p>
+  </div>
+  <div class="intro-text" style="--delay: 4s">
+    <p>[RICK] *burp* M-morty... llegamos al centro.</p>
+    <p>[RICK] El lugar donde la realidad se dobla sobre sí misma.</p>
+  </div>
+  <div class="intro-text" style="--delay: 6s">
+    <p>[MORTY] ¡Rick! ¡Los bugs! ¡Se están moviendo solos!</p>
+    <p>[RICK] No son bugs, Morty... es el código tomando consciencia.</p>
+  </div>
+  <div class="intro-text" style="--delay: 8s">
+    <p class="warning-text">[SISTEMA] ALERTA: COLAPSO DIMENSIONAL INMINENTE</p>
+    <p>[SISTEMA] Iniciando protocolo de contención cuántica...</p>
+  </div>
+  <div class="intro-text" style="--delay: 10s">
+    <p>[RICK] Morty, escuchá bien: tenés que estabilizar el núcleo.</p>
+    <p>[RICK] Cada luz es una grieta en la matrix. ¡Sellalas todas!</p>
+  </div>
+  <div class="intro-text" style="--delay: 12s">
+    <p class="warning-text">INICIANDO SECUENCIA EN 3... 2... 1...</p>
+  </div>
 </div>
+<div class="quantum-flash" id="quantumFlash"></div>
 <div class="instrucciones">
   <h2>⚠️ Room 6: Caos del Núcleo</h2>
   <p>Rick: Morty, estamos en el núcleo caótico de la realidad. La física no responde. Los bugs están vivos. Y el código... se genera solo.</p>
@@ -306,32 +374,65 @@
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const consoleDiv = document.getElementById('console');
+  const quantumFlash = document.getElementById('quantumFlash');
+  
+  // Quantum flash effects
+  function triggerQuantumFlash() {
+    quantumFlash.style.opacity = '0.8';
+    setTimeout(() => {
+      quantumFlash.style.opacity = '0';
+    }, 100);
+  }
+
+  // Trigger quantum flashes randomly
+  setInterval(triggerQuantumFlash, 2000 + Math.random() * 3000);
+
+  // Add reality break effect to certain messages
+  document.querySelectorAll('.warning-text').forEach(el => {
+    el.addEventListener('mouseover', () => {
+      document.body.classList.add('reality-break');
+      triggerQuantumFlash();
+    });
+    el.addEventListener('mouseout', () => {
+      document.body.classList.remove('reality-break');
+    });
+  });
+
   const intro = [
-    "[C137_CONSOLE] *** INICIANDO SECUENCIA DE SIMULACIÓN BALATRO CODEX ***",
-    "[C137_CONSOLE] Injectando caos... Corrupción del sistema al 67%...",
-    "[RICK] Morty... ¡MORTY! Despertá de una maldita vez...",
-    "[RICK] Estamos atrapados en un código convertido en un juego de cartas interdimensional... y para salir tenemos que JUGAR.",
-    "[RICK] Necesitamos ganar al menos $2000 para que la realidad vuelva a estabilizarse... O vamos a explotar como una tostadora sobrecargada.",
-    "[C137_CONSOLE] Múltiples universos detectados. Condición: ALTAMENTE INESTABLE.",
-    "[PC] Hola Rick. ¿Otra simulación tuya rota? ¿No aprendiste nada desde que ejecutaste código en COBOL? JAJAJA.",
-    "[RICK] No me hagás empezar con tu maldito sistema operativo hecho en Basic...",
-    "[C137_CONSOLE] ALERTA: Jugador con coeficiente limitado identificado. Activando modo BURLA ASCII.",
-    "[PC]  ┌( ಠ_ಠ)┘  ¿Eso fue un intento de jugada? Qué vergüenza intergaláctica.",
-    "[PC]  (╯°□°）╯︵ ┻━┻  ¡Te voy a reventar con glitches y errores, jugador de pacotilla!",
-    "[RICK] Morty, no la cagues. Este juego es más importante de lo que parece. Avanzá o morimos.",
-    "[C137_CONSOLE] Realidad intermedia cargada. Comenzando desafío balatro. Buena suerte. Vas a necesitar MUCHA."
+    "[NÚCLEO] Iniciando diagnóstico de estabilidad...",
+    "[NÚCLEO] Detectando fluctuaciones cuánticas...",
+    "[RICK] *burp* El núcleo está vivo, Morty...",
+    "[RICK] Cada error es una grieta en la realidad.",
+    "[SISTEMA] ADVERTENCIA: Integridad dimensional al 31%",
+    "[MORTY] ¡R-rick! ¡Las luces están parpadeando solas!",
+    "[RICK] ¡Son portales Morty! ¡Portales microscópicos!",
+    "[SISTEMA] Activando matriz de contención cuántica...",
+    "[PC] Probabilidad de supervivencia: 13.7%",
+    "[RICK] ¡Cállate, máquina estúpida! *burp*",
+    "[SISTEMA] ALERTA: Colapso del núcleo en progreso",
+    "[RICK] ¡RÁPIDO MORTY! ¡SELLA ESAS GRIETAS!",
+    "[NÚCLEO] Iniciando prueba de estabilidad..."
   ];
 
   let i = 0;
   const escribirIntro = setInterval(() => {
     if (i < intro.length) {
-      consoleDiv.innerHTML += `> ${intro[i]}<br>`;
+      const className = i === 4 ? 'warning-text' : 
+                       i === 10 ? 'reality-break' : '';
+      consoleDiv.innerHTML += `<div class="${className}">> ${intro[i]}</div>`;
       consoleDiv.scrollTop = consoleDiv.scrollHeight;
+      
+      if (i === 4 || i === 10) {
+        triggerQuantumFlash();
+        document.body.classList.add('reality-break');
+        setTimeout(() => document.body.classList.remove('reality-break'), 500);
+      }
       i++;
     } else {
       clearInterval(escribirIntro);
+      iniciarCaos();
     }
-  }, 1200);
+  }, 1000);
 });
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');

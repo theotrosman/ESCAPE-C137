@@ -307,6 +307,11 @@ namespace PrimerProyecto.Controllers
         {
             return View();
         }
+
+        public IActionResult Equipo()
+        {
+            return View();
+        }
     }
 }
 

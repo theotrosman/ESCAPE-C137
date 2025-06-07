@@ -55,8 +55,7 @@
             <div class="plumbus-tooltip">Todo hogar multiversal necesita un Plumbus</div>
         </div>
 
-        <a href="/Home/Index" class="ascii-button" onmouseover="buttonHover(this)">← VOLVER AL INICIO</a>
-        
+<a href="#" class="ascii-button" onmouseover="buttonHover(this)" onclick="volverSinIntro(event)">← VOLVER AL INICIO</a>
         <div id="blueScreen" class="blue-screen">
             <pre class="bsod-text">
                 MULTIVERSAL_KERNEL_PANIC
@@ -383,6 +382,11 @@
     </style>
 
     <script>
+    function volverSinIntro(e) {
+  e.preventDefault();
+  localStorage.setItem('skipIntro', '1');
+  window.location.href = "/Home/Index";
+}
         // Konami Code
         let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
         let konamiIndex = 0;

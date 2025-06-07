@@ -107,124 +107,238 @@ background: rgba(17, 17, 17, 0.90);
       text-align: center;
     }
     #intro {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: black;
-  color: #0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-size: 20px;
-  padding: 40px;
-  z-index: 9999;
-  animation: fadeOutIntro 8.5s forwards 8.5s;
-}
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      color: #0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 20px;
+      padding: 40px;
+      z-index: 9999;
+      animation: fadeOutIntro 12s forwards 12s;
+      overflow: hidden;
+    }
 
-@@keyframes fadeOutIntro {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-@@keyframes boomFlash {
-  0% { background: white; color: black; transform: scale(1.1); }
-  50% { background: red; color: yellow; transform: scale(1.4) rotate(2deg); }
-  100% { background: black; color: #0f0; transform: scale(1); }
-}
+    @@keyframes fadeOutIntro {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+    @@keyframes boomFlash {
+      0% { background: white; color: black; transform: scale(1.1); }
+      50% { background: red; color: yellow; transform: scale(1.4) rotate(2deg); }
+      100% { background: black; color: #0f0; transform: scale(1); }
+    }
 
-.explosion-intro {
-  animation: boomFlash 1.4s ease-in-out;
-}
-@@keyframes flashBang {
-  0% { opacity: 1; }
-  20% { opacity: 1; }
-  100% { opacity: 0; visibility: hidden; }
-}
+    .explosion-intro {
+      animation: boomFlash 1.4s ease-in-out;
+    }
+    @@keyframes flashBang {
+      0% { opacity: 1; }
+      20% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
 
-@@keyframes shakeCrazy {
-  0%, 100% { transform: translate(0, 0); }
-  15% { transform: translate(-20px, 15px); }
-  30% { transform: translate(15px, -10px); }
-  45% { transform: translate(-10px, 5px); }
-  60% { transform: translate(10px, -15px); }
-  75% { transform: translate(-15px, 10px); }
-}
+    @@keyframes shakeCrazy {
+      0%, 100% { transform: translate(0, 0); }
+      15% { transform: translate(-20px, 15px); }
+      30% { transform: translate(15px, -10px); }
+      45% { transform: translate(-10px, 5px); }
+      60% { transform: translate(10px, -15px); }
+      75% { transform: translate(-15px, 10px); }
+    }
 
-@@keyframes colorGlitch {
-  0% { filter: contrast(1) brightness(1) hue-rotate(0deg); }
-  50% { filter: contrast(2) brightness(1.4) hue-rotate(180deg); }
-  100% { filter: contrast(1) brightness(1) hue-rotate(360deg); }
-}
+    @@keyframes colorGlitch {
+      0% { filter: contrast(1) brightness(1) hue-rotate(0deg); }
+      50% { filter: contrast(2) brightness(1.4) hue-rotate(180deg); }
+      100% { filter: contrast(1) brightness(1) hue-rotate(360deg); }
+    }
 
-.flash-screen {
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  background: white;
-  z-index: 10000;
-  animation: flashBang 1.2s ease-out;
-}
-#letter-glitch-bg {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: -1000; /* bien atrás */
-  display: block;
-}
+    .flash-screen {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      z-index: 10000;
+      animation: flashBang 1.2s ease-out;
+    }
+    #letter-glitch-bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: -1000; /* bien atrás */
+      display: block;
+    }
 
-.intro-contenido {
-  z-index: 10001;
-  animation: shakeCrazy 2s ease-in-out, colorGlitch 3s infinite alternate;
-}
+    .intro-contenido {
+      z-index: 10001;
+      animation: shakeCrazy 2s ease-in-out, colorGlitch 3s infinite alternate;
+      position: relative;
+    }
 
-.boom {
-  font-size: 36px;
-  color: red;
-  text-shadow: 0 0 10px white, 0 0 30px yellow;
-  animation: boomGlow 0.5s ease-in-out infinite alternate;
-}
+    .intro-contenido::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle at center, 
+        rgba(255,0,0,0.1) 0%,
+        rgba(0,255,0,0.1) 30%,
+        rgba(0,0,255,0.1) 60%,
+        transparent 100%
+      );
+      animation: rotateBackground 8s linear infinite;
+      z-index: -1;
+    }
 
-.dialogo {
-  font-size: 18px;
-  color: #0f0;
-  font-family: monospace;
-  margin-top: 20px;
-}
+    @@keyframes rotateBackground {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
 
-.rick {
-  color: #66ffff;
-  font-weight: bold;
-}
+    .boom {
+      font-size: 48px;
+      color: red;
+      text-shadow: 0 0 10px white, 
+                   0 0 20px yellow,
+                   0 0 30px orange,
+                   0 0 40px red;
+      animation: boomGlow 0.5s ease-in-out infinite alternate,
+                 boomShake 0.2s ease-in-out infinite;
+      margin-bottom: 30px;
+    }
 
-.morty {
-  color: #ffcc66;
-  font-weight: bold;
-}
+    @@keyframes boomGlow {
+      0% { text-shadow: 0 0 10px white, 0 0 20px yellow, 0 0 30px orange, 0 0 40px red; }
+      100% { text-shadow: 0 0 20px white, 0 0 40px yellow, 0 0 60px orange, 0 0 80px red; }
+    }
+
+    @@keyframes boomShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-2px, 2px) rotate(-1deg); }
+      50% { transform: translate(2px, -2px) rotate(1deg); }
+      75% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+      100% { transform: translate(1px, 1px) rotate(0.5deg); }
+    }
+
+    .dialogo {
+      font-size: 20px;
+      color: #0f0;
+      font-family: monospace;
+      margin-top: 20px;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    .dialogo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0,255,0,0.5), 
+        transparent
+      );
+      animation: scanline 2s linear infinite;
+    }
+
+    @@keyframes scanline {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .rick {
+      color: #66ffff;
+      font-weight: bold;
+      text-shadow: 0 0 10px #66ffff;
+      animation: glitchText 0.3s infinite;
+    }
+
+    .morty {
+      color: #ffcc66;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ffcc66;
+      animation: panicShake 0.2s infinite;
+    }
+
+    @@keyframes panicShake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-1px, 1px); }
+      50% { transform: translate(1px, -1px); }
+      75% { transform: translate(-1px, -1px); }
+    }
+
+    .warning-text {
+      color: #ff0000;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff0000;
+      animation: warningPulse 1s infinite;
+      margin-top: 20px;
+      font-size: 24px;
+    }
+
+    @@keyframes warningPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .reality-error {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9998;
+      mix-blend-mode: screen;
+      animation: realityError 5s infinite;
+    }
+
+    @@keyframes realityError {
+      0%, 100% { background: transparent; }
+      50% { background: rgba(255,0,0,0.1); }
+      51% { background: rgba(0,255,0,0.1); }
+      52% { background: rgba(0,0,255,0.1); }
+      53% { background: transparent; }
+    }
 
   </style>
 </head>
-<div id="intro">
-  <div class="flash-screen"></div>
-  <div class="intro-contenido">
-    <h1 class="boom">💥 COLAPSO MULTIDIMENSIONAL 💥</h1>
-    <p class="dialogo">
-      <span class="rick">Rick:</span> "¡MORTY! ¡SE ROMPIÓ TODO! ¡EL NÚCLEO EXPLOTÓ Y AHORA ESTAMOS EN UN LOOP INTERDIMENSIONAL!"<br>
-      <span class="morty">Morty:</span> "¡Rick, esto se ve peor que tu carpeta de GitHub!"<br>
-      <span class="rick">Rick:</span> "Cada consola es una realidad, Morty. Un universo que grita en código... ¡Tenés que encontrar el patrón antes que todo se derrumbe, AHORA!"<br><br>
-      [⚠️ Consolas vibran. El glitch empieza. La realidad tiembla... ⚠️]
-    </p>
-  </div>
-</div>
-
-
 <body>
-<canvas id="letter-glitch-bg"></canvas>
+  <div class="reality-error"></div>
+  <div id="intro">
+    <div class="flash-screen"></div>
+    <div class="intro-contenido">
+      <h1 class="boom">💥 COLAPSO MULTIDIMENSIONAL CRÍTICO 💥</h1>
+      <div class="dialogo">
+        <p class="warning-text">[ALERTA DE FRAGMENTACIÓN DIMENSIONAL]</p>
+        <p><span class="rick">Rick:</span> "¡M-MORTY! *burp* ¡LA REALIDAD SE ESTÁ DESINTEGRANDO! ¡EL NÚCLEO CUÁNTICO EXPLOTÓ!"</p>
+        <p><span class="morty">Morty:</span> "¡OH GEEZ RICK! ¡TODO SE ESTÁ DESDOBLANDO! ¡HAY DEMASIADAS VERSIONES!"</p>
+        <p><span class="rick">Rick:</span> "¡ESCUCHAME BIEN MORTY! Cada consola es una realidad fracturada... *burp* ¡Son universos gritando en código binario!"</p>
+        <p><span class="morty">Morty:</span> "¡E-esto es una locura Rick! ¡Hay códigos por todas partes!"</p>
+        <p><span class="rick">Rick:</span> "¡CONCENTRATE MORTY! Tenés que encontrar el patrón antes que el multiverso colapse... ¡Y ESTA VEZ ES EN SERIO!"</p>
+        <p class="warning-text">[MÚLTIPLES ANOMALÍAS DETECTADAS]</p>
+        <p class="warning-text">[COLAPSO TOTAL INMINENTE: T-MINUS 60 SEGUNDOS]</p>
+        <p><span class="rick">Rick:</span> "¡LA REALIDAD MISMA DEPENDE DE VOS, MORTY! ¡NO LA CAGUES ESTA VEZ!"</p>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="letter-glitch-bg"></canvas>
 
   <audio src="/audio/audio3.mp3" autoplay loop></audio>
 
@@ -303,7 +417,7 @@ Programador 2: "¿Qué pasa si llegamos al 100%?"
 IA: "Sistema se reinicia. Ustedes desaparecen."
 Programador 1: "Entonces... mejor no aprender nada, ¿no?"
 IA: "Demasiado tarde. Ya sintieron tristeza."
-Pantalla: *parpadea en binario: “AYUDA”*
+Pantalla: *parpadea en binario: "AYUDA"*
 Programador 2: "¿Y si ese mensaje es nuestro yo original pidiendo salir?"
 `
 }

@@ -179,6 +179,43 @@
     .ascii-button:hover::after {
       opacity: 1;
     }
+
+    /* Estilos para el botón de equipo */
+    #btn-equipo {
+      border-color: #00ffff;
+      color: #00ffff;
+      text-shadow: 0 0 5px #00ffff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #btn-equipo::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        transparent,
+        rgba(0, 255, 255, 0.2),
+        transparent
+      );
+      animation: teamGlow 2s infinite;
+    }
+
+    #btn-equipo:hover {
+      border-color: #fff;
+      color: #fff;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 255, 0.4),
+        inset 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    @@keyframes teamGlow {
+      0% { transform: translateY(-100%) rotate(45deg); }
+      100% { transform: translateY(200%) rotate(45deg); }
+    }
   </style>
 </head>
 <body>
@@ -194,95 +231,157 @@
     <button class="ascii-button" id="btn-juego" onclick="entrarJuego()">> ACCEDER AL CÓDIGO FUENTE <</button>
     <button class="ascii-button" id="btn-logros" onclick="verLogros()">> SALA DE TROFEOS <</button>
     <button class="ascii-button tutorial-button" id="btn-tuto" onclick="verTutorial()">> VER TUTORIAL <</button>
+    <button class="ascii-button" id="btn-equipo" onclick="verEquipo()">> EQUIPO <</button>
   </div>
 
   <script>
-    const audio = document.getElementById("intro-audio");
-    window.addEventListener('load', () => {
-      audio.volume = 1;
-      audio.play().catch(e => console.warn("Reproducción bloqueada por el navegador", e));
-    });
+  // Justo antes de arrancar la intro:
+if (localStorage.getItem('skipIntro') === '1') {
+  localStorage.removeItem('skipIntro'); // así no se repite nunca
+  // Mostramos el final/post-intro y los botones directamente:
+  document.getElementById("intro-video").style.display = "none";
+  document.getElementById("overlay").style.opacity = "1";
+  document.getElementById("overlay").style.animation = "none";
+  document.getElementById("typewriter").style.display = "none";
+  // Mostrá los botones y quitá el efecto explosivo
+  ["btn-juego", "btn-tuto", "btn-logros", "btn-equipo"].forEach(id => {
+    const btn = document.getElementById(id);
+    btn.classList.add("show");
+    btn.classList.remove("explosive");
+  });
+  // Si usás audio, podés frenarlo o poner uno especial
+} else {
+  // ...arranca el typeLine/intro normalmente...
+  setTimeout(() => {
+    document.getElementById("intro-video").pause();
+    typeLine();
+  }, 6000);
+}
 
-    const lines = [
-      ">>> INICIANDO CONEXIÓN...",
-      ">>> TRANSMISIÓN DESDE DIMENSIÓN 137...",
-      ">>> RICK Y MORTY HAN SIDO CAPTURADOS EN UN BUCLE DE CÓDIGO MVC...",
-      ">>> INTENTARON HACKEAR EL FRAMEWORK PARA ESCAPAR DEL MULTIVERSO...",
-      ">>> PERO EL SISTEMA LOS DETECTÓ Y LOS ENJAULÓ ENTRE CONTROLADORES Y VISTAS...",
-      ">>> CADA SALA ES UNA CAPA DIFERENTE DE LA REALIDAD...",
-      ">>> SINTONIZANDO LÍNEAS DE CÓDIGO...",
-      ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA",
-      ">>> [SISTEMA REACTIVÁNDOSE...]",
-      ">>> ACCESO PARCIAL CONCEDIDO.\n"
-    ];
+const audio = document.getElementById("intro-audio");
+window.addEventListener('load', () => {
+  audio.volume = 1;
+  audio.play().catch(e => console.warn("Reproducción bloqueada por el navegador", e));
+});
 
-    let currentLine = 0;
-    const typewriter = document.getElementById("typewriter");
-    const body = document.body;
+const lines = [
+  ">>> INICIANDO CONEXIÓN...",
+  ">>> TRANSMISIÓN DESDE DIMENSIÓN 137...",
+  ">>> RICK Y MORTY HAN SIDO CAPTURADOS EN UN BUCLE DE CÓDIGO MVC...",
+  ">>> INTENTARON HACKEAR EL FRAMEWORK PARA ESCAPAR DEL MULTIVERSO...",
+  ">>> PERO EL SISTEMA LOS DETECTÓ Y LOS ENJAULÓ ENTRE CONTROLADORES Y VISTAS...",
+  ">>> CADA SALA ES UNA CAPA DIFERENTE DE LA REALIDAD...",
+  ">>> SINTONIZANDO LÍNEAS DE CÓDIGO...",
+  ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA",
+  ">>> [SISTEMA REACTIVÁNDOSE...]",
+  ">>> ACCESO PARCIAL CONCEDIDO.\n"
+];
 
-    function flashBackground() {
-      body.style.background = 'white';
-      setTimeout(() => { body.style.background = 'black'; }, 150);
-    }
+let currentLine = 0;
+const typewriter = document.getElementById("typewriter");
+const body = document.body;
 
-    function typeLine() {
-      if (currentLine < lines.length) {
-        let line = lines[currentLine];
-        let i = 0;
-        let interval = setInterval(() => {
-          if (line === ">>> ERROR FATAL: INYECCIÓN DE CÓDIGO DETECTADA") {
-            typewriter.innerHTML += `<span style='color: var(--err)'>${line}</span>`;
-            flashBackground();
-            clearInterval(interval);
-            typewriter.innerHTML += '\n';
-            currentLine++;
-            setTimeout(typeLine, 1000);
-            return;
-          }
-          typewriter.textContent += line[i];
-          i++;
-          if (i === line.length) {
-            clearInterval(interval);
-            typewriter.textContent += '\n';
-            currentLine++;
-            setTimeout(typeLine, 280);
-          }
-        }, 20 + Math.random() * 40);
+function flashBackground() {
+  body.style.background = 'white';
+  setTimeout(() => { body.style.background = 'black'; }, 150);
+}
+
+function scrambleWrite(text, color, onDone, glitch = false) {
+  let revealed = '';
+  let i = 0;
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%^&*()_+-=[]{};:\'",.<>?/\\|'.split('');
+  function scrambleStep() {
+    if (i <= text.length) {
+      // Armá el texto: lo ya revelado + el resto scrambleado
+      let visible = text.slice(0, i);
+      let scrambled = '';
+      for (let j = i; j < text.length; j++) {
+        if (text[j] === ' ' || text[j] === '>' || text[j] === ':') {
+          scrambled += text[j]; // que los espacios y símbolos queden fijos para que no sea ilegible
+        } else {
+          scrambled += chars[Math.floor(Math.random() * chars.length)];
+        }
+      }
+      let span = `<span${color ? ` style='color:${color}'` : ''}${glitch ? " class='glitch'" : ""}>${visible}${scrambled}</span><br>`;
+      // Escribí la línea (eliminando la versión previa, para que no se acumule)
+      typewriter.innerHTML = typewriter.innerHTML.replace(/(<span.*?>.*?<\/span><br>)*$/, '') + span;
+      if (i === text.length) {
+        if (onDone) onDone();
       } else {
-        triggerEpicReveal();
+        i++;
+        setTimeout(scrambleStep, 90 + Math.random() * 90);
       }
     }
+  }
+  scrambleStep();
+}
 
-    function triggerEpicReveal() {
-      const btn1 = document.getElementById("btn-juego");
-      const btn2 = document.getElementById("btn-tuto");
-      const btn3 = document.getElementById("btn-logros");
-      btn1.classList.add("show", "explosive");
-      btn2.classList.add("show", "explosive");
-      btn3.classList.add("show", "explosive");
-      setTimeout(() => {
-        btn1.classList.remove("explosive");
-        btn2.classList.remove("explosive");
-        btn3.classList.remove("explosive");
-      }, 700);
+
+function typeLine() {
+  if (currentLine < lines.length) {
+    let line = lines[currentLine];
+    // ¿Es la línea del error?
+    if (line.includes("ERROR FATAL")) {
+      scrambleWrite(line, 'var(--err)', () => {
+        flashBackground();
+        currentLine++;
+        setTimeout(typeLine, 900);
+      }, true);
     }
-
-    setTimeout(() => {
-      document.getElementById("intro-video").pause();
-      typeLine();
-    }, 6000);
-
-    function entrarJuego() {
-      window.location.href = "/Home/Room1";
+    // ¿Es la línea de acceso concedido? (scramble + glitch sutil)
+    else if (line.includes("ACCESO PARCIAL")) {
+      scrambleWrite(line, 'var(--fg)', () => {
+        currentLine++;
+        setTimeout(typeLine, 900);
+      }, true);
     }
-
-    function verTutorial() {
-      window.location.href = "/Home/Tutorial";
+    // Resto de líneas normales (scramble sin glitch)
+    else {
+      scrambleWrite(line, 'var(--fg)', () => {
+        currentLine++;
+        setTimeout(typeLine, 250);
+      });
     }
+  } else {
+    triggerEpicReveal();
+  }
+}
 
-    function verLogros() {
-      window.location.href = '/Home/Logros';
-    }
-  </script>
+function triggerEpicReveal() {
+  const btn1 = document.getElementById("btn-juego");
+  const btn2 = document.getElementById("btn-tuto");
+  const btn3 = document.getElementById("btn-logros");
+  const btn4 = document.getElementById("btn-equipo");
+  btn1.classList.add("show", "explosive");
+  btn2.classList.add("show", "explosive");
+  btn3.classList.add("show", "explosive");
+  btn4.classList.add("show", "explosive");
+  setTimeout(() => {
+    btn1.classList.remove("explosive");
+    btn2.classList.remove("explosive");
+    btn3.classList.remove("explosive");
+    btn4.classList.remove("explosive");
+  }, 700);
+}
+
+setTimeout(() => {
+  document.getElementById("intro-video").pause();
+  typeLine();
+}, 6000);
+
+function entrarJuego() {
+  window.location.href = "/Home/Room1";
+}
+function verTutorial() {
+  window.location.href = "/Home/Tutorial";
+}
+function verLogros() {
+  window.location.href = '/Home/Logros';
+}
+function verEquipo() {
+  window.location.href = '/Home/Equipo';
+}
+</script>
+
 </body>
 </html>
