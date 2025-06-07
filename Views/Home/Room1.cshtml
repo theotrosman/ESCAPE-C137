@@ -46,7 +46,7 @@
 
         #terminal {
             white-space: pre-wrap;
-            font-size: 16px;
+            font-size: 25px;
             line-height: 1.5;
             min-height: 400px;
             animation: colorCycle 3s infinite;
@@ -56,6 +56,13 @@
             display: none;
             margin-top: 20px;
         }
+.decrypted-char {
+    color: #00ff00;
+    font-weight: bold;
+    filter: blur(0.8px);
+    letter-spacing: 1px;
+    transition: color 0.2s;
+}
 
         input {
             background: black;
@@ -80,12 +87,13 @@
             width: 100%;
             height: 100%;
             padding: 40px;
-            font-size: 18px;
+            font-size: 25px;
             white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
+    <audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
 
     <div id="terminal"></div>
 
@@ -96,6 +104,54 @@
     <div id="error-mode"></div>
 
     <script>
+    function decryptedTextEffect(element, text, options = {}) {
+    const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
+    const speed = options.speed || 24;
+    const scrambleIterations = options.scrambleIterations || 12;
+    const audio = document.getElementById('sfx-console');
+        // Reproducir audio desde el principio sincronizado
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play();
+        }
+    return new Promise((resolve) => {
+        let revealed = [];
+        let iterations = [];
+        for (let i = 0; i < text.length; i++) {
+            revealed[i] = false;
+            iterations[i] = 0;
+        }
+        let done = false;
+        
+        function frame() {
+            let output = '';
+            done = true;
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === '\n') {
+                    output += '\n';
+                    continue;
+                }
+                if (revealed[i] || text[i] === ' ') {
+                    output += text[i];
+                } else {
+                    done = false;
+                    output += `<span class="decrypted-char">${characters[Math.floor(Math.random() * characters.length)]}</span>`;
+                    iterations[i]++;
+                    if (iterations[i] >= scrambleIterations) revealed[i] = true;
+                }
+            }
+            element.innerHTML = output;
+            if (!done) setTimeout(frame, speed);
+            else {
+                element.innerHTML = text.replace(/\n/g, '<br>');
+                resolve();
+            }
+        }
+        frame();
+    });
+}
+
         const terminal = document.getElementById("terminal");
         const inputLine = document.getElementById("input-line");
         const input = document.getElementById("respuesta");
@@ -119,24 +175,22 @@
         ];
 
         let i = 0;
-        function escribirLinea() {
-            if (i < texto.length) {
-                const span = document.createElement("span");
-                span.textContent = texto[i] + "\n";
-                if (texto[i].includes("ERROR") || texto[i].includes("ATAQUE") || texto[i].includes("SECURITY")) {
-                    span.classList.add("glitch");
-                }
-                terminal.appendChild(span);
-
-                
-
+function escribirLinea() {
+    if (i < texto.length) {
+        const span = document.createElement("span");
+        terminal.appendChild(span);
+        decryptedTextEffect(span, texto[i])
+            .then(() => {
+                span.innerHTML += "<br>";
                 i++;
-                setTimeout(escribirLinea, 1000);
-            } else {
-                inputLine.style.display = "block";
-                input.focus();
-            }
-        }
+                setTimeout(escribirLinea, 850);
+            });
+    } else {
+        inputLine.style.display = "block";
+        input.focus();
+    }
+}
+
 
         function mostrarErrorRick() {
             inputLine.style.display = "none";

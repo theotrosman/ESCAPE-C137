@@ -12,8 +12,7 @@
     * { box-sizing: border-box; }
     html, body {
       height: 100%;
-      background: radial-gradient(circle, rgb(0, 0, 0), black);
-      color: #0f0;
+background: transparent !important;      
       font-family: monospace;
       padding: 20px;
       margin: 0;
@@ -50,7 +49,7 @@
     .consola {
       width: 30%;
       min-height: 270px;
-      background: #111;
+background: rgba(17, 17, 17, 0.90); 
       border: 1px solid #0f0;
       padding: 10px;
       overflow-y: auto;
@@ -169,6 +168,15 @@
   z-index: 10000;
   animation: flashBang 1.2s ease-out;
 }
+#letter-glitch-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: -1000; /* bien atrás */
+  display: block;
+}
 
 .intro-contenido {
   z-index: 10001;
@@ -216,6 +224,8 @@
 
 
 <body>
+<canvas id="letter-glitch-bg"></canvas>
+
   <audio src="/audio/audio3.mp3" autoplay loop></audio>
 
   <div class="contenedor-realidades" id="contenedor-realidades"></div>
@@ -423,6 +433,145 @@ Stewie: "Bravo, Peter. Has creado un nuevo dios. Y tiene tu cara... comiendo waf
       }, 2000);
     }, 10000);
   </script>
+  <script>
+// Parámetros personalizables
+const glitchColors = ['#2b4539', '#61dca3', '#61b3dc'];
+const glitchSpeed = 18;
+const fontSize = 16;
+const charWidth = 10;
+const charHeight = 20;
+const smooth = true;
+
+// Caracteres a usar
+const lettersAndSymbols = [
+  'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+  '!','#','$','&','*','(',')','-','_','+','=','/','[',']','{','}',';',':','<','>',',','0','1','2','3',
+  '4','5','6','7','8','9'
+];
+
+function getRandomChar() {
+  return lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
+}
+function getRandomColor() {
+  return glitchColors[Math.floor(Math.random() * glitchColors.length)];
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace(/^#/, '');
+  if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+  const num = parseInt(hex, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+function interpolateColor(start, end, factor) {
+  return `rgb(${
+    Math.round(start.r + (end.r - start.r) * factor)
+  },${
+    Math.round(start.g + (end.g - start.g) * factor)
+  },${
+    Math.round(start.b + (end.b - start.b) * factor)
+  })`;
+}
+
+const canvas = document.getElementById('letter-glitch-bg');
+const ctx = canvas.getContext('2d');
+let columns = 0, rows = 0;
+let letters = [];
+let animationFrameId;
+
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  columns = Math.ceil(window.innerWidth / charWidth);
+  rows = Math.ceil(window.innerHeight / charHeight);
+  // Nueva matriz de letras
+  letters = Array.from({ length: columns * rows }, () => ({
+    char: getRandomChar(),
+    color: getRandomColor(),
+    targetColor: getRandomColor(),
+    colorProgress: 1,
+  }));
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function drawLetters() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = `${fontSize}px monospace`;
+  ctx.textBaseline = 'top';
+  for (let index = 0; index < letters.length; index++) {
+    const x = (index % columns) * charWidth;
+    const y = Math.floor(index / columns) * charHeight;
+    ctx.fillStyle = letters[index].color;
+    ctx.fillText(letters[index].char, x, y);
+  }
+  // VIGNETTE (centro oscuro, bordes opacos)
+  ctx.save();
+  const grad = ctx.createRadialGradient(
+    canvas.width / 2, canvas.height / 2, canvas.height / 5,
+    canvas.width / 2, canvas.height / 2, canvas.height / 1.1
+  );
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.97)');
+  ctx.globalAlpha = 0.98;
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.restore();
+}
+
+function updateLetters() {
+  const updateCount = Math.max(1, Math.floor(letters.length * 0.08));
+  for (let i = 0; i < updateCount; i++) {
+    const index = Math.floor(Math.random() * letters.length);
+    letters[index].char = getRandomChar();
+    letters[index].targetColor = getRandomColor();
+    if (!smooth) {
+      letters[index].color = letters[index].targetColor;
+      letters[index].colorProgress = 1;
+    } else {
+      letters[index].colorProgress = 0;
+    }
+  }
+}
+
+function handleSmoothTransitions() {
+  let needsRedraw = false;
+  letters.forEach((letter) => {
+    if (letter.colorProgress < 1) {
+      letter.colorProgress += 0.05;
+      if (letter.colorProgress > 1) letter.colorProgress = 1;
+      const startRgb = hexToRgb(letter.color);
+      const endRgb = hexToRgb(letter.targetColor);
+      if (startRgb && endRgb) {
+        letter.color = interpolateColor(startRgb, endRgb, letter.colorProgress);
+        needsRedraw = true;
+      }
+    }
+  });
+  if (needsRedraw) drawLetters();
+}
+
+let lastGlitch = Date.now();
+function animate() {
+  const now = Date.now();
+  if (now - lastGlitch >= glitchSpeed) {
+    updateLetters();
+    drawLetters();
+    lastGlitch = now;
+  }
+  if (smooth) handleSmoothTransitions();
+  animationFrameId = requestAnimationFrame(animate);
+}
+animate();
+
+</script>
+
 </body>
 <!-- 
 MORTY TENES QUE PASAR EL VALOR DE CADA LETRA EN LA PALABRA "SINCRONIZACION" SEGÚN SU LUGAR EN EL ABECEDARIO 

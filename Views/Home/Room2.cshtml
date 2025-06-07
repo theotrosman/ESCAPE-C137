@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Room 2 - Parche Binario</title>
+    <title>Room 2 - La Paradoja del Tiempo</title>
     <link rel="stylesheet" href="~/css/site.css" />
     <style>
         :root {
@@ -17,7 +17,7 @@
         }
 
         body {
-            background: black;
+            background: transparent !important; 
             color: var(--neon-green);
             font-family: 'Courier New', monospace;
             padding: 40px;
@@ -356,6 +356,15 @@
             z-index: -1;
             opacity: 0.1;
         }
+#balatro-bg {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1000;
+    pointer-events: none;
+    display: block;
+}
 
         #rick-pistas {
             position: fixed;
@@ -367,9 +376,172 @@
             text-align: right;
             transition: all 0.3s;
         }
+
+        .intro-sequence {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: var(--neon-green);
+            font-family: 'VT323', monospace;
+            text-align: center;
+            animation: fadeOut 2s forwards;
+            animation-delay: 12s;
+        }
+
+        .intro-text {
+            max-width: 800px;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .intro-text:nth-child(1) { animation: fadeInUp 2s forwards; }
+        .intro-text:nth-child(2) { animation: fadeInUp 2s forwards; animation-delay: 3s; }
+        .intro-text:nth-child(3) { animation: fadeInUp 2s forwards; animation-delay: 6s; }
+        .intro-text:nth-child(4) { animation: fadeInUp 2s forwards; animation-delay: 9s; }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes fadeOut {
+            to {
+                opacity: 0;
+                pointer-events: none;
+            }
+        }
+
+        .lore-panel {
+            position: fixed;
+            top: 20px;
+            right: -350px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--neon-green);
+            padding: 15px;
+            color: var(--neon-green);
+            font-size: 14px;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: 100;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .lore-panel.show {
+            transform: translateX(-370px);
+        }
+
+        .lore-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 8px 15px;
+            cursor: pointer;
+            z-index: 101;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        .lore-toggle:hover {
+            background: rgba(0, 255, 0, 0.2);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+        }
+
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            mix-blend-mode: screen;
+            opacity: 0;
+        }
+
+        .screen-glitch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.1);
+            pointer-events: none;
+            z-index: 9997;
+            opacity: 0;
+            mix-blend-mode: screen;
+        }
+
+        @@keyframes screenFlash {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.03; }
+            52% { opacity: 0.08; }
+            54% { opacity: 0.02; }
+            56% { opacity: 0.07; }
+            58% { opacity: 0; }
+        }
+
+        @@keyframes screenError {
+            0% { transform: translateX(0); }
+            2% { transform: translateX(-10px); }
+            4% { transform: translateX(10px); }
+            6% { transform: translateX(-5px); }
+            8% { transform: translateX(5px); }
+            10% { transform: translateX(0); }
+        }
+
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 20px;
+            z-index: 1000;
+        }
+
+        .music-controls button {
+            background: transparent;
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .music-controls .volume-slider {
+            width: 100px;
+            margin: 0 10px;
+        }
     </style>
 </head>
 <body>
+<canvas id="balatro-bg"></canvas>
+
     <canvas class="binary-rain" id="binaryRain"></canvas>
     <audio id="audio7" src="~/img/audio7.mp3" preload="auto"></audio>
     <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
@@ -402,6 +574,43 @@
     <div class="rick-console-hint">
         Rick: M-morty... si nada funciona... fijate si la consola te responde algo...
     </div>
+
+    <div class="intro-sequence">
+        <div class="intro-text">
+            <h2>[ALERTA DEL SISTEMA]</h2>
+            <p>Anomalía temporal detectada en el sector C-137</p>
+        </div>
+        <div class="intro-text">
+            <p>Los bucles temporales se están multiplicando exponencialmente</p>
+            <p>Cada decisión crea una nueva línea temporal</p>
+        </div>
+        <div class="intro-text">
+            <p>Rick: M-morty, *burp* necesitamos estabilizar este sector antes de que el tejido espacio-temporal colapse</p>
+            <p>Morty: Oh jeez Rick, ¿qué tengo que hacer?</p>
+        </div>
+        <div class="intro-text">
+            <p>Rick: Decodifica el patrón binario, Morty. Es la única forma de sincronizar las líneas temporales.</p>
+            <p>La realidad depende de ti...</p>
+        </div>
+    </div>
+
+    <button class="lore-toggle" onclick="toggleLore()">EXPLICACIÓN ⚠️</button>
+    <div class="lore-panel" id="lorePanel">
+        <h3>La Paradoja del Tiempo</h3>
+        <p>En esta habitación, el tiempo no fluye de manera lineal. Cada bit del código binario representa un momento congelado en el tiempo, una decisión que bifurca la realidad en múltiples líneas temporales.</p>
+        <p>Rick descubrió que alguien o algo está manipulando estas bifurcaciones temporales, creando un laberinto de posibilidades infinitas. La única forma de restaurar el flujo normal del tiempo es decodificar el patrón oculto en la matriz binaria.</p>
+        <p>Cada intento fallido crea una nueva línea temporal, multiplicando exponencialmente el caos. El Consejo de Ricks ha detectado que si no se resuelve pronto, el colapso de todas estas realidades podría crear un agujero negro temporal que consumiría todo el multiverso C-137.</p>
+    </div>
+
+    <div class="music-controls">
+        <button onclick="toggleMusic()">🎵 PLAY/PAUSE</button>
+        <input type="range" class="volume-slider" min="0" max="1" step="0.1" value="0.5" onchange="adjustVolume(this.value)">
+        <button onclick="nextTrack()">⏭️ SIGUIENTE</button>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="~/img/yuugensong.mp3" type="audio/mp3">
+    </audio>
 
     <script>
         // Matrix Rain Effect
@@ -647,14 +856,14 @@
             errorSound.play().catch(() => {});
         }
 
-        // Rick's hints system
+        // Enhanced Rick's hints
         const pistasRick = [
-            "Rick: mmm... este binario me suena... lo vi en algún *source* antes...",
-            "Rick: hay cosas que no están en la pantalla, Morty...",
-            "Rick: ¿Nunca pensaste que la respuesta podía estar en el código HTML?",
-            "Rick: si tan solo existiera una tecla para ver el detrás de escena...",
-            "Rick: algunos bugs se resuelven con F12, Morty.",
-            "Rick: los comentarios no siempre son solo para los programadores..."
+            "[ALERTA DIMENSIONAL] Rick: *burp* M-morty... este código... está vivo Morty... ¡ESTÁ VIVO!",
+            "[ERROR TEMPORAL] Rick: Las líneas de código se están... se están doblando Morty... ¡están creando paradojas!",
+            "[ANOMALÍA DETECTADA] Rick: El HTML Morty... *burp* ...el HTML guarda secretos más allá de tu comprensión...",
+            "[FRAGMENTACIÓN CUÁNTICA] Rick: La respuesta está en el origen Morty... en el maldito origen del código...",
+            "[DISTORSIÓN CRÍTICA] Rick: F12 Morty... *burp* ...es la llave a la verdad detrás de la simulación...",
+            "[COLAPSO INMINENTE] Rick: Los comentarios Morty... son susurros interdimensionales..."
         ];
 
         let pistaIndex = 0;
@@ -673,6 +882,57 @@
                 }, 500);
             }
         }
+
+        // Enhanced glitch effects
+        function createRandomGlitch() {
+            const glitch = document.createElement('div');
+            glitch.className = 'glitch-overlay';
+            document.body.appendChild(glitch);
+
+            const height = Math.random() * 100 + 50;
+            const top = Math.random() * (window.innerHeight - height);
+            
+            glitch.style.height = height + 'px';
+            glitch.style.top = top + 'px';
+            glitch.style.background = `
+                linear-gradient(${Math.random() * 360}deg,
+                transparent,
+                rgba(0, 255, 0, ${Math.random() * 0.3}),
+                transparent)
+            `;
+            glitch.style.opacity = '1';
+            glitch.style.animation = `screenError ${Math.random() * 0.5 + 0.2}s`;
+
+            setTimeout(() => glitch.remove(), 500);
+        }
+
+        function createScreenFlash() {
+            const flash = document.createElement('div');
+            flash.className = 'screen-glitch';
+            document.body.appendChild(flash);
+            
+            flash.style.animation = 'screenFlash 0.5s';
+            setTimeout(() => flash.remove(), 500);
+        }
+
+        // Intensify visual effects
+        setInterval(createRandomGlitch, 3000);
+        setInterval(createScreenFlash, 5000);
+
+        // Auto-start music at lower volume
+        window.addEventListener('load', () => {
+            const audioElement = document.getElementById('bgMusic');
+            currentTrack = Math.floor(Math.random() * musicTracks.length);
+            audioElement.src = musicTracks[currentTrack];
+            audioElement.volume = 0.15;
+            audioElement.play().catch(() => {});
+            
+            // Remove music controls
+            const musicControls = document.querySelector('.music-controls');
+            if (musicControls) {
+                musicControls.remove();
+            }
+        });
 
         // Console messages mejorados
         console.clear(); // Limpia la consola primero
@@ -743,6 +1003,45 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         });
+
+        // Music System
+        const musicTracks = [
+            '/img/yuugensong.mp3',
+            '/img/nightcall.mp3',
+            '/img/pokerface.mp3',
+            '/img/audio1.mp3',
+            '/img/audio2.mp3',
+            '/img/audio3.mp3',
+            '/img/audio4.mp3',
+            '/img/audio5.mp3',
+            '/img/audio7.mp3'
+        ];
+
+        let currentTrack = 0;
+        const audioElement = document.getElementById('bgMusic');
+
+        function toggleMusic() {
+            if (audioElement.paused) {
+                audioElement.play();
+            } else {
+                audioElement.pause();
+            }
+        }
+
+        function adjustVolume(value) {
+            audioElement.volume = value;
+        }
+
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % musicTracks.length;
+            audioElement.src = musicTracks[currentTrack];
+            audioElement.play();
+        }
+
+        function toggleLore() {
+            const lorePanel = document.getElementById('lorePanel');
+            lorePanel.classList.toggle('show');
+        }
     </script>
 
     <script>
@@ -768,6 +1067,111 @@
 
         cambiarTituloGlitch();
     </script>
+    <script>
+// Adaptado para vanilla y colores balatro-verde
+const vert = `
+attribute vec2 position;
+varying vec2 vUv;
+void main() {
+    vUv = position * 0.5 + 0.5;
+    gl_Position = vec4(position, 0, 1);
+}
+`;
+const frag = `
+precision highp float;
+varying vec2 vUv;
+uniform float iTime;
+uniform vec2 iResolution;
+
+// COLORES BALATRO TEMA VERDE/NEGRO
+vec3 color1 = vec3(0.03, 0.10, 0.07);   // casi negro, más oscuro aún
+vec3 color2 = vec3(0.01, 0.20, 0.07);   // verde MUY oscuro
+vec3 color3 = vec3(0.04, 0.45, 0.13);   // verde neón, pero más bajito
+
+
+void main() {
+    vec2 uv = (vUv - 0.5) * 2.0;
+    float len = length(uv);
+
+    float angle = atan(uv.y, uv.x);
+    float t = iTime * 0.12;
+    float spin = angle + t + sin(t + len * 8.0) * 0.15;
+
+    float band = smoothstep(0.3, 0.7, abs(sin(len * 6.0 - t * 2.0 + spin * 2.0)));
+
+    vec3 col = mix(color1, color2, band);
+
+    // Efectos tipo balatro swirl
+    float swirl = 0.6 + 0.4 * cos(t * 0.8 + len * 5.0 + spin * 2.5);
+    col = mix(col, color3, swirl * 0.5 * (1.0 - len));
+    
+    gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+// Helper WebGL
+function createShader(gl, src, type) {
+    let s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s);
+    return s;
+}
+function createProgram(gl, vsrc, fsrc) {
+    let p = gl.createProgram();
+    gl.attachShader(p, createShader(gl, vsrc, gl.VERTEX_SHADER));
+    gl.attachShader(p, createShader(gl, fsrc, gl.FRAGMENT_SHADER));
+    gl.linkProgram(p);
+    if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw gl.getProgramInfoLog(p);
+    return p;
+}
+
+function startBalatroBg() {
+    const canvas = document.getElementById("balatro-bg");
+    const gl = canvas.getContext("webgl");
+    if (!gl) return;
+
+    // Fullscreen canvas
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    // Compile shader
+    const prog = createProgram(gl, vert, frag);
+    gl.useProgram(prog);
+
+    // Triangle (full screen quad)
+    const vertices = new Float32Array([
+        -1, -1, 1, -1, -1, 1,
+        -1, 1, 1, -1, 1, 1
+    ]);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    const posLoc = gl.getAttribLocation(prog, "position");
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const timeLoc = gl.getUniformLocation(prog, "iTime");
+    const resLoc = gl.getUniformLocation(prog, "iResolution");
+
+    function draw(now) {
+        gl.useProgram(prog);
+        gl.uniform1f(timeLoc, now * 0.001);
+        gl.uniform2f(resLoc, canvas.width, canvas.height);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+}
+startBalatroBg();
+</script>
+
 </body>
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
