@@ -68,10 +68,10 @@ namespace PrimerProyecto.Controllers
                 return IsGameStartCompleted();
             }
 
-            // Room7Codex requiere completar Room 7
+            // Room7Codex requiere completar Room 6
             if (roomName == "Room7Codex")
             {
-                return IsRoomCompleted(7);
+                return IsRoomCompleted(6);
             }
 
             // Room 8 requiere completar Room7Codex
@@ -102,7 +102,7 @@ namespace PrimerProyecto.Controllers
                 }
                 else if (roomName == "Room7Codex")
                 {
-                    TempData["ErrorMessage"] = "Debes completar la Room 7 primero.";
+                    TempData["ErrorMessage"] = "Debes completar la Room 6 primero.";
                 }
                 else if (roomNumber == 8)
                 {

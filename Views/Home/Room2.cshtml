@@ -350,11 +350,12 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             pointer-events: none;
-            z-index: -1;
-            opacity: 0.1;
+            z-index: 1;
+            opacity: 0.15;
+            display: block;
         }
 #balatro-bg {
     position: fixed;
@@ -381,8 +382,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background: black;
             display: flex;
             flex-direction: column;
@@ -392,6 +393,7 @@
             color: var(--neon-green);
             font-family: 'VT323', monospace;
             text-align: center;
+            opacity: 1;
             animation: fadeOut 2s forwards;
             animation-delay: 15s;
             overflow: hidden;
@@ -406,6 +408,10 @@
             text-shadow: 0 0 10px var(--neon-green);
         }
 
+        .intro-text:nth-child(1) { animation: fadeInUp 2s forwards; }
+        .intro-text:nth-child(2) { animation: fadeInUp 2s forwards; animation-delay: 3s; }
+        .intro-text:nth-child(3) { animation: fadeInUp 2s forwards; animation-delay: 6s; }
+        .intro-text:nth-child(4) { animation: fadeInUp 2s forwards; animation-delay: 9s; }
         .intro-text::before {
             content: '';
             position: absolute;
@@ -417,6 +423,15 @@
             animation: scanline 2s linear infinite;
         }
 
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         .intro-text h2 {
             font-size: 2.5em;
             margin-bottom: 0.5em;
@@ -424,6 +439,8 @@
             display: inline-block;
         }
 
+        @@keyframes fadeOut {
+            to { opacity: 0; visibility: hidden; }
         .intro-text h2::before,
         .intro-text h2::after {
             content: attr(data-text);
@@ -682,18 +699,24 @@
     <div class="intro-sequence">
         <div class="binary-overlay"></div>
         <div class="intro-text">
+            <h2>[ALERTA DEL SISTEMA]</h2>
+            <p>Anomalía temporal detectada en el sector C-137</p>
             <h2 data-text="[ALERTA DEL SISTEMA]">[ALERTA DEL SISTEMA]</h2>
             <p class="warning">⚠️ ANOMALÍA TEMPORAL CRÍTICA DETECTADA ⚠️</p>
             <p>Sector C-137: Múltiples fracturas en la línea temporal principal</p>
             <p class="danger">NIVEL DE AMENAZA: CRÍTICO</p>
         </div>
         <div class="intro-text">
+            <p>Los bucles temporales se están multiplicando exponencialmente</p>
+            <p>Cada decisión crea una nueva línea temporal</p>
             <h2 data-text="[ANÁLISIS DE DAÑOS]">[ANÁLISIS DE DAÑOS]</h2>
             <p>Bucles temporales multiplicándose exponencialmente</p>
             <p>Integridad dimensional: 32% y descendiendo</p>
             <p class="warning">Colapso total estimado en: T-MINUS 10:00</p>
         </div>
         <div class="intro-text">
+            <p>Rick: M-morty, *burp* necesitamos estabilizar este sector antes de que el tejido espacio-temporal colapse</p>
+            <p>Morty: Oh jeez Rick, ¿qué tengo que hacer?</p>
             <h2 data-text="[TRANSMISIÓN ENTRANTE]">[TRANSMISIÓN ENTRANTE]</h2>
             <p>Rick: M-morty, *burp* esto es malo... muy malo...</p>
             <p>Rick: El tejido espacio-temporal se está desgarrando</p>
@@ -701,6 +724,8 @@
             <p>Rick: ¡Las líneas de código están vivas, Morty! ¡VIVAS!</p>
         </div>
         <div class="intro-text">
+            <p>Rick: Decodifica el patrón binario, Morty. Es la única forma de sincronizar las líneas temporales.</p>
+            <p>La realidad depende de ti...</p>
             <h2 data-text="[PROTOCOLO DE EMERGENCIA]">[PROTOCOLO DE EMERGENCIA]</h2>
             <p>Rick: Solo hay una forma de arreglarlo, Morty...</p>
             <p>Rick: Decodifica el patrón binario antes de que sea tarde</p>
@@ -732,30 +757,39 @@
         const canvas = document.querySelector('.binary-rain');
         const ctx = canvas.getContext('2d');
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        function resizeBinaryRainCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeBinaryRainCanvas();
+        window.addEventListener('resize', resizeBinaryRainCanvas);
 
         const binary = '10';
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
+        let columns = Math.floor(window.innerWidth / 14);
+        let drops = [];
 
-        for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
+        function resetDrops() {
+            columns = Math.floor(window.innerWidth / 14);
+            drops = [];
+            for (let i = 0; i < columns; i++) {
+                drops[i] = Math.random() * -50;
+            }
         }
+        resetDrops();
+        window.addEventListener('resize', resetDrops);
 
         function drawBinaryRain() {
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.fillStyle = '#00ff00';
-            ctx.font = fontSize + 'px monospace';
+            ctx.font = '14px monospace';
 
             for (let i = 0; i < drops.length; i++) {
                 const text = binary[Math.floor(Math.random() * binary.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                ctx.fillText(text, i * 14, drops[i] * 14);
 
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                if (drops[i] * 14 > canvas.height && Math.random() > 0.975) {
                     drops[i] = 0;
                 }
                 drops[i]++;
@@ -1105,12 +1139,13 @@
         window.addEventListener('load', () => {
             initializeTablero();
             showNextHint();
-            
-            // Start binary rain animation
             setInterval(drawBinaryRain, 33);
-            
-            // Start portal generation
             setInterval(createPortal, 3000);
+            // Ocultar la intro después de la animación
+            setTimeout(() => {
+                const intro = document.querySelector('.intro-sequence');
+                if (intro) intro.style.display = 'none';
+            }, 17000); // 15s delay + 2s fade
         });
 
         // Responsive handling
@@ -1326,4 +1361,3 @@ startBalatroBg();
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
 <!-- MORTY ES UNA TRAMPA LA RESPUESTA ES 479 -->
-</html>

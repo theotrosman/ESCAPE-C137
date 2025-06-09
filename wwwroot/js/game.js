@@ -21,12 +21,12 @@ let bird = null;
 let pipes = [];
 
 // Configuración del juego
-const GRAVITY = 0.4;
-const LIFT_FORCE = -0.4;
-const FALL_FORCE = 0.3;
-const PIPE_SPEED = 2;
-const PIPE_SPAWN_INTERVAL = 3000;
-const MAX_VELOCITY = 5;
+const GRAVITY = 1.7;
+const LIFT_FORCE = -1.5;
+const FALL_FORCE = 1.3;
+const PIPE_SPEED = 8;
+const PIPE_SPAWN_INTERVAL = 900;
+const MAX_VELOCITY = 18;
 
 // Ajustar tamaño del canvas
 function resizeCanvas() {
@@ -52,14 +52,19 @@ pipeImg.src = '/img/ramfoto.png';
 // Clase Bird
 class Bird {
     constructor() {
-        this.x = canvas.width / 3;
+        this.x = canvas.width * 0.18;
         this.y = canvas.height / 2;
         this.velocity = 0;
         this.rotation = 0;
         this.scale = 1;
+        this.speedX = 0;
     }
 
     move(isHandOpen) {
+        // Avance horizontal constante
+        this.x += this.speedX;
+        if (this.x > canvas.width * 0.7) this.x = canvas.width * 0.7; // No dejar que se vaya del todo a la derecha
+
         // Control continuo basado en el estado de la mano
         if (isHandOpen) {
             this.velocity += LIFT_FORCE;
@@ -89,11 +94,12 @@ class Bird {
     }
 
     getBounds() {
+        // Hitbox aún más pequeña y centrada
         return {
-            x: this.x - BIRD_SIZE * 0.7,
-            y: this.y - BIRD_SIZE * 0.7,
-            width: BIRD_SIZE * 1.4,
-            height: BIRD_SIZE * 1.4
+            x: this.x - BIRD_SIZE * 0.28,
+            y: this.y - BIRD_SIZE * 0.28,
+            width: BIRD_SIZE * 0.56,
+            height: BIRD_SIZE * 0.56
         };
     }
 }
@@ -102,50 +108,57 @@ class Bird {
 class Pipe {
     constructor() {
         this.x = canvas.width;
-        const minHeight = canvas.height * 0.2;
-        const maxHeight = canvas.height * 0.6;
-        this.height = Math.random() * (maxHeight - minHeight) + minHeight;
+        this.rams = [];
+        // Generar entre 2 y 4 RAMs por obstáculo
+        const ramCount = Math.floor(Math.random() * 3) + 2;
+        // Definir un hueco vertical pasable
+        const minGap = PIPE_GAP * 0.7;
+        const gapY = Math.random() * (canvas.height - minGap * 1.5) + minGap * 0.75;
+        const gapHeight = minGap + Math.random() * (PIPE_GAP * 0.5);
+        // Generar RAMs arriba del hueco
+        let y = 0;
+        while (y < gapY - 10) {
+            const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
+            this.rams.push({
+                x: this.x,
+                y: y,
+                width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
+                height: ramHeight
+            });
+            y += ramHeight + Math.random() * 20;
+        }
+        // Generar RAMs debajo del hueco
+        y = gapY + gapHeight;
+        while (y < canvas.height - 10) {
+            const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
+            this.rams.push({
+                x: this.x,
+                y: y,
+                width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
+                height: ramHeight
+            });
+            y += ramHeight + Math.random() * 20;
+        }
         this.passed = false;
         this.scored = false;
-        this.width = PIPE_WIDTH;
     }
 
     update() {
         this.x -= PIPE_SPEED;
+        this.rams.forEach(ram => { ram.x = this.x; });
     }
 
     draw() {
-        // Tubo superior
-        ctx.save();
-        ctx.translate(this.x + PIPE_WIDTH / 2, this.height - canvas.height);
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(pipeImg, -PIPE_WIDTH / 2, -PIPE_WIDTH / 2, PIPE_WIDTH, PIPE_WIDTH);
-        ctx.restore();
-
-        // Tubo inferior
-        ctx.save();
-        ctx.translate(this.x + PIPE_WIDTH / 2, this.height + PIPE_GAP);
-        ctx.rotate(Math.PI / 2);
-        ctx.drawImage(pipeImg, -PIPE_WIDTH / 2, -PIPE_WIDTH / 2, PIPE_WIDTH, PIPE_WIDTH);
-        ctx.restore();
+        this.rams.forEach(ram => {
+            ctx.save();
+            ctx.drawImage(pipeImg, ram.x, ram.y, ram.width, ram.height);
+            ctx.restore();
+        });
     }
 
     checkCollision(bird) {
         const birdBounds = bird.getBounds();
-        const topPipe = {
-            x: this.x,
-            y: 0,
-            width: PIPE_WIDTH,
-            height: this.height
-        };
-        const bottomPipe = {
-            x: this.x,
-            y: this.height + PIPE_GAP,
-            width: PIPE_WIDTH,
-            height: canvas.height - (this.height + PIPE_GAP)
-        };
-
-        return this.checkBounds(birdBounds, topPipe) || this.checkBounds(birdBounds, bottomPipe);
+        return this.rams.some(ram => this.checkBounds(birdBounds, ram));
     }
 
     checkBounds(rect1, rect2) {
@@ -241,9 +254,13 @@ function gameLoop(timestamp) {
 function checkCollisions() {
     // Colisión con el techo o suelo
     if (bird.y - BIRD_SIZE < 0 || bird.y + BIRD_SIZE > canvas.height) {
+        // Efecto visual de choque
+        ctx.save();
+        ctx.fillStyle = 'rgba(255,0,0,0.4)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
         return true;
     }
-    
     // Colisión con tubos
     return pipes.some(pipe => pipe.checkCollision(bird));
 }

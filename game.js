@@ -21,12 +21,12 @@ let bird = null;
 let pipes = [];
 
 // Configuración del juego
-const GRAVITY = 0.4;
-const LIFT_FORCE = -0.4;
-const FALL_FORCE = 0.3;
-const PIPE_SPEED = 2;
+const GRAVITY = 9.8;
+const LIFT_FORCE = -0.1;
+const FALL_FORCE = 4;
+const PIPE_SPEED = 30;
 const PIPE_SPAWN_INTERVAL = 3000;
-const MAX_VELOCITY = 5;
+const MAX_VELOCITY = 40;
 
 // Ajustar tamaño del canvas
 function resizeCanvas() {

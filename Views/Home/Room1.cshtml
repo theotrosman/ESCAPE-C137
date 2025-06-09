@@ -106,8 +106,8 @@
     <script>
     function decryptedTextEffect(element, text, options = {}) {
     const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
-    const speed = options.speed || 24;
-    const scrambleIterations = options.scrambleIterations || 12;
+    const speed = options.speed || 10;
+    const scrambleIterations = options.scrambleIterations || 6;
     const audio = document.getElementById('sfx-console');
         // Reproducir audio desde el principio sincronizado
         if (audio) {
@@ -179,11 +179,11 @@ function escribirLinea() {
     if (i < texto.length) {
         const span = document.createElement("span");
         terminal.appendChild(span);
-        decryptedTextEffect(span, texto[i])
+        decryptedTextEffect(span, texto[i], { speed: 8, scrambleIterations: 4 })
             .then(() => {
                 span.innerHTML += "<br>";
                 i++;
-                setTimeout(escribirLinea, 850);
+                setTimeout(escribirLinea, 1400);
             });
     } else {
         inputLine.style.display = "block";
