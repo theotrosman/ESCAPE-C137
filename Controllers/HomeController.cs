@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using System;
 
 namespace PrimerProyecto.Controllers
 {
@@ -124,20 +125,38 @@ namespace PrimerProyecto.Controllers
             switch (roomNumber)
             {
                 case 3:
-                    ViewBag.SecuenciaCorrecta = "ATCG";
-                    ViewBag.Grid = new List<List<char>>
+                    // Secuencia correcta preestablecida según las condiciones de Rick
+                    string secuenciaCorrecta = "ATGCGTACGC"; // 2A, 2T, 3G, 3C, no palíndromo, no más de 2 iguales seguidas
+                    int gridSize = 10;
+                    var random = new Random();
+                    int colCorrecta = random.Next(0, gridSize); // columna donde irá la secuencia correcta
+
+                    // Generar grilla
+                    var grid = new List<List<char>>();
+                    for (int row = 0; row < gridSize; row++)
                     {
-                        "ATCGATCGAT".ToList(),
-                        "TCGATCGATC".ToList(),
-                        "CGATCGATCG".ToList(),
-                        "GATCGATCGA".ToList(),
-                        "ATCGATCGAT".ToList(),
-                        "TCGATCGATC".ToList(),
-                        "CGATCGATCG".ToList(),
-                        "GATCGATCGA".ToList(),
-                        "ATCGATCGAT".ToList(),
-                        "TCGATCGATC".ToList()
-                    };
+                        var fila = new List<char>();
+                        for (int col = 0; col < gridSize; col++)
+                        {
+                            if (col == colCorrecta)
+                            {
+                                fila.Add(secuenciaCorrecta[row]);
+                            }
+                            else
+                            {
+                                // Generar base aleatoria, pero diferente a la correcta en esa fila
+                                char[] bases = new[] { 'A', 'T', 'C', 'G' };
+                                char baseRandom;
+                                do {
+                                    baseRandom = bases[random.Next(0, 4)];
+                                } while (baseRandom == secuenciaCorrecta[row]);
+                                fila.Add(baseRandom);
+                            }
+                        }
+                        grid.Add(fila);
+                    }
+                    ViewBag.SecuenciaCorrecta = secuenciaCorrecta;
+                    ViewBag.Grid = grid;
                     break;
                 case 5:
                     // Configuración específica para Room5 si es necesaria
