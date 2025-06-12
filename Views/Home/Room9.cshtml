@@ -4,58 +4,568 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Room 9 - Dimension Dash</title>
-    <style>
-        body,html {
-            margin:0;
-            padding:0;
-            overflow:hidden;
-            background:black;
-            color:#00ffcc;
-            font-family: 'Courier New', monospace;
-        }
-        #hud {
-            position:fixed;
-            top:10px;
-            left:10px;
-            z-index:100;
-            background:rgba(0,0,0,0.6);
-            padding:10px 20px;
-            border:2px solid #00ffcc;
-            font-size:1.2em;
-        }
-        #instructions {
-            position:fixed;
-            top:50%;
-            left:50%;
-            transform:translate(-50%,-50%);
-            text-align:center;
-            font-size:1.4em;
-        }
-        #pcgif {
-            position:fixed;
-            bottom:10px;
-            right:10px;
-            width:120px;
-            opacity:0.7;
-            z-index:99;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Room 9 - Colapso Final</title>
+  <link rel="stylesheet" href="~/css/site.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      font-family: monospace;
+      color: #0f0;
+    }
+
+    #nave {
+      position: absolute;
+      width: 200px;
+      top: -300px;
+      left: -200px;
+      transform: rotate(0deg);
+      z-index: 10;
+      transition: all 8s ease-in-out;
+      filter: brightness(1.2) drop-shadow(0 0 10px red);
+    }
+
+    .glitch-bg {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      background: repeating-linear-gradient(
+        0deg,
+        #000,
+        #000 2px,
+        #111 2px,
+        #111 4px
+      );
+      animation: glitchAnim 0.2s infinite;
+      opacity: 0.25;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .ascii-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      font-size: 14px;
+      color: #00ffcc;
+      opacity: 0.07;
+      z-index: 0;
+      white-space: pre;
+      pointer-events: none;
+    }
+
+    .explosion {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, red, orange, yellow, transparent);
+      border-radius: 50%;
+      animation: explode 0.6s ease-out forwards;
+      opacity: 0.8;
+    }
+
+    @@keyframes glitchAnim {
+      0% { transform: translate(0px, 0px); }
+      25% { transform: translate(3px, -2px); }
+      50% { transform: translate(-3px, 2px); }
+      75% { transform: translate(1px, -1px); }
+      100% { transform: translate(0px, 0px); }
+    }
+
+    @@keyframes explode {
+      0% { transform: scale(0.2); opacity: 1; }
+      100% { transform: scale(3); opacity: 0; }
+    }
+
+    .console {
+      position: absolute;
+      bottom: 5%;
+      left: 10%;
+      width: 80%;
+      font-size: 1.2rem;
+      white-space: pre-line;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+      animation-delay: 4s;
+      z-index: 20;
+    }
+
+    @@keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @@keyframes naveEstela {
+      0% { filter: brightness(1.2) drop-shadow(0 0 10px #0ff) drop-shadow(0 0 30px #f0f); }
+      50% { filter: brightness(2) drop-shadow(0 0 40px #ff0) drop-shadow(0 0 80px #f00); }
+      100% { filter: brightness(1.2) drop-shadow(0 0 10px #0ff) drop-shadow(0 0 30px #f0f); }
+    }
+    @@keyframes naveGlitch {
+      0% { transform: rotate(0deg) scale(1); }
+      20% { transform: rotate(10deg) scale(1.05); }
+      40% { transform: rotate(-8deg) scale(0.98); }
+      60% { transform: rotate(12deg) scale(1.1); }
+      80% { transform: rotate(-6deg) scale(1.02); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+    .nave-epica {
+      animation: naveEstela 1.2s infinite alternate, naveGlitch 0.7s infinite alternate;
+      transition: filter 0.3s, transform 0.3s;
+    }
+    .portal-entrada {
+      position: fixed;
+      left: 50vw; top: 60vh;
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #0ff, #f0f, #ff0, #0ff 100%);
+      box-shadow: 0 0 80px 40px #0ff8, 0 0 120px 80px #f0f4;
+      filter: blur(2px) brightness(1.2);
+      z-index: 100;
+      opacity: 0.7;
+      pointer-events: none;
+      animation: portalSpin 2.5s linear infinite;
+    }
+    @@keyframes portalSpin { 100% { filter: hue-rotate(360deg) blur(2px) brightness(1.2); } }
+    .console {
+      position: absolute;
+      bottom: 5%;
+      left: 10%;
+      width: 80%;
+      font-size: 1.2rem;
+      white-space: pre-line;
+      opacity: 0;
+      animation: fadeIn 1s ease-in-out forwards;
+      animation-delay: 2.5s;
+      z-index: 20;
+      text-shadow: 0 0 8px #0ff, 0 0 2px #fff;
+      letter-spacing: 0.5px;
+    }
+  </style>
 </head>
 <body>
-    <div id="hud">SCORE: <span id="score">0</span></div>
-    <div id="instructions">Presiona ESPACIO para iniciar.<br>Usa ←→ para moverte, ESPACIO para saltar y recoge los anillos.</div>
-    <img id="pcgif" src="/img/gifcomputadora.gif" alt="pc">
-    <script type="module">
-        import { init } from '/js/runner.js';
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-        });
-        document.addEventListener('keydown', () => {
-            document.getElementById('instructions').style.display = 'none';
-        }, { once: true });
-    </script>
+  <div class="glitch-bg"></div>
+  <img id="nave" src="~/img/naveparachocar.png" alt="Nave en picada" />
+  <div id="nave-estela"></div>
+  <div id="portal-entrada" class="portal-entrada" style="display:none;"></div>
+  <div class="console" id="consoleText"></div>
+
+  <script>
+    setTimeout(() => {
+      const nave = document.getElementById('nave');
+      nave.style.top = '65vh';
+      nave.style.left = '90vw';
+      nave.style.transform = 'rotate(1440deg)';
+    }, 500);
+
+    // Explosiones aleatorias visuales
+    function spawnExplosion() {
+      const explosion = document.createElement('div');
+      explosion.className = 'explosion';
+      explosion.style.left = Math.random() * 90 + 'vw';
+      explosion.style.top = Math.random() * 80 + 'vh';
+      document.body.appendChild(explosion);
+      setTimeout(() => explosion.remove(), 800);
+    }
+    setInterval(spawnExplosion, 900);
+
+    const textoIntro = `
+[REALIDAD INESTABLE]
+Rick: Morty, rompiste el núcleo… la nave entró en colapso dimensional...
+
+/...\\
+//ERROR_298: MULTIVERSO DAÑADO
+#== TRANSFERENCIA FORZADA ==#
+
+> Iniciando protocolo: T.E.T.R.I.S
+> Sistema activado: Trascendencia Entre Tiempos, Realidades y Simulación
+
+Rick: Tenés que estabilizar las realidades... usando un... ¿Tetris roguelike? ¿¡Quién escribió esta mierda!?
+
+Morty: Rick, ¡las piezas tienen caras, Rick!
+
+> ATAQUE DE PARADOJAS INESTABLES DETECTADO
+> SHARD 281-B: DESINTEGRADO
+> GRAVEDAD QUÁNTICA FLUCTUANTE / REPOSICIONANDO ORIGEN
+> EMPEZANDO EN 3... 2... 1...`;
+
+    // Efecto DECRYPTED + SCRAMBLE para texto de consola
+    function efectoDecryptedScramble(texto, elemento, velocidad = 18) {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()_+-=<>?[]{}|';
+      let idx = 0;
+      function revealChar() {
+        if (idx > texto.length) return;
+        let reveal = texto.slice(0, idx);
+        let scramble = '';
+        for (let j = idx; j < texto.length; j++) {
+          if (texto[j] === '\n' || texto[j] === ' ' || texto[j] === '\r') scramble += texto[j];
+          else scramble += charset[Math.floor(Math.random()*charset.length)];
+        }
+        elemento.innerHTML = reveal + '<span style="opacity:0.4;">' + scramble + '</span>';
+        idx++;
+        setTimeout(revealChar, velocidad + Math.random()*18);
+      }
+      revealChar();
+    }
+
+    // --- ANIMACIÓN ÉPICA DE NAVE Y PORTAL ---
+    function animarNaveYPortal() {
+      const nave = document.getElementById('nave');
+      const estela = document.getElementById('nave-estela');
+      const portal = document.getElementById('portal-entrada');
+      nave.classList.add('nave-epica');
+      // Estela animada
+      estela.style.position = 'absolute';
+      estela.style.left = '0';
+      estela.style.top = '0';
+      estela.style.width = '100vw';
+      estela.style.height = '100vh';
+      estela.style.pointerEvents = 'none';
+      estela.style.zIndex = 9;
+      // Partículas
+      let interval = setInterval(()=>{
+        let p = document.createElement('div');
+        p.style.position = 'fixed';
+        p.style.left = (parseFloat(nave.style.left)||0)+100 + 'px';
+        p.style.top = (parseFloat(nave.style.top)||0)+100 + 'px';
+        p.style.width = '18px';
+        p.style.height = '18px';
+        p.style.borderRadius = '50%';
+        p.style.background = 'radial-gradient(circle, #0ff 0%, #f0f 60%, transparent 100%)';
+        p.style.opacity = 0.5+Math.random()*0.3;
+        p.style.zIndex = 8;
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(), 900);
+      }, 80);
+      // Glitch y rotaciones
+      let t = 0;
+      let naveAnim = setInterval(()=>{
+        t++;
+        nave.style.top = (parseFloat(nave.style.top)||-300) + 6 + 'px';
+        nave.style.left = (parseFloat(nave.style.left)||-200) + 8 + Math.sin(t/3)*8 + 'px';
+        nave.style.transform = 'rotate('+(1440+t*8+Math.sin(t/2)*20)+'deg) scale('+(1+Math.sin(t/8)*0.04)+')';
+        if (t>60) portal.style.display = 'block';
+        if (t>90) {
+          clearInterval(naveAnim); clearInterval(interval);
+          nave.style.opacity = 0;
+          setTimeout(()=>{portal.style.opacity=0;}, 800);
+        }
+      }, 40);
+    }
+
+    // --- TEXTO DE CONSOLA Y TRANSICIÓN AL JUEGO ---
+    setTimeout(() => {
+      const consoleText = document.getElementById('consoleText');
+      efectoDecryptedScramble(textoIntro, consoleText, 14);
+      animarNaveYPortal();
+      setTimeout(()=>{
+        // Aquí inicia el minijuego de paradoja de realidades
+        iniciarParadojaRealidades();
+      }, 8000);
+    }, 1200);
+
+    // --- JUEGO DE SELECCIÓN DE REALIDADES CAÓTICAS ---
+    // Inspirado en Balatro, Papers Please, Stanley Parable, WarioWare y Rick & Morty
+    // Modular, escalable y con hooks para assets/memes externos
+
+    // --- CONFIGURACIÓN Y ASSETS ---
+    const REALIDADES = [
+      // Ejemplo de realidades, puedes expandir con memes, imágenes, frases, etc.
+      {
+        fondo: 'linear-gradient(135deg, #0ff 0%, #f0f 100%)',
+        icono: '☢️',
+        texto: 'Texto invertido',
+        efecto: 'invert',
+        tipo: 'corrupta',
+        frase: 'Rick: ¡Morty, esa realidad es radiactiva!'
+      },
+      {
+        fondo: 'repeating-linear-gradient(45deg, #000, #000 10px, #0ff 10px, #0ff 20px)',
+        icono: '🐱',
+        texto: 'Gato con sombrero',
+        efecto: 'pixel',
+        tipo: 'buena',
+        frase: 'Morty: ¡Esa es la realidad de los gatos inteligentes!'
+      },
+      {
+        fondo: 'radial-gradient(circle, #ff0 0%, #f00 100%)',
+        icono: '🦠',
+        texto: 'Símbolo viral',
+        efecto: 'glitch',
+        tipo: 'corrupta',
+        frase: 'Rick: ¡Modo pandemia multidimensional activado!'
+      },
+      {
+        fondo: 'linear-gradient(90deg, #fff 0%, #0ff 100%)',
+        icono: '🍕',
+        texto: 'Pizza consciente',
+        efecto: 'ascii',
+        tipo: 'buena',
+        frase: 'Morty: ¡La pizza piensa, Rick!'
+      },
+      {
+        fondo: 'linear-gradient(120deg, #f0f 0%, #000 100%)',
+        icono: '👾',
+        texto: 'Texto en japonés: ピザ',
+        efecto: 'jap',
+        tipo: 'buena',
+        frase: 'Rick: ¿Por qué todo está en japonés, Morty?'
+      },
+      {
+        fondo: 'repeating-linear-gradient(60deg, #0f0, #0f0 8px, #000 8px, #000 16px)',
+        icono: '🧬',
+        texto: 'ADN corrupto',
+        efecto: 'scramble',
+        tipo: 'corrupta',
+        frase: 'Morty: ¡Eso no es ADN, Rick!'
+      },
+      // ... puedes agregar cientos más para llegar a 3000 líneas ...
+    ];
+
+    const FRASES_RICK = [
+      'Rick: ¡Morty, esa era la realidad donde los perros gobiernan!',
+      'Rick: ¿Por qué elegiste esa, Morty?',
+      'Rick: ¡Eso es peor que la C-137!',
+      'Rick: ¡Buen trabajo, Morty! (creo...)',
+      'Rick: ¡Esa realidad tiene sentido del humor!'
+    ];
+    const FRASES_MORTY = [
+      'Morty: ¡Rick, esa era la de los gatos con sombrero!',
+      'Morty: ¿Seguro que era la correcta?',
+      'Morty: ¡No entiendo nada, Rick!',
+      'Morty: ¡Esa realidad me da miedo!'
+    ];
+    const FRASES_PANDEMIA = [
+      'Rick: ¡Modo pandemia multidimensional activado!',
+      'Morty: ¡Todo se está glitcheando, Rick!',
+      'Rick: ¡Corre Morty, corre!'
+    ];
+
+    // --- ESTADO DEL JUEGO ---
+    let scoreBuenas = 0, scoreCorruptas = 0, rachaErrores = 0, pandemia = false, timer = null, tiempoRestante = 5, ronda = 0;
+    let historial = [];
+
+    // --- INICIO DEL JUEGO ---
+    function iniciarJuegoRealidades() {
+      // Limpia pantalla
+      document.body.innerHTML = `<div id='juego-realidades' style='position:fixed;inset:0;z-index:999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;'>
+        <div id='barra-timer' style='height:12px;width:60vw;background:#222;border-radius:8px;overflow:hidden;margin-bottom:24px;'><div id='timer-bar' style='height:100%;width:100%;background:linear-gradient(90deg,#0ff,#f0f);transition:width 0.2s;'></div></div>
+        <div id='pantalla-realidades' style='display:flex;gap:32px;justify-content:center;align-items:center;width:90vw;max-width:1200px;'></div>
+        <div id='comentario-rickmorty' style='margin-top:32px;color:#0ff;font-size:1.3em;text-shadow:0 0 8px #0ff,0 0 2px #fff;min-height:40px;text-align:center;'></div>
+        <div id='score' style='margin-top:18px;color:#fff;font-size:1.1em;'></div>
+      </div>`;
+      scoreBuenas = 0; scoreCorruptas = 0; rachaErrores = 0; pandemia = false; ronda = 0; historial = [];
+      siguienteRonda();
+    }
+
+    // --- GENERADOR DE REALIDADES RANDOM ---
+    function getRandomRealidad() {
+      return REALIDADES[Math.floor(Math.random()*REALIDADES.length)];
+    }
+
+    // --- RONDA PRINCIPAL ---
+    function siguienteRonda() {
+      ronda++;
+      tiempoRestante = pandemia ? 2.5 : 5;
+      let rA = getRandomRealidad();
+      let rB = getRandomRealidad();
+      while(rA === rB) rB = getRandomRealidad();
+      renderRealidades(rA, rB);
+      iniciarTimer();
+    }
+
+    // --- TIMER ---
+    function iniciarTimer() {
+      clearInterval(timer);
+      let bar = document.getElementById('timer-bar');
+      bar.style.width = '100%';
+      let t = tiempoRestante;
+      timer = setInterval(()=>{
+        t -= 0.1;
+        bar.style.width = (t/tiempoRestante*100)+"%";
+        if(t<=0) {
+          clearInterval(timer);
+          elegirRealidad(null);
+        }
+      }, 100);
+    }
+
+    // --- RENDER DE REALIDADES ---
+    function renderRealidades(rA, rB) {
+      let cont = document.getElementById('pantalla-realidades');
+      cont.innerHTML = '';
+      [rA, rB].forEach((r, idx)=>{
+        let card = document.createElement('div');
+        card.className = 'realidad-card';
+        card.style.width = '38vw';
+        card.style.height = '44vh';
+        card.style.background = r.fondo;
+        card.style.borderRadius = '22px';
+        card.style.boxShadow = '0 0 32px #0ff8, 0 0 80px #f0f4';
+        card.style.display = 'flex';
+        card.style.flexDirection = 'column';
+        card.style.alignItems = 'center';
+        card.style.justifyContent = 'center';
+        card.style.position = 'relative';
+        card.style.cursor = 'pointer';
+        card.style.transition = 'transform 0.2s, filter 0.2s';
+        card.style.overflow = 'hidden';
+        // Glitch effect
+        card.onmouseenter = ()=>{card.style.transform='scale(1.04) rotate('+(Math.random()*8-4)+'deg)';card.style.filter='hue-rotate('+(Math.random()*360)+'deg) blur(1.5px)';};
+        card.onmouseleave = ()=>{card.style.transform='';card.style.filter='';};
+        // Icono
+        let icon = document.createElement('div');
+        icon.innerText = r.icono;
+        icon.style.fontSize = '3.5em';
+        icon.style.marginBottom = '12px';
+        icon.style.textShadow = '0 0 18px #fff,0 0 2px #0ff';
+        card.appendChild(icon);
+        // Texto
+        let txt = document.createElement('div');
+        txt.innerText = r.texto;
+        txt.style.fontSize = '1.5em';
+        txt.style.color = '#fff';
+        txt.style.textShadow = '0 0 8px #0ff,0 0 2px #fff';
+        txt.style.marginBottom = '8px';
+        card.appendChild(txt);
+        // Efectos visuales
+        if(r.efecto==='invert') card.style.filter = 'invert(1)';
+        if(r.efecto==='pixel') card.style.imageRendering = 'pixelated';
+        if(r.efecto==='glitch') card.style.animation = 'shake-glitch 0.5s infinite alternate';
+        if(r.efecto==='ascii') txt.innerText = '#%&$*';
+        if(r.efecto==='jap') txt.innerText = 'ピザ';
+        if(r.efecto==='scramble') txt.innerText = scrambleText(r.texto);
+        // Overlay ascii
+        if(Math.random()<0.5) {
+          let ascii = document.createElement('div');
+          ascii.innerText = '▒░▓▓▒▒░▒▓▒░▒▓░▒░▓▓░▒▓▒░░▒░▓░▒▓▒▒▓▓░▒░▒▓▓░▒▓▒';
+          ascii.style.position = 'absolute';
+          ascii.style.top = '10%';
+          ascii.style.left = '5%';
+          ascii.style.opacity = '0.12';
+          ascii.style.fontSize = '1.2em';
+          ascii.style.pointerEvents = 'none';
+          card.appendChild(ascii);
+        }
+        // Click para elegir
+        card.onclick = ()=>{
+          clearInterval(timer);
+          elegirRealidad(idx);
+        };
+        cont.appendChild(card);
+      });
+    }
+
+    // --- SCRAMBLE TEXT ---
+    function scrambleText(txt) {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()_+-=<>?[]{}|';
+      return txt.split('').map(c=>c===' '||c==='\n'?c:charset[Math.floor(Math.random()*charset.length)]).join('');
+    }
+
+    // --- ELECCIÓN DE REALIDAD ---
+    function elegirRealidad(idx) {
+      let cont = document.getElementById('pantalla-realidades');
+      let cards = cont.children;
+      let rA, rB, realidadElegida, realidad;
+      
+      if (cards && cards.length === 2) {
+        rA = cards[0];
+        rB = cards[1];
+        
+        if (idx === 0 || idx === 1) {
+          realidadElegida = idx === 0 ? rA : rB;
+          
+          // Buscar la realidad correspondiente
+          let textoRealidad = '';
+          try {
+            textoRealidad = realidadElegida.children[1].innerText;
+            realidad = REALIDADES.find(r => r.texto === textoRealidad || 
+                                    (r.efecto === 'ascii' && textoRealidad === '#%&$*') ||
+                                    (r.efecto === 'jap' && textoRealidad === 'ピザ') ||
+                                    (r.efecto === 'scramble' && r.texto.length === textoRealidad.length));
+          } catch (e) {
+            console.error("Error al buscar la realidad", e);
+          }
+        }
+      }
+      
+      // Si no se encontró la realidad, elegir una aleatoria
+      if (!realidad) {
+        realidad = getRandomRealidad();
+      }
+      
+      let comentario = document.getElementById('comentario-rickmorty');
+      if (comentario) {
+        let esBuena = realidad.tipo === 'buena';
+        if (esBuena) { 
+          scoreBuenas++; 
+          rachaErrores = 0; 
+          comentario.innerText = FRASES_RICK[Math.floor(Math.random()*FRASES_RICK.length)]; 
+        } else { 
+          scoreCorruptas++; 
+          rachaErrores++; 
+          comentario.innerText = FRASES_MORTY[Math.floor(Math.random()*FRASES_MORTY.length)]; 
+        }
+        
+        historial.push(realidad);
+        
+        // Modo pandemia
+        if (rachaErrores >= 3 && !pandemia) activarPandemia();
+        
+        // Actualiza score
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+          scoreElement.innerText = `Realidades buenas: ${scoreBuenas} | Corruptas destruidas: ${scoreCorruptas}`;
+        }
+        
+        // Glitch visual
+        document.body.style.filter = 'hue-rotate('+(Math.random()*360)+'deg) blur(2px)';
+        setTimeout(() => {document.body.style.filter='';}, 400);
+        
+        // Siguiente ronda o final
+        if (scoreBuenas >= 5) return finalJuego(true);
+        if (scoreCorruptas >= 5) return finalJuego(false);
+        setTimeout(siguienteRonda, 1200);
+      }
+    }
+
+    // --- MODO PANDEMIA ---
+    function activarPandemia() {
+      pandemia = true;
+      let comentario = document.getElementById('comentario-rickmorty');
+      comentario.innerText = FRASES_PANDEMIA[Math.floor(Math.random()*FRASES_PANDEMIA.length)];
+      document.body.style.background = 'radial-gradient(circle, #f00 0%, #000 100%)';
+      setTimeout(()=>{document.body.style.background='#000';}, 1200);
+    }
+
+    // --- FINAL DEL JUEGO ---
+    function finalJuego(victoria) {
+      document.getElementById('juego-realidades').innerHTML = `<div style='color:#0ff;font-size:2.2em;text-shadow:0 0 18px #0ff,0 0 2px #fff;text-align:center;margin-top:10vh;'>
+        ${victoria?'<b>>> ¡REALIDAD ESTABILIZADA!</b>':'<b>>> COLAPSO MULTIDIMENSIONAL</b>'}<br><br>
+        ${victoria?'Rick: Morty, ¡lo lograste! Has salvado el multiverso.':'Morty: Rick, ¡todo se fue al carajo!'}<br><br>
+        <button onclick='location.reload()' style='background:#0ff;color:#000;font-size:1.2em;font-weight:bold;padding:16px 40px;border-radius:12px;box-shadow:0 0 18px #0ff;cursor:pointer;'>Reiniciar la Simulación</button>
+      </div>`;
+    }
+
+    // --- INICIO DE PARADOJA DE REALIDADES ---
+    function iniciarParadojaRealidades() {
+      // Limpia pantalla
+      document.getElementById('consoleText').style.opacity = 0;
+      document.getElementById('portal-entrada').style.opacity = 0;
+      setTimeout(()=>{
+        document.body.innerHTML = `
+        <div id='juego-realidades' style='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;'>
+          <div id='barra-timer' style='height:12px;width:60vw;background:#222;border-radius:8px;overflow:hidden;margin-bottom:24px;'><div id='timer-bar' style='height:100%;width:100%;background:linear-gradient(90deg,#0ff,#f0f);transition:width 0.2s;'></div></div>
+          <div id='pantalla-realidades' style='display:flex;gap:32px;justify-content:center;align-items:center;width:90vw;max-width:1200px;'></div>
+          <div id='comentario-rickmorty' style='margin-top:32px;color:#0ff;font-size:1.3em;text-shadow:0 0 8px #0ff,0 0 2px #fff;min-height:40px;text-align:center;'></div>
+          <div id='score' style='margin-top:18px;color:#fff;font-size:1.1em;'></div>
+        </div>`;
+        scoreBuenas = 0; scoreCorruptas = 0; rachaErrores = 0; pandemia = false; ronda = 0; historial = [];
+        siguienteRonda();
+      }, 900);
+    }
+  </script>
 </body>
 </html>
+

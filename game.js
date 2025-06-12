@@ -44,7 +44,7 @@ const PIPE_GAP = Math.min(canvas.width, canvas.height) * 0.3;
 
 // Cargar imágenes
 const birdImg = new Image();
-birdImg.src = '/img/rickNave.png';
+birdImg.src = '/img/naveparachocar.png';
 
 const pipeImg = new Image();
 pipeImg.src = '/img/ramfoto.png';
