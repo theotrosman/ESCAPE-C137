@@ -7,6 +7,9 @@
   <meta charset="UTF-8">
   <title>Room 9 - Colapso Final</title>
   <link rel="stylesheet" href="~/css/site.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/niklasf/stockfish.js/stockfish.js"></script>
+
   <style>
     html, body {
       margin: 0;
@@ -142,9 +145,62 @@
       text-shadow: 0 0 8px #0ff, 0 0 2px #fff;
       letter-spacing: 0.5px;
     }
+    /*acá va el style con el estilo del ajedrez*/
+    body { background: #070710; margin:0; padding:0; min-height:100vh; }
+  #chess-container { 
+    display: flex; flex-direction: column; align-items: center; 
+    justify-content: center; min-height: 100vh;
+  }
+  #board { 
+    display: grid; grid-template: repeat(8, 60px)/repeat(8, 60px);
+    border: 5px solid #0f0; box-shadow: 0 0 40px #0f08,0 0 120px #0ff8;
+    margin: 30px 0; position: relative;
+    background: repeating-linear-gradient(45deg,#222,#333 10px,#222 20px);
+  }
+  .sq {
+    width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; cursor: pointer; transition: box-shadow .1s;
+    position: relative;
+    transition: filter 0.2s;
+  .sq.white { background: rgba(230,255,230,0.09);}
+  .sq.black { background: rgba(15,15,30,0.7);}
+  .sq.selected, .sq.valid { box-shadow: 0 0 16px 4px #0ff6; filter: brightness(2);}
+  .sq.capture { animation: captureFlash 0.4s;}
+  @@keyframes captureFlash {
+    0% { box-shadow:0 0 30px 12px #ff03, 0 0 80px 8px #0ff3; filter: brightness(5);}
+    100% { box-shadow:none; filter: brightness(1);}
+  }
+  #comment { 
+    min-height:2em; color:#fff; text-align:center; font-family:monospace; font-size:1.3em;
+    margin:10px 0; text-shadow:0 0 8px #0ff,0 0 3px #fff;
+  }
+  #restart { 
+    background: #0f0; border:none; padding:10px 20px; font-size:1em; 
+    border-radius:9px; cursor:pointer; font-family:inherit;
+    box-shadow:0 0 15px #0f08; transition: background .2s;
+  }
+  #restart:hover { background: #fff; color: #0f0;}
+  /* Flasher/Glitch effect */
+  .flash {
+    animation: flashy .4s linear;
+  }
+  @@keyframes flashy {
+    0% { background: #fff; filter: blur(4px);}
+    100% { background: initial; filter: none;}
+  }
+  /* Glitch text */
+  .glitchy {
+    color: #0ff; text-shadow: 2px 0 #f0f, -2px 0 #0f0;
+    animation: glitchTxt 0.2s infinite alternate;
+  }
+  @@keyframes glitchTxt {
+    from { text-shadow: 2px 0 #f0f, -2px 0 #0f0;}
+    to   { text-shadow: -2px 0 #ff0, 2px 0 #00f;}
+  }
   </style>
 </head>
 <body>
+
   <div class="glitch-bg"></div>
   <img id="nave" src="~/img/naveparachocar.png" alt="Nave en picada" />
   <div id="nave-estela"></div>
@@ -565,7 +621,131 @@ Morty: Rick, ¡las piezas tienen caras, Rick!
         siguienteRonda();
       }, 900);
     }
+    // acá va el script del ajedrez
+    const PIECES = {
+  'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
+  'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
+};
+const RickQuotes = [
+  "Morty, esa jugada no la vio ni Stockfish.",
+  "Jaque mate en 3, Morty... o en 42, da igual.",
+  "Esto no es ajedrez, es física cuántica aplicada.",
+  "Burp... ¿Seguro que sos real, Morty?",
+  "¡Esa es una jugada multidimensional, Morty!",
+];
+const MortyQuotes = [
+  "Aw man Rick, ¿seguro que este es el mejor movimiento?",
+  "¡Uh! ¡Nunca jugué tan bien en mi vida!",
+  "Esto se está poniendo raro, Rick...",
+  "¿Por qué la máquina piensa tanto, Rick?",
+  "¿Está bien que capture así, Rick?"
+];
+
+let chess = new Chess();
+let stockfish = new Worker('https://cdn.jsdelivr.net/gh/niklasf/stockfish.js/stockfish.asm.js');
+let selected = null, possible = [];
+const boardDiv = document.getElementById('board');
+const commentDiv = document.getElementById('comment');
+
+function render() {
+  boardDiv.innerHTML = '';
+  let b = chess.board();
+  for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
+    let sq = document.createElement('div');
+    sq.className = 'sq ' + ((r+c)%2 ? 'black' : 'white');
+    sq.dataset.square = 'abcdefgh'[c] + (8-r);
+    if(selected && selected[0]==r && selected[1]==c) sq.classList.add('selected');
+    if(possible.some(([rr,cc])=>rr==r&&cc==c)) sq.classList.add('valid');
+    if(b[r][c]) {
+      sq.innerHTML = `<span class="glitchy">${PIECES[b[r][c].color=='w'?b[r][c].type.toUpperCase():b[r][c].type]}</span>`;
+      sq.dataset.piece = b[r][c].color+b[r][c].type;
+    }
+    sq.onclick = ()=>handleClick(r,c);
+    boardDiv.appendChild(sq);
+  }
+}
+
+function handleClick(r,c) {
+  let sqName = 'abcdefgh'[c]+(8-r);
+  let b = chess.board();
+  if(selected && possible.some(([rr,cc])=>rr==r&&cc==c)) {
+    let from = 'abcdefgh'[selected[1]]+(8-selected[0]);
+    makeMove({from,to:sqName,promotion:'q'});
+    selected = null; possible=[];
+    return;
+  }
+  if(b[r][c] && b[r][c].color=='w' && chess.turn()=='w') {
+    selected = [r,c];
+    possible = chess.moves({square:sqName,verbose:true}).map(m=>{
+      let rr = 8-parseInt(m.to[1]), cc = 'abcdefgh'.indexOf(m.to[0]);
+      return [rr,cc];
+    });
+    render();
+  } else {
+    selected = null; possible=[];
+    render();
+  }
+}
+
+function makeMove(move) {
+  let moveResult = chess.move(move);
+  render();
+  flashEffect();
+  if(chess.in_checkmate()) return endGame("¡Jaque mate! Ganaste, Morty!");
+  if(chess.in_draw()) return endGame("¡Tablas! La realidad se reinicia...");
+  showQuote(true);
+  setTimeout(engineMove, 400);
+}
+
+function engineMove() {
+  if(chess.game_over()) return;
+  commentDiv.textContent = "Rick está pensando...";
+  stockfish.postMessage('position fen ' + chess.fen());
+  stockfish.postMessage('go depth 15');
+  stockfish.onmessage = function(e) {
+    let line = e.data;
+    if(line.startsWith('bestmove')) {
+      let move = line.split(' ')[1];
+      if(move==='(none)') return endGame("¡Victoria cuántica! La máquina se rinde.");
+      chess.move({from:move.slice(0,2),to:move.slice(2,4),promotion:'q'});
+      render();
+      glitchBoard();
+      showQuote(false);
+      if(chess.in_checkmate()) return endGame("Rick & Morty pierden... ¡Jaquemate interdimensional!");
+      if(chess.in_draw()) return endGame("¡Tablas! ¿Demasiada entropía?");
+    }
+  }
+}
+
+function flashEffect() {
+  boardDiv.classList.add('flash');
+  setTimeout(()=>boardDiv.classList.remove('flash'), 350);
+}
+function glitchBoard() {
+  document.querySelectorAll('.sq').forEach(sq=>{
+    if(Math.random()<0.15) {
+      sq.classList.add('flash');
+      setTimeout(()=>sq.classList.remove('flash'),200+Math.random()*400);
+    }
+  });
+}
+function showQuote(isUser) {
+  let q = isUser ? RickQuotes : MortyQuotes;
+  commentDiv.textContent = q[Math.floor(Math.random()*q.length)];
+}
+function endGame(msg) {
+  commentDiv.innerHTML = `<span style="color:#f0f;">${msg}</span>`;
+}
+document.getElementById('restart').onclick = ()=>{chess=new Chess();render();commentDiv.textContent="Rick & Morty vs IA Interdimensional";};
+render();
+commentDiv.textContent = "Rick & Morty vs IA Interdimensional";
   </script>
+  <div id="chess-container">
+  <div id="comment"></div>
+  <div id="board"></div>
+  <button id="restart">Reiniciar</button>
+</div>
+
 </body>
 </html>
 
