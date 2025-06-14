@@ -395,7 +395,7 @@
             text-align: center;
             opacity: 1;
             animation: fadeOut 2s forwards;
-            animation-delay: 15s;
+            animation-delay: 12s;
             overflow: hidden;
         }
 
@@ -409,9 +409,9 @@
         }
 
         .intro-text:nth-child(1) { animation: fadeInUp 2s forwards; }
-        .intro-text:nth-child(2) { animation: fadeInUp 2s forwards; animation-delay: 3s; }
-        .intro-text:nth-child(3) { animation: fadeInUp 2s forwards; animation-delay: 6s; }
-        .intro-text:nth-child(4) { animation: fadeInUp 2s forwards; animation-delay: 9s; }
+        .intro-text:nth-child(2) { animation: fadeInUp 2s forwards; animation-delay: 2s; }
+        .intro-text:nth-child(3) { animation: fadeInUp 2s forwards; animation-delay: 4s; }
+        .intro-text:nth-child(4) { animation: fadeInUp 2s forwards; animation-delay: 6s; }
         .intro-text::before {
             content: '';
             position: absolute;
@@ -419,8 +419,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0,255,0,0.2), transparent);
-            animation: scanline 2s linear infinite;
+            background: linear-gradient(90deg, transparent, rgba(0,255,0,0.4), transparent);
+            animation: scanline 1s linear infinite;
         }
 
         @@keyframes fadeInUp {
@@ -432,58 +432,46 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @@keyframes scanline {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
         .intro-text h2 {
             font-size: 2.5em;
             margin-bottom: 0.5em;
             position: relative;
             display: inline-block;
-        }
-
-        @@keyframes fadeOut {
-            to { opacity: 0; visibility: hidden; }
-        .intro-text h2::before,
-        .intro-text h2::after {
-            content: attr(data-text);
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.8;
-        }
-
-        .intro-text h2::before {
-            animation: glitch-1 0.5s infinite;
-            color: #ff0000;
-            clip: rect(24px, 550px, 90px, 0);
-        }
-
-        .intro-text h2::after {
-            animation: glitch-2 0.7s infinite;
-            color: #0000ff;
-            clip: rect(85px, 550px, 140px, 0);
+            text-shadow: 0 0 15px var(--neon-green),
+                         0 0 30px var(--neon-green),
+                         0 0 45px var(--neon-green);
         }
 
         .intro-text p {
-            font-size: 1.2em;
             margin: 0.8em 0;
-            opacity: 0.9;
+            text-shadow: 0 0 8px var(--neon-green);
         }
 
-        .intro-text:nth-child(1) { 
-            animation: fadeInUp 2s forwards, glitchText 0.3s infinite; 
+        .warning {
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00,
+                         0 0 20px #ffff00;
+            animation: pulse 1s infinite;
         }
-        .intro-text:nth-child(2) { 
-            animation: fadeInUp 2s forwards, glitchText 0.3s infinite; 
-            animation-delay: 3s; 
+
+        .danger {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000,
+                         0 0 20px #ff0000;
+            animation: pulse 0.5s infinite;
         }
-        .intro-text:nth-child(3) { 
-            animation: fadeInUp 2s forwards, glitchText 0.3s infinite; 
-            animation-delay: 6s; 
-        }
-        .intro-text:nth-child(4) { 
-            animation: fadeInUp 2s forwards, glitchText 0.3s infinite; 
-            animation-delay: 9s; 
+
+        @@keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         .binary-overlay {
@@ -501,11 +489,6 @@
         @@keyframes binaryFade {
             0%, 100% { opacity: 0.1; }
             50% { opacity: 0.2; }
-        }
-
-        @@keyframes scanline {
-            0% { left: -100%; }
-            100% { left: 200%; }
         }
 
         @@keyframes glitchText {
@@ -658,14 +641,43 @@
         .intro-text p {
             margin: 0.8em 0;
         }
+
+        @@keyframes victory-flash {
+            0%, 100% { background: transparent; }
+            50% { background: rgba(0, 255, 0, 0.1); }
+        }
+        
+        @@keyframes error-shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        @@keyframes victory-portal {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @@keyframes distortion {
+            0% { transform: scale(1); filter: blur(0); }
+            50% { transform: scale(1.1); filter: blur(2px); }
+            100% { transform: scale(1); filter: blur(0); }
+        }
+        
+        .victory-flash {
+            animation: victory-flash 1s;
+        }
+        
+        .error-shake {
+            animation: error-shake 0.5s;
+        }
     </style>
 </head>
 <body>
 <canvas id="balatro-bg"></canvas>
 
     <canvas class="binary-rain" id="binaryRain"></canvas>
-    <audio id="audio7" src="~/img/audio7.mp3" preload="auto"></audio>
-    <img id="rick-gif" src="~/img/rickgif.gif" alt="Rick hablando" />
 
     <div class="glitch-container">
         <h1 id="titulo-room2" class="glitch-text" data-text="Room 2: Parche Binario"></h1>
@@ -715,8 +727,6 @@
             <p class="warning">Colapso total estimado en: T-MINUS 10:00</p>
         </div>
         <div class="intro-text">
-            <p>Rick: M-morty, *burp* el hacker está usando el código binario para manipular el tiempo</p>
-            <p>Morty: Oh jeez Rick, ¿qué tengo que hacer?</p>
             <h2 data-text="[TRANSMISIÓN ENTRANTE]">[TRANSMISIÓN ENTRANTE]</h2>
             <p>Rick: M-morty, *burp* esto es malo... muy malo...</p>
             <p>Rick: El framework temporal se está desgarrando</p>
@@ -807,13 +817,10 @@
 
         // DOM Elements
         const elements = {
-            tablero: document.getElementById("tablero"),
-            mensaje: document.getElementById("mensaje"),
-            audio: document.getElementById("audio7"),
-            gif: document.getElementById("rick-gif"),
-            titulo: document.getElementById("titulo-room2"),
-            input: document.getElementById("respuesta"),
-            rickPistas: document.getElementById("rick-pistas")
+            tablero: document.getElementById('tablero'),
+            input: document.getElementById('respuesta'),
+            mensaje: document.getElementById('mensaje'),
+            rickPistas: document.getElementById('rick-pistas')
         };
 
         // Inicializar tablero con efectos mejorados
@@ -899,110 +906,169 @@
         // Sistema de verificación mejorado
         function verificar() {
             const input = elements.input.value.trim();
-            const valorDecimal = parseInt(gameState.binarioFijo, 2); // 479
+            const valorDecimal = 479; // Valor fijo para asegurar la comparación
 
             if (gameState.completed) return;
 
             showGlitch(500);
             gameState.intentos++;
 
+            console.log('Input:', input, 'Expected:', valorDecimal, 'Type:', typeof input, typeof valorDecimal);
+
             if (input === valorDecimal.toString()) {
+                console.log('¡Respuesta correcta!');
                 gameState.completed = true;
                 
-                // Efectos de victoria
+                // Efectos de victoria mejorados
                 elements.mensaje.innerHTML = `
-                    <span style="color: #00ff00; font-size: 1.2em;">
+                    <span style="color: #00ff00; font-size: 1.2em; text-shadow: 0 0 10px #00ff00;">
                         ✔️ ¡Perfecto Morty! Decodificaste el parche.
                     </span>`;
                 elements.mensaje.classList.add('show');
                 
-                // Activar portal grande
+                // Efectos visuales de victoria
+                document.body.classList.add('victory-flash');
+                setTimeout(() => document.body.classList.remove('victory-flash'), 1000);
+
+                // Crear explosión de partículas
+                for (let i = 0; i < 50; i++) {
+                    createVictoryParticle();
+                }
+
+                // Activar portal grande con efectos mejorados
                 const portalFinal = document.createElement('div');
                 portalFinal.className = 'portal-container';
                 portalFinal.style.left = '50%';
                 portalFinal.style.top = '50%';
                 portalFinal.style.transform = 'translate(-50%, -50%)';
+                portalFinal.style.zIndex = '9999';
                 
                 const innerPortalFinal = document.createElement('div');
                 innerPortalFinal.className = 'portal';
                 innerPortalFinal.style.width = '300px';
                 innerPortalFinal.style.height = '300px';
+                innerPortalFinal.style.animation = 'portalPulse 1s infinite, victoryPortal 2s forwards';
                 
                 portalFinal.appendChild(innerPortalFinal);
                 document.body.appendChild(portalFinal);
-                
-                // Efectos adicionales
-                showVictoryEffects();
-                
-                // Redirección
-                setTimeout(() => {
-                    window.location.href = "/Home/Room3";
-                }, 3000);
+
+                // Sonido de victoria
+                const victorySound = new Audio('/sounds/victory.mp3');
+                victorySound.volume = 0.5;
+                victorySound.play().catch(() => {});
+
+                // Marcar Room2 como completada y redireccionar
+                fetch('/Home/CompleteRoom/2', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Room2 completed:', data);
+                    // Forzar la redirección después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room3";
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Error completing room:', error);
+                    // Intentar redirección de todos modos después de 3 segundos
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room3";
+                    }, 3000);
+                });
             } else {
-                // Efectos de error
+                // Efectos de error mejorados
                 elements.mensaje.innerHTML = `
-                    <span style="color: #ff0000;">
+                    <span style="color: #ff0000; text-shadow: 0 0 10px #ff0000;">
                         ❌ Nah Morty... ese número no desbloquea nada.
                         ${gameState.intentos >= gameState.maxIntentos ? 
                           '<br>Tal vez deberías revisar la consola...' : ''}
                     </span>`;
                 elements.mensaje.classList.add('show');
                 
-                showErrorEffects();
+                // Efectos visuales de error
+                document.body.classList.add('error-shake');
+                setTimeout(() => document.body.classList.remove('error-shake'), 500);
+
+                // Crear distorsión de pantalla
+                createScreenDistortion();
+
+                // Sonido de error
+                const errorSound = new Audio('/sounds/error.mp3');
+                errorSound.volume = 0.3;
+                errorSound.play().catch(() => {});
             }
         }
 
-        // Efectos de victoria
-        function showVictoryEffects() {
-            // Lluvia de números binarios
-            for (let i = 0; i < 20; i++) {
-                setTimeout(() => {
-                    const num = document.createElement('div');
-                    num.style.position = 'fixed';
-                    num.style.color = '#00ff00';
-                    num.style.top = '-20px';
-                    num.style.left = Math.random() * window.innerWidth + 'px';
-                    num.style.fontSize = '20px';
-                    num.style.zIndex = '1000';
-                    num.innerText = Math.random() > 0.5 ? '1' : '0';
-                    
-                    document.body.appendChild(num);
-                    
-                    let pos = -20;
-                    const fall = setInterval(() => {
-                        pos += 2;
-                        num.style.top = pos + 'px';
-                        
-                        if (pos > window.innerHeight) {
-                            clearInterval(fall);
-                            num.remove();
-                        }
-                    }, 10);
-                }, i * 100);
+        // Nuevas funciones para efectos visuales
+        function createVictoryParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'victory-particle';
+            particle.style.cssText = `
+                position: fixed;
+                width: 10px;
+                height: 10px;
+                background: #00ff00;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                box-shadow: 0 0 10px #00ff00;
+            `;
+            
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 2 + Math.random() * 3;
+            const distance = 100 + Math.random() * 200;
+            
+            let posX = 0;
+            let posY = 0;
+            let opacity = 1;
+            
+            function animate() {
+                posX += Math.cos(angle) * velocity;
+                posY += Math.sin(angle) * velocity;
+                opacity -= 0.02;
+                
+                particle.style.transform = `translate(calc(-50% + ${posX}px), calc(-50% + ${posY}px))`;
+                particle.style.opacity = opacity;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    particle.remove();
+                }
             }
             
-            // Sonido de victoria
-            const victorySound = new Audio('/sounds/victory.mp3');
-            victorySound.volume = 0.5;
-            victorySound.play().catch(() => {});
+            requestAnimationFrame(animate);
         }
 
-        // Efectos de error
-        function showErrorEffects() {
-            // Shake effect
-            elements.tablero.style.animation = 'none';
-            elements.tablero.offsetHeight;
-            elements.tablero.style.animation = 'shake 0.5s';
+        function createScreenDistortion() {
+            const distortion = document.createElement('div');
+            distortion.className = 'screen-distortion';
+            distortion.style.cssText = `
+                position: fixed;
+                inset: 0;
+                background: rgba(255, 0, 0, 0.1);
+                pointer-events: none;
+                z-index: 9998;
+                animation: distortion 0.5s forwards;
+            `;
             
-            // Glitch effect
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => showGlitch(100), i * 100);
-            }
+            document.body.appendChild(distortion);
             
-            // Error sound
-            const errorSound = new Audio('/sounds/error.mp3');
-            errorSound.volume = 0.3;
-            errorSound.play().catch(() => {});
+            setTimeout(() => distortion.remove(), 500);
         }
 
         // Enhanced Rick's hints
@@ -1141,11 +1207,18 @@
             showNextHint();
             setInterval(drawBinaryRain, 33);
             setInterval(createPortal, 3000);
+            
             // Ocultar la intro después de la animación
             setTimeout(() => {
                 const intro = document.querySelector('.intro-sequence');
-                if (intro) intro.style.display = 'none';
-            }, 17000); // 15s delay + 2s fade
+                if (intro) {
+                    intro.style.opacity = '0';
+                    intro.style.transition = 'opacity 2s ease-out';
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                    }, 2000);
+                }
+            }, 12000); // 12s delay + 2s fade
         });
 
         // Responsive handling
@@ -1158,13 +1231,8 @@
         const musicTracks = [
             '/img/yuugensong.mp3',
             '/img/nightcall.mp3',
-            '/img/pokerface.mp3',
-            '/img/audio1.mp3',
-            '/img/audio2.mp3',
-            '/img/audio3.mp3',
-            '/img/audio4.mp3',
-            '/img/audio5.mp3',
-            '/img/audio7.mp3'
+            '/img/pokerface.mp3'
+            
         ];
 
         let currentTrack = 0;
