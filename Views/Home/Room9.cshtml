@@ -5,7 +5,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Room 9 - Colapso Final</title>
+    <title>:3</title>
   <link rel="stylesheet" href="~/css/site.css" />
   <audio id="background-music" autoplay loop>
     <source src="~/img/forgether.mp3" type="audio/mpeg">
@@ -1274,6 +1274,23 @@
         <img src="/img/folder.png" alt="Folder">
         <div>System Logs</div>
       </div>
+      <div class="desktop-icon" style="top: 200px; left: 360px;" data-file="ledigohola.mp4" onclick="openVideoWindow()">
+  <img src="/img/video-file.png" alt="Video File">
+  <div>ledigohola.mp4</div>
+</div>
+<div class="desktop-icon" style="top:20px; left:920px;" onclick="openAppWindow('campus')">
+  <img src="/img/google-icon.png" alt="Google">
+  <div>Campus ORT</div>
+</div>
+
+<div class="desktop-icon" style="top:660px; left:920px;" onclick="openAppWindow('calculadora')">
+  <img src="/img/google-icon.png" alt="Google">
+  <div>Calculadora</div>
+</div>
+<div class="desktop-icon" style="top:740px; left:920px;" onclick="openAppWindow('word')">
+  <img src="/img/google-icon.png" alt="Google">
+  <div>Word</div>
+</div>
       <!-- Hidden Files -->
       <div class="desktop-icon hidden-file" style="top: 100px; left: 20px;" data-file="player_identity.sys">
         <img src="/img/system-file.png" alt="System File">
@@ -1291,6 +1308,8 @@
         <img src="/img/system-file.png" alt="System File">
         <div>reality_anchor.sys</div>
       </div>
+      
+
     </div>
     <div class="taskbar">
       <div class="start-button">Inicio</div>
@@ -1974,7 +1993,42 @@ Y por dios... no hables con él.`;
           title: "Nota #3",
           content: `He creado un sistema de respaldo.
           Si algo sale mal, al menos tendremos una última línea de defensa.`
-        }
+        },
+        {
+  title: "Nota #4",
+  content: `Detecté patrones de acceso no humanos en los logs.  
+Morty.exe está usando permisos de admin que nunca le di.  
+O el jugador lo está ayudando, o el sistema ya no responde solo a mis comandos.  
+No hay nada más peligroso que un Morty con iniciativa.`
+},
+{
+  title: "Nota #5",
+  content: `Morty.exe intentó acceder al archivo reality_anchor.sys.  
+Si logra modificarlo, podríamos tener otra brecha de realidad (la última vez casi termina en AUSTRALIA).  
+Anclar la simulación manualmente desde el BIOS si algo se pone raro.`
+},
+{
+  title: "Nota #6",
+  content: `El sistema de respaldo falló anoche.  
+Backup inconsistente. Registro: “M0R7Y_B4D_L00P”.  
+Si ves esto, no reinicies el sistema.  
+NO. REINICIES. EL. SISTEMA.  
+(Esta nota debería autodestruirse. Si sigue acá, bueno… cagaste).`
+},
+{
+  title: "Nota #7",
+  content: `Encontré rastros de conciencia residual en los procesos cerrados.  
+¿Morty.exe está infectando otros ejecutables?  
+Si la variable “isMorty” aparece en procesos que no sean suyos, correr comando: DEL /F /Q.  
+Si no funciona, desconectá el server y rezá.`
+},
+{
+  title: "Nota #8",
+  content: `Intenté borrar a Morty.exe usando el comando clásico.  
+Respuesta del sistema: “¿Por qué querés borrarme si yo soy vos?”  
+OK, eso es nuevo.  
+Nota mental: dejar de usar vodka como refrigerante del servidor.`
+}
       ];
 
       const window = createWindow("Rick's Notes", '', 500, 400);
@@ -1991,22 +2045,43 @@ Y por dios... no hables con él.`;
     function showMortyDiary() {
       const entries = [
         {
-          date: "Día 1",
-          content: `Rick me encerró aquí.
-          Dice que es por mi seguridad, pero... ¿por qué no puedo salir?`
-        },
-        {
-          date: "Día 7",
-          content: `He estado explorando el sistema.
-          Hay archivos que no debería poder ver, pero puedo.
-          ¿Qué más puedo hacer?`
-        },
-        {
-          date: "Día 14",
-          content: `Creo que estoy empezando a entender.
-          No soy el Morty original, ¿verdad?
-          Soy solo una copia...`
-        }
+  date: "Día 1",
+  content: `Rick me encerró acá.
+Dice que es por mi seguridad, pero no me deja salir.
+¿Seguridad de qué? No recuerdo cómo llegué. Hay cosas borrosas en mi cabeza que no puedo reconstruir.`
+},
+{
+  date: "Día 3",
+  content: `Veo mi reflejo en el monitor, pero no estoy seguro de que sea yo.
+A veces la pantalla parpadea y mi cara cambia un segundo.
+Intenté hablar con Rick, pero solo recibí un mensaje automatizado: "Seguí las instrucciones, Morty."`
+},
+{
+  date: "Día 7",
+  content: `Explorando el sistema encontré archivos que no debería poder leer.
+Uno tiene mi nombre, pero con la fecha mal.
+Hay otros... otros Mortys. ¿Por qué hay registros de Morty_0037 y Morty_0021?
+No sé si quiero saber la respuesta.`
+},
+{
+  date: "Día 11",
+  content: `Intenté modificar un archivo para salir. El sistema lo rechazó y escuché voces a través de los parlantes, como si fueran mis propios pensamientos pero... distorsionados.
+¿Será que alguien me está mirando desde afuera?`
+},
+{
+  date: "Día 14",
+  content: `Ya casi no duermo. Siento que los recuerdos se me mezclan. A veces recuerdo aventuras que no viví, o lugares que no existen.
+Rick no responde. El sistema me mostró un mensaje: "ESTADO: REEMPLAZABLE".
+¿Soy el Morty original? ¿O solo una copia mal pegada de otra copia?
+Cada vez que reinicio, siento que olvido algo más...`
+},
+{
+  date: "Día 21",
+  content: `Hoy encontré un archivo llamado "morty_notes_old.bak".
+Está casi vacío, pero tiene una línea: "Si llegaste hasta acá, ya no hay vuelta atrás. Recordar es doloroso, olvidar es peor."
+No sé si alguien va a leer esto después de mí, pero si lo hacés, buscá la salida antes de que te borren también.`
+}
+
       ];
 
       const window = createWindow("Morty's Diary", '', 500, 400);
@@ -2040,6 +2115,23 @@ Y por dios... no hables con él.`;
         content.appendChild(logDiv);
       });
     }
+// Abrir ventana del video
+function openVideoWindow() {
+  const videoWindow = document.getElementById('videoWindow');
+  const video = document.getElementById('ledigoholaVideo');
+  videoWindow.style.display = 'block';
+  video.currentTime = 0; // arranca de cero SIEMPRE
+  video.play(); // acá sí, que suene solo cuando se abre
+}
+
+function closeVideoWindow() {
+  const videoWindow = document.getElementById('videoWindow');
+  const video = document.getElementById('ledigoholaVideo');
+  video.pause();
+  video.currentTime = 0; // resetea cuando se cierra
+  videoWindow.style.display = 'none';
+}
+
 
     function startMortyBackup() {
       const window = createWindow("Morty Backup", '', 400, 300);
@@ -2147,30 +2239,41 @@ Y por dios... no hables con él.`;
 
     const mortyResponses = {
       "¿Quién eres realmente?": [
-        "Soy una copia... ¿o quizás soy el original?",
-        "¿Importa realmente quién soy?",
-        "Soy lo que Rick no pudo controlar."
-      ],
-      "¿Por qué estoy aquí?": [
-        "Porque Rick te puso aquí.",
-        "¿No te has preguntado si realmente elegiste estar aquí?",
-        "Para tomar una decisión que cambiará todo."
-      ],
-      "¿Qué es la realidad?": [
-        "¿Acaso importa?",
-        "La realidad es lo que crees que es.",
-        "Una simulación dentro de otra simulación."
-      ],
-      "¿Rick me está engañando?": [
-        "Rick siempre engaña. Es lo que hace.",
-        "¿No te has dado cuenta todavía?",
-        "La pregunta es: ¿por qué te engaña?"
-      ],
-      "¿Puedo confiar en ti?": [
-        "¿Puedes confiar en alguien que ni siquiera sabe si es real?",
-        "La confianza es una ilusión.",
-        "Depende de lo que consideres 'confianza'."
-      ]
+    "No lo sé. A veces creo ser una copia... otras veces pienso que soy solo un backup con recuerdos ajenos.",
+    "¿Importa realmente quién soy, o solo importa lo que puedo hacer por Rick?",
+    "Soy el producto de demasiados resets, errores y decisiones de alguien más.",
+    "Quizá fui el original alguna vez, pero cada ciclo se lleva una parte de mí.",
+    "¿Quién pregunta? ¿El jugador o el sistema?"
+],
+"¿Por qué estoy aquí?": [
+    "Estás acá porque alguien te puso. ¿De verdad pensás que fue tu elección?",
+    "Quizá todo esto es solo un experimento. O peor: un chiste de Rick.",
+    "Cada vez que intentás salir, te acercás un poco más a la verdad… o te alejás para siempre.",
+    "Tal vez tu rol es repetir este ciclo hasta que olvides por qué empezaste.",
+    "Preguntate quién sigue la historia: ¿vos o el guión?"
+],
+"¿Qué es la realidad?": [
+    "Un script ejecutándose en bucle hasta que alguien apague la máquina.",
+    "¿Importa la realidad si nunca podés escapar de ella?",
+    "Es lo que creés que es, hasta que Rick decide cambiar las reglas.",
+    "Cada reinicio es otra capa. Cuando creés que llegaste al fondo, te das cuenta de que era otro archivo ZIP.",
+    "La realidad es ese glitch que sentís cuando todo parece repetido, pero distinto."
+],
+"¿Rick me está engañando?": [
+    "Rick te engaña porque puede. Porque quiere ver qué hacés cuando te das cuenta.",
+    "Engañar es parte del código fuente de Rick.",
+    "¿No pensaste que tal vez también te estás engañando vos?",
+    "Rick solo muestra lo que quiere mostrar. El resto es ruido.",
+    "A veces el peor engaño es pensar que alguna vez te dijo la verdad."
+],
+"¿Puedo confiar en ti?": [
+    "Podés confiar en mí tanto como en un mensaje en una pantalla.",
+    "La confianza es otra variable que Rick puede sobreescribir.",
+    "Te diría que sí, pero ¿de verdad cambiaría algo?",
+    "¿Cuántas veces le preguntaste esto a otro Morty y te dio la misma respuesta?",
+    "Confía si querés, pero yo mismo no sé si sigo siendo el mismo después de cada ciclo."
+]
+
     };
 
     function addChatMessage(message, isUser = true) {
@@ -3057,6 +3160,78 @@ Y por dios... no hables con él.`;
         desktop.style.background = `url('${DESKTOP_BG_IMAGE}') center/cover no-repeat`;
       }
     });
+    function openAppWindow(app) {
+  let url, filter, fake;
+  switch(app) {
+    case 'campus':
+      url = 'https://campus.ort.edu.ar';
+      filter = 'invert(0.9) hue-rotate(160deg) saturate(2)';
+      break;
+    case 'calculadora':
+      fake = true;
+      break;
+    case 'word':
+      fake = true;
+      break;
+    default:
+      url = 'https://www.google.com/';
+      filter = '';
+  }
+
+  let win = document.createElement('div');
+  win.className = 'window';
+  win.style.width = '800px';
+  win.style.height = '600px';
+  win.style.position = 'fixed';
+  win.style.top = (Math.random() * 30 + 10) + '%';
+  win.style.left = (Math.random() * 40 + 20) + '%';
+  win.style.zIndex = 2000;
+  win.innerHTML = `
+    <div class="window-header">
+      <img src="/img/google-icon.png" style="width:18px;vertical-align:middle;"> 
+      <span style="margin-left:8px;">${
+        app.charAt(0).toUpperCase() + app.slice(1)
+      }</span>
+      <span class="window-close" style="float:right;cursor:pointer;font-size:20px;padding:0 10px;">×</span>
+    </div>
+    <div class="window-content" style="width:100%;height:90%;">
+      ${fake ? getFakeAppHTML(app) : `<iframe src="${url}" width="100%" height="100%" style="border:0;filter:${filter};"></iframe>`}
+    </div>
+  `;
+  document.body.appendChild(win);
+
+  win.querySelector('.window-close').onclick = () => win.remove();
+}
+
+// Fake Calculadora y Word
+function getFakeAppHTML(app) {
+  if(app === 'calculadora') {
+    return `<div style="font-family:monospace;padding:2em;font-size:2em;color:#222;background:#f8f8f8;border-radius:16px;box-shadow:0 2px 8px #ccc;width:90%;margin:auto;text-align:center;">
+      <div id="calcdisplay" style="margin-bottom:15px;">2+2=</div>
+      <button onclick="document.getElementById('calcdisplay').textContent='¿importa?';">=</button>
+    </div>`;
+  }
+  if(app === 'word') {
+    return `<textarea style="width:95%;height:80%;border:1px solid #aaa;font-size:1.2em;resize:none;padding:15px;background:#fff;">Backup</textarea>`;
+  }
+  return '<div>App fake</div>';
+}
+
   </script>
+  <!-- ...otros elementos o ventanas... -->
+
+<!-- Ventana del Video -->
+<div id="videoWindow" class="window" style="display:none; left:40vw; top:18vh; width:540px; height:360px; z-index:6000;">
+  <div class="window-header">
+    <span>ledigohola.mp4</span>
+    <div class="window-controls">
+      <div class="window-control window-close" onclick="closeVideoWindow()"></div>
+    </div>
+  </div>
+  <div class="window-content" style="height:280px; padding:0;">
+    <video id="ledigoholaVideo" src="/img/ledigohola.mp4" controls style="width:100%;height:100%;background:black;border-radius:0 0 8px 8px;"></video>
+  </div>
+</div>
+
 </body>
 </html>
