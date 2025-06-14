@@ -26,7 +26,76 @@ Reemplazar
 Añadir  
 Serializar  
 Terminar
-```
+
+# Room9 - Epic Endings
+
+## Overview
+Room9 features three epic, animated, and narrative endings that provide unique experiences while preserving the original intro sequence.
+
+## Endings
+
+### 1. ELIMINAR DEFINITIVAMENTE
+- Triggered by clicking the "Eliminar" button
+- Features:
+  - Screen flash and glitch effects
+  - Taskbar distortion
+  - Icon explosion animation
+  - Blue Screen of Death (BSOD) with scrambled text
+  - Ghost icon with floating animation
+  - Final message with typewriter effect
+
+### 2. UNIRME A MORTY
+- Triggered by clicking the "Unirme a Morty" button
+- Features:
+  - Screen vibration effect
+  - Icon mutation with random Morty-related names
+  - Glitched campus frame
+  - Overlay messages with scramble effect
+  - Taskbar corruption
+  - MORTY OS clock display
+
+### 3. REINICIAR TODO
+- Triggered by clicking the "Reiniciar" button
+- Features:
+  - White flash and static noise
+  - Random icon positions and rotations
+  - Blinking REPEAT.lnk icon
+  - Progressive glitch effects
+  - Empty classroom background
+  - Final console message
+
+## Easter Eggs
+- Press Ctrl+Alt+R and enter "rickandmorty" to trigger a secret ending
+- Repeating endings will create additional creepy files
+- Choosing "Unirme a Morty" and then restarting will maintain corruption
+
+## Technical Details
+- All endings use existing visual and sound resources
+- Animations include:
+  - Fade effects
+  - Glitches
+  - Flashes
+  - Screen vibrations
+  - Text scrambling
+  - Typewriter effects
+- Each ending requires user interaction
+- Original intro sequence remains untouched
+
+## Assets
+Required assets in wwwroot:
+- /img/endings/
+  - ghost_of_you.png
+  - repeat.png
+  - empty-classroom.jpg
+  - campus.png
+- /sounds/
+  - fail.mp3
+  - morty_corrupt.mp3
+  - reality-break.mp3
+  - glitch.mp3
+
+## Implementation
+The endings are implemented in `wwwroot/js/endings.js` and integrated into the main game through `game.js`. All animations and effects are handled through CSS and JavaScript, with no modifications to the original intro sequence.
 
 ---
 

@@ -331,6 +331,35 @@ namespace PrimerProyecto.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult SetFinalSession(string final)
+        {
+            HttpContext.Session.SetString("Room9Passed", "1");
+            HttpContext.Session.SetString("Room9Final", final);
+            return Ok();
+        }
+
+        public IActionResult FinalEliminar()
+        {
+            var access = CheckRoomAccess(9);
+            if (access is RedirectToActionResult) return access;
+            return View();
+        }
+
+        public IActionResult FinalUnirse()
+        {
+            var access = CheckRoomAccess(9);
+            if (access is RedirectToActionResult) return access;
+            return View();
+        }
+
+        public IActionResult FinalReiniciar()
+        {
+            var access = CheckRoomAccess(9);
+            if (access is RedirectToActionResult) return access;
+            return View();
+        }
     }
 }
 

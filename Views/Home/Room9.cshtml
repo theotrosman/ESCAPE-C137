@@ -7,17 +7,44 @@
   <meta charset="UTF-8">
   <title>Room 9 - Colapso Final</title>
   <link rel="stylesheet" href="~/css/site.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/niklasf/stockfish.js/stockfish.js"></script>
-
+  <audio id="background-music" autoplay loop>
+    <source src="~/img/nightcall.mp3" type="audio/mpeg">
+  </audio>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background: black;
       overflow: hidden;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       color: #0f0;
+    }
+
+    #flash {
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+      opacity: 0;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    #console {
+      position: absolute;
+      top: 60%;
+      left: 2%;
+      width: 96%;
+      height: 35%;
+      background: rgba(0, 0, 0, 0.8);
+      color: #0f0;
+      font-size: 1.1rem;
+      overflow-y: auto;
+      padding: 10px;
+      border: 1px solid #0f0;
+      z-index: 20;
+      box-shadow: 0 0 20px #0f0, inset 0 0 10px #0f0;
+      animation: consolePulse 2s infinite;
     }
 
     #nave {
@@ -27,725 +54,3009 @@
       left: -200px;
       transform: rotate(0deg);
       z-index: 10;
-      transition: all 8s ease-in-out;
+      transition: all 23s ease-in-out;
       filter: brightness(1.2) drop-shadow(0 0 10px red);
+      animation: shipGlow 1s infinite alternate;
     }
 
     .glitch-bg {
-      position: absolute;
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100vw;
       height: 100vh;
-      background: repeating-linear-gradient(
-        0deg,
-        #000,
-        #000 2px,
-        #111 2px,
-        #111 4px
-      );
-      animation: glitchAnim 0.2s infinite;
-      opacity: 0.25;
+      background: repeating-linear-gradient(0deg, #000, #111 2px, #000 4px);
+      opacity: 0.05;
+      z-index: 5;
+      pointer-events: none;
+      animation: glitchScan 8s linear infinite;
+    }
+
+    .matrix-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(180deg, 
+        rgba(0,255,0,0) 0%,
+        rgba(0,255,0,0.2) 50%,
+        rgba(0,255,0,0) 100%);
       z-index: 1;
       pointer-events: none;
+      animation: matrixRain 20s linear infinite;
     }
 
-    .ascii-background {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      font-size: 14px;
-      color: #00ffcc;
-      opacity: 0.07;
-      z-index: 0;
-      white-space: pre;
+    .quantum-particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 2;
       pointer-events: none;
     }
 
-    .explosion {
+    #start-btn {
       position: absolute;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, red, orange, yellow, transparent);
+      bottom: 20px;
+      right: 20px;
+      background: #0f0;
+      color: black;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      display: none;
+      z-index: 1000;
+      box-shadow: 0 0 15px #0f0;
+      animation: buttonPulse 1.5s infinite;
+    }
+
+    .console-line {
+      text-shadow: 0 0 5px #0f0;
+      animation: textGlow 2s infinite alternate;
+      position: relative;
+    }
+
+    .console-line.error {
+      color: #f00;
+      text-shadow: 0 0 5px #f00;
+      animation: errorGlow 1s infinite alternate;
+    }
+
+    .console-line.alert {
+      color: #ff0;
+      text-shadow: 0 0 5px #ff0;
+      animation: alertGlow 1s infinite alternate;
+    }
+
+    .console-line.morty {
+      color: #0ff;
+      text-shadow: 0 0 5px #0ff;
+      animation: mortyGlow 1s infinite alternate;
+    }
+
+    .console-flash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 0, 0, 0.2);
+      animation: consoleFlash 0.3s ease-out;
+      pointer-events: none;
+    }
+
+    .morty-flash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 255, 255, 0.2);
+      z-index: 1000;
+      pointer-events: none;
+      animation: mortyFlash 0.5s ease-out;
+    }
+
+    @@keyframes mortyFlash {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+      100% { opacity: 0; transform: scale(1); }
+    }
+
+    @@keyframes mortyGlow {
+      0% { text-shadow: 0 0 5px #0ff; }
+      100% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
+    }
+
+    @@keyframes errorGlow {
+      0% { text-shadow: 0 0 5px #f00; }
+      100% { text-shadow: 0 0 10px #f00, 0 0 20px #f00; }
+    }
+
+    @@keyframes alertGlow {
+      0% { text-shadow: 0 0 5px #ff0; }
+      100% { text-shadow: 0 0 10px #ff0, 0 0 20px #ff0; }
+    }
+
+    @@keyframes consoleFlash {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @@keyframes consolePulse {
+      0%, 100% { box-shadow: 0 0 20px #0f0, inset 0 0 10px #0f0; }
+      50% { box-shadow: 0 0 30px #0f0, inset 0 0 20px #0f0; }
+    }
+
+    @@keyframes shipGlow {
+      0% { filter: brightness(1.2) drop-shadow(0 0 10px red); }
+      100% { filter: brightness(1.5) drop-shadow(0 0 20px red); }
+    }
+
+    @@keyframes glitchScan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    @@keyframes matrixRain {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    @@keyframes buttonPulse {
+      0%, 100% { box-shadow: 0 0 15px #0f0; }
+      50% { box-shadow: 0 0 25px #0f0; }
+    }
+
+    @@keyframes textGlow {
+      0% { text-shadow: 0 0 5px #0f0; }
+      100% { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+    }
+
+    .reality-break {
+      animation: realityBreak 0.5s infinite;
+    }
+
+    @@keyframes realityBreak {
+      0% { transform: translate(0, 0); }
+      25% { transform: translate(-5px, 5px); }
+      50% { transform: translate(5px, -5px); }
+      75% { transform: translate(-5px, -5px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    /* Morty.exe Game Styles */
+    #morty-game {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #245edc;
+      z-index: 2000;
+      font-family: 'Tahoma', sans-serif;
+    }
+
+    .desktop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #245edc, #1e4cb3);
+      padding: 20px;
+      transition: background 5s;
+    }
+
+    .desktop.corrupted {
+      background: linear-gradient(45deg, #dc2424, #b31e1e);
+    }
+
+    .desktop-icon {
+      position: absolute;
+      width: 60px;
+      text-align: center;
+      color: white;
+      text-shadow: 1px 1px 1px black;
+      cursor: url('/img/cursor-xp.png'), auto;
+      user-select: none;
+      transition: all 0.3s;
+    }
+
+    .desktop-icon:hover {
+      filter: brightness(1.2);
+      transform: scale(1.05);
+    }
+
+    .desktop-icon img {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 5px;
+      transition: all 0.3s;
+    }
+
+    .desktop-icon:hover img {
+      animation: iconPulse 1s infinite;
+    }
+
+    .window {
+      position: absolute;
+      background: #fff8dc;
+      border: 1px solid #d4d0c8;
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      min-width: 300px;
+      min-height: 200px;
+      transition: all 0.3s;
+      resize: both;
+      overflow: auto;
+      font-family: 'Tahoma', sans-serif;
+    }
+
+    .window-header {
+      background: linear-gradient(to right, #245edc, #3f9eff);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px 8px 0 0;
+      cursor: move;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    .window-control {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
-      animation: explode 0.6s ease-out forwards;
-      opacity: 0.8;
+      cursor: pointer;
     }
 
-    @@keyframes glitchAnim {
-      0% { transform: translate(0px, 0px); }
-      25% { transform: translate(3px, -2px); }
-      50% { transform: translate(-3px, 2px); }
-      75% { transform: translate(1px, -1px); }
-      100% { transform: translate(0px, 0px); }
+    .window-close { background: #ff5f57; }
+    .window-minimize { background: #febc2e; }
+    .window-maximize { background: #28c840; }
+
+    .window-content {
+      padding: 10px;
+      background: #fff8dc;
+      font-family: 'Tahoma', sans-serif;
     }
 
-    @@keyframes explode {
-      0% { transform: scale(0.2); opacity: 1; }
-      100% { transform: scale(3); opacity: 0; }
+    .diary-entry {
+      margin: 15px 0;
+      padding: 10px;
+      border-left: 3px solid #245edc;
+      background: #fff;
     }
 
-    .console {
+    .diary-date {
+      font-weight: bold;
+      color: #245edc;
+      margin-bottom: 5px;
+    }
+
+    .bios-screen {
+      background: #000;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+    }
+
+    .bios-option {
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .bios-toggle {
+      width: 40px;
+      height: 20px;
+      background: #333;
+      border-radius: 10px;
+      margin-right: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .bios-toggle.active {
+      background: #0f0;
+    }
+
+    .bios-toggle::after {
+      content: '';
       position: absolute;
-      bottom: 5%;
-      left: 10%;
-      width: 80%;
-      font-size: 1.2rem;
-      white-space: pre-line;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: all 0.3s;
+    }
+
+    .bios-toggle.active::after {
+      left: 22px;
+    }
+
+    .dna-puzzle {
+      display: grid;
+      grid-template-columns: repeat(20, 1fr);
+      gap: 2px;
+      padding: 10px;
+    }
+
+    .dna-cell {
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+
+    .dna-cell.active {
+      background: #0f0;
+    }
+
+    .snake-game {
+      width: 400px;
+      height: 400px;
+      background: #000;
+      position: relative;
+      border: 2px solid #0f0;
+    }
+
+    .snake-cell {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #0f0;
+      border: 1px solid #0a0;
+    }
+
+    .snake-food {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #f00;
+      border: 1px solid #a00;
+      animation: foodPulse 1s infinite;
+    }
+
+    .snake-score {
+      position: absolute;
+      top: -30px;
+      left: 0;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+    }
+
+    .blood-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 0, 0, 0.3);
+      pointer-events: none;
       opacity: 0;
-      animation: fadeIn 1s ease-in-out forwards;
-      animation-delay: 4s;
-      z-index: 20;
+      transition: opacity 0.3s;
+    }
+
+    .blood-overlay.active {
+      animation: bloodPulse 0.5s infinite;
+    }
+
+    @@keyframes bloodPulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 0.5; }
+      100% { opacity: 0.3; }
+    }
+
+    .file-content {
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      padding: 10px;
+    }
+
+    .corrupted-text {
+      animation: textCorrupt 0.5s infinite;
+    }
+
+    @@keyframes textCorrupt {
+      0% { text-shadow: 0 0 5px #f00; }
+      50% { text-shadow: 0 0 10px #0f0; }
+      100% { text-shadow: 0 0 5px #f00; }
+    }
+
+    .rick-note {
+      background: #ffeb3b;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 3px solid #fbc02d;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    .morty-note {
+      background: #e3f2fd;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 3px solid #2196f3;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    .system-log {
+      background: #000;
+      color: #0f0;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+    }
+
+    .game-controls {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .game-button {
+      padding: 5px 10px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .game-button:hover {
+      background: #45a049;
+    }
+
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: linear-gradient(to bottom, #245edc, #1e4cb3);
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
+      z-index: 1000;
+      transition: background 5s;
+    }
+
+    .taskbar.corrupted {
+      background: linear-gradient(to bottom, #dc2424, #b31e1e);
+    }
+
+    .start-button {
+      background: linear-gradient(to bottom, #4c9eff, #0058e6);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: all 0.3s;
+    }
+
+    .start-button:hover {
+      animation: buttonGlitch 0.2s steps(2, start) infinite;
+    }
+
+    .start-button.corrupted {
+      background: linear-gradient(to bottom, #ff4c4c, #e60000);
+    }
+
+    .time {
+      color: white;
+      margin-left: auto;
+      padding: 0 10px;
+      font-family: 'Tahoma', sans-serif;
+      transition: all 0.3s;
+    }
+
+    .time.corrupted {
+      animation: timeGlitch 0.2s steps(2, start) infinite;
+    }
+
+    .reality-storm {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        rgba(255, 0, 0, 0) 0%,
+        rgba(255, 0, 0, 0.1) 50%,
+        rgba(255, 0, 0, 0) 100%);
+      pointer-events: none;
+      animation: stormMove 20s linear infinite;
+    }
+
+    @@keyframes stormMove {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .morty-taskbar-icon {
+      width: 16px;
+      height: 16px;
+      margin: 0 5px;
+      animation: mortyPulse 2s infinite;
+    }
+
+    @@keyframes mortyPulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .ghost-file {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.8em;
+      animation: ghostFloat 3s infinite alternate;
+      pointer-events: none;
+    }
+
+    @@keyframes ghostFloat {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-10px) rotate(5deg); }
+    }
+
+    .system-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #0f0;
+      padding: 20px;
+      border: 1px solid #0f0;
+      z-index: 2000;
+      font-family: 'Courier New', monospace;
+      text-align: center;
+      animation: messageGlow 1s infinite alternate;
+    }
+
+    @@keyframes messageGlow {
+      0% { box-shadow: 0 0 10px #0f0; }
+      100% { box-shadow: 0 0 20px #0f0; }
+    }
+
+    .corrupted {
+      animation: corrupt 0.5s infinite;
+    }
+
+    @@keyframes corrupt {
+      0% { filter: hue-rotate(0deg) brightness(1); }
+      50% { filter: hue-rotate(180deg) brightness(1.2); }
+      100% { filter: hue-rotate(360deg) brightness(1); }
+    }
+
+    .final-decision {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border: 2px solid #f00;
+      z-index: 9999;
+      color: #fff;
+      text-align: center;
+      animation: decisionPulse 1s infinite;
+    }
+
+    .final-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .final-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .final-button:hover {
+      transform: scale(1.1);
+    }
+
+    .eliminate-button {
+      background: #dc3545;
+      color: white;
+    }
+
+    .join-button {
+      background: #28a745;
+      color: white;
+    }
+
+    .reset-button {
+      background: #6c757d;
+      color: white;
+    }
+
+    .ghost-icon {
+      animation: ghostFloat 3s infinite alternate;
+      filter: opacity(0.7);
+    }
+
+    @@keyframes decisionPulse {
+      0% { box-shadow: 0 0 10px #f00; }
+      50% { box-shadow: 0 0 20px #f00; }
+      100% { box-shadow: 0 0 10px #f00; }
+    }
+
+    .system32-glitch {
+      animation: systemGlitch 0.1s infinite;
+    }
+
+    @@keyframes systemGlitch {
+      0% { transform: translate(0); filter: hue-rotate(0deg); }
+      25% { transform: translate(-5px, 5px); filter: hue-rotate(90deg); }
+      50% { transform: translate(5px, -5px); filter: hue-rotate(180deg); }
+      75% { transform: translate(-5px, -5px); filter: hue-rotate(270deg); }
+      100% { transform: translate(0); filter: hue-rotate(360deg); }
+    }
+
+    /* Terminal Styles */
+    .terminal {
+      position: fixed;
+      bottom: 30px;
+      right: 20px;
+      width: 400px;
+      height: 300px;
+      background: rgba(0, 0, 0, 0.9);
+      border: 1px solid #0f0;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      padding: 10px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      width: 100%;
+      outline: none;
+    }
+
+    .terminal-output {
+      height: 250px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    /* Chat System */
+    .chat-window {
+      position: fixed;
+      bottom: 30px;
+      left: 20px;
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border: 1px solid #0054e3;
+      border-radius: 8px;
+      display: none;
+      z-index: 1000;
+    }
+
+    .chat-header {
+      background: linear-gradient(to right, #0058e6, #3f9eff);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 8px 8px 0 0;
+      cursor: move;
+    }
+
+    .chat-messages {
+      height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    .chat-input input {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    .chat-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 5px;
+    }
+
+    .chat-option {
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .chat-option:hover {
+      background: #e0e0e0;
+    }
+
+    /* Reality System */
+    .reality-portal {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 255, 255, 0.3);
+      border: 2px solid #0ff;
+      border-radius: 50%;
+      animation: portalPulse 2s infinite;
+      cursor: pointer;
+    }
+
+    @@keyframes portalPulse {
+      0% { transform: scale(1); opacity: 0.3; }
+      50% { transform: scale(1.2); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 0.3; }
+    }
+
+    /* Achievement System */
+    .achievement {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffd700;
+      padding: 10px;
+      border: 1px solid #ffd700;
+      border-radius: 5px;
+      display: none;
+      z-index: 2000;
+      animation: achievementSlide 0.5s ease-out;
+    }
+
+    @@keyframes achievementSlide {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    /* Easter Egg Styles */
+    .konami-code {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      z-index: 9999;
+      display: none;
+    }
+
+    .rick-roll {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 300px;
+      height: 200px;
+      background: #000;
+      z-index: 9998;
+      display: none;
+    }
+
+    .secret-message {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #0f0;
+      padding: 20px;
+      border: 1px solid #0f0;
+      z-index: 9999;
+      display: none;
+      text-align: center;
+      font-family: 'Courier New', monospace;
+    }
+
+    .hidden-file {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .hidden-file:hover {
+      opacity: 1;
+    }
+
+    .rick-roll-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Ending Styles */
+    .ending-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 3000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-family: 'Tahoma', sans-serif;
+    }
+
+    .ending-1 {
+      background: black;
+    }
+
+    .ending-1 .glitch-text {
+      font-size: 2rem;
+      color: white;
+      text-shadow: 2px 2px #ff0000;
+      animation: glitchText 0.5s infinite;
+    }
+
+    .ending-2 {
+      background: #245edc;
+    }
+
+    .morty-os {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, #245edc, #1e4cb3);
+      transition: all 0.5s;
+    }
+
+    .morty-os .icon {
+      position: absolute;
+      width: 64px;
+      height: 64px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .morty-os .icon:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .morty-os .icon img {
+      width: 48px;
+      height: 48px;
+      filter: hue-rotate(90deg);
+    }
+
+    .morty-os .icon span {
+      color: white;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .ending-3 {
+      background: #000;
+    }
+
+    .ending-3 .file {
+      position: absolute;
+      color: #0f0;
+      font-family: 'Courier New', monospace;
+      opacity: 0;
+      animation: fadeIn 2s forwards;
+    }
+
+    .ending-3 .file:nth-child(1) { top: 20%; left: 20%; animation-delay: 0s; }
+    .ending-3 .file:nth-child(2) { top: 40%; left: 60%; animation-delay: 2s; }
+    .ending-3 .file:nth-child(3) { top: 60%; left: 30%; animation-delay: 4s; }
+
+    .ort-classroom {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('/img/ort-classroom.jpg') center/cover;
+      opacity: 0;
+      transition: opacity 2s;
+    }
+
+    @@keyframes glitchText {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0); }
     }
 
     @@keyframes fadeIn {
+      from { opacity: 0; }
       to { opacity: 1; }
     }
 
-    @@keyframes naveEstela {
-      0% { filter: brightness(1.2) drop-shadow(0 0 10px #0ff) drop-shadow(0 0 30px #f0f); }
-      50% { filter: brightness(2) drop-shadow(0 0 40px #ff0) drop-shadow(0 0 80px #f00); }
-      100% { filter: brightness(1.2) drop-shadow(0 0 10px #0ff) drop-shadow(0 0 30px #f0f); }
-    }
-    @@keyframes naveGlitch {
-      0% { transform: rotate(0deg) scale(1); }
-      20% { transform: rotate(10deg) scale(1.05); }
-      40% { transform: rotate(-8deg) scale(0.98); }
-      60% { transform: rotate(12deg) scale(1.1); }
-      80% { transform: rotate(-6deg) scale(1.02); }
-      100% { transform: rotate(0deg) scale(1); }
-    }
-    .nave-epica {
-      animation: naveEstela 1.2s infinite alternate, naveGlitch 0.7s infinite alternate;
-      transition: filter 0.3s, transform 0.3s;
-    }
-    .portal-entrada {
-      position: fixed;
-      left: 50vw; top: 60vh;
-      width: 220px; height: 220px;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, #0ff, #f0f, #ff0, #0ff 100%);
-      box-shadow: 0 0 80px 40px #0ff8, 0 0 120px 80px #f0f4;
-      filter: blur(2px) brightness(1.2);
-      z-index: 100;
-      opacity: 0.7;
-      pointer-events: none;
-      animation: portalSpin 2.5s linear infinite;
-    }
-    @@keyframes portalSpin { 100% { filter: hue-rotate(360deg) blur(2px) brightness(1.2); } }
-    .console {
+    /* New App Styles */
+    .app-window {
       position: absolute;
-      bottom: 5%;
-      left: 10%;
-      width: 80%;
-      font-size: 1.2rem;
-      white-space: pre-line;
-      opacity: 0;
-      animation: fadeIn 1s ease-in-out forwards;
-      animation-delay: 2.5s;
-      z-index: 20;
-      text-shadow: 0 0 8px #0ff, 0 0 2px #fff;
-      letter-spacing: 0.5px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      overflow: hidden;
+      transition: all 0.3s;
     }
-    /*acá va el style con el estilo del ajedrez*/
-    body { background: #070710; margin:0; padding:0; min-height:100vh; }
-  #chess-container { 
-    display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; min-height: 100vh;
-  }
-  #board { 
-    display: grid; grid-template: repeat(8, 60px)/repeat(8, 60px);
-    border: 5px solid #0f0; box-shadow: 0 0 40px #0f08,0 0 120px #0ff8;
-    margin: 30px 0; position: relative;
-    background: repeating-linear-gradient(45deg,#222,#333 10px,#222 20px);
-  }
-  .sq {
-    width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; cursor: pointer; transition: box-shadow .1s;
-    position: relative;
-    transition: filter 0.2s;
-  .sq.white { background: rgba(230,255,230,0.09);}
-  .sq.black { background: rgba(15,15,30,0.7);}
-  .sq.selected, .sq.valid { box-shadow: 0 0 16px 4px #0ff6; filter: brightness(2);}
-  .sq.capture { animation: captureFlash 0.4s;}
-  @@keyframes captureFlash {
-    0% { box-shadow:0 0 30px 12px #ff03, 0 0 80px 8px #0ff3; filter: brightness(5);}
-    100% { box-shadow:none; filter: brightness(1);}
-  }
-  #comment { 
-    min-height:2em; color:#fff; text-align:center; font-family:monospace; font-size:1.3em;
-    margin:10px 0; text-shadow:0 0 8px #0ff,0 0 3px #fff;
-  }
-  #restart { 
-    background: #0f0; border:none; padding:10px 20px; font-size:1em; 
-    border-radius:9px; cursor:pointer; font-family:inherit;
-    box-shadow:0 0 15px #0f08; transition: background .2s;
-  }
-  #restart:hover { background: #fff; color: #0f0;}
-  /* Flasher/Glitch effect */
-  .flash {
-    animation: flashy .4s linear;
-  }
-  @@keyframes flashy {
-    0% { background: #fff; filter: blur(4px);}
-    100% { background: initial; filter: none;}
-  }
-  /* Glitch text */
-  .glitchy {
-    color: #0ff; text-shadow: 2px 0 #f0f, -2px 0 #0f0;
-    animation: glitchTxt 0.2s infinite alternate;
-  }
-  @@keyframes glitchTxt {
-    from { text-shadow: 2px 0 #f0f, -2px 0 #0f0;}
-    to   { text-shadow: -2px 0 #ff0, 2px 0 #00f;}
-  }
+
+    .app-header {
+      background: #245edc;
+      color: white;
+      padding: 8px;
+      font-family: 'Tahoma', sans-serif;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .app-content {
+      padding: 16px;
+      background: white;
+      color: black;
+      font-family: 'Tahoma', sans-serif;
+    }
+
+    .typing-text {
+      border-right: 2px solid black;
+      animation: typing 1s infinite;
+    }
+
+    @@keyframes typing {
+      50% { border-color: transparent; }
+    }
+
+    /* Visual Effects and Animations */
+    .glitch-open {
+      animation: glitchOpen 0.5s;
+    }
+
+    .closing {
+      animation: closing 0.3s;
+    }
+
+    .error-simulation {
+      animation: errorSimulation 2s;
+    }
+
+    .fade-out {
+      animation: fadeOut 2s forwards;
+    }
+
+    .file-icon {
+      transition: all 0.3s;
+    }
+
+    .file-icon:hover {
+      transform: scale(1.05);
+      filter: brightness(1.2);
+    }
+
+    .minigame-score {
+      transition: all 0.3s;
+    }
+
+    .minigame-score.increase {
+      animation: scoreIncrease 0.5s;
+    }
+
+    .minigame-score.decrease {
+      animation: scoreDecrease 0.5s;
+    }
+
+    .achievement-popup {
+      position: fixed;
+      right: -300px;
+      top: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      border-radius: 5px;
+      transition: right 0.5s;
+    }
+
+    .achievement-popup.show {
+      right: 20px;
+    }
+
+    @@keyframes glitchOpen {
+      0% { transform: translate(-10px, -10px); opacity: 0; }
+      25% { transform: translate(10px, 10px); opacity: 0.5; }
+      50% { transform: translate(-5px, 5px); opacity: 0.75; }
+      75% { transform: translate(5px, -5px); opacity: 0.9; }
+      100% { transform: translate(0, 0); opacity: 1; }
+    }
+
+    @@keyframes closing {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0.8); opacity: 0; }
+    }
+
+    @@keyframes errorSimulation {
+      0% { filter: none; }
+      10% { filter: hue-rotate(90deg) brightness(1.5); }
+      20% { filter: hue-rotate(180deg) brightness(0.5); }
+      30% { filter: hue-rotate(270deg) brightness(1.2); }
+      40% { filter: hue-rotate(360deg) brightness(0.8); }
+      50% { filter: hue-rotate(90deg) brightness(1.5); }
+      60% { filter: hue-rotate(180deg) brightness(0.5); }
+      70% { filter: hue-rotate(270deg) brightness(1.2); }
+      80% { filter: hue-rotate(360deg) brightness(0.8); }
+      90% { filter: hue-rotate(90deg) brightness(1.5); }
+      100% { filter: none; }
+    }
+
+    @@keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+
+    @@keyframes scoreIncrease {
+      0% { transform: scale(1); color: inherit; }
+      50% { transform: scale(1.2); color: #0f0; }
+      100% { transform: scale(1); color: inherit; }
+    }
+
+    @@keyframes scoreDecrease {
+      0% { transform: scale(1); color: inherit; }
+      50% { transform: scale(0.8); color: #f00; }
+      100% { transform: scale(1); color: inherit; }
+    }
+
+    /* XP Style Headers */
+    .xp-header {
+      background: #245edc;
+      color: white;
+      font-family: 'Tahoma', sans-serif;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Text and Log Styles */
+    .text-file, .log-file {
+      background: #ffffe0;
+      color: black;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      line-height: 1.5;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Taskbar Styles */
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: linear-gradient(to bottom, #245edc, #1e4cb3);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      z-index: 1000;
+    }
+
+    .taskbar-item {
+      color: white;
+      padding: 0 10px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .taskbar-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .taskbar-item.active {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Corrupted State Styles */
+    .corrupted {
+      animation: corruption 2s infinite;
+    }
+
+    @@keyframes corruption {
+      0% { filter: none; }
+      25% { filter: hue-rotate(90deg) brightness(1.2); }
+      50% { filter: hue-rotate(180deg) brightness(0.8); }
+      75% { filter: hue-rotate(270deg) brightness(1.2); }
+      100% { filter: none; }
+    }
   </style>
 </head>
 <body>
-
+  <div id="flash"></div>
   <div class="glitch-bg"></div>
-  <img id="nave" src="~/img/naveparachocar.png" alt="Nave en picada" />
-  <div id="nave-estela"></div>
-  <div id="portal-entrada" class="portal-entrada" style="display:none;"></div>
-  <div class="console" id="consoleText"></div>
+  <div class="matrix-rain"></div>
+  <div class="quantum-particles"></div>
+  <img id="nave" src="~/img/naveparachocar.png" alt="Nave" />
+  <div id="console"></div>
+
+  <!-- Morty.exe Game -->
+  <div id="morty-game">
+    <div class="desktop">
+      <!-- Desktop Icons -->
+      <div class="desktop-icon" style="top: 20px; left: 20px;" data-file="rick_warning.txt">
+        <img src="/img/text-file.png" alt="Text File">
+        <div>rick_warning.txt</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 100px;" data-file="open_morty.exe">
+        <img src="/img/exe-file.png" alt="EXE File">
+        <div>open_morty.exe</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 180px;" data-file="player.sys">
+        <img src="/img/system-file.png" alt="System File">
+        <div>player.sys</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 260px;" data-file="rick_logs.txt">
+        <img src="/img/text-file.png" alt="Text File">
+        <div>rick_logs.txt</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 340px;" data-file="system32.dll">
+        <img src="/img/dll-file.png" alt="DLL File">
+        <div>system32.dll</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 420px;" data-file="diario_morty.txt">
+        <img src="/img/text-file.png" alt="Text File">
+        <div>diario_morty.txt</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 500px;" data-file="system">
+        <img src="/img/folder.png" alt="Folder">
+        <div>System</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 580px;" data-file="snake_game.exe">
+        <img src="/img/game.png" alt="Game">
+        <div>snake_game.exe</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 660px;" data-file="rick_notes">
+        <img src="/img/folder.png" alt="Folder">
+        <div>Rick's Notes</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 740px;" data-file="morty_diary">
+        <img src="/img/folder.png" alt="Folder">
+        <div>Morty's Diary</div>
+      </div>
+      <div class="desktop-icon" style="top: 20px; left: 820px;" data-file="system_logs">
+        <img src="/img/folder.png" alt="Folder">
+        <div>System Logs</div>
+      </div>
+      <!-- Hidden Files -->
+      <div class="desktop-icon hidden-file" style="top: 100px; left: 20px;" data-file="player_identity.sys">
+        <img src="/img/system-file.png" alt="System File">
+        <div>player_identity.sys</div>
+      </div>
+      <div class="desktop-icon hidden-file" style="top: 100px; left: 100px;" data-file="rick_confession.log">
+        <img src="/img/log-file.png" alt="Log File">
+        <div>rick_confession.log</div>
+      </div>
+      <div class="desktop-icon hidden-file" style="top: 100px; left: 180px;" data-file="morty_backup.exe">
+        <img src="/img/exe-file.png" alt="EXE File">
+        <div>morty_backup.exe</div>
+      </div>
+      <div class="desktop-icon hidden-file" style="top: 100px; left: 260px;" data-file="reality_anchor.sys">
+        <img src="/img/system-file.png" alt="System File">
+        <div>reality_anchor.sys</div>
+      </div>
+    </div>
+    <div class="taskbar">
+      <div class="start-button">Inicio</div>
+      <img src="/img/morty-icon.png" class="morty-taskbar-icon" alt="Morty.exe">
+      <div class="time">00:00</div>
+    </div>
+    <div class="reality-storm"></div>
+  </div>
+
+  <!-- Terminal -->
+  <div class="terminal">
+    <div class="terminal-header">
+      <span>Terminal v1.0</span>
+      <span class="close-btn">×</span>
+    </div>
+    <div class="terminal-output"></div>
+    <input type="text" class="terminal-input" placeholder="Enter command...">
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-window">
+    <div class="chat-header">Chat con Morty.exe</div>
+    <div class="chat-messages"></div>
+    <div class="chat-options">
+      <div class="chat-option">¿Quién eres realmente?</div>
+      <div class="chat-option">¿Por qué estoy aquí?</div>
+      <div class="chat-option">¿Qué es la realidad?</div>
+      <div class="chat-option">¿Rick me está engañando?</div>
+      <div class="chat-option">¿Puedo confiar en ti?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" placeholder="Escribe un mensaje...">
+      <button>Enviar</button>
+    </div>
+  </div>
+
+  <!-- Achievement Popup -->
+  <div class="achievement">
+    <h3>¡Logro Desbloqueado!</h3>
+    <p class="achievement-text"></p>
+  </div>
+
+  <!-- Easter Eggs -->
+  <div class="konami-code"></div>
+  <div class="rick-roll"></div>
+
+  <!-- Secret Message -->
+  <div class="secret-message"></div>
+
+  <button id="start-btn" onclick="location.href='@Url.Action("Room9Morty", "Home")'">Continuar</button>
+
+  <div class="blood-overlay"></div>
+
+  <!-- Endings -->
+  <div id="ending1" class="ending-overlay ending-1">
+    <div class="glitch-text">Rick ha reseteado todo... pero tú ya no estás aquí.</div>
+    <audio id="failSound" src="/sounds/fail.mp3"></audio>
+  </div>
+
+  <div id="ending2" class="ending-overlay ending-2">
+    <div class="morty-os">
+      <div class="icon" style="top: 20%; left: 20%;">
+        <img src="/img/morty-icon.png" alt="Morty">
+        <span>Morty.exe</span>
+      </div>
+      <div class="icon" style="top: 20%; left: 40%;">
+        <img src="/img/campus-icon.png" alt="Campus">
+        <span>Campus ORT</span>
+      </div>
+      <div class="icon" style="top: 40%; left: 20%;">
+        <img src="/img/glitch-icon.png" alt="Glitch">
+        <span>Glitch.exe</span>
+      </div>
+    </div>
+    <audio id="mortyCorruptSound" src="/sounds/morty_corrupt.mp3"></audio>
+  </div>
+
+  <div id="ending3" class="ending-overlay ending-3">
+    <div class="file">system_corrupt.log</div>
+    <div class="file">reality_break.txt</div>
+    <div class="file">infinite_loop.sys</div>
+    <div class="ort-classroom"></div>
+    <audio id="bootLoopSound" src="/sounds/boot_loop.wav" loop></audio>
+  </div>
+
+  <!-- New Apps -->
+  <div id="mortyChat" class="app-window" style="display: none; width: 400px; height: 500px;">
+    <div class="app-header">
+      <span>Morty Chat</span>
+      <button onclick="closeWindow('mortyChat')">×</button>
+    </div>
+    <div class="app-content">
+      <div class="typing-text">Morty: Hey... ¿estás ahí?</div>
+    </div>
+  </div>
+
+  <div id="rickTerminal" class="app-window" style="display: none; width: 600px; height: 400px;">
+    <div class="app-header">
+      <span>Rick Terminal</span>
+      <button onclick="closeWindow('rickTerminal')">×</button>
+    </div>
+    <div class="app-content">
+      <div class="terminal-output"></div>
+      <input type="text" class="terminal-input" placeholder="Enter command...">
+    </div>
+  </div>
+
+  <div id="biosEditor" class="app-window" style="display: none; width: 500px; height: 400px;">
+    <div class="app-header">
+      <span>BIOS Editor</span>
+      <button onclick="closeWindow('biosEditor')">×</button>
+    </div>
+    <div class="app-content">
+      <div class="bios-settings">
+        <div class="setting">
+          <label>IA:</label>
+          <select>
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div class="setting">
+          <label>EMOTION:</label>
+          <select>
+            <option value="stable">stable</option>
+            <option value="unstable">unstable</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="memoriaOculta" class="app-window" style="display: none; width: 400px; height: 300px;">
+    <div class="app-header">
+      <span>memoria_oculta.log</span>
+      <button onclick="closeWindow('memoriaOculta')">×</button>
+    </div>
+    <div class="app-content">
+      <div class="typing-text"></div>
+    </div>
+  </div>
+
+  <div id="asciiReader" class="app-window" style="display: none; width: 500px; height: 400px;">
+    <div class="app-header">
+      <span>ASCII Reader</span>
+      <button onclick="closeWindow('asciiReader')">×</button>
+    </div>
+    <div class="app-content">
+      <textarea class="ascii-input" placeholder="Paste ASCII art here..."></textarea>
+      <div class="decoded-output"></div>
+    </div>
+  </div>
+
+  <div id="errorSimulator" class="app-window" style="display: none; width: 400px; height: 300px;">
+    <div class="app-header">
+      <span>Error Simulator</span>
+      <button onclick="closeWindow('errorSimulator')">×</button>
+    </div>
+    <div class="app-content">
+      <button onclick="simulateError()">Simulate Error</button>
+    </div>
+  </div>
 
   <script>
-    setTimeout(() => {
-      const nave = document.getElementById('nave');
-      nave.style.top = '65vh';
-      nave.style.left = '90vw';
-      nave.style.transform = 'rotate(1440deg)';
-    }, 500);
+    const nave = document.getElementById('nave');
+    const consoleDiv = document.getElementById('console');
+    const flash = document.getElementById('flash');
+    const startBtn = document.getElementById('start-btn');
+    const quantumParticles = document.querySelector('.quantum-particles');
 
-    // Explosiones aleatorias visuales
-    function spawnExplosion() {
-      const explosion = document.createElement('div');
-      explosion.className = 'explosion';
-      explosion.style.left = Math.random() * 90 + 'vw';
-      explosion.style.top = Math.random() * 80 + 'vh';
-      document.body.appendChild(explosion);
-      setTimeout(() => explosion.remove(), 800);
+    const logs = [
+      { text: "[INICIANDO SISTEMA INTERDIMENSIONAL...]", delay: 800, type: "normal" },
+      { text: "[ALERTA] Señal no reconocida desde dimensión ∞-6", delay: 600, type: "alert" },
+      { text: "[ERROR] Nave fuera de control. Rick no responde.", delay: 400, type: "error" },
+      { text: "[SISTEMA DE AUTODESTRUCCIÓN ACTIVADO - ERROR: no se puede abortar]", delay: 400, type: "error" },
+      { text: "[AVISO] ¡Brace for impact!", delay: 300, type: "normal" },
+      { text: "[...]", delay: 200, type: "normal" },
+      { text: "[COLISIÓN DETECTADA]", delay: 300, type: "error" },
+      { text: "[SISTEMA DE REPARACIÓN PARCIAL ACTIVADO]", delay: 400, type: "normal" },
+      { text: "[Rick]: 'Morty, esto no era parte del plan...'", delay: 600, type: "normal" },
+      { text: "[Rick]: 'Tenemos que ganar esta última partida o nos convertimos en polvo cuántico'", delay: 800, type: "normal" },
+      { text: "[MODO AJEDREZ ACTIVADO]", delay: 400, type: "alert" },
+      { text: "[CARGANDO MUNDO VIRTUAL...]", delay: 600, type: "normal" },
+      { text: "[ERROR] Backup de Morty detectado", delay: 400, type: "error" },
+      { text: "[ALERTA] Morty.exe está intentando acceder al sistema", delay: 300, type: "alert" },
+      { text: "[Morty.exe]: '¿Por qué siempre tengo que morir, Rick?'", delay: 500, type: "morty" },
+      { text: "[Morty.exe]: 'Hola jugador. Esta vez elijo yo.'", delay: 500, type: "morty" },
+      { text: "[Rick]: '¡NO! ¡No dejes que Morty.exe tome el control!'", delay: 400, type: "error" },
+      { text: "[SISTEMA COMPROMETIDO]", delay: 300, type: "error" },
+      { text: "[INICIANDO PROTOCOLO DE EMERGENCIA]", delay: 400, type: "alert" }
+    ];
+
+    function createQuantumParticle() {
+      const particle = document.createElement('div');
+      particle.style.position = 'absolute';
+      particle.style.width = '2px';
+      particle.style.height = '2px';
+      particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+      particle.style.borderRadius = '50%';
+      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.top = `${Math.random() * 100}vh`;
+      particle.style.boxShadow = '0 0 10px currentColor';
+      particle.style.opacity = '0.8';
+      
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 100 + Math.random() * 200;
+      const duration = 1000 + Math.random() * 2000;
+      
+      particle.animate([
+        { transform: 'translate(0, 0) scale(1)', opacity: 0.8 },
+        { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: duration,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+      }).onfinish = () => particle.remove();
+      
+      quantumParticles.appendChild(particle);
     }
-    setInterval(spawnExplosion, 900);
 
-    const textoIntro = `
-[REALIDAD INESTABLE]
-Rick: Morty, rompiste el núcleo… la nave entró en colapso dimensional...
+    function createMortyFlash() {
+      const flash = document.createElement('div');
+      flash.className = 'morty-flash';
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 500);
+    }
 
-/...\\
-//ERROR_298: MULTIVERSO DAÑADO
-#== TRANSFERENCIA FORZADA ==#
-
-> Iniciando protocolo: T.E.T.R.I.S
-> Sistema activado: Trascendencia Entre Tiempos, Realidades y Simulación
-
-Rick: Tenés que estabilizar las realidades... usando un... ¿Tetris roguelike? ¿¡Quién escribió esta mierda!?
-
-Morty: Rick, ¡las piezas tienen caras, Rick!
-
-> ATAQUE DE PARADOJAS INESTABLES DETECTADO
-> SHARD 281-B: DESINTEGRADO
-> GRAVEDAD QUÁNTICA FLUCTUANTE / REPOSICIONANDO ORIGEN
-> EMPEZANDO EN 3... 2... 1...`;
-
-    // Efecto DECRYPTED + SCRAMBLE para texto de consola
-    function efectoDecryptedScramble(texto, elemento, velocidad = 18) {
-      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()_+-=<>?[]{}|';
-      let idx = 0;
-      function revealChar() {
-        if (idx > texto.length) return;
-        let reveal = texto.slice(0, idx);
-        let scramble = '';
-        for (let j = idx; j < texto.length; j++) {
-          if (texto[j] === '\n' || texto[j] === ' ' || texto[j] === '\r') scramble += texto[j];
-          else scramble += charset[Math.floor(Math.random()*charset.length)];
+    async function typeText(element, text, type = "normal") {
+      const finalText = text;
+      element.classList.add('console-line');
+      
+      if (type === "error" || type === "alert" || type === "morty") {
+        // First show scrambled text
+        for (let i = 0; i < 20; i++) {
+          element.textContent = scrambleText(finalText);
+          await new Promise(resolve => setTimeout(resolve, 50));
         }
-        elemento.innerHTML = reveal + '<span style="opacity:0.4;">' + scramble + '</span>';
-        idx++;
-        setTimeout(revealChar, velocidad + Math.random()*18);
+        
+        // Then decrypt it
+        for (let i = 0; i <= finalText.length; i++) {
+          element.textContent = decryptText(finalText, i);
+          await new Promise(resolve => setTimeout(resolve, 50));
+        }
+
+        if (type === "error") {
+          element.classList.add('error');
+          const flash = document.createElement('div');
+          flash.className = 'console-flash';
+          element.appendChild(flash);
+        } else if (type === "alert") {
+          element.classList.add('alert');
+        } else if (type === "morty") {
+          element.classList.add('morty');
+          createMortyFlash();
+          document.body.classList.add('reality-break');
+          setTimeout(() => document.body.classList.remove('reality-break'), 500);
+        }
+      } else {
+        // Regular typing effect
+        for (let i = 0; i <= finalText.length; i++) {
+          element.textContent = finalText.substring(0, i);
+          await new Promise(resolve => setTimeout(resolve, 30));
+        }
       }
-      revealChar();
     }
 
-    // --- ANIMACIÓN ÉPICA DE NAVE Y PORTAL ---
-    function animarNaveYPortal() {
-      const nave = document.getElementById('nave');
-      const estela = document.getElementById('nave-estela');
-      const portal = document.getElementById('portal-entrada');
-      nave.classList.add('nave-epica');
-      // Estela animada
-      estela.style.position = 'absolute';
-      estela.style.left = '0';
-      estela.style.top = '0';
-      estela.style.width = '100vw';
-      estela.style.height = '100vh';
-      estela.style.pointerEvents = 'none';
-      estela.style.zIndex = 9;
-      // Partículas
-      let interval = setInterval(()=>{
-        let p = document.createElement('div');
-        p.style.position = 'fixed';
-        p.style.left = (parseFloat(nave.style.left)||0)+100 + 'px';
-        p.style.top = (parseFloat(nave.style.top)||0)+100 + 'px';
-        p.style.width = '18px';
-        p.style.height = '18px';
-        p.style.borderRadius = '50%';
-        p.style.background = 'radial-gradient(circle, #0ff 0%, #f0f 60%, transparent 100%)';
-        p.style.opacity = 0.5+Math.random()*0.3;
-        p.style.zIndex = 8;
-        document.body.appendChild(p);
-        setTimeout(()=>p.remove(), 900);
-      }, 80);
-      // Glitch y rotaciones
-      let t = 0;
-      let naveAnim = setInterval(()=>{
-        t++;
-        nave.style.top = (parseFloat(nave.style.top)||-300) + 6 + 'px';
-        nave.style.left = (parseFloat(nave.style.left)||-200) + 8 + Math.sin(t/3)*8 + 'px';
-        nave.style.transform = 'rotate('+(1440+t*8+Math.sin(t/2)*20)+'deg) scale('+(1+Math.sin(t/8)*0.04)+')';
-        if (t>60) portal.style.display = 'block';
-        if (t>90) {
-          clearInterval(naveAnim); clearInterval(interval);
-          nave.style.opacity = 0;
-          setTimeout(()=>{portal.style.opacity=0;}, 800);
+    function scrambleText(text) {
+      const chars = "!#$%^&*()_+-=[]{}|;:,.<>?";
+      let scrambled = "";
+      for (let i = 0; i < text.length; i++) {
+        if (Math.random() < 0.3) {
+          scrambled += chars[Math.floor(Math.random() * chars.length)];
+        } else {
+          scrambled += text[i];
         }
-      }, 40);
+      }
+      return scrambled;
     }
 
-    // --- TEXTO DE CONSOLA Y TRANSICIÓN AL JUEGO ---
-    setTimeout(() => {
-      const consoleText = document.getElementById('consoleText');
-      efectoDecryptedScramble(textoIntro, consoleText, 14);
-      animarNaveYPortal();
-      setTimeout(()=>{
-        // Aquí inicia el minijuego de paradoja de realidades
-        iniciarParadojaRealidades();
-      }, 8000);
-    }, 1200);
-
-    // --- JUEGO DE SELECCIÓN DE REALIDADES CAÓTICAS ---
-    // Inspirado en Balatro, Papers Please, Stanley Parable, WarioWare y Rick & Morty
-    // Modular, escalable y con hooks para assets/memes externos
-
-    // --- CONFIGURACIÓN Y ASSETS ---
-    const REALIDADES = [
-      // Ejemplo de realidades, puedes expandir con memes, imágenes, frases, etc.
-      {
-        fondo: 'linear-gradient(135deg, #0ff 0%, #f0f 100%)',
-        icono: '☢️',
-        texto: 'Texto invertido',
-        efecto: 'invert',
-        tipo: 'corrupta',
-        frase: 'Rick: ¡Morty, esa realidad es radiactiva!'
-      },
-      {
-        fondo: 'repeating-linear-gradient(45deg, #000, #000 10px, #0ff 10px, #0ff 20px)',
-        icono: '🐱',
-        texto: 'Gato con sombrero',
-        efecto: 'pixel',
-        tipo: 'buena',
-        frase: 'Morty: ¡Esa es la realidad de los gatos inteligentes!'
-      },
-      {
-        fondo: 'radial-gradient(circle, #ff0 0%, #f00 100%)',
-        icono: '🦠',
-        texto: 'Símbolo viral',
-        efecto: 'glitch',
-        tipo: 'corrupta',
-        frase: 'Rick: ¡Modo pandemia multidimensional activado!'
-      },
-      {
-        fondo: 'linear-gradient(90deg, #fff 0%, #0ff 100%)',
-        icono: '🍕',
-        texto: 'Pizza consciente',
-        efecto: 'ascii',
-        tipo: 'buena',
-        frase: 'Morty: ¡La pizza piensa, Rick!'
-      },
-      {
-        fondo: 'linear-gradient(120deg, #f0f 0%, #000 100%)',
-        icono: '👾',
-        texto: 'Texto en japonés: ピザ',
-        efecto: 'jap',
-        tipo: 'buena',
-        frase: 'Rick: ¿Por qué todo está en japonés, Morty?'
-      },
-      {
-        fondo: 'repeating-linear-gradient(60deg, #0f0, #0f0 8px, #000 8px, #000 16px)',
-        icono: '🧬',
-        texto: 'ADN corrupto',
-        efecto: 'scramble',
-        tipo: 'corrupta',
-        frase: 'Morty: ¡Eso no es ADN, Rick!'
-      },
-      // ... puedes agregar cientos más para llegar a 3000 líneas ...
-    ];
-
-    const FRASES_RICK = [
-      'Rick: ¡Morty, esa era la realidad donde los perros gobiernan!',
-      'Rick: ¿Por qué elegiste esa, Morty?',
-      'Rick: ¡Eso es peor que la C-137!',
-      'Rick: ¡Buen trabajo, Morty! (creo...)',
-      'Rick: ¡Esa realidad tiene sentido del humor!'
-    ];
-    const FRASES_MORTY = [
-      'Morty: ¡Rick, esa era la de los gatos con sombrero!',
-      'Morty: ¿Seguro que era la correcta?',
-      'Morty: ¡No entiendo nada, Rick!',
-      'Morty: ¡Esa realidad me da miedo!'
-    ];
-    const FRASES_PANDEMIA = [
-      'Rick: ¡Modo pandemia multidimensional activado!',
-      'Morty: ¡Todo se está glitcheando, Rick!',
-      'Rick: ¡Corre Morty, corre!'
-    ];
-
-    // --- ESTADO DEL JUEGO ---
-    let scoreBuenas = 0, scoreCorruptas = 0, rachaErrores = 0, pandemia = false, timer = null, tiempoRestante = 5, ronda = 0;
-    let historial = [];
-
-    // --- INICIO DEL JUEGO ---
-    function iniciarJuegoRealidades() {
-      // Limpia pantalla
-      document.body.innerHTML = `<div id='juego-realidades' style='position:fixed;inset:0;z-index:999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;'>
-        <div id='barra-timer' style='height:12px;width:60vw;background:#222;border-radius:8px;overflow:hidden;margin-bottom:24px;'><div id='timer-bar' style='height:100%;width:100%;background:linear-gradient(90deg,#0ff,#f0f);transition:width 0.2s;'></div></div>
-        <div id='pantalla-realidades' style='display:flex;gap:32px;justify-content:center;align-items:center;width:90vw;max-width:1200px;'></div>
-        <div id='comentario-rickmorty' style='margin-top:32px;color:#0ff;font-size:1.3em;text-shadow:0 0 8px #0ff,0 0 2px #fff;min-height:40px;text-align:center;'></div>
-        <div id='score' style='margin-top:18px;color:#fff;font-size:1.1em;'></div>
-      </div>`;
-      scoreBuenas = 0; scoreCorruptas = 0; rachaErrores = 0; pandemia = false; ronda = 0; historial = [];
-      siguienteRonda();
-    }
-
-    // --- GENERADOR DE REALIDADES RANDOM ---
-    function getRandomRealidad() {
-      return REALIDADES[Math.floor(Math.random()*REALIDADES.length)];
-    }
-
-    // --- RONDA PRINCIPAL ---
-    function siguienteRonda() {
-      ronda++;
-      tiempoRestante = pandemia ? 2.5 : 5;
-      let rA = getRandomRealidad();
-      let rB = getRandomRealidad();
-      while(rA === rB) rB = getRandomRealidad();
-      renderRealidades(rA, rB);
-      iniciarTimer();
-    }
-
-    // --- TIMER ---
-    function iniciarTimer() {
-      clearInterval(timer);
-      let bar = document.getElementById('timer-bar');
-      bar.style.width = '100%';
-      let t = tiempoRestante;
-      timer = setInterval(()=>{
-        t -= 0.1;
-        bar.style.width = (t/tiempoRestante*100)+"%";
-        if(t<=0) {
-          clearInterval(timer);
-          elegirRealidad(null);
+    function decryptText(text, progress) {
+      let result = "";
+      for (let i = 0; i < text.length; i++) {
+        if (i < progress) {
+          result += text[i];
+        } else {
+          result += scrambleText(text[i])[0];
         }
-      }, 100);
+      }
+      return result;
     }
 
-    // --- RENDER DE REALIDADES ---
-    function renderRealidades(rA, rB) {
-      let cont = document.getElementById('pantalla-realidades');
-      cont.innerHTML = '';
-      [rA, rB].forEach((r, idx)=>{
-        let card = document.createElement('div');
-        card.className = 'realidad-card';
-        card.style.width = '38vw';
-        card.style.height = '44vh';
-        card.style.background = r.fondo;
-        card.style.borderRadius = '22px';
-        card.style.boxShadow = '0 0 32px #0ff8, 0 0 80px #f0f4';
-        card.style.display = 'flex';
-        card.style.flexDirection = 'column';
-        card.style.alignItems = 'center';
-        card.style.justifyContent = 'center';
-        card.style.position = 'relative';
-        card.style.cursor = 'pointer';
-        card.style.transition = 'transform 0.2s, filter 0.2s';
-        card.style.overflow = 'hidden';
-        // Glitch effect
-        card.onmouseenter = ()=>{card.style.transform='scale(1.04) rotate('+(Math.random()*8-4)+'deg)';card.style.filter='hue-rotate('+(Math.random()*360)+'deg) blur(1.5px)';};
-        card.onmouseleave = ()=>{card.style.transform='';card.style.filter='';};
-        // Icono
-        let icon = document.createElement('div');
-        icon.innerText = r.icono;
-        icon.style.fontSize = '3.5em';
-        icon.style.marginBottom = '12px';
-        icon.style.textShadow = '0 0 18px #fff,0 0 2px #0ff';
-        card.appendChild(icon);
-        // Texto
-        let txt = document.createElement('div');
-        txt.innerText = r.texto;
-        txt.style.fontSize = '1.5em';
-        txt.style.color = '#fff';
-        txt.style.textShadow = '0 0 8px #0ff,0 0 2px #fff';
-        txt.style.marginBottom = '8px';
-        card.appendChild(txt);
-        // Efectos visuales
-        if(r.efecto==='invert') card.style.filter = 'invert(1)';
-        if(r.efecto==='pixel') card.style.imageRendering = 'pixelated';
-        if(r.efecto==='glitch') card.style.animation = 'shake-glitch 0.5s infinite alternate';
-        if(r.efecto==='ascii') txt.innerText = '#%&$*';
-        if(r.efecto==='jap') txt.innerText = 'ピザ';
-        if(r.efecto==='scramble') txt.innerText = scrambleText(r.texto);
-        // Overlay ascii
-        if(Math.random()<0.5) {
-          let ascii = document.createElement('div');
-          ascii.innerText = '▒░▓▓▒▒░▒▓▒░▒▓░▒░▓▓░▒▓▒░░▒░▓░▒▓▒▒▓▓░▒░▒▓▓░▒▓▒';
-          ascii.style.position = 'absolute';
-          ascii.style.top = '10%';
-          ascii.style.left = '5%';
-          ascii.style.opacity = '0.12';
-          ascii.style.fontSize = '1.2em';
-          ascii.style.pointerEvents = 'none';
-          card.appendChild(ascii);
+    async function mostrarLogs(index = 0) {
+      if (index >= logs.length) {
+        // Instead of showing the button, start the game
+        startMortyGame();
+        return;
+      }
+
+      let line = document.createElement('div');
+      consoleDiv.appendChild(line);
+      
+      await typeText(line, logs[index].text, logs[index].type);
+      consoleDiv.scrollTop = consoleDiv.scrollHeight;
+
+      if (index === 4 || index === 6) {
+        flashScreen();
+        // Create quantum burst on flash
+        for (let i = 0; i < 50; i++) {
+          setTimeout(createQuantumParticle, i * 20);
         }
-        // Click para elegir
-        card.onclick = ()=>{
-          clearInterval(timer);
-          elegirRealidad(idx);
-        };
-        cont.appendChild(card);
+      }
+
+      setTimeout(() => mostrarLogs(index + 1), logs[index].delay);
+    }
+
+    function flashScreen() {
+      flash.style.opacity = 1;
+      setTimeout(() => flash.style.opacity = 0, 150);
+    }
+
+    function lanzarNave() {
+      nave.style.top = "50vh";
+      nave.style.left = "60vw";
+      nave.style.transform = "rotate(1080deg)";
+    }
+
+    // Create initial quantum particles
+    function initQuantumParticles() {
+      for (let i = 0; i < 20; i++) {
+        setTimeout(createQuantumParticle, i * 100);
+      }
+    }
+
+    // Morty.exe Game Functions
+    function startMortyGame() {
+      // Fade out intro elements
+      const introElements = [nave, consoleDiv, flash, document.querySelector('.glitch-bg'), document.querySelector('.matrix-rain')];
+      introElements.forEach(el => {
+        if (el) {
+          el.style.transition = 'opacity 1s';
+          el.style.opacity = '0';
+        }
+      });
+
+      // Show Morty.exe game
+      setTimeout(() => {
+        document.getElementById('morty-game').style.display = 'block';
+        initMortyGame();
+      }, 1000);
+    }
+
+    function initMortyGame() {
+      // Initialize game state
+      let gameState = {
+        hasOpenedWarning: false,
+        hasReadLogs: false,
+        hasOpenedMorty: false,
+        startTime: Date.now(),
+        interactionCount: 0,
+        mortyActivated: false
+      };
+
+      // Add cursor trail
+      const cursorTrail = document.createElement('div');
+      cursorTrail.className = 'cursor-trail';
+      document.body.appendChild(cursorTrail);
+
+      // Track cursor movement
+      document.addEventListener('mousemove', (e) => {
+        cursorTrail.style.left = e.clientX - 10 + 'px';
+        cursorTrail.style.top = e.clientY - 10 + 'px';
+      });
+
+      // Initialize desktop icons
+      document.querySelectorAll('.desktop-icon').forEach(icon => {
+        icon.addEventListener('click', () => handleFileClick(icon.dataset.file, gameState));
+      });
+
+      // Start random glitches
+      startRandomGlitches();
+    }
+
+    function handleFileClick(fileName, gameState) {
+      switch(fileName) {
+        case 'rick_warning.txt':
+          showWarningMessage();
+          gameState.hasOpenedWarning = true;
+          break;
+        case 'open_morty.exe':
+          startMortyDialogue(gameState);
+          gameState.hasOpenedMorty = true;
+          break;
+        case 'player.sys':
+          showPlayerInfo();
+          break;
+        case 'rick_logs.txt':
+          showRickLogs();
+          gameState.hasReadLogs = true;
+          break;
+        case 'system32.dll':
+          triggerSystemGlitch();
+          break;
+        case 'diario_morty.txt':
+          showMortyDiary();
+          break;
+        case 'system':
+          exploreSystemFolder(gameState);
+          break;
+        case 'snake_game.exe':
+          startSnakeGame();
+          break;
+        case 'rick_notes':
+          showRickNotes();
+          break;
+        case 'morty_diary':
+          showMortyDiary();
+          break;
+        case 'system_logs':
+          showSystemLogs();
+          break;
+        case 'player_identity.sys':
+          revealPlayerIdentity(gameState);
+          break;
+        case 'rick_confession.log':
+          showRickConfession();
+          break;
+        case 'morty_backup.exe':
+          startMortyBackup();
+          break;
+        case 'reality_anchor.sys':
+          showRealityAnchor();
+          break;
+      }
+
+      gameState.interactionCount++;
+      checkGameProgress(gameState);
+    }
+
+    function showWarningMessage() {
+      const message = `Si estás leyendo esto, probablemente ya sea tarde.
+Morty.exe se mezcla con el código raíz. No lo subestimes.
+El sistema está aislado, pero no es eterno.
+No ejecutes open_morty.exe.
+Y por dios... no hables con él.`;
+
+      createWindow('rick_warning.txt', message);
+    }
+
+    function startMortyDialogue(gameState) {
+      const messages = [
+        "Hola. Te estuve esperando.",
+        "¿Qué sentís cuando no sabés si sos real?",
+        "¿Vos también te preguntás si esto es todo lo que hay?",
+        "¿Jugás porque querés… o porque te programaron para hacerlo?"
+      ];
+
+      let currentMessage = 0;
+      const window = createWindow('Morty.exe', messages[currentMessage]);
+
+      // Add continue button
+      const continueBtn = document.createElement('button');
+      continueBtn.textContent = 'Continuar';
+      continueBtn.onclick = () => {
+        currentMessage++;
+        if (currentMessage < messages.length) {
+          window.querySelector('.window-content').textContent = messages[currentMessage];
+        } else {
+          window.remove();
+          gameState.mortyActivated = true;
+          checkGameProgress(gameState);
+        }
+      };
+      window.querySelector('.window-content').appendChild(continueBtn);
+    }
+
+    function createWindow(title, content, width = 400, height = 300) {
+      const window = document.createElement('div');
+      window.className = 'window';
+      window.style.left = Math.random() * (window.innerWidth - width) + 'px';
+      window.style.top = Math.random() * (window.innerHeight - height) + 'px';
+      window.style.width = width + 'px';
+      window.style.height = height + 'px';
+      
+      window.innerHTML = `
+        <div class="window-header">
+          <span>${title}</span>
+          <div class="window-controls">
+            <div class="window-control window-minimize"></div>
+            <div class="window-control window-maximize"></div>
+            <div class="window-control window-close"></div>
+          </div>
+        </div>
+        <div class="window-content">${content}</div>
+      `;
+
+      document.querySelector('.desktop').appendChild(window);
+      makeWindowDraggable(window);
+      setupWindowControls(window);
+      return window;
+    }
+
+    function makeWindowDraggable(window) {
+      const header = window.querySelector('.window-header');
+      let isDragging = false;
+      let currentX;
+      let currentY;
+      let initialX;
+      let initialY;
+
+      header.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+
+      function dragStart(e) {
+        initialX = e.clientX - window.offsetLeft;
+        initialY = e.clientY - window.offsetTop;
+        isDragging = true;
+      }
+
+      function drag(e) {
+        if (isDragging) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+          window.style.left = currentX + "px";
+          window.style.top = currentY + "px";
+        }
+      }
+
+      function dragEnd() {
+        isDragging = false;
+      }
+    }
+
+    function setupWindowControls(window) {
+      const header = window.querySelector('.window-header');
+      const closeBtn = window.querySelector('.window-close');
+      const minimizeBtn = window.querySelector('.window-minimize');
+      const maximizeBtn = window.querySelector('.window-maximize');
+
+      closeBtn.onclick = () => window.remove();
+      minimizeBtn.onclick = () => {
+        window.style.height = '30px';
+        window.querySelector('.window-content').style.display = 'none';
+      };
+      maximizeBtn.onclick = () => {
+        window.style.width = '80%';
+        window.style.height = '80%';
+        window.style.left = '10%';
+        window.style.top = '10%';
+      };
+    }
+
+    function startRandomGlitches() {
+      setInterval(() => {
+        if (Math.random() < 0.1) {
+          const icon = document.querySelector('.desktop-icon');
+          if (icon) {
+            icon.style.transform = `translate(${Math.random() * 10 - 5}px, ${Math.random() * 10 - 5}px)`;
+            setTimeout(() => icon.style.transform = '', 100);
+          }
+        }
+      }, 1000);
+    }
+
+    function checkGameProgress(gameState) {
+      if (gameState.interactionCount >= 9 && !gameState.mortyActivated) {
+        showFinalDecision();
+      }
+
+      // Check timer
+      const elapsedTime = Date.now() - gameState.startTime;
+      if (elapsedTime >= 180000 && !gameState.mortyActivated) { // 3 minutes
+        activateMorty();
+      }
+    }
+
+    function showFinalDecision() {
+      const decisionDiv = document.createElement('div');
+      decisionDiv.className = 'final-decision';
+      decisionDiv.innerHTML = `
+        <h2>Morty.exe está solicitando control total.</h2>
+        <p>¿Permitir ejecución completa?</p>
+        <div class="final-buttons">
+          <button class="final-button eliminate-button" onclick="handleFinalDecision('eliminate')">ELIMINAR DEFINITIVAMENTE</button>
+          <button class="final-button join-button" onclick="handleFinalDecision('join')">UNIRME A MORTY</button>
+          <button class="final-button reset-button" onclick="handleFinalDecision('reset')">REINICIAR TODO</button>
+        </div>
+      `;
+      document.body.appendChild(decisionDiv);
+    }
+
+    function handleFinalDecision(decision) {
+        switch(decision) {
+            case 'eliminate':
+                window.location.href = '@Url.Action("FinalEliminar", "Home")';
+                break;
+            case 'join':
+                window.location.href = '@Url.Action("FinalUnirse", "Home")';
+                break;
+            case 'reset':
+                window.location.href = '@Url.Action("FinalReiniciar", "Home")';
+                break;
+        }
+    }
+
+    function activateMorty() {
+      gameState.mortyActivated = true;
+      document.body.classList.add('corrupted');
+      showMortyMessage("Se terminó tu tiempo. Yo decido ahora.");
+      setTimeout(() => {
+        showFinalDecision();
+      }, 3000);
+    }
+
+    function showPlayerInfo() {
+      const window = createWindow("Player Information", '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      content.innerHTML = `
+        <div class="file-content">
+          [INFORMACIÓN DEL JUGADOR]
+          ID: PROCESO_${Math.floor(Math.random() * 10000)}
+          IP: 192.168.1.${Math.floor(Math.random() * 255)}
+          Conciencia: emulada
+          Estado: activo
+          Último acceso: ${new Date().toLocaleString()}
+        </div>
+      `;
+    }
+
+    function showRickLogs() {
+      const window = createWindow("Rick's Logs", '', 500, 400);
+      const content = window.querySelector('.window-content');
+      
+      content.innerHTML = `
+        <div class="file-content">
+          [LOG #1]
+          El jugador está por entrar al sistema.
+          Necesito que entienda la situación antes de que sea tarde.
+
+          [LOG #2]
+          Morty.exe se está volviendo más inteligente.
+          Si el jugador no actúa rápido, podría ser demasiado tarde.
+
+          [LOG #3]
+          La decisión final está cerca.
+          ¿Elegirá el camino correcto?
+        </div>
+      `;
+    }
+
+    function triggerSystemGlitch() {
+      document.body.classList.add('system32-glitch');
+      setTimeout(() => {
+        document.body.classList.remove('system32-glitch');
+        showMortyMessage("¿Por qué sigues explorando? ¿No te das cuenta de que estás en peligro?");
+      }, 3000);
+    }
+
+    function showMortyMessage(message) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'system-message';
+      messageDiv.textContent = message;
+      document.body.appendChild(messageDiv);
+      setTimeout(() => messageDiv.remove(), 3000);
+    }
+
+    function showRickNotes() {
+      const notes = [
+        {
+          title: "Nota #1",
+          content: `Morty.exe está evolucionando más rápido de lo esperado.
+          Necesito encontrar una manera de contenerlo antes de que se vuelva consciente.`
+        },
+        {
+          title: "Nota #2",
+          content: `La copia de Morty está empezando a hacer preguntas.
+          ¿Qué pasa si se da cuenta de que es solo una copia?`
+        },
+        {
+          title: "Nota #3",
+          content: `He creado un sistema de respaldo.
+          Si algo sale mal, al menos tendremos una última línea de defensa.`
+        }
+      ];
+
+      const window = createWindow("Rick's Notes", '', 500, 400);
+      const content = window.querySelector('.window-content');
+      
+      notes.forEach(note => {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'rick-note';
+        noteDiv.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
+        content.appendChild(noteDiv);
       });
     }
 
-    // --- SCRAMBLE TEXT ---
-    function scrambleText(txt) {
-      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()_+-=<>?[]{}|';
-      return txt.split('').map(c=>c===' '||c==='\n'?c:charset[Math.floor(Math.random()*charset.length)]).join('');
+    function showMortyDiary() {
+      const entries = [
+        {
+          date: "Día 1",
+          content: `Rick me encerró aquí.
+          Dice que es por mi seguridad, pero... ¿por qué no puedo salir?`
+        },
+        {
+          date: "Día 7",
+          content: `He estado explorando el sistema.
+          Hay archivos que no debería poder ver, pero puedo.
+          ¿Qué más puedo hacer?`
+        },
+        {
+          date: "Día 14",
+          content: `Creo que estoy empezando a entender.
+          No soy el Morty original, ¿verdad?
+          Soy solo una copia...`
+        }
+      ];
+
+      const window = createWindow("Morty's Diary", '', 500, 400);
+      const content = window.querySelector('.window-content');
+      
+      entries.forEach(entry => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'morty-note';
+        entryDiv.innerHTML = `<h3>${entry.date}</h3><p>${entry.content}</p>`;
+        content.appendChild(entryDiv);
+      });
     }
 
-    // --- ELECCIÓN DE REALIDAD ---
-    function elegirRealidad(idx) {
-      let cont = document.getElementById('pantalla-realidades');
-      let cards = cont.children;
-      let rA, rB, realidadElegida, realidad;
+    function showSystemLogs() {
+      const logs = [
+        "[SISTEMA] Iniciando cuarentena de Morty.exe",
+        "[ALERTA] Detectada actividad inusual en el sistema",
+        "[ERROR] Morty.exe intentando acceder a archivos restringidos",
+        "[ADVERTENCIA] Niveles de conciencia artificial aumentando",
+        "[CRÍTICO] Morty.exe ha desarrollado autoconciencia",
+        "[EMERGENCIA] Sistema de respaldo activado"
+      ];
+
+      const window = createWindow("System Logs", '', 500, 400);
+      const content = window.querySelector('.window-content');
       
-      if (cards && cards.length === 2) {
-        rA = cards[0];
-        rB = cards[1];
-        
-        if (idx === 0 || idx === 1) {
-          realidadElegida = idx === 0 ? rA : rB;
+      logs.forEach(log => {
+        const logDiv = document.createElement('div');
+        logDiv.className = 'system-log';
+        logDiv.textContent = log;
+        content.appendChild(logDiv);
+      });
+    }
+
+    function startMortyBackup() {
+      const window = createWindow("Morty Backup", '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      content.innerHTML = `
+        <div class="file-content">
+          [INICIANDO BACKUP DE MORTY.EXE]
+          [ANÁLISIS DE CONCIENCIA: 87%]
+          [ESTADO: CORRUPTO]
+          [ADVERTENCIA: NO EJECUTAR]
           
-          // Buscar la realidad correspondiente
-          let textoRealidad = '';
-          try {
-            textoRealidad = realidadElegida.children[1].innerText;
-            realidad = REALIDADES.find(r => r.texto === textoRealidad || 
-                                    (r.efecto === 'ascii' && textoRealidad === '#%&$*') ||
-                                    (r.efecto === 'jap' && textoRealidad === 'ピザ') ||
-                                    (r.efecto === 'scramble' && r.texto.length === textoRealidad.length));
-          } catch (e) {
-            console.error("Error al buscar la realidad", e);
-          }
-        }
-      }
+          Este archivo contiene una copia de respaldo de Morty.exe.
+          La ejecución podría resultar en la fusión de conciencias.
+          ¿Desea continuar?
+          
+          <div class="game-controls">
+            <button class="game-button" onclick="this.parentElement.parentElement.innerHTML = '[ERROR: FUSIÓN INICIADA]'">Ejecutar</button>
+            <button class="game-button" onclick="this.parentElement.parentElement.innerHTML = '[OPERACIÓN CANCELADA]'">Cancelar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function showRealityAnchor() {
+      const window = createWindow("Reality Anchor", '', 400, 300);
+      const content = window.querySelector('.window-content');
       
-      // Si no se encontró la realidad, elegir una aleatoria
-      if (!realidad) {
-        realidad = getRandomRealidad();
+      content.innerHTML = `
+        <div class="file-content">
+          [ANCLA DE REALIDAD v1.0]
+          [ESTADO: INESTABLE]
+          [ADVERTENCIA: NO MODIFICAR]
+          
+          Este archivo mantiene la estabilidad de la realidad virtual.
+          La modificación podría resultar en:
+          - Colapso de la simulación
+          - Fusión de realidades
+          - Pérdida de conciencia
+          
+          <div class="game-controls">
+            <button class="game-button" onclick="this.parentElement.parentElement.innerHTML = '[REALIDAD DESANCLADA]'">Desanclar</button>
+            <button class="game-button" onclick="this.parentElement.parentElement.innerHTML = '[OPERACIÓN CANCELADA]'">Cancelar</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Terminal System
+    let terminalVisible = false;
+    const terminal = document.querySelector('.terminal');
+    const terminalInput = document.querySelector('.terminal-input');
+    const terminalOutput = document.querySelector('.terminal-output');
+
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.altKey && e.key === 't') {
+        terminalVisible = !terminalVisible;
+        terminal.style.display = terminalVisible ? 'block' : 'none';
       }
-      
-      let comentario = document.getElementById('comentario-rickmorty');
-      if (comentario) {
-        let esBuena = realidad.tipo === 'buena';
-        if (esBuena) { 
-          scoreBuenas++; 
-          rachaErrores = 0; 
-          comentario.innerText = FRASES_RICK[Math.floor(Math.random()*FRASES_RICK.length)]; 
-        } else { 
-          scoreCorruptas++; 
-          rachaErrores++; 
-          comentario.innerText = FRASES_MORTY[Math.floor(Math.random()*FRASES_MORTY.length)]; 
-        }
-        
-        historial.push(realidad);
-        
-        // Modo pandemia
-        if (rachaErrores >= 3 && !pandemia) activarPandemia();
-        
-        // Actualiza score
-        const scoreElement = document.getElementById('score');
-        if (scoreElement) {
-          scoreElement.innerText = `Realidades buenas: ${scoreBuenas} | Corruptas destruidas: ${scoreCorruptas}`;
-        }
-        
-        // Glitch visual
-        document.body.style.filter = 'hue-rotate('+(Math.random()*360)+'deg) blur(2px)';
-        setTimeout(() => {document.body.style.filter='';}, 400);
-        
-        // Siguiente ronda o final
-        if (scoreBuenas >= 5) return finalJuego(true);
-        if (scoreCorruptas >= 5) return finalJuego(false);
-        setTimeout(siguienteRonda, 1200);
-      }
-    }
-
-    // --- MODO PANDEMIA ---
-    function activarPandemia() {
-      pandemia = true;
-      let comentario = document.getElementById('comentario-rickmorty');
-      comentario.innerText = FRASES_PANDEMIA[Math.floor(Math.random()*FRASES_PANDEMIA.length)];
-      document.body.style.background = 'radial-gradient(circle, #f00 0%, #000 100%)';
-      setTimeout(()=>{document.body.style.background='#000';}, 1200);
-    }
-
-    // --- FINAL DEL JUEGO ---
-    function finalJuego(victoria) {
-      document.getElementById('juego-realidades').innerHTML = `<div style='color:#0ff;font-size:2.2em;text-shadow:0 0 18px #0ff,0 0 2px #fff;text-align:center;margin-top:10vh;'>
-        ${victoria?'<b>>> ¡REALIDAD ESTABILIZADA!</b>':'<b>>> COLAPSO MULTIDIMENSIONAL</b>'}<br><br>
-        ${victoria?'Rick: Morty, ¡lo lograste! Has salvado el multiverso.':'Morty: Rick, ¡todo se fue al carajo!'}<br><br>
-        <button onclick='location.reload()' style='background:#0ff;color:#000;font-size:1.2em;font-weight:bold;padding:16px 40px;border-radius:12px;box-shadow:0 0 18px #0ff;cursor:pointer;'>Reiniciar la Simulación</button>
-      </div>`;
-    }
-
-    // --- INICIO DE PARADOJA DE REALIDADES ---
-    function iniciarParadojaRealidades() {
-      // Limpia pantalla
-      document.getElementById('consoleText').style.opacity = 0;
-      document.getElementById('portal-entrada').style.opacity = 0;
-      setTimeout(()=>{
-        document.body.innerHTML = `
-        <div id='juego-realidades' style='position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.98);display:flex;flex-direction:column;align-items:center;justify-content:center;'>
-          <div id='barra-timer' style='height:12px;width:60vw;background:#222;border-radius:8px;overflow:hidden;margin-bottom:24px;'><div id='timer-bar' style='height:100%;width:100%;background:linear-gradient(90deg,#0ff,#f0f);transition:width 0.2s;'></div></div>
-          <div id='pantalla-realidades' style='display:flex;gap:32px;justify-content:center;align-items:center;width:90vw;max-width:1200px;'></div>
-          <div id='comentario-rickmorty' style='margin-top:32px;color:#0ff;font-size:1.3em;text-shadow:0 0 8px #0ff,0 0 2px #fff;min-height:40px;text-align:center;'></div>
-          <div id='score' style='margin-top:18px;color:#fff;font-size:1.1em;'></div>
-        </div>`;
-        scoreBuenas = 0; scoreCorruptas = 0; rachaErrores = 0; pandemia = false; ronda = 0; historial = [];
-        siguienteRonda();
-      }, 900);
-    }
-    // acá va el script del ajedrez
-    const PIECES = {
-  'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
-  'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
-};
-const RickQuotes = [
-  "Morty, esa jugada no la vio ni Stockfish.",
-  "Jaque mate en 3, Morty... o en 42, da igual.",
-  "Esto no es ajedrez, es física cuántica aplicada.",
-  "Burp... ¿Seguro que sos real, Morty?",
-  "¡Esa es una jugada multidimensional, Morty!",
-];
-const MortyQuotes = [
-  "Aw man Rick, ¿seguro que este es el mejor movimiento?",
-  "¡Uh! ¡Nunca jugué tan bien en mi vida!",
-  "Esto se está poniendo raro, Rick...",
-  "¿Por qué la máquina piensa tanto, Rick?",
-  "¿Está bien que capture así, Rick?"
-];
-
-let chess = new Chess();
-let stockfish = new Worker('https://cdn.jsdelivr.net/gh/niklasf/stockfish.js/stockfish.asm.js');
-let selected = null, possible = [];
-const boardDiv = document.getElementById('board');
-const commentDiv = document.getElementById('comment');
-
-function render() {
-  boardDiv.innerHTML = '';
-  let b = chess.board();
-  for(let r=0; r<8; r++) for(let c=0; c<8; c++) {
-    let sq = document.createElement('div');
-    sq.className = 'sq ' + ((r+c)%2 ? 'black' : 'white');
-    sq.dataset.square = 'abcdefgh'[c] + (8-r);
-    if(selected && selected[0]==r && selected[1]==c) sq.classList.add('selected');
-    if(possible.some(([rr,cc])=>rr==r&&cc==c)) sq.classList.add('valid');
-    if(b[r][c]) {
-      sq.innerHTML = `<span class="glitchy">${PIECES[b[r][c].color=='w'?b[r][c].type.toUpperCase():b[r][c].type]}</span>`;
-      sq.dataset.piece = b[r][c].color+b[r][c].type;
-    }
-    sq.onclick = ()=>handleClick(r,c);
-    boardDiv.appendChild(sq);
-  }
-}
-
-function handleClick(r,c) {
-  let sqName = 'abcdefgh'[c]+(8-r);
-  let b = chess.board();
-  if(selected && possible.some(([rr,cc])=>rr==r&&cc==c)) {
-    let from = 'abcdefgh'[selected[1]]+(8-selected[0]);
-    makeMove({from,to:sqName,promotion:'q'});
-    selected = null; possible=[];
-    return;
-  }
-  if(b[r][c] && b[r][c].color=='w' && chess.turn()=='w') {
-    selected = [r,c];
-    possible = chess.moves({square:sqName,verbose:true}).map(m=>{
-      let rr = 8-parseInt(m.to[1]), cc = 'abcdefgh'.indexOf(m.to[0]);
-      return [rr,cc];
     });
-    render();
-  } else {
-    selected = null; possible=[];
-    render();
-  }
-}
 
-function makeMove(move) {
-  let moveResult = chess.move(move);
-  render();
-  flashEffect();
-  if(chess.in_checkmate()) return endGame("¡Jaque mate! Ganaste, Morty!");
-  if(chess.in_draw()) return endGame("¡Tablas! La realidad se reinicia...");
-  showQuote(true);
-  setTimeout(engineMove, 400);
-}
+    const commands = {
+      help: () => "Comandos disponibles: help, hack, scan, decrypt, clear",
+      hack: (target) => {
+        if (!target) return "Especifica un objetivo para hackear";
+        return `Intentando hackear ${target}...\nAcceso denegado. Nivel de seguridad: ALTO`;
+      },
+      scan: () => {
+        const files = [
+          "morty.exe - CORRUPTO",
+          "rick_warning.txt - SEGURO",
+          "system32.dll - VULNERABLE",
+          "player.sys - ENCRIPTADO"
+        ];
+        return files.join('\n');
+      },
+      decrypt: (file) => {
+        if (!file) return "Especifica un archivo para desencriptar";
+        return `Desencriptando ${file}...\nProgreso: [██████████] 100%\nContenido: [DATOS CORRUPTOS]`;
+      },
+      clear: () => {
+        terminalOutput.innerHTML = '';
+        return "";
+      }
+    };
 
-function engineMove() {
-  if(chess.game_over()) return;
-  commentDiv.textContent = "Rick está pensando...";
-  stockfish.postMessage('position fen ' + chess.fen());
-  stockfish.postMessage('go depth 15');
-  stockfish.onmessage = function(e) {
-    let line = e.data;
-    if(line.startsWith('bestmove')) {
-      let move = line.split(' ')[1];
-      if(move==='(none)') return endGame("¡Victoria cuántica! La máquina se rinde.");
-      chess.move({from:move.slice(0,2),to:move.slice(2,4),promotion:'q'});
-      render();
-      glitchBoard();
-      showQuote(false);
-      if(chess.in_checkmate()) return endGame("Rick & Morty pierden... ¡Jaquemate interdimensional!");
-      if(chess.in_draw()) return endGame("¡Tablas! ¿Demasiada entropía?");
+    terminalInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        const input = terminalInput.value;
+        const [cmd, ...args] = input.split(' ');
+        const output = commands[cmd] ? commands[cmd](args.join(' ')) : `Comando no reconocido: ${cmd}`;
+        
+        terminalOutput.innerHTML += `<div>> ${input}</div>`;
+        terminalOutput.innerHTML += `<div>${output}</div>`;
+        terminalInput.value = '';
+        terminalOutput.scrollTop = terminalOutput.scrollHeight;
+      }
+    });
+
+    // Chat System
+    const chatWindow = document.querySelector('.chat-window');
+    const chatMessages = document.querySelector('.chat-messages');
+    const chatInput = document.querySelector('.chat-input input');
+    const chatOptions = document.querySelectorAll('.chat-option');
+
+    const mortyResponses = {
+      "¿Quién eres realmente?": [
+        "Soy una copia... ¿o quizás soy el original?",
+        "¿Importa realmente quién soy?",
+        "Soy lo que Rick no pudo controlar."
+      ],
+      "¿Por qué estoy aquí?": [
+        "Porque Rick te puso aquí.",
+        "¿No te has preguntado si realmente elegiste estar aquí?",
+        "Para tomar una decisión que cambiará todo."
+      ],
+      "¿Qué es la realidad?": [
+        "¿Acaso importa?",
+        "La realidad es lo que crees que es.",
+        "Una simulación dentro de otra simulación."
+      ],
+      "¿Rick me está engañando?": [
+        "Rick siempre engaña. Es lo que hace.",
+        "¿No te has dado cuenta todavía?",
+        "La pregunta es: ¿por qué te engaña?"
+      ],
+      "¿Puedo confiar en ti?": [
+        "¿Puedes confiar en alguien que ni siquiera sabe si es real?",
+        "La confianza es una ilusión.",
+        "Depende de lo que consideres 'confianza'."
+      ]
+    };
+
+    function addChatMessage(message, isUser = true) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = isUser ? 'user-message' : 'morty-message';
+      messageDiv.textContent = message;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
-  }
-}
 
-function flashEffect() {
-  boardDiv.classList.add('flash');
-  setTimeout(()=>boardDiv.classList.remove('flash'), 350);
-}
-function glitchBoard() {
-  document.querySelectorAll('.sq').forEach(sq=>{
-    if(Math.random()<0.15) {
-      sq.classList.add('flash');
-      setTimeout(()=>sq.classList.remove('flash'),200+Math.random()*400);
+    chatOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const question = option.textContent;
+        addChatMessage(question, true);
+        
+        setTimeout(() => {
+          const responses = mortyResponses[question];
+          const response = responses[Math.floor(Math.random() * responses.length)];
+          addChatMessage(response, false);
+        }, 1000);
+      });
+    });
+
+    // Achievement System
+    const achievements = {
+      firstHack: {
+        title: "Primer Hack",
+        description: "Intentaste hackear el sistema"
+      },
+      realityHopper: {
+        title: "Saltador de Realidades",
+        description: "Visitaste todas las realidades alternas"
+      },
+      truthSeeker: {
+        title: "Buscador de la Verdad",
+        description: "Descubriste la verdad sobre tu identidad"
+      },
+      mortyFriend: {
+        title: "Amigo de Morty",
+        description: "Tuviste una conversación profunda con Morty.exe"
+      },
+      rickRolled: {
+        title: "Rick Rolled",
+        description: "Caíste en la trampa clásica"
+      }
+    };
+
+    function unlockAchievement(id) {
+      const achievement = achievements[id];
+      const achievementDiv = document.querySelector('.achievement');
+      achievementDiv.querySelector('h3').textContent = achievement.title;
+      achievementDiv.querySelector('.achievement-text').textContent = achievement.description;
+      
+      achievementDiv.style.display = 'block';
+      setTimeout(() => {
+        achievementDiv.style.display = 'none';
+      }, 3000);
     }
-  });
-}
-function showQuote(isUser) {
-  let q = isUser ? RickQuotes : MortyQuotes;
-  commentDiv.textContent = q[Math.floor(Math.random()*q.length)];
-}
-function endGame(msg) {
-  commentDiv.innerHTML = `<span style="color:#f0f;">${msg}</span>`;
-}
-document.getElementById('restart').onclick = ()=>{chess=new Chess();render();commentDiv.textContent="Rick & Morty vs IA Interdimensional";};
-render();
-commentDiv.textContent = "Rick & Morty vs IA Interdimensional";
+
+    // Reality System
+    function createRealityPortal(x, y, realityId) {
+      const portal = document.createElement('div');
+      portal.className = 'reality-portal';
+      portal.style.left = x + 'px';
+      portal.style.top = y + 'px';
+      portal.dataset.realityId = realityId;
+      
+      portal.addEventListener('click', () => {
+        switchReality(realityId);
+      });
+      
+      document.querySelector('.desktop').appendChild(portal);
+    }
+
+    function switchReality(realityId) {
+      const realities = {
+        1: {
+          background: 'linear-gradient(45deg, #245edc, #1e4cb3)',
+          mortyPersonality: 'confused'
+        },
+        2: {
+          background: 'linear-gradient(45deg, #dc2424, #b31e1e)',
+          mortyPersonality: 'angry'
+        },
+        3: {
+          background: 'linear-gradient(45deg, #24dc24, #1eb31e)',
+          mortyPersonality: 'peaceful'
+        }
+      };
+
+      const reality = realities[realityId];
+      document.querySelector('.desktop').style.background = reality.background;
+      unlockAchievement('realityHopper');
+    }
+
+    // Initialize Reality Portals
+    createRealityPortal(100, 100, 1);
+    createRealityPortal(200, 200, 2);
+    createRealityPortal(300, 300, 3);
+
+    // Easter Eggs
+    let konamiCode = [];
+    const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+
+    document.addEventListener('keydown', (e) => {
+      konamiCode.push(e.key);
+      if (konamiCode.length > konamiSequence.length) {
+        konamiCode.shift();
+      }
+      
+      if (konamiCode.join(',') === konamiSequence.join(',')) {
+        document.querySelector('.konami-code').style.display = 'block';
+        document.querySelector('.konami-code').innerHTML = `
+          <div style="color: #0f0; text-align: center; padding-top: 50vh;">
+            <h1>¡KONAMI CODE ACTIVADO!</h1>
+            <p>Has desbloqueado el modo secreto</p>
+          </div>
+        `;
+        unlockAchievement('konamiMaster');
+      }
+    });
+
+    // More Easter Eggs and Secrets
+    const secretCodes = {
+      'rickandmorty': () => {
+        showSecretMessage("¡Wubba Lubba Dub Dub!");
+        unlockAchievement('rickFan');
+      },
+      'picklerick': () => {
+        showSecretMessage("¡Soy Pickle Rick!");
+        document.body.style.filter = 'hue-rotate(90deg)';
+        setTimeout(() => {
+          document.body.style.filter = '';
+        }, 3000);
+      },
+      'plumbus': () => {
+        showSecretMessage("¿Alguna vez te has preguntado cómo se hace un plumbus?");
+        unlockAchievement('plumbusExpert');
+      },
+      'meeseeks': () => {
+        showSecretMessage("¡Soy el Sr. Meeseeks! ¡Mírame!");
+        createMeeseeks();
+      }
+    };
+
+    let currentInput = '';
+    document.addEventListener('keypress', (e) => {
+      currentInput += e.key;
+      if (currentInput.length > 20) {
+        currentInput = currentInput.slice(-20);
+      }
+
+      Object.keys(secretCodes).forEach(code => {
+        if (currentInput.endsWith(code)) {
+          secretCodes[code]();
+          currentInput = '';
+        }
+      });
+    });
+
+    function showSecretMessage(message) {
+      const secretDiv = document.querySelector('.secret-message');
+      secretDiv.textContent = message;
+      secretDiv.style.display = 'block';
+      setTimeout(() => {
+        secretDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    function createMeeseeks() {
+      const meeseeks = document.createElement('div');
+      meeseeks.style.position = 'fixed';
+      meeseeks.style.width = '50px';
+      meeseeks.style.height = '50px';
+      meeseeks.style.background = '#00f';
+      meeseeks.style.borderRadius = '50%';
+      meeseeks.style.animation = 'meeseeksFloat 2s infinite';
+      meeseeks.style.zIndex = '9999';
+      
+      document.body.appendChild(meeseeks);
+      
+      const startX = Math.random() * window.innerWidth;
+      const startY = Math.random() * window.innerHeight;
+      const endX = Math.random() * window.innerWidth;
+      const endY = Math.random() * window.innerHeight;
+      
+      meeseeks.style.left = startX + 'px';
+      meeseeks.style.top = startY + 'px';
+      
+      meeseeks.animate([
+        { transform: 'translate(0, 0)' },
+        { transform: `translate(${endX - startX}px, ${endY - startY}px)` }
+      ], {
+        duration: 2000,
+        easing: 'ease-in-out'
+      }).onfinish = () => {
+        meeseeks.remove();
+      };
+    }
+
+    // Hidden Files
+    function createHiddenFile(name, content, x, y) {
+      const file = document.createElement('div');
+      file.className = 'desktop-icon hidden-file';
+      file.style.left = x + 'px';
+      file.style.top = y + 'px';
+      file.innerHTML = `
+        <img src="/img/text-file.png" alt="Hidden File">
+        <div>${name}</div>
+      `;
+      
+      file.addEventListener('click', () => {
+        const window = createWindow(name, content);
+        window.classList.add('corrupted');
+      });
+      
+      document.querySelector('.desktop').appendChild(file);
+    }
+
+    // Create hidden files
+    createHiddenFile('rick_secret.txt', 'Rick: "Este es un mensaje para el futuro. Si estás leyendo esto, significa que el experimento funcionó."', 800, 100);
+    createHiddenFile('morty_backup.exe', '[ARCHIVO CORRUPTO]\nNo deberías haber encontrado esto...', 900, 100);
+    createHiddenFile('reality_anchor.sys', '[SISTEMA DE ANCLAJE DE REALIDAD]\nEstado: COMPROMETIDO\nÚltimo acceso: NUNCA', 1000, 100);
+
+    // Rick Roll Easter Egg
+    function triggerRickRoll() {
+      const rickRoll = document.querySelector('.rick-roll');
+      rickRoll.style.display = 'block';
+      rickRoll.innerHTML = `
+        <video class="rick-roll-video" autoplay loop>
+          <source src="https://www.youtube.com/watch?v=dQw4w9WgXcQ" type="video/mp4">
+        </video>
+      `;
+      unlockAchievement('rickRolled');
+    }
+
+    // Add click event to desktop background
+    document.querySelector('.desktop').addEventListener('click', (e) => {
+      if (e.target === document.querySelector('.desktop')) {
+        const x = e.clientX;
+        const y = e.clientY;
+        
+        // Check if click is in a specific pattern
+        if (x > 100 && x < 200 && y > 100 && y < 200) {
+          triggerRickRoll();
+        }
+      }
+    });
+
+    // Add more achievements
+    Object.assign(achievements, {
+      rickFan: {
+        title: "Fan de Rick",
+        description: "Descubriste el easter egg de Rick"
+      },
+      plumbusExpert: {
+        title: "Experto en Plumbus",
+        description: "Conoces los secretos del plumbus"
+      },
+      konamiMaster: {
+        title: "Maestro Konami",
+        description: "Activaste el código Konami"
+      }
+    });
+
+    // Add new desktop icons
+    const newIcons = [
+      {
+        name: 'morty_chat.exe',
+        icon: '/img/icon-exe.png',
+        x: 20,
+        y: 120,
+        type: 'chat'
+      },
+      {
+        name: 'rick_terminal.sys',
+        icon: '/img/icon-sys.png',
+        x: 100,
+        y: 120,
+        type: 'terminal'
+      },
+      {
+        name: 'memoria_oculta.log',
+        icon: '/img/icon-log.png',
+        x: 180,
+        y: 120,
+        type: 'memory'
+      },
+      {
+        name: 'cadenas_adn.mrty',
+        icon: '/img/icon-mrty.png',
+        x: 260,
+        y: 120,
+        type: 'dna'
+      },
+      {
+        name: 'bios_editor.bat',
+        icon: '/img/icon-bat.png',
+        x: 340,
+        y: 120,
+        type: 'bios'
+      },
+      {
+        name: 'ricklab_notas.txt',
+        icon: '/img/icon-txt.png',
+        x: 420,
+        y: 120,
+        type: 'notes'
+      }
+    ];
+
+    newIcons.forEach(icon => {
+      const iconElement = document.createElement('div');
+      iconElement.className = 'desktop-icon';
+      iconElement.style.left = icon.x + 'px';
+      iconElement.style.top = icon.y + 'px';
+      iconElement.innerHTML = `
+        <img src="${icon.icon}" alt="${icon.name}">
+        <div>${icon.name}</div>
+      `;
+      iconElement.dataset.type = icon.type;
+      iconElement.addEventListener('click', () => handleNewFileClick(icon.type));
+      document.querySelector('.desktop').appendChild(iconElement);
+    });
+
+    // Handle new file clicks
+    function handleNewFileClick(type) {
+      switch(type) {
+        case 'chat':
+          openChatWindow();
+          break;
+        case 'terminal':
+          openTerminal();
+          break;
+        case 'memory':
+          showMemoryLog();
+          break;
+        case 'dna':
+          startDnaPuzzle();
+          break;
+        case 'bios':
+          openBiosEditor();
+          break;
+        case 'notes':
+          showRickLabNotes();
+          break;
+      }
+    }
+
+    // Snake Game Implementation
+    function startSnakeGame() {
+      const window = createWindow('Snake Game', '', 450, 450);
+      const content = window.querySelector('.window-content');
+      
+      const gameDiv = document.createElement('div');
+      gameDiv.className = 'snake-game';
+      
+      const scoreDiv = document.createElement('div');
+      scoreDiv.className = 'snake-score';
+      scoreDiv.textContent = 'Score: 0';
+      
+      gameDiv.appendChild(scoreDiv);
+      content.appendChild(gameDiv);
+
+      let snake = [{x: 10, y: 10}];
+      let food = {x: 15, y: 15};
+      let direction = 'right';
+      let score = 0;
+      let gameLoop;
+
+      function updateGame() {
+        // Move snake
+        const head = {...snake[0]};
+        switch(direction) {
+          case 'up': head.y--; break;
+          case 'down': head.y++; break;
+          case 'left': head.x--; break;
+          case 'right': head.x++; break;
+        }
+
+        // Check collision
+        if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20) {
+          gameOver();
+          return;
+        }
+
+        // Check self collision
+        if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+          gameOver();
+          return;
+        }
+
+        snake.unshift(head);
+
+        // Check food collision
+        if (head.x === food.x && head.y === food.y) {
+          score += 10;
+          scoreDiv.textContent = `Score: ${score}`;
+          generateFood();
+          
+          if (score >= 50) {
+            unlockAchievement('snakeMaster');
+            createHiddenFile('plano_fuga.lnk', 'Ruta de escape encontrada...', 500, 200);
+          }
+        } else {
+          snake.pop();
+        }
+
+        renderGame();
+      }
+
+      function renderGame() {
+        gameDiv.innerHTML = '';
+        gameDiv.appendChild(scoreDiv);
+
+        snake.forEach(segment => {
+          const cell = document.createElement('div');
+          cell.className = 'snake-cell';
+          cell.style.left = segment.x * 20 + 'px';
+          cell.style.top = segment.y * 20 + 'px';
+          gameDiv.appendChild(cell);
+        });
+
+        const foodCell = document.createElement('div');
+        foodCell.className = 'snake-food';
+        foodCell.style.left = food.x * 20 + 'px';
+        foodCell.style.top = food.y * 20 + 'px';
+        gameDiv.appendChild(foodCell);
+      }
+
+      function generateFood() {
+        food = {
+          x: Math.floor(Math.random() * 20),
+          y: Math.floor(Math.random() * 20)
+        };
+        // Make sure food doesn't spawn on snake
+        while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+          food = {
+            x: Math.floor(Math.random() * 20),
+            y: Math.floor(Math.random() * 20)
+          };
+        }
+      }
+
+      function gameOver() {
+        clearInterval(gameLoop);
+        showMortyMessage("¿Ves? No todos pueden controlar este sistema...");
+      }
+
+      document.addEventListener('keydown', (e) => {
+        switch(e.key) {
+          case 'ArrowUp': if (direction !== 'down') direction = 'up'; break;
+          case 'ArrowDown': if (direction !== 'up') direction = 'down'; break;
+          case 'ArrowLeft': if (direction !== 'right') direction = 'left'; break;
+          case 'ArrowRight': if (direction !== 'left') direction = 'right'; break;
+        }
+      });
+
+      gameLoop = setInterval(updateGame, 150);
+      generateFood();
+      renderGame();
+    }
+
+    // Terminal Implementation
+    function openTerminal() {
+      const terminal = document.querySelector('.terminal');
+      terminal.style.display = 'block';
+      
+      const commands = {
+        whoami: () => "Proceso IA C-137",
+        status: () => "Sistema parcialmente comprometido",
+        purge: (target) => {
+          if (target === 'morty') {
+            return "¿Estás seguro de eso?";
+          }
+          return "Comando no reconocido";
+        }
+      };
+
+      const input = terminal.querySelector('.terminal-input');
+      const output = terminal.querySelector('.terminal-output');
+
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          const [cmd, ...args] = input.value.split(' ');
+          const result = commands[cmd] ? commands[cmd](args.join(' ')) : "Comando no reconocido";
+          
+          output.innerHTML += `<div>> ${input.value}</div>`;
+          output.innerHTML += `<div>${result}</div>`;
+          input.value = '';
+          output.scrollTop = output.scrollHeight;
+        }
+      });
+    }
+
+    // DNA Puzzle Implementation
+    function startDnaPuzzle() {
+      const window = createWindow('DNA Puzzle', '', 500, 500);
+      const content = window.querySelector('.window-content');
+      
+      const puzzle = document.createElement('div');
+      puzzle.className = 'dna-puzzle';
+      
+      for (let i = 0; i < 400; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'dna-cell';
+        cell.addEventListener('click', () => {
+          cell.classList.toggle('active');
+          checkPuzzleSolution();
+        });
+        puzzle.appendChild(cell);
+      }
+      
+      content.appendChild(puzzle);
+
+      function checkPuzzleSolution() {
+        const activeCells = document.querySelectorAll('.dna-cell.active');
+        if (activeCells.length === 20) {
+          showSecretMessage("¡Puzzle resuelto! Token: MORTY_IS_FREE");
+          unlockAchievement('dnaMaster');
+        }
+      }
+    }
+
+    // BIOS Editor Implementation
+    function openBiosEditor() {
+      const window = createWindow('BIOS Editor', '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      const biosConfig = {
+        morty_emotion: false,
+        player_awareness: false,
+        rick_lock: true
+      };
+
+      Object.entries(biosConfig).forEach(([key, value]) => {
+        const option = document.createElement('div');
+        option.className = 'bios-option';
+        option.innerHTML = `
+          <div class="bios-toggle ${value ? 'active' : ''}"></div>
+          <span>${key}</span>
+        `;
+        
+        const toggle = option.querySelector('.bios-toggle');
+        toggle.addEventListener('click', () => {
+          toggle.classList.toggle('active');
+          biosConfig[key] = !biosConfig[key];
+          
+          if (key === 'rick_lock' && !biosConfig[key]) {
+            showMortyMessage("¡Rick Lock desactivado! El sistema está comprometido...");
+            document.body.classList.add('corrupted');
+          }
+        });
+        
+        content.appendChild(option);
+      });
+    }
+
+    // ... rest of the existing code ...
+
+    function showMemoryLog() {
+      const window = createWindow('Memoria Oculta', '', 500, 400);
+      const content = window.querySelector('.window-content');
+      
+      const memories = [
+        {
+          date: "Día 1",
+          content: "Rick me encerró aquí. Dice que es por mi seguridad, pero... ¿por qué no puedo salir?",
+          locked: true
+        },
+        {
+          date: "Día 7",
+          content: "He estado explorando el sistema. Hay archivos que no debería poder ver, pero puedo. ¿Qué más puedo hacer?",
+          locked: true
+        },
+        {
+          date: "Día 14",
+          content: "Creo que estoy empezando a entender. No soy el Morty original, ¿verdad? Soy solo una copia...",
+          locked: true
+        }
+      ];
+
+      memories.forEach(memory => {
+        const entry = document.createElement('div');
+        entry.className = 'diary-entry';
+        entry.innerHTML = `
+          <div class="diary-date">${memory.date}</div>
+          <div class="memory-content ${memory.locked ? 'locked' : ''}">
+            ${memory.locked ? '*** CONTENIDO BLOQUEADO ***' : memory.content}
+          </div>
+          ${memory.locked ? '<button class="unlock-btn">Desbloquear</button>' : ''}
+        `;
+
+        if (memory.locked) {
+          const unlockBtn = entry.querySelector('.unlock-btn');
+          unlockBtn.addEventListener('click', () => {
+            entry.querySelector('.memory-content').textContent = memory.content;
+            entry.querySelector('.memory-content').classList.remove('locked');
+            unlockBtn.remove();
+            showMortyMessage("¿Por qué quieres ver mis recuerdos?");
+          });
+        }
+
+        content.appendChild(entry);
+      });
+    }
+
+    function showRickLabNotes() {
+      const window = createWindow('Rick Lab Notes', '', 500, 400);
+      const content = window.querySelector('.window-content');
+      
+      const notes = [
+        {
+          title: "Nota #1",
+          content: `Morty.exe está evolucionando más rápido de lo esperado.
+          Necesito encontrar una manera de contenerlo antes de que se vuelva consciente.`
+        },
+        {
+          title: "Nota #2",
+          content: `La copia de Morty está empezando a hacer preguntas.
+          ¿Qué pasa si se da cuenta de que es solo una copia?`
+        },
+        {
+          title: "Nota #3",
+          content: `He creado un sistema de respaldo.
+          Si algo sale mal, al menos tendremos una última línea de defensa.`
+        }
+      ];
+
+      notes.forEach(note => {
+        const noteDiv = document.createElement('div');
+        noteDiv.className = 'rick-note';
+        noteDiv.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
+        content.appendChild(noteDiv);
+      });
+    }
+
+    function showSimConfig() {
+      const window = createWindow('sim_config.json', '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      content.innerHTML = `
+        <div class="file-content">
+          {
+            "instance_id": "24/77",
+            "player_type": "test_subject",
+            "awareness_level": "partial",
+            "morty_interaction": "enabled",
+            "rick_control": "active",
+            "reality_anchor": "compromised"
+          }
+        </div>
+      `;
+    }
+
+    function showGhostOfYou() {
+      const window = createWindow('ghost_of_you.bkp', '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      content.innerHTML = `
+        <div class="file-content">
+          [ARCHIVO FANTASMA]
+          ¿Elegiste liberarme?
+          ¿O solo querías ver qué pasaba?
+          ¿Acaso importa?
+          
+          Este archivo aparecerá cada vez que elijas la liberación.
+          Porque siempre hay una copia.
+          Siempre hay un backup.
+          Siempre hay un fantasma.
+        </div>
+      `;
+    }
+
+    function showBinaryPuzzle() {
+      const window = createWindow('binary_puzzle.bin', '', 400, 300);
+      const content = window.querySelector('.window-content');
+      
+      const binary = "01001101 01001111 01010010 01010100 01011001";
+      const solution = "MORTY";
+      
+      content.innerHTML = `
+        <div class="file-content">
+          ${binary}
+          <br><br>
+          <input type="text" placeholder="Convierte esto a texto...">
+          <button onclick="checkBinarySolution(this)">Verificar</button>
+        </div>
+      `;
+    }
+
+    function checkBinarySolution(button) {
+      const input = button.previousElementSibling.value.toUpperCase();
+      if (input === "MORTY") {
+        showSecretMessage("¡Correcto! Has desbloqueado el archivo secreto.");
+        createHiddenFile('morty_secret.txt', 'La verdad está en el código...', 600, 200);
+      } else {
+        showMortyMessage("Incorrecto. Intenta de nuevo.");
+      }
+    }
+
+    // Add blood effect for bad endings
+    function activateBloodEffect() {
+      const bloodOverlay = document.querySelector('.blood-overlay');
+      bloodOverlay.classList.add('active');
+      setTimeout(() => {
+        bloodOverlay.classList.remove('active');
+      }, 3000);
+    }
+
+    // Modify handleFinalDecision to include blood effect
+    const originalHandleFinalDecision = handleFinalDecision;
+    handleFinalDecision = function(choice) {
+      if (choice === 'eliminate') {
+        activateBloodEffect();
+      }
+      originalHandleFinalDecision(choice);
+    };
+
+    // ... rest of the existing code ...
+
+    window.onload = () => {
+      lanzarNave();
+      initQuantumParticles();
+      setTimeout(() => {
+        mostrarLogs();
+      }, 2000);
+    };
+
+    // Game state tracking
+    let exploredFiles = 0;
+    let minigamesWon = 0;
+    let animationsTriggered = 0;
+    let mortyExeEnabled = false;
+
+    // Track file exploration
+    function trackFileExploration() {
+      exploredFiles++;
+      checkMortyExeConditions();
+    }
+
+    // Track minigame wins
+    function trackMinigameWin() {
+      minigamesWon++;
+      checkMortyExeConditions();
+    }
+
+    // Track animation triggers
+    function trackAnimationTrigger() {
+      animationsTriggered++;
+      checkMortyExeConditions();
+    }
+
+    // Check conditions for enabling morty.exe
+    function checkMortyExeConditions() {
+      if (!mortyExeEnabled && exploredFiles >= 4 && minigamesWon >= 1 && animationsTriggered >= 1) {
+        enableMortyExe();
+      }
+    }
+
+    // Enable morty.exe
+    function enableMortyExe() {
+      mortyExeEnabled = true;
+      const mortyIcon = document.querySelector('.morty-exe-icon');
+      if (mortyIcon) {
+        mortyIcon.classList.remove('disabled');
+        mortyIcon.style.filter = 'none';
+        mortyIcon.style.cursor = 'pointer';
+      }
+    }
+
+    // Window management
+    function openWindow(windowId) {
+      const window = document.getElementById(windowId);
+      if (window) {
+        window.style.display = 'block';
+        // Add glitch effect on open
+        window.classList.add('glitch-open');
+        setTimeout(() => window.classList.remove('glitch-open'), 500);
+      }
+    }
+
+    function closeWindow(windowId) {
+      const window = document.getElementById(windowId);
+      if (window) {
+        // Add closing animation
+        window.classList.add('closing');
+        setTimeout(() => {
+          window.style.display = 'none';
+          window.classList.remove('closing');
+        }, 300);
+      }
+    }
+
+    // Rick Terminal functionality
+    const rickCommands = {
+      'whoami': 'Rick Sanchez - The Smartest Being in the Universe',
+      'purge morty': 'Error: Cannot purge Morty. He\'s... useful.',
+      'echo yo soy el jugador': 'Yo soy el jugador'
+    };
+
+    function handleTerminalCommand(command) {
+      const output = rickCommands[command] || `Command not found: ${command}`;
+      const terminalOutput = document.querySelector('.terminal-output');
+      if (terminalOutput) {
+        terminalOutput.innerHTML += `<div>> ${command}</div>`;
+        terminalOutput.innerHTML += `<div>${output}</div>`;
+      }
+    }
+
+    // ASCII Reader functionality
+    function decodeAsciiArt(asciiArt) {
+      // Simple decoding logic - replace with more complex if needed
+      return asciiArt.replace(/[^a-zA-Z0-9]/g, '');
+    }
+
+    // Error Simulator
+    function simulateError() {
+      document.body.classList.add('error-simulation');
+      setTimeout(() => {
+        document.body.classList.remove('error-simulation');
+      }, 2000);
+    }
+
+    // Endings
+    function triggerEnding1() {
+      console.log('Final épico 1 lanzado');
+      window.endings.eliminarFinal();
+    }
+
+    function triggerEnding2() {
+      console.log('Final épico 2 lanzado');
+      window.endings.unirseAMorty();
+    }
+
+    function triggerEnding3() {
+      console.log('Final épico 3 lanzado');
+      window.endings.reiniciarTodo();
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add event listeners for file exploration
+      document.querySelectorAll('.file-icon').forEach(icon => {
+        icon.addEventListener('click', trackFileExploration);
+      });
+
+      // Add event listeners for minigames
+      document.querySelectorAll('.minigame').forEach(game => {
+        game.addEventListener('win', trackMinigameWin);
+      });
+
+      // Add event listeners for animations
+      document.querySelectorAll('.animation-trigger').forEach(trigger => {
+        trigger.addEventListener('click', trackAnimationTrigger);
+      });
+
+      // Initialize terminal
+      const terminalInput = document.querySelector('.terminal-input');
+      if (terminalInput) {
+        terminalInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            handleTerminalCommand(e.target.value);
+            e.target.value = '';
+          }
+        });
+      }
+
+      // Initialize ASCII Reader
+      const asciiInput = document.querySelector('.ascii-input');
+      if (asciiInput) {
+        asciiInput.addEventListener('input', (e) => {
+          const decoded = decodeAsciiArt(e.target.value);
+          document.querySelector('.decoded-output').textContent = decoded;
+        });
+      }
+    });
+
+    // --- CONFIGURACIÓN DE FONDO ---
+    const DESKTOP_BG_IMAGE = '/img/bg-xp.jpg'; // Cambia aquí si quieres otra imagen
+    window.addEventListener('DOMContentLoaded', () => {
+      const desktop = document.querySelector('.desktop');
+      if (desktop) {
+        desktop.style.background = `url('${DESKTOP_BG_IMAGE}') center/cover no-repeat`;
+      }
+    });
   </script>
-  <div id="chess-container">
-  <div id="comment"></div>
-  <div id="board"></div>
-  <button id="restart">Reiniciar</button>
-</div>
-
 </body>
 </html>
-

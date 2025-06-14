@@ -427,3 +427,29 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("Iniciando aplicación...");
     initializeHandDetection();
 });
+
+// Add endings integration
+function triggerEnding(type) {
+    switch(type) {
+        case 'eliminate':
+            window.endings.eliminarFinal();
+            break;
+        case 'joinMorty':
+            window.endings.unirseAMorty();
+            break;
+        case 'restart':
+            window.endings.reiniciarTodo();
+            break;
+    }
+}
+
+// Add easter egg detection
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.altKey && e.key === 'r') {
+        const input = prompt('Enter secret code:');
+        if (input === 'rickandmorty') {
+            // Trigger secret ending
+            window.endings.reiniciarTodo();
+        }
+    }
+});

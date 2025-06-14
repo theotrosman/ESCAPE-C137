@@ -94,6 +94,11 @@
 </head>
 <body>
     <audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
+    <audio id="audio1" src="/audio/audio1.mp3" loop></audio>
+    <audio id="audio2" src="/audio/audio2.mp3" loop></audio>
+    <audio id="audio3" src="/audio/audio3.mp3" loop></audio>
+    <audio id="audio4" src="/audio/audio4.mp3" loop></audio>
+    <audio id="audio5" src="/audio/audio5.mp3" loop></audio>
 
     <div id="terminal"></div>
 
@@ -160,16 +165,19 @@
         const texto = [
             "[SISTEMA] Inicializando núcleo de conciencia...",
             "[BOOTLOADER] Realidad: MVC-137",
-            "[RICK] m-m-morty... we're in the code...",
+            "[RICK] M-morty... we're in the code...",
             "[ALERTA] Protocolo de autoconciencia activado.",
             "[ERROR 0xD3AD] El controlador empezó a escribir su propio código.",
             "[LOG] --> injecting controller@SelfAwareMode.cs...",
             "[SECURITY BREACH] Controlador intentando reescribir rutas.",
             "[ATAQUE] Bit sequence infiltrated: 01100111 01101100 01101001 01110100 01100011 01101000",
+            "[RICK] Escucha bien, Morty. Alguien está intentando hackear la realidad.",
+            "[RICK] Han encontrado una vulnerabilidad en el framework de la existencia.",
+            "[RICK] Si no detenemos esto, toda la realidad podría colapsar en un bucle infinito.",
             "Tu misión:",
-            "- Infiltrar la pipeline.",
-            "- Depurar el núcleo Razor.",
-            "- Romper la cuarta pared.",
+            "- Infiltrar la pipeline de la realidad.",
+            "- Depurar el núcleo Razor que mantiene todo unido.",
+            "- Romper la cuarta pared y encontrar al hacker.",
             "[RICK] Esto no es un juego Morty, es una fucking intervención cósmica.",
             "¿Entendiste? (y/n)"
         ];
@@ -259,6 +267,39 @@ function escribirLinea() {
             } else {
                 input.value = "";
             }
+        });
+
+        // Glitch audio system
+        const audioElements = [
+            document.getElementById('audio1'),
+            document.getElementById('audio2'),
+            document.getElementById('audio3'),
+            document.getElementById('audio4'),
+            document.getElementById('audio5')
+        ];
+
+        function glitchAudio() {
+            // Randomly play/pause/seek audio elements
+            audioElements.forEach(audio => {
+                if (Math.random() > 0.5) {
+                    if (audio.paused) {
+                        audio.currentTime = Math.random() * audio.duration;
+                        audio.volume = Math.random() * 0.3;
+                        audio.play();
+                    } else {
+                        audio.pause();
+                    }
+                }
+            });
+        }
+
+        // Start glitch effect
+        setInterval(glitchAudio, 500);
+
+        // Initial play
+        audioElements.forEach(audio => {
+            audio.volume = Math.random() * 0.3;
+            audio.play();
         });
     </script>
 </body>

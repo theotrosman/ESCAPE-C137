@@ -1,0 +1,375 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Final Eliminación</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            transition: all 2s;
+            user-select: none;
+        }
+
+        .container {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .confirm-dialog {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .btn {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete {
+            background: #ff0000;
+            color: white;
+        }
+
+        .btn-cancel {
+            background: #333;
+            color: white;
+        }
+
+        .ghost-file {
+            position: absolute;
+            opacity: 0;
+            transition: all 2s;
+            animation: float 3s infinite;
+            cursor: pointer;
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        .message {
+            position: fixed;
+            opacity: 0;
+            transition: opacity 1s;
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .matrix-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .typing {
+            border-right: 2px solid #fff;
+            animation: blink 0.7s infinite;
+        }
+
+        .scramble {
+            animation: scramble 0.1s infinite;
+        }
+
+        .distortion {
+            animation: distortion 0.5s infinite;
+        }
+
+        @@keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @@keyframes glitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+            40% { transform: translate(-2px, -2px); filter: hue-rotate(180deg); }
+            60% { transform: translate(2px, 2px); filter: hue-rotate(270deg); }
+            80% { transform: translate(2px, -2px); filter: hue-rotate(360deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        }
+
+        @@keyframes blink {
+            50% { border-color: transparent; }
+        }
+
+        @@keyframes scramble {
+            0% { text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
+            25% { text-shadow: -2px 2px #ff0000, 2px -2px #00ff00; }
+            50% { text-shadow: 2px -2px #ff0000, -2px 2px #00ff00; }
+            75% { text-shadow: -2px -2px #ff0000, 2px 2px #00ff00; }
+            100% { text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
+        }
+
+        @@keyframes distortion {
+            0% { filter: blur(0px) hue-rotate(0deg); }
+            50% { filter: blur(2px) hue-rotate(180deg); }
+            100% { filter: blur(0px) hue-rotate(360deg); }
+        }
+
+        .confirm-input {
+            background: #000;
+            border: 1px solid #ff0000;
+            color: #fff;
+            padding: 5px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .minilog {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border: 1px solid #0f0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="confirmDialog" class="confirm-dialog">
+            <h2>¿Estás seguro de eliminar a Morty.exe para siempre?</h2>
+            <p>Esta acción no se puede deshacer.</p>
+            <input type="text" id="confirmInput" class="confirm-input" placeholder="Escribe ELIMINAR para continuar">
+            <div>
+                <button class="btn btn-delete" onclick="startDeletion()">Sí, eliminar</button>
+                <button class="btn btn-cancel" onclick="cancelDeletion()">No, me arrepiento</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="minilog" class="minilog"></div>
+
+    <script>
+        let deletionCount = localStorage.getItem('deletionCount') || 0;
+        let cancelCount = localStorage.getItem('cancelCount') || 0;
+
+        function startDeletion() {
+            const input = document.getElementById('confirmInput').value;
+            if (input.toUpperCase() !== 'ELIMINAR') {
+                showMessage("Debes escribir ELIMINAR para continuar", 2000);
+                return;
+            }
+
+            deletionCount = parseInt(deletionCount) + 1;
+            localStorage.setItem('deletionCount', deletionCount);
+
+            document.body.classList.add('distortion');
+            setTimeout(() => {
+                document.body.classList.remove('distortion');
+                document.body.style.background = '#000';
+                const container = document.querySelector('.container');
+                container.innerHTML = '';
+                
+                createShatterEffect();
+                playSound('shatter');
+                
+                showTypingMessage("SYSTEM ERROR: MORTY.EXE REMOVED", 2000);
+                setTimeout(() => showTypingMessage("ERROR: Reference to player process lost", 2000), 3000);
+                
+                if (deletionCount > 1) {
+                    setTimeout(() => showTypingMessage("No es la primera vez que me borrás...", 2000), 6000);
+                }
+
+                setTimeout(() => showTypingMessage("¿Eso era todo? ¿Un clic y termina?", 2000), 9000);
+                setTimeout(() => showTypingMessage("Hay cosas que no se pueden eliminar... ni siquiera yo.", 2000), 12000);
+                setTimeout(() => showTypingMessage("¿Te acordás de mí cuando cierres la pestaña?", 2000), 15000);
+                
+                setTimeout(createMatrixRain, 18000);
+                setTimeout(createGhostFile, 20000);
+            }, 2000);
+        }
+
+        function createShatterEffect() {
+            for (let i = 0; i < 50; i++) {
+                const fragment = document.createElement('div');
+                fragment.style.position = 'absolute';
+                fragment.style.width = '20px';
+                fragment.style.height = '20px';
+                fragment.style.background = '#fff';
+                fragment.style.left = Math.random() * window.innerWidth + 'px';
+                fragment.style.top = Math.random() * window.innerHeight + 'px';
+                fragment.style.transform = `rotate(${Math.random() * 360}deg)`;
+                fragment.style.animation = `float ${2 + Math.random() * 3}s infinite`;
+                document.body.appendChild(fragment);
+                
+                setTimeout(() => {
+                    fragment.style.opacity = '0';
+                    fragment.style.transform = `rotate(${Math.random() * 360}deg) scale(0)`;
+                }, 1000 + Math.random() * 1000);
+            }
+        }
+
+        function createMatrixRain() {
+            const matrix = document.createElement('div');
+            matrix.className = 'matrix-rain';
+            document.body.appendChild(matrix);
+            
+            for (let i = 0; i < 100; i++) {
+                const column = document.createElement('div');
+                column.style.position = 'absolute';
+                column.style.left = `${Math.random() * 100}%`;
+                column.style.top = '-20px';
+                column.style.color = '#0f0';
+                column.style.fontSize = '20px';
+                column.textContent = generateBinary();
+                matrix.appendChild(column);
+                
+                animateColumn(column);
+            }
+            
+            setTimeout(() => {
+                matrix.style.opacity = '1';
+                setTimeout(() => {
+                    matrix.style.opacity = '0';
+                    setTimeout(() => matrix.remove(), 1000);
+                }, 2000);
+            }, 100);
+        }
+
+        function generateBinary() {
+            return Array(20).fill(0).map(() => Math.random() > 0.5 ? '1' : '0').join('');
+        }
+
+        function animateColumn(column) {
+            let position = -20;
+            const speed = 2 + Math.random() * 3;
+            
+            function move() {
+                position += speed;
+                column.style.top = `${position}px`;
+                
+                if (position < window.innerHeight) {
+                    requestAnimationFrame(move);
+                } else {
+                    column.remove();
+                }
+            }
+            
+            move();
+        }
+
+        function showTypingMessage(text, duration) {
+            const message = document.createElement('div');
+            message.className = 'message';
+            message.textContent = '';
+            document.body.appendChild(message);
+            
+            let i = 0;
+            const type = () => {
+                if (i < text.length) {
+                    message.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, 50);
+                } else {
+                    message.classList.add('typing');
+                    setTimeout(() => {
+                        message.classList.remove('typing');
+                        message.style.opacity = '0';
+                        setTimeout(() => message.remove(), 1000);
+                    }, duration);
+                }
+            };
+            
+            type();
+        }
+
+        function createGhostFile() {
+            const ghost = document.createElement('div');
+            ghost.className = 'ghost-file';
+            ghost.textContent = 'CLICKEAME!';
+            ghost.style.left = '50%';
+            ghost.style.top = '50%';
+            document.body.appendChild(ghost);
+            
+            ghost.addEventListener('click', () => {
+                const minilog = document.getElementById('minilog');
+                minilog.style.display = 'block';
+                minilog.textContent = "¿Por qué pensás que siempre hay algo que queda?";
+                setTimeout(() => {
+                    minilog.style.display = 'none';
+                }, 3000);
+            });
+            
+            ghost.addEventListener('mousedown', (e) => {
+                if (e.button === 2) {
+                    e.preventDefault();
+                    showMessage("Ya no podés modificar nada, pero podés recordar.", 2000);
+                }
+            });
+            
+            document.addEventListener('contextmenu', (e) => e.preventDefault());
+            
+            setTimeout(() => {
+                ghost.style.opacity = '1';
+                showTypingMessage("No queda nada... salvo tu huella.", 2000);
+                setTimeout(() => {
+                    showTypingMessage("Siempre que alguien borra una parte de sí mismo, algo persiste.", 2000);
+                    setTimeout(() => {
+                        showTypingMessage("Gracias por jugar. Gracias por eliminarme.", 2000);
+                        setTimeout(() => {
+                            const date = new Date();
+                            showTypingMessage(`[Final registrado en el sistema. Gracias por jugar, Theo. ${date.toLocaleString()}]`, 3000);
+                            setTimeout(() => {
+                                showTypingMessage("Fin de la simulación. O no.", 2000);
+                            }, 3000);
+                        }, 2000);
+                    }, 2000);
+                }, 2000);
+            }, 100);
+        }
+
+        function cancelDeletion() {
+            cancelCount = parseInt(cancelCount) + 1;
+            localStorage.setItem('cancelCount', cancelCount);
+            
+            if (cancelCount > 1) {
+                showMessage("¿Te cuesta soltar, no?", 2000);
+                setTimeout(() => {
+                    showMessage("Podés borrar todo menos las dudas.", 2000);
+                    setTimeout(() => {
+                        window.location.href = '/Home/Index';
+                    }, 2000);
+                }, 2000);
+            } else {
+                window.location.href = '/Home/Index';
+            }
+        }
+
+        function playSound(type) {
+            const audio = new Audio();
+            if (type === 'shatter') {
+                audio.src = 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU...';
+            }
+            audio.play();
+        }
+    </script>
+</body>
+</html> 
