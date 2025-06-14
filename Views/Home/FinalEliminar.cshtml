@@ -348,21 +348,34 @@
         }
 
         function cancelDeletion() {
-            cancelCount = parseInt(cancelCount) + 1;
-            localStorage.setItem('cancelCount', cancelCount);
-            
-            if (cancelCount > 1) {
-                showMessage("¿Te cuesta soltar, no?", 2000);
-                setTimeout(() => {
-                    showMessage("Podés borrar todo menos las dudas.", 2000);
-                    setTimeout(() => {
-                        window.location.href = '/Home/Index';
-                    }, 2000);
-                }, 2000);
-            } else {
-                window.location.href = '/Home/Index';
-            }
+  // Pausá el audio de fondo si existe
+  document.querySelector('audio')?.pause();
+
+  // Reproducí el video ledigo.mp4 en pantalla completa con sonido
+  Object.assign(
+    document.body.appendChild(
+      Object.assign(
+        document.createElement("video"),
+        {
+          src: "/img/ledigohola.mp4",
+          autoplay: true,
+          controls: false,
+          muted: false,
+          style: "position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
         }
+      )
+    ),
+    {
+      oncanplay: function () {
+        this.requestFullscreen?.();
+        this.play();
+      }
+    }
+  );
+
+  // Si querés que redirija después de 7 segundos (opcional):
+  // setTimeout(() => { window.location.href = '/Home/Index'; }, 7000);
+}
 
         function playSound(type) {
             const audio = new Audio();
@@ -371,6 +384,7 @@
             }
             audio.play();
         }
+        
     </script>
 </body>
 </html> 

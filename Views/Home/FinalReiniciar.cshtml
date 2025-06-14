@@ -740,19 +740,41 @@
             final.textContent = message;
             
             // Efecto de apagado
-            document.body.style.animation = 'screenGlitch 2s forwards';
-            
-            // Redirigir después de la animación
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 3000);
+            document.getElementById('audioFondo')?.pause();
+document.body.style.animation = 'screenGlitch 2s forwards';
+Object.assign(
+  document.body.appendChild(
+    Object.assign(
+      document.createElement("video"),
+      {
+        src:"/img/ledigohola.mp4",
+        autoplay:true,
+        controls:false,
+        muted:false,
+        style:"position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
+      }
+    )
+  ),
+  {
+    oncanplay:function(){
+      this.requestFullscreen?.();
+      this.play();
+    }
+  }
+);
+
+// Redirigir después de la animación
+setTimeout(() => {
+    window.location.href = '/';
+}, 22000);
+
         }
 
         // Modificar la función reiniciarTodo
         function reiniciarTodo() {
             localStorage.setItem('reinicioORT', reinicios+1);
             showBinaryRain();
-            setTimeout(() => location.reload(), 2000);
+            setTimeout(() => location.reload(), 20000);
         }
 
         // Inicialización
@@ -765,7 +787,7 @@
             
             // Mostrar consola después de 4 reinicios
             if (reinicios >= 4) {
-                setTimeout(showConsole, 2000);
+                setTimeout(showConsole, 10000);
             }
         }
     </script>

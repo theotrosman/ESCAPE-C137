@@ -463,6 +463,29 @@
                 document.getElementById('finalMessage').style.display = 'block';
             }, 2000);
         }, 15000);
+        setTimeout(() => {
+  document.querySelector('audio')?.pause(); // apaga audio de fondo
+  Object.assign(
+    document.body.appendChild(
+      Object.assign(
+        document.createElement("video"),
+        {
+          src: "/img/ledigohola.mp4",
+          autoplay: true,
+          controls: false,
+          muted: false,
+          style: "position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
+        }
+      )
+    ),
+    {
+      oncanplay: function () {
+        this.requestFullscreen?.();
+        this.play();
+      }
+    }
+  );
+}, 28000); 
     </script>
 </body>
 </html>
