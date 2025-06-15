@@ -1,14 +1,49 @@
-Tutorial absoluto de Rooms:
-Para ingresar a cualquier room ingresar directo mediante el enlace /Home/Room(Numero de room)
--> E ingresar la clave "adminmvc" 
+🚪🗝️ LLAVE MAESTRA - ESCAPE ROOM RICK & MORTY (ADMIN)
 
-Como pasar rooms:
-Room1/GameStart: Linea con el bug: línea 32 / linea 32 / 32
-Room2: Ingresar el numero 479 (Adivinable entrando al Source y leyendo la pista de Rick)
-Room3: La linea genética correcta es: "ATGCGTACGC"
-Room4: Ordenar los bloques en el texto indicado y despues usar 3 comandos: git add . / git commit -m "upload rick" / git push
-Room5: Leer la realidad Sigma: Sacar el valor del lugar del abecedario de la primera letra de la lista de 10 letras del README y pasarlo a base 3: Eso te da 104 en base 10 -> (10212 en base 3) (Que es la clave correcta)
-Room6: No hay truco, llegar a 15 clickeando
-Room7: No hay truco, llegar a $3300 jugando al juego de cartas, ESPACIO para mostrar/ocultar las reglas
-Room8: Flappy bird con la camara (Abrir la mano es saltar y cerrarla es caer)
-Room9: Abrir 9 aplicaciones hasta que aparezca el pop-up de Morty malvado y ahi elegir el final de los 3 que mas te guste
+--- ACCESO DIRECTO A CUALQUIER ROOM ---
+URL: /Home/Room[NUMERO]          Ej: /Home/Room3
+CLAVE: adminmvc
+
+--- SOLUCIONES Y TIPS DE TODAS LAS ROOMS ---
+
+🌀 GameStart / Room1:
+  - Solución: Escribir "línea 32", "linea 32" o simplemente "32" (el bug está en esa línea).
+
+💾 Room2:
+  - Clave: 479
+  - (La podés deducir revisando el Source y la pista de Rick.)
+
+🧬 Room3:
+  - Secuencia genética correcta: **ATGCGTACGC**
+  - (Leé en vertical. Es la única columna estable.)
+
+🧑‍💻 Room4:
+  1. Ordená los bloques del texto como se indica.
+  2. Escribí estos 3 comandos en orden:
+     - git add .
+     - git commit -m "upload rick"
+     - git push
+
+📖 Room5:
+  - Realidad Sigma: Sacá el valor del abecedario de la **primera letra** de la lista de 10 letras del README y suma esos valores.
+  - Pasá ese número a base 3.
+  - Resultado: **104 (decimal) → 10212 (base 3)**
+  - (Esta es la clave correcta.)
+
+🧪 Room6:
+  - No hay truco: llegá a 15 clickeando.
+
+🃏 Room7:
+  - No hay truco: llegá a $3300 jugando al juego de cartas.
+  - TIP: Presioná **ESPACIO** para mostrar/ocultar las reglas.
+
+🦆 Room8:
+  - Flappy Bird con la cámara.
+  - Abrí la mano para saltar, cerrala para caer.
+
+👹 Room9:
+  - Abrí 9 aplicaciones (ventanas).
+  - Cuando aparezca el pop-up de Morty malvado, elegí tu final favorito entre 3 opciones.
+
+---
+🔑 ¡Listo! Escape garantizado si seguís esta guía. Cualquier duda, consultá al Consejo de Ricks.
