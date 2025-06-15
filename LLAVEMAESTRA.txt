@@ -1,0 +1,14 @@
+Tutorial absoluto de Rooms:
+Para ingresar a cualquier room ingresar directo mediante el enlace /Home/Room(Numero de room)
+-> E ingresar la clave "adminmvc" 
+
+Como pasar rooms:
+Room1/GameStart: Linea con el bug: línea 32 / linea 32 / 32
+Room2: Ingresar el numero 479 (Adivinable entrando al Source y leyendo la pista de Rick)
+Room3: La linea genética correcta es: "ATGCGTACGC"
+Room4: Ordenar los bloques en el texto indicado y despues usar 3 comandos: git add . / git commit -m "upload rick" / git push
+Room5: Leer la realidad Sigma: Sacar el valor del lugar del abecedario de la primera letra de la lista de 10 letras del README y pasarlo a base 3: Eso te da 104 en base 10 -> (10212 en base 3) (Que es la clave correcta)
+Room6: No hay truco, llegar a 15 clickeando
+Room7: No hay truco, llegar a $3300 jugando al juego de cartas, ESPACIO para mostrar/ocultar las reglas
+Room8: Flappy bird con la camara (Abrir la mano es saltar y cerrarla es caer)
+Room9: Abrir 9 aplicaciones hasta que aparezca el pop-up de Morty malvado y ahi elegir el final de los 3 que mas te guste

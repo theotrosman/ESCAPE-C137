@@ -3524,16 +3524,11 @@
 <script>
 // Add this at the beginning of your script section
 const songs = [
-  '/img/celestesong.mp3',
   '/img/nightcall.mp3',
   '/img/pokerface.mp3',
-  '/img/karmapolice.mp3',
   '/img/balatrotheme.mp3',
-  '/img/yuugensong.mp3',
-   '/img/cemetrygates.mp3',
-    '/img/domogenesis.mp3',
      '/img/americanboy.mp3',
-      '/img/touchthesky.mp3'  // Fixed filename
+      '/img/touchthesky.mp3'
 ];
 
 let currentSong = null;
@@ -3601,26 +3596,28 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   const intro = [
-    "[C137_CONSOLE] Iniciando simulación...",
-    "[RICK] *burp* M-morty... ¿Sabes qué es peor que estar atrapado en un bucle temporal?",
-    "[MORTY] Ohh jeez Rick, ¿q-qué cosa?",
-    "[RICK] Estar atrapado en un JUEGO DE CARTAS INTERDIMENSIONAL, Morty!",
-    "[SISTEMA] ERROR: Detección de anomalía C-137 en el tejido espacio-temporal",
-    "[RICK] Algún idiota convirtió nuestra realidad en un mazo de cartas, Morty.",
-    "[RICK] Y no cualquier idiota, Morty. Fue el CONSEJO DE RICKS.",
-    "[MORTY] P-pero Rick, ¿por qué harían eso?",
-    "[RICK] Porque son unos burócratas aburridos, Morty! *burp* Crearon el BALATRO CODEX.",
-    "[RICK] Un sistema para contener Ricks problemáticos en bucles de juegos de cartas.",
-    "[PC] Probabilidad de escape: 0.0137%",
-    "[RICK] ¡CÁLLATE MÁQUINA ESTÚPIDA! *burp* Morty, necesitamos $3100 para hackear el sistema.",
-    "[PC] ERROR: INTENTO DE OVERRIDE DETECTADO",
-    "[RICK] Cada carta es un fragmento de realidad cristalizada, Morty.",
-    "[RICK] Las cartas raras son grietas en la matriz... podemos usarlas.",
-    "[SISTEMA] ADVERTENCIA: INTEGRIDAD DE LA SIMULACIÓN AL 78% Y DESCENDIENDO",
-    "[MEMORIA] Ecos de las salas anteriores resuenan en el espacio-tiempo...",
-    "[RICK] ¡VAMOS MORTY! ¡ELIGE BIEN O NOS QUEDAREMOS AQUÍ PARA SIEMPRE!",
-    "[C137_CONSOLE] Iniciando protocolo de contención... Buena suerte."
-  ];
+  "[C137_CONSOLE] >>> Boot sequence initiated...",
+  "[C137_CONSOLE] >>> Analizando coherencia multidimensional...",
+  "[RICK] *buuurp* M-morty, siento que mi código fuente tiene memoria RAM... ¡y resaca!",
+  "[MORTY] Uhhh, Rick, ¿eso es malo o... tipo, existencialista?",
+  "[RICK] ¿Existencialista? No, ¡es peor! Estamos atrapados en un juego de cartas interdimensional, Morty.",
+  "[SISTEMA] ALERTA: Anomalía C-137 alterando la secuencia lógica.",
+  "[RICK] Algún Rick del consejo se aburrió y convirtió nuestra realidad en un mazo bugueado.",
+  "[RICK] Y ahora todo es probabilidades, rarezas, glitches... como la vez que mezclé CSS con tequila.",
+  "[MORTY] ¡Oh jeez Rick! ¿El CSS también tiene bugs existenciales?",
+  "[RICK] Morty, en este multiverso hasta las cartas tienen traumas no resueltos.",
+  "[SISTEMA] ERROR: Detected overflow en la variable $escapatoria. Nivel crítico.",
+  "[RICK] ¿Ves esa baraja? Cada carta es una grieta en la realidad. Si jugamos bien, hackeamos la simulación.",
+  "[PC] Probabilidad de escape: 0.0137%. Consejo: ni te gastes.",
+  "[RICK] ¡CÁLLATE, SOFWARE DE CUARTA! Morty, necesitamos $3100 virtuales para un exploit interdimensional.",
+  "[PC] ERROR: Intento de acceso root denegado.",
+  "[RICK] ¿Recordás los fragmentos raros? Usalos, Morty. Son como parches de código en la Matrix.",
+  "[SISTEMA] INTEGRIDAD DE LA SIMULACIÓN: 78% y descendiendo... ¿Te asustás, Morty? Yo sí.",
+  "[MEMORIA] Flashback: los bugs de las salas anteriores se sienten como errores de RAM.",
+  "[RICK] ¡ATENCIÓN, MORTY! Cada elección importa. Si la pifiás, nos convertimos en variables huérfanas.",
+  "[C137_CONSOLE] >>> Protocolo de contención activado. Preparate para el caos.",
+  "[C137_CONSOLE] >>> Sugerencia: Apagá la compu... si te animás."
+];
 
   let i = 0;
   const escribirIntro = setInterval(() => {
@@ -3645,7 +3642,7 @@ window.addEventListener('DOMContentLoaded', () => {
       startAmbientEffects();
       enableButtons();
     }
-  }, 1500);
+  }, 1800);
 
   if (!document.getElementById('life-bg')) {
     const lifeCanvas = document.createElement('canvas');

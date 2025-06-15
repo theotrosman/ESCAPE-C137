@@ -226,7 +226,12 @@
   <audio id="intro-audio">
     <source src="/img/adultswimintro.mp3" type="audio/mp3">
   </audio>
-
+<audio id="typewriter-audio">
+  <source src="/img/sfxtype.mp3" type="audio/mp3">
+</audio>
+<audio id="bg-fightclub" loop>
+  <source src="/img/fightclub.mp3" type="audio/mp3">
+</audio>
   <div id="overlay">
     <div class="console-text" id="typewriter"></div>
     <button class="ascii-button" id="btn-juego" onclick="entrarJuego()">> ACCEDER AL CÓDIGO FUENTE <</button>
@@ -318,36 +323,67 @@ function scrambleWrite(text, color, onDone, glitch = false) {
   scrambleStep();
 }
 
+let typeAudio = document.getElementById("typewriter-audio");
+let typeAudioPlaying = false;
+
+function startTypeAudio() {
+  if (!typeAudio) return;
+  typeAudio.loop = true;
+  typeAudio.currentTime = 0;
+  typeAudio.volume = 0.7;
+  // Si ya está sonando, no la dupliques
+  if (!typeAudioPlaying) {
+    typeAudio.play().catch(() => {});
+    typeAudioPlaying = true;
+  }
+}
+function stopTypeAudio() {
+  if (!typeAudio) return;
+  typeAudio.pause();
+  typeAudio.currentTime = 0;
+  typeAudioPlaying = false;
+}
+const bgAudio = document.getElementById('bg-fightclub');
+bgAudio.volume = 0.70; // O el volumen que prefieras
+let bgAudioStarted = false; // Para asegurarse que solo arranca una vez
 
 function typeLine() {
+  // Arranca el audio de tipeo y el de fondo solo la primera vez
+  if (currentLine === 0) {
+    startTypeAudio();
+    if (!bgAudioStarted) {
+      bgAudio.currentTime = 0;
+      bgAudio.play().catch(()=>{});
+      bgAudioStarted = true;
+    }
+  }
+
   if (currentLine < lines.length) {
     let line = lines[currentLine];
-    // ¿Es la línea del error?
     if (line.includes("ERROR FATAL")) {
       scrambleWrite(line, 'var(--err)', () => {
         flashBackground();
         currentLine++;
         setTimeout(typeLine, 900);
       }, true);
-    }
-    // ¿Es la línea de acceso concedido? (scramble + glitch sutil)
-    else if (line.includes("ACCESO PARCIAL")) {
+    } else if (line.includes("ACCESO PARCIAL")) {
       scrambleWrite(line, 'var(--fg)', () => {
         currentLine++;
         setTimeout(typeLine, 900);
       }, true);
-    }
-    // Resto de líneas normales (scramble sin glitch)
-    else {
+    } else {
       scrambleWrite(line, 'var(--fg)', () => {
         currentLine++;
         setTimeout(typeLine, 250);
       });
     }
   } else {
+    stopTypeAudio();
     triggerEpicReveal();
   }
 }
+
+
 
 function triggerEpicReveal() {
   const btn1 = document.getElementById("btn-juego");
