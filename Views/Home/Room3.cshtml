@@ -923,9 +923,27 @@
                 consola.appendChild(entidad);
             }, 4000);
 
-            setTimeout(() => {
-                window.location.href = '/home/room4';
-            }, 7000);
+            fetch('/Home/CompleteRoom/3', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) throw new Error('Error al completar la sala');
+    return response.json();
+})
+.then(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room4';
+    }, 7000);
+})
+.catch(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room4';
+    }, 7000);
+});
+
         }
 
         function lanzarPopUp() {

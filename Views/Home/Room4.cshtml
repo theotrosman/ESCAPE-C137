@@ -1,3 +1,4 @@
+@@ -1,691 +1,756 @@
 @{
     Layout = null;
 }
@@ -7,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>:3</title>
+    <title>Room 4 - Memory Collapse</title>
     <style>
         :root {
             --bg: #000;
@@ -417,28 +418,60 @@
             100% {
                 transform: scaleX(1.2) rotate(-1deg);
             }
+    @@keyframes glitch {
+  0% { transform: skew(0.5deg); }
+  50% { transform: translateX(-2px) scale(1.02); color: #00ffff; }
+  100% { transform: skew(-0.5deg); }
+}
         }
 
+@@keyframes glitchHeavy {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-4px, 2px); }
+  50% { transform: translate(3px, -3px); color: #ff00ff; }
+  75% { transform: translate(-5px, 1px); }
+  100% { transform: translate(0, 0); }
+}
         @@keyframes glitch {
             0% {
                 transform: skew(0.5deg);
             }
 
+@@keyframes shakeFinal {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(2px, 2px); }
+  100% { transform: translate(-2px, -2px); }
+}
             50% {
                 transform: translateX(-2px) scale(1.02);
                 color: #00ffff;
             }
 
+@@keyframes explodeOut {
+  0% { box-shadow: 0 0 10px lime; }
+  100% { box-shadow: 0 0 50px #39ff14; }
+}
             100% {
                 transform: skew(-0.5deg);
             }
         }
 
+@@keyframes flicker {
+  0% { opacity: 1; }
+  50% { opacity: 0.2; }
+  100% { opacity: 1; }
+}
         @@keyframes glitchHeavy {
             0% {
                 transform: translate(0, 0);
             }
 
+@@keyframes slideWarp {
+  0% { transform: scaleX(1) rotate(0deg); }
+  100% { transform: scaleX(1.2) rotate(-1deg); }
+}
             25% {
                 transform: translate(-4px, 2px);
             }
@@ -448,6 +481,9 @@
                 color: #ff00ff;
             }
 
+@@keyframes invertFlash {
+  0%, 100% { filter: invert(0); }
+  50% { filter: invert(1); }
             75% {
                 transform: translate(-5px, 1px);
             }
@@ -528,7 +564,8 @@
 
 <body>
     <audio autoplay loop>
-        <source src="/img/fightclub.mp3" type="audio/mpeg" />
+        <source src="/img/karmapolice.mp3" type="audio/mpeg" />
+        <source src="/img/yuugensong.mp3" type="audio/mpeg" />
     </audio>
 
     <div id="matrixOverlay"></div>
@@ -540,13 +577,18 @@
     <div id="gameContainer">
         <div id="timer">Tiempo restante: <span id="countdown">60</span>s</div>
         <div class="console" id="console">
+            [Rick]: Morty... escuchá, este código está lleno de bugs.
+            [Rick]: Estoy atrapado en la RAM. Hay bloques de memoria rotos...
             [Rick]: Morty... el hacker está intentando corromper la memoria del sistema.
             [Rick]: Estoy atrapado en la RAM, pero encontré una vulnerabilidad en su código.
             [Rick]: Hay bloques de memoria que el hacker no pudo corromper...
             [Rick]: Tenés que arrastrarlos en este orden exacto:
             [Rick]: T-R-A-S-C-E-N-D-E-R-_-R-E-A-L-I-D-A-D
+            [Rick]: Si lo hacés bien, después vas a tener que ejecutar los comandos de git...
             [Rick]: Si lo hacés bien, vas a poder acceder al repositorio del hacker...
             [Rick]: El commit debe ser: "upload rick"
+            [Rick]: ¡Si te equivocás, el multiverso colapsa, Morty!
+
             [Rick]: ¡Si te equivocás, el hacker obtendrá acceso total al sistema, Morty!
         </div>
         <div class="memory-dump" id="dump"></div>
@@ -748,9 +790,17 @@ setInterval(() => {
 }
 
 
-
-
+setTimeout(() => {
+    const intro = document.getElementById('introContainer');
+    if (intro.style.display !== 'none') {
+        intro.style.display = 'none';
+        document.getElementById('gameContainer').style.display = 'flex';
+        console.warn("Forzando fin de intro por timeout.");
+        startGame();
+    }
+}, 10000);
     </script>
+    
 </body>
 
 </html>

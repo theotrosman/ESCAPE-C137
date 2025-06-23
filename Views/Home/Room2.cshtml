@@ -916,96 +916,28 @@
             console.log('Input:', input, 'Expected:', valorDecimal, 'Type:', typeof input, typeof valorDecimal);
 
             if (input === valorDecimal.toString()) {
-                console.log('¡Respuesta correcta!');
-                gameState.completed = true;
-                
-                // Efectos de victoria mejorados
-                elements.mensaje.innerHTML = `
-                    <span style="color: #00ff00; font-size: 1.2em; text-shadow: 0 0 10px #00ff00;">
-                        ✔️ ¡Perfecto Morty! Decodificaste el parche.
-                    </span>`;
-                elements.mensaje.classList.add('show');
-                
-                // Efectos visuales de victoria
-                document.body.classList.add('victory-flash');
-                setTimeout(() => document.body.classList.remove('victory-flash'), 1000);
+    fetch('/Home/CompleteRoom/2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Error al completar la sala');
+        return response.json();
+    })
+    .then(() => {
+        setTimeout(() => {
+            window.location.href = "/Home/Room3";
+        }, 3000);
+    })
+    .catch(() => {
+        setTimeout(() => {
+            window.location.href = "/Home/Room3";
+        }, 3000);
+    });
+}
 
-                // Crear explosión de partículas
-                for (let i = 0; i < 50; i++) {
-                    createVictoryParticle();
-                }
-
-                // Activar portal grande con efectos mejorados
-                const portalFinal = document.createElement('div');
-                portalFinal.className = 'portal-container';
-                portalFinal.style.left = '50%';
-                portalFinal.style.top = '50%';
-                portalFinal.style.transform = 'translate(-50%, -50%)';
-                portalFinal.style.zIndex = '9999';
-                
-                const innerPortalFinal = document.createElement('div');
-                innerPortalFinal.className = 'portal';
-                innerPortalFinal.style.width = '300px';
-                innerPortalFinal.style.height = '300px';
-                innerPortalFinal.style.animation = 'portalPulse 1s infinite, victoryPortal 2s forwards';
-                
-                portalFinal.appendChild(innerPortalFinal);
-                document.body.appendChild(portalFinal);
-
-                // Sonido de victoria
-                const victorySound = new Audio('/sounds/victory.mp3');
-                victorySound.volume = 0.5;
-                victorySound.play().catch(() => {});
-
-                // Marcar Room2 como completada y redireccionar
-                fetch('/Home/CompleteRoom/2', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Room2 completed:', data);
-                    // Forzar la redirección después de 3 segundos
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room3";
-                    }, 3000);
-                })
-                .catch(error => {
-                    console.error('Error completing room:', error);
-                    // Intentar redirección de todos modos después de 3 segundos
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room3";
-                    }, 3000);
-                });
-            } else {
-                // Efectos de error mejorados
-                elements.mensaje.innerHTML = `
-                    <span style="color: #ff0000; text-shadow: 0 0 10px #ff0000;">
-                        ❌ Nah Morty... ese número no desbloquea nada.
-                        ${gameState.intentos >= gameState.maxIntentos ? 
-                          '<br>Tal vez deberías revisar la consola...' : ''}
-                    </span>`;
-                elements.mensaje.classList.add('show');
-                
-                // Efectos visuales de error
-                document.body.classList.add('error-shake');
-                setTimeout(() => document.body.classList.remove('error-shake'), 500);
-
-                // Crear distorsión de pantalla
-                createScreenDistortion();
-
-                // Sonido de error
-                const errorSound = new Audio('/sounds/error.mp3');
-                errorSound.volume = 0.3;
-                errorSound.play().catch(() => {});
-            }
         }
 
         // Nuevas funciones para efectos visuales
