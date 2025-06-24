@@ -34,7 +34,7 @@ CLAVE: adminmvc
   - No hay truco: llegá a 15 clickeando.
 
 🃏 Room7:
-  - No hay truco: llegá a $3300 jugando al juego de cartas.
+  - No hay truco: llegá a $3100 jugando al juego de cartas.
   - TIP: Presioná **ESPACIO** para mostrar/ocultar las reglas.
 
 🦆 Room8:
