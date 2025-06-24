@@ -1,4 +1,4 @@
-<h1 align="center">🧬 ESCAPE-C137: Rick's Multiversal Lockdown</h1>
+<h1 align="center">꩜ESCAPE-C137꩜
 
 <p align="center">
   <code>[REPOSITORIO CORROMPIDO]</code><br>
