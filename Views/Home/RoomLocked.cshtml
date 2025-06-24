@@ -2,6 +2,58 @@
     Layout = null;
     var roomNumber = ViewBag.RoomNumber;
     var roomName = ViewBag.RoomName ?? $"Room{roomNumber}";
+
+    string themeColor = "#33ff33"; // default
+    string scanText = "[ :: ESCANEANDO TRAZAS DE REALIDAD :: ]";
+    string asciiMsg = ">>> [LOCKED] Acceso denegado";
+    string music = "/img/cuandonoestas.mp3";
+    string emoji = "";
+
+    switch (roomNumber)
+    {
+        case 1:
+            themeColor = "#66ffcc"; // consola clásica
+            scanText = "[ :: ESCANEANDO MATRIZ INICIAL :: ]";
+            asciiMsg = ">>> [LOCKED] Nodo raíz sin autorización";
+            break;
+        case 2:
+            themeColor = "#ffcc33";
+            scanText = "[ :: FLUCTUACIÓN BINARIA DETECTADA :: ]";
+            asciiMsg = ">>> [LOCKED] Lógica temporal colapsada";
+            break;
+        case 3:
+            themeColor = "#bb66ff";
+            scanText = "[ :: SECUENCIA GENÉTICA DESINCRONIZADA :: ]";
+            asciiMsg = ">>> [LOCKED] ADN digital bloqueado";
+            break;
+        case 4:
+            themeColor = "#00ccff";
+            scanText = "[ :: IA ANÓMALA DETECTADA EN RED NEURAL :: ]";
+            asciiMsg = ">>> [LOCKED] Conciencia artificial en conflicto";
+            break;
+        case 5:
+            themeColor = "#ff4444";
+            scanText = "[ :: FRAGMENTACIÓN CUÁNTICA INESTABLE :: ]";
+            asciiMsg = ">>> [LOCKED] Núcleo en vórtice digital";
+            break;
+        case 6:
+            themeColor = "#ff66cc";
+            scanText = "[ :: PORTAL DIMENSIONAL NO VALIDADO :: ]";
+            asciiMsg = ">>> [LOCKED] Singularidad fuera de fase";
+            break;
+        case 7:
+            themeColor = "#ff99cc"; // coquette
+            scanText = "────୨ৎ ESCANEANDO COQUETTEX SYSTEM ྀི୨˚♡˚୧";
+            asciiMsg = ">>> El Codex Coquettex te rechaza ✧૮₍ ´• ˕ •` ₎ა✧";
+            emoji = "♡‧₊˚ʚ🃏ɞ˚₊‧";
+            music = "/img/ultraviolence.mp3";
+            break;
+        case 8:
+            themeColor = "#ffffff";
+            scanText = "[ :: FUSIÓN MULTIVERSAL INCOMPLETA :: ]";
+            asciiMsg = ">>> [LOCKED] Puerta final aún inestable";
+            break;
+    }
 }
 
 <!DOCTYPE html>
@@ -9,146 +61,206 @@
 <head>
     <meta charset="UTF-8">
     <title>Room @roomNumber Bloqueada</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #000;
-            --fg: #0f0;
-        }
-
         body {
-            background: var(--bg);
-            color: var(--fg);
-            font-family: 'VT323', monospace;
+            background: #000000;
+color: @themeColor;
+            font-family: 'Share Tech Mono', monospace;
             margin: 0;
+            padding: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            text-align: center;
-            padding: 20px;
+            align-items: center;
+            text-shadow: 0 0 5px @themeColor;
         }
+
+        .terminal-box {
+            background: #000;
+border: 1px solid @themeColor;            padding: 30px;
+            width: 90%;
+            max-width: 800px;
+box-shadow: 0 0 30px @themeColor;
+        }
+
 
         .ascii-lock {
             white-space: pre;
             font-size: 14px;
             line-height: 1;
-            margin-bottom: 30px;
-            text-shadow: 0 0 5px var(--fg);
+            margin-bottom: 20px;
+color: @themeColor;
         }
+
 
         .message {
-            font-size: 24px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 5px var(--fg);
-        }
-
-        .back-button {
-            background: transparent;
-            border: 2px solid var(--fg);
-            color: var(--fg);
-            padding: 10px 20px;
-            font-family: 'VT323', monospace;
             font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
+            margin-bottom: 10px;
         }
 
-        .back-button:hover {
-            background: var(--fg);
-            color: var(--bg);
-        }
-
-        .error-message {
-            color: #ff0000;
-            margin-top: 20px;
+        .cmd-line {
+            width: 100%;
+            display: flex;
+            align-items: center;
             font-size: 18px;
-            text-shadow: 0 0 5px #ff0000;
+            margin-top: 20px;
         }
 
-        .admin-section {
-            margin-top: 30px;
-            padding: 20px;
-            border: 1px dashed var(--fg);
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .admin-section:hover {
-            opacity: 1;
+        .cmd-prefix {
+            margin-right: 10px;
         }
 
         .admin-input {
             background: transparent;
             border: none;
-            border-bottom: 2px solid var(--fg);
-            color: var(--fg);
-            font-family: 'VT323', monospace;
+            border-bottom: 1px solid @themeColor;
+color: @themeColor;
+            flex: 1;
+            font-family: 'Share Tech Mono', monospace;
             font-size: 18px;
-            padding: 5px;
-            margin-right: 10px;
             outline: none;
         }
 
         .admin-input::placeholder {
-            color: rgba(0, 255, 0, 0.5);
+            color: @themeColor;
+        }
+
+        .cursor {
+            animation: blink 1s step-start infinite;
+            margin-left: 5px;
         }
 
         #adminMessage {
-            color: var(--fg);
-            margin-top: 10px;
+            margin-top: 15px;
             font-size: 16px;
             opacity: 0;
             transition: opacity 0.3s;
+            color: @themeColor;
         }
 
         .loading {
             animation: blink 1s infinite;
         }
 
+        .buttons {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .back-button {
+            background: transparent;
+            border: 1px solid @themeColor;
+            color: @themeColor;
+            padding: 10px 25px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: @themeColor;
+            color: #000;
+        }
+
         @@keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0; }
         }
+        .scan-line {
+  font-size: 14px;
+  color: @themeColor;
+  margin-top: 10px;
+  animation: scanText 2s steps(20, end) infinite;
+}
+
+@@keyframes scanText {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+body.error-mode,
+body.error-mode * {
+  --fg: #ff0000 !important;
+  color: #ff0000 !important;
+  border-color: #ff0000 !important;
+  text-shadow: 0 0 6px #ff0000 !important;
+}
+body.error-mode .terminal-box {
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.6) !important;
+}
     </style>
 </head>
 <body>
-    <div class="ascii-lock">
-  +-----------------+
-  |    ________     |
-  |   /        \\    |
-  |  |   ||  |  |   |
-  |  |   ||  |  |   |
-  |  |   ||  |  |   |
-  |  |   ||  |  |   |
-  |   \\________/    |
-  |                 |
-  +-----------------+
-    </div>
+    <audio id="ultra-audio" preload="auto">
+  <source src="/img/ultraviolence.mp3" type="audio/mpeg">
+</audio>
+<audio id="ultra-audio" preload="auto">
+  <source src="/img/ultraviolence.mp3" type="audio/mpeg">
+</audio>
 
-    <div class="message">
-        ACCESO DENEGADO<br>
-        @(roomName == "Room7Codex" ? "Room7Codex" : $"Room {roomNumber}") bloqueada
-    </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const audio = document.getElementById("room-music");
 
-    <div class="error-message">
-        @TempData["ErrorMessage"]
-    </div>
+  const iniciar = () => {
+    // Solo reproducir si no está sonando
+    if (audio.paused) {
+      audio.currentTime = 53.5; // o el segundo que necesites
+      audio.volume = 0.2;
+      audio.play().catch(err => console.warn("No se pudo reproducir:", err));
+    }
 
-    <div class="admin-section">
-        <input type="password" id="adminPass" class="admin-input" placeholder="Código de administrador" onkeydown="checkAdmin(event)">
+    // Desactiva más escuchas después del primero
+    document.removeEventListener("click", iniciar);
+    document.removeEventListener("keydown", iniciar);
+  };
+
+  document.addEventListener("click", iniciar);
+  document.addEventListener("keydown", iniciar);
+});
+</script>
+
+<div class="scan-line" id="scanLine"></div>
+
+
+    <div class="terminal-box">
+        <div class="ascii-lock">
+                      /^--^\     /^--^\     /^--^\
+                      \____/     \____/     \____/
+                     /      \   /      \   /      \
+                    |        | |        | |        |
+                     \__  __/   \__  __/   \__  __/
+|^|^|^|^|^|^|^|^|^|^|^|^\ \^|^|^|^/ /^|^|^|^|^\ \^|^|^|^|^|^|^|^|^|^|^|^|
+| | | | | | | | | | | | |\ \| | |/ /| | | | | | \ \ | | | | | | | | | | |
+########################/ /######\ \###########/ /#######################
+| | | | | | | | | | | | \/| | | | \/| | | | | |\/ | | | | | | | | | | | |
+|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|_|
+        </div>
+
+        <div class="message">
+            ACCESO DENEGADO — @(roomName == "Room7Codex" ? "Room7Codex" : $"Room {roomNumber}") bloqueada
+        </div>
+
+        <div class="cmd-line">
+<span class="cmd-prefix">@emoji Ingresar clave de administrador:</span>
+            <input type="password" id="adminPass" class="admin-input" placeholder="••••••••" onkeydown="checkAdmin(event)">
+            <span class="cursor">█</span>
+        </div>
+
         <div id="adminMessage"></div>
+
+        <div class="buttons">
+            <button class="back-button" onclick="window.location.href='@(roomNumber > 1 ? $"/Home/Room{roomNumber-1}" : "/")'">
+                @(roomNumber > 1 ? $"VOLVER A ROOM {roomNumber-1}" : "IR AL INICIO")
+            </button>
+            <button class="back-button" onclick="window.location.href='/'">IR AL INICIO</button>
+        </div>
     </div>
-
-    <button class="back-button" onclick="window.location.href='@(roomNumber > 1 ? $"/Home/Room{roomNumber-1}" : "/")'">
-        @(roomNumber > 1 ? $"VOLVER A ROOM {roomNumber-1}" : "IR AL INICIO")
-    </button>
-
-    <button class="back-button" onclick="window.location.href='/'" style="margin-left: 10px;">
-        IR AL INICIO
-    </button>
+    <div id="type-effect" class="console-log"></div>
 
     <script>
         function showMessage(message, isLoading = false) {
@@ -166,8 +278,9 @@
             if (e.key === 'Enter') {
                 const pass = document.getElementById('adminPass').value;
                 if (pass === 'adminmvc') {
-                    showMessage('Verificando acceso...', true);
                     
+                    showMessage('[.] Verificando acceso...', true);
+
                     fetch('/Home/AdminUnlock?roomNumber=@roomNumber&roomName=@roomName', {
                         method: 'POST',
                         headers: {
@@ -175,30 +288,132 @@
                         }
                     })
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Error en la respuesta del servidor');
-                        }
+                        if (!response.ok) throw new Error('Respuesta fallida del servidor');
                         return response.json();
                     })
                     .then(data => {
                         if (data.success) {
-                            showMessage('Acceso concedido. Redirigiendo...');
+                            showMessage('[✓] Acceso concedido. Redirigiendo...');
                             setTimeout(() => {
                                 window.location.href = data.redirectTo;
                             }, 1000);
                         } else {
-                            showMessage('Error: ' + (data.message || 'No se pudo desbloquear la room'));
+                            showMessage('[x] Error: ' + (data.message || 'No se pudo desbloquear la sala'));
                         }
                     })
                     .catch(error => {
-                        showMessage('Error: ' + error.message);
+                        showMessage('[x] Error: ' + error.message);
                         console.error('Error:', error);
                     });
                 } else {
-                    showMessage('Código incorrecto');
+showMessage('[x] Clave incorrecta', false, true);
                 }
             }
         }
+        const textoConsola = "> Protocol/R-37:   █  █  █  █  █  █  █  █  █  █ █  █  █  █  █ █  █  █  █  █\n> Realidad-alternativa-inestable\n> Clave/requerida/para/estabilizar...";
+let i = 0;
+function escribirTexto() {
+  if (i < textoConsola.length) {
+    document.getElementById("type-effect").innerText += textoConsola.charAt(i);
+    i++;
+    setTimeout(escribirTexto, 35);
+  }
+}
+escribirTexto();
+function showMessage(message, isLoading = false, isError = false) {
+  const msgElement = document.getElementById('adminMessage');
+  msgElement.textContent = message;
+  msgElement.style.opacity = '1';
+
+  if (isLoading) {
+    msgElement.classList.add('loading');
+  } else {
+    msgElement.classList.remove('loading');
+  }
+
+  if (isError) {
+    document.body.classList.add('error-mode');
+    setTimeout(() => document.body.classList.remove('error-mode'), 1500);
+  }
+}
+
     </script>
+<audio id="room-music" preload="auto">
+    <source src="@music" type="audio/mpeg">
+</audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const audio = document.getElementById("room-music");
+    const iniciar = () => {
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+        document.removeEventListener("click", iniciar);
+        document.removeEventListener("keydown", iniciar);
+    };
+    document.addEventListener("click", iniciar);
+    document.addEventListener("keydown", iniciar);
+});
+</script>
+<script>
+const scanTexts = [
+  "[ :: ANALIZANDO ANOMALÍAS DIMENSIONALES :: ]",
+  "[ :: CARGANDO FRAGMENTOS DEL CÓDIGO ORIGINAL :: ]",
+  "[ :: RECONSTRUYENDO MEMORIA RAM SIMULADA :: ]",
+  "[ :: ERROR: IDENTIDAD DEL USUARIO NO COINCIDE :: ]",
+  "[ :: ACTIVANDO PROTOCOLO C-137 DE CONTENCIÓN :: ]",
+  "[ :: DETECTANDO GLITCHES EN LA ESTRUCTURA DIGITAL :: ]",
+  "[ :: SINCRONIZANDO VARIABLES DEL MULTIVERSO :: ]",
+  "[ :: BUSCANDO CARTAS DEL CODEX PERDIDAS :: ]",
+  "[ :: INESTABILIDAD CUÁNTICA: 87% Y EN AUMENTO :: ]",
+  "[ :: FILTRANDO INPUT COQUETTEX PARA RICK :: ]",
+  "[ :: VALIDANDO FRAGMENTOS DE ESTILO :: ]",
+  "[ :: SISTEMA DETECTÓ TENDENCIA ESTÉTICA PELIGROSA :: ]",
+  "[ :: ESTRUCTURA SIMBÓLICA ALTERADA POR EL USUARIO :: ]",
+  "[ :: DECODIFICANDO EMOCIONES COQUETTEX ░▒░▒░▒ :: ]",
+  "[ :: NO SE ENCONTRÓ LA SUBE :: REINTENTANDO :: ]",
+  "[ :: ANÁLISIS DEL LORE EN CURSO... ESPERÁ :: ]",
+  "[ :: MATRIZ ESTÉTICA NO ACEPTADA POR LA IA PRINCIPAL :: ]",
+  "[ :: PROBABILIDAD DE SALIR: 0.37% Y BAJANDO :: ]",
+  "[ :: REINICIALIZANDO CONSCIENTE DE RICK... ███░░░░░ :: ]"
+];
+
+const scrambleCharset = "▒▓░▌▐█▒▒▌■▄▀◊◆";
+
+function scramble(text) {
+  return text.split("").map(c => {
+    return c === " " ? " " : scrambleCharset[Math.floor(Math.random() * scrambleCharset.length)];
+  }).join("");
+}
+
+function revealLine(text, el, delay = 35) {
+  let current = Array(text.length).fill("");
+  let i = 0;
+  const interval = setInterval(() => {
+    for (let j = 0; j < text.length; j++) {
+      if (j <= i) current[j] = text[j];
+      else if (current[j] !== text[j]) current[j] = scrambleCharset[Math.floor(Math.random() * scrambleCharset.length)];
+    }
+    el.textContent = current.join("");
+    i++;
+    if (i > text.length) clearInterval(interval);
+  }, delay);
+}
+
+function loopScanLines() {
+  const el = document.getElementById("scanLine");
+  let current = 0;
+  function nextLine() {
+    const line = scanTexts[current];
+    revealLine(line, el);
+    current = (current + 1) % scanTexts.length;
+    setTimeout(nextLine, 4000); // espera 4s antes de cambiar
+  }
+  nextLine();
+}
+
+document.addEventListener("DOMContentLoaded", loopScanLines);
+</script>
+
 </body>
-</html> 
+</html>

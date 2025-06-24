@@ -138,6 +138,7 @@
 
         .trophy-card:not(.locked):hover .trophy-info {
             transform: translateY(0);
+            
         }
 
         .trophy-title {
@@ -184,9 +185,45 @@
             background: var(--gold);
             color: #000;
         }
+        body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 0, 0.03),
+    rgba(0, 255, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 100;
+  mix-blend-mode: screen;
+  animation: flicker 1s infinite;
+}
+
+@@keyframes flicker {
+  0% { opacity: 0.95; }
+  50% { opacity: 1; }
+  100% { opacity: 0.95; }
+}
+.trophy-card:not(.locked):hover img {
+  filter: brightness(1.2) contrast(1.3) saturate(1.2);
+  transform: scale(1.03);
+  animation: glitch 0.3s ease-in-out;
+}
+
+@@keyframes glitch {
+  0% { transform: translate(0); }
+  33% { transform: translate(-2px, 1px); }
+  66% { transform: translate(2px, -1px); }
+  100% { transform: translate(0); }
+}
+
     </style>
 </head>
 <body>
+    
 <a href="#" class="back-button" onclick="volverSinIntro(event)">&lt; VOLVER</a>
 
     <div class="container">
@@ -230,6 +267,7 @@
             window.location.href = `/Home/Room${roomNumber}`;
         }
     </script>
+    
 </body>
 </html>
 
