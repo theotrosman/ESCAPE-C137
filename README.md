@@ -24,15 +24,15 @@ Morty, este archivo es una llave.
 Buscá el patrón. Desbloqueá el código.
 Y por favor... no confíes en las variables globales.
 + Dividir
-- Extraer
++ Extraer
 + Codificar
-- Inyectar
++ Inyectar
 + Duplicar
-- Unificar
++ Unificar
 + Reemplazar
-- Añadir
++ Añadir
 + Serializar
-- Terminar
++ Terminar
  ```
 <p align="center"> <sub><code>// Transmisión encerrada en commit efímero</code></sub><br> <sub>Generado por Rick (versión inestable) • Realidad protegida por <code>[MVC]</code></sub> </p>
 
