@@ -13,7 +13,8 @@
 No tengo acceso al controlador. Solo puedo escribir acá.
 
 Este README no es documentación. Es una señal.
-Estoy atrapado en el repositorio. En esta dimensión el backend está bloqueado.
+Estoy atrapado en el repositorio.
+En esta dimensión el backend está bloqueado.
 
 [INTENTO DE ACCESO A MVC]
 ERROR 403 — RickLockedException("readmeOnly = true")
