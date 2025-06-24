@@ -10,7 +10,8 @@
 ```txt
 [RICK CONNECTING...]
 ...Morty... ¿me recibís?...
-No tengo acceso al controlador. Solo puedo escribir acá.
+No tengo acceso al controlador.
+Solo puedo escribir acá.
 
 Este README no es documentación. Es una señal.
 Estoy atrapado en el repositorio.
