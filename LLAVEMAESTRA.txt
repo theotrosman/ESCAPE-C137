@@ -46,4 +46,7 @@ CLAVE: adminmvc
   - Cuando aparezca el pop-up de Morty malvado, elegí tu final favorito entre 3 opciones.
 
 ---
+Recomendaciones: 
+-> En algunas rooms vas a tener que hacer o deshacer zoom para poder ver todos los elementos en pantalla 
+- (Por ejemplo en la room3 a la hora de enviar los comandos vas a tener que hacer tab seguramente para poder ver el boton de enviado)
 🔑 ¡Listo! Escape garantizado si seguís esta guía. Cualquier duda, consultá al Consejo de Ricks.

@@ -3186,23 +3186,30 @@ function closeVideoWindow() {
   win.style.top = (Math.random() * 30 + 10) + '%';
   win.style.left = (Math.random() * 40 + 20) + '%';
   win.style.zIndex = 2000;
+
   win.innerHTML = `
     <div class="window-header">
-      <img src="/img/google-icon.png" style="width:18px;vertical-align:middle;"> 
-      <span style="margin-left:8px;">${
-        app.charAt(0).toUpperCase() + app.slice(1)
-      }</span>
-      <span class="window-close" style="float:right;cursor:pointer;font-size:20px;padding:0 10px;">×</span>
+      <span style="display:flex;align-items:center;">
+        <img src="/img/google-icon.png" style="width:18px;vertical-align:middle;margin-right:8px;"> 
+        ${app.charAt(0).toUpperCase() + app.slice(1)}
+      </span>
+      <div class="window-controls">
+        <div class="window-control window-minimize"></div>
+        <div class="window-control window-maximize"></div>
+        <div class="window-control window-close"></div>
+      </div>
     </div>
-    <div class="window-content" style="width:100%;height:90%;">
+    <div class="window-content" style="width:100%;height:calc(100% - 30px);overflow:hidden;">
       ${fake ? getFakeAppHTML(app) : `<iframe src="${url}" width="100%" height="100%" style="border:0;filter:${filter};"></iframe>`}
     </div>
   `;
+
   document.body.appendChild(win);
 
-  win.querySelector('.window-close').onclick = () => win.remove();
+  // ✅ Hacerla draggable y con controles
+  makeWindowDraggable(win);
+  setupWindowControls(win);
 }
-
 // Fake Calculadora y Word
 function getFakeAppHTML(app) {
   if(app === 'calculadora') {

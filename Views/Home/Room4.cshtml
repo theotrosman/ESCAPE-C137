@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Room 4 - Memory Collapse</title>
+    <title>𖣂</title>
     <style>
         :root {
             --bg: #000;
@@ -622,13 +622,16 @@
         }
 
         const introLines = [
-            '[INICIO ROOM 4: MEMORIA COLAPSADA]',
-            '[Rick]: Morty... abrimos un portal muy profundo.',
-            '[Rick]: Esta RAM está corrupta.',
-            '[Rick]: Ordená bloques o todo se desintegra.',
-            '[Morty]: ¿Y si fallo?',
-            '[Rick]: Entonces no existimos Morty...',
-        ];
+  '[C137_CONSOLE] :: ROOM 4: MEMORIA COLAPSADA INICIADA',
+  '[SISTEMA] Fragmentos de memoria detectados: estado inestable.',
+  '[Rick]: Morty... abrimos un portal demasiado profundo esta vez.',
+  '[Rick]: Esto no es solo RAM corrupta. Es nuestra historia… desencriptada mal.',
+  '[Rick]: Cada bloque está fuera de orden. Como si el tiempo hubiera olvidado cómo seguir.',
+  '[Morty]: ¿Rick, y si me equivoco armando esto?',
+  '[Rick]: Entonces desaparecemos. Como un `console.log()` sin consola.',
+  '[Rick]: Vos, yo, esta línea de código rota... todo se convierte en eco sin runtime.',
+  '[C137_CONSOLE] :: INSTRUCCIÓN: Restaurá la memoria. O colapsá con ella.',
+];
         let idx = 0;
         const introDiv = document.getElementById('introText');
         function showLine() {
@@ -756,8 +759,27 @@ setInterval(() => {
     document.body.appendChild(fx);
     document.body.style.animation = 'shakeFinal 0.4s infinite';
 
-    setTimeout(() => window.location.href = '/Home/Room5', 6000);
-  } else {
+fetch('/Home/CompleteRoom/4', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) throw new Error('Error al completar la sala');
+    return response.json();
+})
+.then(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room5';
+    }, 6000);
+})
+.catch(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room5';
+    }, 6000);
+});  
+} else {
     cons.innerHTML = '';
     const fail = document.createElement('div');
     fail.style.position = 'fixed';

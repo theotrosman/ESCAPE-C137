@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-    <title>:3</title>
+    <title>୨ৎ</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.1/p5.min.js"></script>
   <style>
     * {
@@ -13,7 +13,7 @@
 
     html, body {
       overflow: hidden;
-      background: linear-gradient(145deg, #123, #081c17);
+background: linear-gradient(145deg, #2a0e1a, #1a0d13);
       font-family: 'Courier New', monospace;
       height: 100vh;
       display: flex;
@@ -30,8 +30,8 @@
       right: 0;
       bottom: 0;
       background: 
-        radial-gradient(circle at 20% 20%, rgba(0,255,0,0.1) 0%, transparent 40%),
-        radial-gradient(circle at 80% 80%, rgba(255,0,255,0.1) 0%, transparent 40%);
+        radial-gradient(circle at 20% 20%, rgba(255,182,193,0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,182,193.1) 0%, transparent 40%);
       pointer-events: none;
       animation: ambientGlow 10s infinite alternate;
     }
@@ -39,8 +39,8 @@
     #hud, #acciones, #console {
       position: absolute;
       z-index: 2;
-      color: lime;
-      text-shadow: 0 0 5px lime;
+      color: #ffb6c1;
+      text-shadow: 0 0 5px #ffb6c1;
     }
 
     #hud {
@@ -51,9 +51,9 @@
       font-size: 18px;
       border-radius: 8px;
       box-shadow: 
-        0 0 10px lime,
-        inset 0 0 20px rgba(0,255,0,0.3);
-      border: 1px solid rgba(0,255,0,0.3);
+        0 0 10px #ffb6c1,
+        inset 0 0 20px rgba(255,182,193,0.3);
+      border: 1px solid rgba(255,182,193,0.3);
       animation: hudPulse 2s infinite;
     }
 
@@ -68,9 +68,9 @@
       padding: 15px;
       border-radius: 8px;
       box-shadow: 
-        0 0 15px rgba(0,255,0,0.5),
-        inset 0 0 30px rgba(0,255,0,0.2);
-      border: 1px solid rgba(0,255,0,0.3);
+        0 0 15px rgba(255,182,193,0.5),
+        inset 0 0 30px rgba(255,182,193,0.2);
+      border: 1px solid rgba(255,182,193,0.3);
       animation: consolePulse 4s infinite;
     }
 
@@ -79,11 +79,11 @@
     }
 
     #console::-webkit-scrollbar-track {
-      background: rgba(0,255,0,0.1);
+      background: rgba(255,182,193,0.1);
     }
 
     #console::-webkit-scrollbar-thumb {
-      background: rgba(0,255,0,0.5);
+      background: rgba(255,182,193,0.5);
       border-radius: 4px;
     }
 
@@ -96,15 +96,15 @@
     }
 
     button {
-      background: rgba(0,0,0,0.8);
-      color: lime;
-      border: 2px solid lime;
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffb6c1;
+      border: 2px solid #ffb6c1;
       padding: 12px 20px;
       cursor: pointer;
       font-size: 16px;
       border-radius: 8px;
       transition: all 0.3s ease;
-      text-shadow: 0 0 5px lime;
+      text-shadow: 0 0 5px #ffb6c1;
       position: relative;
       overflow: hidden;
     }
@@ -116,15 +116,15 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(transparent, rgba(0,255,0,0.2), transparent);
+      background: linear-gradient(transparent, rgba(255,182,193,0.2), transparent);
       animation: buttonGlow 2s infinite;
     }
 
     button:hover {
       transform: scale(1.1);
       box-shadow: 
-        0 0 20px lime,
-        inset 0 0 20px lime;
+        0 0 20px #ffb6c1,
+        inset 0 0 20px #ffb6c1;
       animation: buttonHover 0.5s infinite;
     }
 
@@ -133,8 +133,8 @@
       z-index: 1;
       border-radius: 15px;
       box-shadow: 
-        0 0 50px rgba(0,255,0,0.3),
-        0 0 100px rgba(0,255,0,0.1);
+        0 0 50px rgba(255,182,193,0.3),
+        0 0 100px rgba(255,182,193,0.1);
       animation: canvasPulse 4s infinite;
     }
 
@@ -145,13 +145,13 @@
     }
 
     @@keyframes hudPulse {
-      0%, 100% { box-shadow: 0 0 10px lime; }
-      50% { box-shadow: 0 0 20px lime; }
+      0%, 100% { box-shadow: 0 0 10px #ffb6c1; }
+      50% { box-shadow: 0 0 20px #ffb6c1; }
     }
 
     @@keyframes consolePulse {
-      0%, 100% { box-shadow: 0 0 15px rgba(0,255,0,0.5); }
-      50% { box-shadow: 0 0 25px rgba(0,255,0,0.7); }
+      0%, 100% { box-shadow: 0 0 15px rgba(255,182,193,0.5); }
+      50% { box-shadow: 0 0 25px rgba(255,182,193,0.7); }
     }
 
     @@keyframes buttonGlow {
@@ -160,13 +160,13 @@
     }
 
     @@keyframes buttonHover {
-      0%, 100% { text-shadow: 0 0 5px lime; }
-      50% { text-shadow: 0 0 15px lime; }
+      0%, 100% { text-shadow: 0 0 5px #ffb6c1; }
+      50% { text-shadow: 0 0 15px #ffb6c1; }
     }
 
     @@keyframes canvasPulse {
-      0%, 100% { box-shadow: 0 0 50px rgba(0,255,0,0.3); }
-      50% { box-shadow: 0 0 70px rgba(0,255,0,0.5); }
+      0%, 100% { box-shadow: 0 0 50px rgba(255,182,193,0.3); }
+      50% { box-shadow: 0 0 70px rgba(255,182,193,0.5); }
     }
 
     @@keyframes matrixRain {
@@ -207,9 +207,9 @@
       z-index: 1;
       opacity: 0.1;
       background: linear-gradient(0deg, 
-        rgba(0,255,0,0) 0%,
-        rgba(0,255,0,0.2) 50%,
-        rgba(0,255,0,0) 100%);
+        rgba(255,182,193,0) 0%,
+        rgba(255,182,193,0.2) 50%,
+        rgba(255,182,193,0) 100%);
       animation: matrixRain 20s linear infinite;
     }
 
@@ -317,9 +317,8 @@
     }
 
     @@keyframes brokenReality {
-      0% { background-color: black; color: lime; }
-      50% { background-color: red; color: yellow; }
-      100% { background-color: black; color: lime; }
+      0% { background-color: black; color: #ffb6c1; }
+      100% { background-color: black; color: #ffb6c1; }
     }
 
     @@keyframes card3DShift {
@@ -371,11 +370,11 @@
       position: absolute;
       inset: -2px;
       background: linear-gradient(
-        45deg,
-        rgba(255, 215, 0, 0.8),
-        rgba(32, 184, 255, 0.9),
-        rgba(255, 215, 0, 0.8)
-      );
+  45deg,
+  rgba(255, 182, 193, 0.8),   /* LightPink */
+  rgba(255, 153, 204, 0.9),   /* HotPink pastel */
+  rgba(255, 182, 193, 0.8)    /* LightPink de nuevo */
+);
       border-radius: 16px;
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -413,23 +412,23 @@
 
     /* Special effects for rare cards */
     .carta[data-rare="true"] {
-      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
-    }
+  box-shadow: 0 0 20px rgba(255, 182, 193, 0.4); /* LightPink glow */
+}
 
-    .carta[data-rare="true"]:hover {
-      box-shadow: 
-        0 0 30px rgba(255, 215, 0, 0.6),
-        0 0 60px rgba(255, 215, 0, 0.3);
-    }
+.carta[data-rare="true"]:hover {
+  box-shadow: 
+    0 0 30px rgba(255, 153, 204, 0.6),  /* HotPink más intenso */
+    0 0 60px rgba(255, 182, 193, 0.3);  /* LightPink difuminado */
+}
 
-    .carta[data-rare="true"]::before {
-      background: linear-gradient(
-        45deg,
-        rgba(255, 215, 0, 0.9),
-        rgba(255, 128, 0, 0.9),
-        rgba(255, 215, 0, 0.9)
-      );
-    }
+.carta[data-rare="true"]::before {
+  background: linear-gradient(
+    45deg,
+    rgba(255, 182, 193, 0.9),  /* LightPink */
+    rgba(255, 153, 204, 0.9),  /* HotPink pastel */
+    rgba(255, 182, 193, 0.9)
+  );
+}
 
     /* Victory effects */
     @@keyframes victoryPulse {
@@ -464,9 +463,9 @@
       position: absolute;
       inset: -3px;
       background: linear-gradient(45deg,
-        rgba(255, 215, 0, 0.8),  /* strong gold */
-        rgba(32, 184, 255, 0.9), /* bright cyan */
-        rgba(255, 215, 0, 0.8)   /* strong gold */
+        rgba(255, 182, 193, 0.8),  /* light pink */
+rgba(255, 153, 204, 0.9),  /* vibrant hot pink */
+rgba(255, 182, 193, 0.8)  /* strong gold */
       );
       border-radius: 16px;  /* Increased border radius */
       opacity: 0;
@@ -475,8 +474,9 @@
       pointer-events: none;
       filter: blur(8px);  /* Increased blur for softer edges */
       box-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.5),
-        0 0 40px rgba(32, 184, 255, 0.5);
+        0 0 20px #ffc0cb,
+  0 0 40px #ff99cc,
+  0 0 60px rgba(255, 182, 193, 0.2);
     }
 
     .carta:hover::before {
@@ -536,7 +536,7 @@
     .carta {
       box-shadow: 
         0 10px 20px rgba(0, 0, 0, 0.3),
-        0 5px 15px rgba(0, 255, 0, 0.1);
+        0 5px 15px rgba(255,182,193, 0.1);
       transition: 
         transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
@@ -548,7 +548,7 @@
       border-color: rgba(255, 255, 255, 1);
       box-shadow: 
         0 20px 30px rgba(0, 0, 0, 0.4),
-        0 15px 25px rgba(0, 255, 0, 0.2),
+        0 15px 25px rgba(255,182,193, 0.2),
         0 0 20px rgba(255, 255, 255, 0.3);
       transform: 
         scale(1.1)
@@ -754,7 +754,7 @@
       box-shadow: 
         0 15px 30px rgba(0,0,0,0.3),
         0 0 20px rgba(255,255,255,0.5),
-        0 0 40px rgba(0,255,0,0.3);
+        0 0 40px rgba(255,182,193,0.3);
     }
 
     /* Animaciones */
@@ -890,7 +890,7 @@
       box-shadow:
         0 15px 30px rgba(0,0,0,0.3),
         0 0 20px rgba(255,255,255,0.5),
-        0 0 40px rgba(0,255,0,0.3),
+        0 0 40px rgba(255,182,193,0.3),
         inset 0 0 15px rgba(255,255,255,0.2);
     }
 
@@ -905,9 +905,9 @@
       inset: -20px;
       background: conic-gradient(from 0deg at 50% 50%,
         transparent 0deg,
-        rgba(0, 255, 0, 0.2) 90deg,
+        rgba(255,182,193, 0.2) 90deg,
         transparent 180deg,
-        rgba(0, 255, 0, 0.2) 270deg,
+        rgba(255,182,193, 0.2) 270deg,
         transparent 360deg
       );
       border-radius: 50%;
@@ -936,7 +936,7 @@
       background: repeating-linear-gradient(
         90deg,
         transparent,
-        rgba(0, 255, 0, 0.2) 1px,
+        rgba(255,182,193, 0.2) 1px,
         transparent 2px
       );
       opacity: 0;
@@ -958,7 +958,7 @@
       inset: -10px;
       border-radius: 15px;
       background: radial-gradient(circle at 50% 50%,
-        rgba(0, 255, 0, 0.5),
+        rgba(255,182,193, 0.5),
         transparent 70%
       );
       opacity: 0;
@@ -982,7 +982,7 @@
       inset: 0;
       background: linear-gradient(45deg,
         transparent 40%,
-        rgba(0, 255, 0, 0.5) 45%,
+        rgba(255,182,193, 0.5) 45%,
         transparent 50%
       );
       opacity: 0;
@@ -1008,7 +1008,7 @@
       inset: -15px;
       background: radial-gradient(circle at 50% 50%,
         rgba(0, 0, 0, 0.8) 0%,
-        rgba(0, 255, 0, 0.5) 30%,
+        rgba(255,182,193, 0.5) 30%,
         transparent 60%
       );
       border-radius: 50%;
@@ -1032,7 +1032,7 @@
       inset: -5px;
       background: linear-gradient(90deg,
         transparent,
-        rgba(0, 255, 0, 0.5),
+        rgba(255,182,193, 0.5),
         transparent
       );
       opacity: 0;
@@ -1046,9 +1046,10 @@
 
     /* Nuevas animaciones */
     @@keyframes borderGlow {
-      0%, 100% { border-color: rgba(0, 255, 0, 0.5); }
-      50% { border-color: rgba(0, 255, 0, 1); }
-    }
+  0%, 100% { border-color: rgba(255, 182, 193, 0.5); }
+  50%     { border-color: rgba(255, 153, 204, 1); }
+}
+
 
     @@keyframes portalSpin {
       0% { transform: rotate(0deg) scale(1); }
@@ -1125,8 +1126,8 @@
       background: rgba(0,0,0,0.8);
       padding: 15px;
       border-radius: 10px;
-      border: 1px solid #0f0;
-      color: #0f0;
+      border: 1px solid #ffc0cb;
+      color: #ffc0cb;
       font-family: 'Courier New', monospace;
       text-align: center;
       opacity: 0;
@@ -1134,8 +1135,8 @@
       pointer-events: none;
       z-index: 4;
       box-shadow: 
-        0 0 20px rgba(0,255,0,0.2),
-        inset 0 0 10px rgba(0,255,0,0.2);
+        0 0 20px rgba(255,182,193,0.2),
+        inset 0 0 10px rgba(255,182,193,0.2);
     }
 
     .game-instructions.show {
@@ -1145,7 +1146,7 @@
     .game-instructions h2 {
       font-size: 1.2em;
       margin-bottom: 10px;
-      text-shadow: 0 0 10px #0f0;
+      text-shadow: 0 0 10px #ffc0cb;
     }
 
     .game-instructions ul {
@@ -1164,7 +1165,7 @@
       content: '>';
       position: absolute;
       left: 0;
-      color: #0f0;
+      color: #ffc0cb;
       animation: blink 1s infinite;
     }
 
@@ -1176,21 +1177,21 @@
     /* Mejoras en los botones */
     button {
       background: rgba(0,0,0,0.8);
-      color: #0f0;
-      border: 2px solid #0f0;
+      color: #ffc0cb;
+      border: 2px solid #ffc0cb;
       padding: 12px 25px;
       font-size: 16px;
       border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      text-shadow: 0 0 5px #0f0;
+      text-shadow: 0 0 5px #ffc0cb;
       position: relative;
       overflow: hidden;
       margin: 0 10px;
       min-width: 120px;
       box-shadow: 
-        0 0 15px rgba(0,255,0,0.2),
-        inset 0 0 10px rgba(0,255,0,0.1);
+        0 0 15px rgba(255,182,193,0.2),
+        inset 0 0 10px rgba(255,182,193,0.1);
     }
 
     button::before {
@@ -1202,7 +1203,7 @@
       height: 100%;
       background: linear-gradient(
         transparent,
-        rgba(0,255,0,0.2),
+        rgba(255,182,193,0.2),
         transparent
       );
       animation: buttonGlow 2s infinite;
@@ -1211,8 +1212,8 @@
     button:hover {
       transform: scale(1.1);
       box-shadow: 
-        0 0 30px rgba(0,255,0,0.4),
-        inset 0 0 20px rgba(0,255,0,0.2);
+        0 0 30px rgba(255,182,193,0.4),
+        inset 0 0 20px rgba(255,182,193,0.2);
     }
 
     button:active {
@@ -1248,10 +1249,10 @@
       line-height: 1.4;
       padding: 15px;
       background: rgba(0,0,0,0.9);
-      border: 2px solid #0f0;
+      border: 2px solid #ffc0cb;
       box-shadow: 
-        0 0 20px rgba(0,255,0,0.2),
-        inset 0 0 15px rgba(0,255,0,0.1);
+        0 0 20px rgba(255,182,193,0.2),
+        inset 0 0 15px rgba(255,182,193,0.1);
     }
 
     #console div {
@@ -1262,13 +1263,13 @@
     }
 
     #console div:hover {
-      background: rgba(0,255,0,0.1);
+      background: rgba(255,182,193,0.1);
       transform: translateX(5px);
     }
 
     /* Efectos de memoria */
     .memory-echo {
-      text-shadow: 0 0 10px #0f0;
+      text-shadow: 0 0 10px #ffc0cb;
       animation: memoryPulse 4s infinite;
     }
 
@@ -1280,12 +1281,12 @@
     /* Animaciones de victoria/derrota */
     .money-change {
       position: fixed;
-      color: lime;
+      color: #ffb6c1;
       font-size: 24px;
       font-family: 'Courier New', monospace;
       pointer-events: none;
       animation: moneyFloat 1.5s ease-out forwards;
-      text-shadow: 0 0 10px lime;
+      text-shadow: 0 0 10px #ffb6c1;
       z-index: 1000;
     }
 
@@ -1312,7 +1313,7 @@
       0% { transform: scale(1); }
       50% { 
         transform: scale(1.2);
-        box-shadow: 0 0 50px lime;
+        box-shadow: 0 0 50px #ffb6c1;
       }
       100% { transform: scale(1); }
     }
@@ -1339,7 +1340,7 @@
       animation: moneyPopupAnim 1.2s forwards;
     }
     .money-popup.gain {
-      color: #00ff00;
+      color: #ff69b4;
       animation-name: moneyPopupGain;
     }
     .money-popup.loss {
@@ -1366,8 +1367,8 @@
       height: 110px;
       background: radial-gradient(circle at 60% 40%, #222 60%, #111 100%);
       border-radius: 50%;
-      border: 3px solid #0f0;
-      box-shadow: 0 0 30px #0f05, 0 0 60px #0f03;
+      border: 3px solid #ffc0cb;
+      box-shadow: 0 0 30px #ffc0cb5, 0 0 60px #ffc0cb3;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1389,7 +1390,7 @@
       color: #fff;
       font-size: 1.1rem;
       margin-bottom: 2px;
-      text-shadow: 0 0 8px #0f0;
+      text-shadow: 0 0 8px #ffc0cb;
     }
     #combo-circle .combo-value {
       color: #ff0;
@@ -1443,8 +1444,8 @@
         45deg,
         transparent,
         transparent 10px,
-        rgba(0, 255, 0, 0.3) 10px,
-        rgba(0, 255, 0, 0.3) 20px
+        rgba(255,182,193, 0.3) 10px,
+        rgba(255,182,193, 0.3) 20px
       );
       animation: realityWarp 4s infinite linear;
     }
@@ -1493,7 +1494,7 @@
 
     /* Carta 11: Efecto de agujero negro */
     .carta:nth-child(11)::before {
-      background: radial-gradient(circle at center, black, rgba(0, 255, 0, 0.5) 70%);
+      background: radial-gradient(circle at center, black, rgba(255,182,193, 0.5) 70%);
       animation: blackHole 3s infinite;
     }
 
@@ -1502,7 +1503,7 @@
       background: repeating-linear-gradient(
         90deg,
         transparent,
-        rgba(0, 255, 0, 0.2) 1px,
+        rgba(255,182,193, 0.2) 1px,
         transparent 2px
       );
       animation: matrixCode 2s infinite;
@@ -1512,9 +1513,9 @@
     .carta:nth-child(13)::before {
       background: conic-gradient(
         from 0deg at 50% 50%,
-        rgba(0, 255, 0, 0),
-        rgba(0, 255, 0, 0.8),
-        rgba(0, 255, 0, 0)
+        rgba(255,182,193, 0),
+        rgba(255,182,193, 0.8),
+        rgba(255,182,193, 0)
       );
       animation: vortexSpin 3s infinite linear;
     }
@@ -1691,8 +1692,8 @@
         translateZ(50px);
       box-shadow: 
         0 25px 50px rgba(0,0,0,0.5),
-        0 0 30px rgba(0,255,0,0.3),
-        inset 0 0 20px rgba(0,255,0,0.2);
+        0 0 30px rgba(255,182,193,0.3),
+        inset 0 0 20px rgba(255,182,193,0.2);
       z-index: 10;
     }
 
@@ -1702,7 +1703,7 @@
       inset: -2px;
       background: linear-gradient(45deg,
         transparent,
-        rgba(0, 255, 0, 0.3),
+        rgba(255,182,193, 0.3),
         transparent
       );
       border-radius: 12px;
@@ -1731,7 +1732,7 @@
       opacity: 0.85;
       mix-blend-mode: color-burn;
       box-shadow: 
-        inset 0 0 20px rgba(0,255,0,0.2),
+        inset 0 0 20px rgba(255,182,193,0.2),
         0 0 15px rgba(0,0,0,0.5);
     }
 
@@ -1747,7 +1748,7 @@
 
     .reality-glitch {
       position: fixed;
-      color: #0f0;
+      color: #ffc0cb;
       font-family: monospace;
       font-size: 24px;
       pointer-events: none;
@@ -1816,9 +1817,9 @@
       inset: -5px;
       background: linear-gradient(45deg, 
         transparent 0%, 
-        rgba(0,255,0,0.2) 45%, 
-        rgba(0,255,0,0.8) 50%,
-        rgba(0,255,0,0.2) 55%,
+        rgba(255,182,193,0.2) 45%, 
+        rgba(255,182,193,0.8) 50%,
+        rgba(255,182,193,0.2) 55%,
         transparent 100%);
       transform: translateZ(-1px);
       opacity: 0;
@@ -1829,9 +1830,9 @@
     .card:hover {
       transform: scale(1.2) translateZ(50px) rotateY(10deg);
       box-shadow: 
-        0 0 30px rgba(0,255,0,0.8),
-        0 0 60px rgba(0,255,0,0.4),
-        0 0 90px rgba(0,255,0,0.2);
+        0 0 30px rgba(255,182,193,0.8),
+        0 0 60px rgba(255,182,193,0.4),
+        0 0 90px rgba(255,182,193,0.2);
       z-index: 100;
     }
 
@@ -1848,8 +1849,8 @@
     .card[data-type="special"]:hover {
       transform: scale(1.3) translateZ(80px) rotateY(20deg);
       box-shadow: 
-        0 0 50px rgba(255,0,255,0.8),
-        0 0 100px rgba(255,0,255,0.4);
+        0 0 50px rgba(255,255,182,193.8),
+        0 0 100px rgba(255,255,182,193.4);
     }
 
     .card[data-type="rare"] {
@@ -1929,7 +1930,7 @@
         transform: scale(1);
       }
       50% { 
-        background: rgba(0,255,0,0.2);
+        background: rgba(255,182,193,0.2);
         transform: scale(1.1);
       }
     }
@@ -2003,7 +2004,7 @@
         repeating-linear-gradient(
           45deg,
           transparent 0%,
-          rgba(0,255,0,0.1) 10%,
+          rgba(255,182,193,0.1) 10%,
           transparent 20%
         );
     }
@@ -2050,7 +2051,7 @@
     /* Efectos únicos para cada carta */
     .carta[data-card="1"] {
       animation: dimensionalRift 3s infinite;
-      background: linear-gradient(45deg, #000, #0f0);
+      background: linear-gradient(45deg, #000, #ffc0cb);
     }
 
     .carta[data-card="1"]:hover::before {
@@ -2060,7 +2061,7 @@
       background: conic-gradient(
         from 0deg at 50% 50%,
         transparent,
-        #0f0,
+        #ffc0cb,
         transparent
       );
       animation: portalSpin 2s infinite linear;
@@ -2078,7 +2079,7 @@
       position: absolute;
       inset: -10px;
       background: 
-        radial-gradient(circle at 30% 30%, rgba(255,0,255,0.5), transparent 50%),
+        radial-gradient(circle at 30% 30%, rgba(255,255,182,193.5), transparent 50%),
         radial-gradient(circle at 70% 70%, rgba(0,255,255,0.5), transparent 50%);
       filter: blur(5px);
       animation: quantumFluctuation 4s infinite;
@@ -2095,7 +2096,7 @@
       background: repeating-linear-gradient(
         45deg,
         transparent,
-        rgba(0,255,0,0.2) 2px,
+        rgba(255,182,193,0.2) 2px,
         transparent 4px
       );
       animation: matrixRain 2s linear infinite;
@@ -2129,12 +2130,12 @@
       position: absolute;
       inset: 0;
       background: 
-        radial-gradient(circle at center, rgba(0,255,0,0), rgba(0,255,0,0.5)),
+        radial-gradient(circle at center, rgba(255,182,193,0), rgba(255,182,193,0.5)),
         repeating-radial-gradient(
           circle at center,
-          rgba(0,255,0,0.2) 0%,
+          rgba(255,182,193,0.2) 0%,
           transparent 10%,
-          rgba(0,255,0,0.2) 20%
+          rgba(255,182,193,0.2) 20%
         );
       animation: pulseWave 4s infinite;
     }
@@ -2183,9 +2184,9 @@
         rotateY(var(--rotateY, 15deg));
       z-index: 100;
       box-shadow: 
-        0 0 50px rgba(0,255,0,0.8),
-        0 0 100px rgba(0,255,0,0.4),
-        inset 0 0 30px rgba(0,255,0,0.6);
+        0 0 50px rgba(255,182,193,0.8),
+        0 0 100px rgba(255,182,193,0.4),
+        inset 0 0 30px rgba(255,182,193,0.6);
     }
 
     /* Efectos de selección de carta */
@@ -2194,9 +2195,9 @@
     }
 
     @@keyframes selectedCard {
-      0% { transform: scale(1); box-shadow: 0 0 30px rgba(0,255,0,0.6); }
-      50% { transform: scale(1.1); box-shadow: 0 0 60px rgba(0,255,0,0.8); }
-      100% { transform: scale(1); box-shadow: 0 0 30px rgba(0,255,0,0.6); }
+      0% { transform: scale(1); box-shadow: 0 0 30px rgba(255,182,193,0.6); }
+      50% { transform: scale(1.1); box-shadow: 0 0 60px rgba(255,182,193,0.8); }
+      100% { transform: scale(1); box-shadow: 0 0 30px rgba(255,182,193,0.6); }
     }
 
     /* Efectos de victoria/derrota mejorados */
@@ -2214,8 +2215,8 @@
         transform: scale(1.3) rotate(360deg); 
         filter: brightness(2) hue-rotate(90deg);
         box-shadow: 
-          0 0 100px rgba(0,255,0,0.8),
-          0 0 200px rgba(0,255,0,0.4);
+          0 0 100px rgba(255,182,193,0.8),
+          0 0 200px rgba(255,182,193,0.4);
       }
       100% { transform: scale(1); filter: brightness(1); }
     }
@@ -2236,7 +2237,7 @@
       pointer-events: none;
       background: radial-gradient(
         circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(0,255,0,0.2),
+        rgba(255,182,193,0.2),
         transparent 50%
       );
       opacity: 0;
@@ -2256,7 +2257,7 @@
         repeating-linear-gradient(
           45deg,
           transparent,
-          rgba(0,255,0,0.1) 10px,
+          rgba(255,182,193,0.1) 10px,
           transparent 20px
         );
       animation: realityWarp 10s infinite linear;
@@ -2277,7 +2278,7 @@
       background: linear-gradient(
         45deg,
         transparent,
-        rgba(0,255,0,0.3),
+        rgba(255,182,193,0.3),
         transparent
       );
       filter: blur(5px);
@@ -2304,7 +2305,7 @@
         rgba(255, 0, 0, 0.8),
         rgba(255, 165, 0, 0.8),
         rgba(255, 255, 0, 0.8),
-        rgba(0, 255, 0, 0.8),
+        rgba(255,182,193, 0.8),
         rgba(0, 0, 255, 0.8),
         rgba(75, 0, 130, 0.8),
         rgba(238, 130, 238, 0.8),
@@ -2326,7 +2327,7 @@
       position: absolute;
       inset: -10px;
       background: 
-        radial-gradient(circle at 30% 30%, rgba(255,0,255,0.8), transparent 50%),
+        radial-gradient(circle at 30% 30%, rgba(255,255,182,193.8), transparent 50%),
         radial-gradient(circle at 70% 70%, rgba(0,255,255,0.8), transparent 50%);
       filter: blur(15px);
       animation: plasmaEffect 4s infinite;
@@ -2446,7 +2447,7 @@
         inset: -15px;
         background: 
             radial-gradient(circle at 30% 30%, rgba(0,255,255,0.8), transparent 60%),
-            radial-gradient(circle at 70% 70%, rgba(255,0,255,0.8), transparent 60%);
+            radial-gradient(circle at 70% 70%, rgba(255,255,182,193.8), transparent 60%);
         filter: blur(8px);
         animation: quantumFlux 4s infinite;
         opacity: 0;
@@ -2485,8 +2486,8 @@
             rgba(255,0,0,0.8),
             rgba(255,165,0,0.8),
             rgba(255,255,0,0.8),
-            rgba(0,255,0,0.8),
-            rgba(0,0,255,0.8),
+            rgba(255,182,193,0.8),
+            rgba(0,255,182,193.8),
             rgba(75,0,130,0.8),
             rgba(238,130,238,0.8),
             rgba(255,0,0,0.8)
@@ -2511,7 +2512,7 @@
             repeating-radial-gradient(
                 circle at 50% 50%,
                 transparent,
-                rgba(0,255,0,0.5) 10px,
+                rgba(255,182,193,0.5) 10px,
                 transparent 20px
             );
         animation: pulseWave 2s infinite;
@@ -2740,7 +2741,7 @@
         inset: -20px;
         background: radial-gradient(
             circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-            rgba(var(--card-color, 0,255,0), 0.4),
+            rgba(var(--card-color, 255,182,193), 0.4),
             transparent 70%
         );
         pointer-events: none;
@@ -2760,26 +2761,27 @@
       font-family: 'VT323', monospace;
       font-size: 18px;
       background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
-      color: #00ff00;
-      border: 2px solid #00ff00;
+      color: #ff69b4;
+      border: 2px solid #ff69b4;
       border-radius: 5px;
       cursor: pointer;
       transition: all 0.2s ease;
-      text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-      box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-      position: relative;
+text-shadow: 0 0 5px rgba(255, 182, 193, 0.5);
+box-shadow: 0 0 10px rgba(255, 182, 193, 0.2);      
+position: relative;
       overflow: hidden;
     }
 
     .bet-button:hover {
       transform: translateY(-2px) scale(1.05);
       background: linear-gradient(45deg, #2a2a2a, #3a3a3a);
-      border-color: #00ff88;
-      color: #00ff88;
-      text-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
-      box-shadow: 
-        0 0 20px rgba(0, 255, 136, 0.4),
-        0 0 40px rgba(0, 255, 136, 0.2);
+      border-color: #ff99cc;
+color: #ff99cc;
+text-shadow: 0 0 10px rgba(255, 153, 204, 0.8);
+box-shadow: 
+  0 0 20px rgba(255, 153, 204, 0.4),
+  0 0 40px rgba(255, 153, 204, 0.2);
+
     }
 
     .bet-button:active {
@@ -2793,7 +2795,7 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+background: radial-gradient(circle, rgba(255, 182, 193, 0.1) 0%, transparent 70%);
       transform: scale(0);
       transition: transform 0.3s ease-out;
     }
@@ -2809,11 +2811,24 @@
       100% { transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1); }
     }
 
-    @@keyframes cardGlow {
-      0% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.2); }
-      50% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.6), 0 0 60px rgba(0, 255, 136, 0.4); }
-      100% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.2); }
-    }
+   @@keyframes cardGlow {
+  0% {
+    box-shadow: 
+      0 0 15px rgba(255, 182, 193, 0.3),
+      0 0 30px rgba(255, 153, 204, 0.2);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(255, 182, 193, 0.6),
+      0 0 60px rgba(255, 153, 204, 0.4),
+      0 0 80px rgba(255, 192, 203, 0.2);
+  }
+  100% {
+    box-shadow: 
+      0 0 15px rgba(255, 182, 193, 0.3),
+      0 0 30px rgba(255, 153, 204, 0.2);
+  }
+}
 
     @@keyframes cardPulse {
       0% { transform: scale(1); filter: brightness(1); }
@@ -2939,7 +2954,7 @@
 
     .music-btn {
       background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
-      border: 2px solid #00ff00;
+      border: 2px solid #ff69b4;
       border-radius: 50%;
       width: 60px;
       height: 60px;
@@ -2948,26 +2963,27 @@
       justify-content: center;
       cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+box-shadow: 0 0 15px rgba(255, 182, 193, 0.2);
     }
 
     .music-btn:hover {
       transform: scale(1.1);
-      border-color: #00ff88;
-      box-shadow: 
-        0 0 20px rgba(0, 255, 136, 0.4),
-        0 0 40px rgba(0, 255, 136, 0.2);
+border-color: #ffc0cb;
+box-shadow: 
+  0 0 20px #ffc0cb,
+  0 0 40px #ffb6c1,
+  0 0 60px rgba(255, 192, 203, 0.3);
     }
 
     .music-btn i {
-      color: #00ff00;
+      color: #ff69b4;
       font-size: 24px;
       transition: all 0.3s ease;
     }
 
-    .music-btn:hover i {
-      color: #00ff88;
-    }
+   .music-btn:hover i {
+  color: #ffc0cb;
+}
 
     .music-btn.playing {
       animation: musicPulse 2s infinite;
@@ -3015,7 +3031,7 @@
         animation: correctCard 0.8s ease-out;
         transform: scale(1.1);
         filter: brightness(1.5) hue-rotate(90deg);
-        box-shadow: 0 0 30px #00ff00;
+        box-shadow: 0 0 30px #ff69b4;
     }
 
     .card-incorrect {
@@ -3110,9 +3126,9 @@
     }
 
     @@keyframes cardMatch {
-        0% { transform: scale(1); box-shadow: 0 0 20px lime; }
-        50% { transform: scale(1.2); box-shadow: 0 0 50px lime, 0 0 100px lime; }
-        100% { transform: scale(0); box-shadow: 0 0 200px lime; }
+        0% { transform: scale(1); box-shadow: 0 0 20px #ffb6c1; }
+        50% { transform: scale(1.2); box-shadow: 0 0 50px #ffb6c1, 0 0 100px #ffb6c1; }
+        100% { transform: scale(0); box-shadow: 0 0 200px #ffb6c1; }
     }
 
     @@keyframes cardMismatch {
@@ -3165,7 +3181,7 @@
         width: 200px;
         height: 200px;
         border-radius: 50%;
-        background: radial-gradient(circle, lime, transparent);
+        background: radial-gradient(circle, #ffb6c1, transparent);
         transform: translate(-50%, -50%);
         pointer-events: none;
         z-index: 1000;
@@ -3202,8 +3218,8 @@
         z-index: 999;
         mix-blend-mode: screen;
         background: 
-            radial-gradient(circle at 30% 30%, rgba(0,255,0,0.1), transparent 50%),
-            radial-gradient(circle at 70% 70%, rgba(255,0,255,0.1), transparent 50%);
+            radial-gradient(circle at 30% 30%, rgba(255,182,193,0.1), transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(255,255,182,193.1), transparent 50%);
         filter: blur(20px);
         opacity: 0.5;
         animation: realityDistort 10s infinite alternate;
@@ -3220,7 +3236,7 @@
         position: absolute;
         width: 4px;
         height: 4px;
-        background: lime;
+        background: #ffb6c1;
         border-radius: 50%;
         pointer-events: none;
         filter: blur(2px);
@@ -3235,15 +3251,15 @@
         background: rgba(0,0,0,0.9);
         padding: 30px;
         border-radius: 15px;
-        border: 2px solid lime;
-        color: lime;
+        border: 2px solid #ffb6c1;
+        color: #ffb6c1;
         font-size: 18px;
         z-index: 1001;
         display: none;
         width: 80%;
         max-width: 600px;
         text-align: left;
-        box-shadow: 0 0 30px lime;
+        box-shadow: 0 0 30px #ffb6c1;
     }
 
     .victory-dialog.active {
@@ -3275,7 +3291,7 @@
         inset: -10px;
         background: radial-gradient(
             circle at 50% 50%,
-            rgba(0,255,0,0.5),
+            rgba(255,182,193,0.5),
             transparent 70%
         );
         opacity: 0;
@@ -3296,7 +3312,7 @@
         background: repeating-linear-gradient(
             90deg,
             transparent,
-            rgba(0,255,0,0.2) 1px,
+            rgba(255,182,193,0.2) 1px,
             transparent 2px
         );
         opacity: 0;
@@ -3316,9 +3332,9 @@
             rotateY(var(--rotateY, 15deg));
         z-index: 100;
         box-shadow: 
-            0 0 50px rgba(0,255,0,0.8),
-            0 0 100px rgba(0,255,0,0.4),
-            inset 0 0 30px rgba(0,255,0,0.6);
+            0 0 50px rgba(255,182,193,0.8),
+            0 0 100px rgba(255,182,193,0.4),
+            inset 0 0 30px rgba(255,182,193,0.6);
     }
 
     /* Money win/loss animations */
@@ -3334,20 +3350,20 @@
         0% { 
             transform: scale(1);
             filter: brightness(1) hue-rotate(0deg);
-            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+            box-shadow: 0 0 20px rgba(255,182,193,0.5);
         }
         50% { 
             transform: scale(1.3) rotate(10deg);
             filter: brightness(2) hue-rotate(90deg);
             box-shadow: 
-                0 0 50px rgba(0,255,0,0.8),
-                0 0 100px rgba(0,255,0,0.4),
-                inset 0 0 30px rgba(0,255,0,0.6);
+                0 0 50px rgba(255,182,193,0.8),
+                0 0 100px rgba(255,182,193,0.4),
+                inset 0 0 30px rgba(255,182,193,0.6);
         }
         100% { 
             transform: scale(1);
             filter: brightness(1) hue-rotate(180deg);
-            box-shadow: 0 0 20px rgba(0,255,0,0.5);
+            box-shadow: 0 0 20px rgba(255,182,193,0.5);
         }
     }
 
@@ -3415,7 +3431,7 @@
         pointer-events: none;
         width: 10px;
         height: 10px;
-        background: radial-gradient(circle, rgba(0,255,0,0.8), transparent);
+        background: radial-gradient(circle, rgba(255,182,193,0.8), transparent);
         border-radius: 50%;
         z-index: 1000;
         filter: blur(1px);
@@ -3433,7 +3449,7 @@
         background: repeating-linear-gradient(
             45deg,
             transparent,
-            rgba(0,255,0,0.1) 10px,
+            rgba(255,182,193,0.1) 10px,
             transparent 20px
         );
         mix-blend-mode: overlay;
@@ -3483,34 +3499,39 @@
 [SISTEMA] INICIANDO SECUENCIA DE AUTODESTRUCCIÓN...
 [RICK] ¡CORRE MORTY! ¡COOORREEEEE!</div>
 </div>
-<div class="memory-echo" id="room1-echo">Room 1</div>
-<div class="memory-echo" id="room2-echo">Room 2</div>
-<div class="memory-echo" id="room3-echo">Room 3</div>
-<div class="memory-echo" id="room4-echo">Room 4</div>
+<div class="memory-echo" id="room1-echo">୨୧ Room 1: ✧ Alarma Rota ✧</div>
+<div class="memory-echo" id="room2-echo">❀ Room 2: Binario Despierto</div>
+<div class="memory-echo" id="room3-echo">⋆ Room 3: El Sacrificio ⋆</div>
+<div class="memory-echo" id="room4-echo">𖦹 Room 4: Silencio Glitcheado</div>
+<div class="memory-echo" id="room5-echo">⋅˚₊‧ Room 5: Caos y Ruido</div>
+<div class="memory-echo" id="room6-echo">♥ Room 6: Codex en Ruinas</div>
+<div class="memory-echo" id="room7-echo">☁ Room 7: coquettex.log</div>
+<div class="memory-echo" id="room8-echo">🌙 Room 8: Última Realidad</div>
+
 
 <!-- Instrucciones del juego -->
 <div class="game-instructions" id="gameInstructions">
-  <h2>🃏 CARDEX C-137 🃏</h2>
+  <div class="coquette-frame">✦ ──────── ୨ৎ :: C-137 Cardex Activated :: ୨ৎ ──────── ✦</div>
   <ul>
-    <li>Encuentra las dos cartas correctas entre las opciones</li>
-    <li>Acumula $3100 para escapar de esta realidad</li>
-    <li>Encadena combos para multiplicar tus ganancias</li>
-    <li>Cuidado con las cartas glitch y las anomalías</li>
-    <li>Recomendación: Poner música con el botón de Play inferior izqauierdo</li>
+    <li>⋆ Identificá las cartas correctas entre glitches y símbolos encriptados</li>
+    <li>⋆ Acumulá $3100 para ejecutar el exploit interdimensional</li>
+    <li>⋆ Encadená combos para generar distorsión de ganancia cuántica</li>
+    <li>⋆ Cuidado: algunas cartas fueron corrompidas por el Consejo Rick</li>
+    <li>⋆ Activá la música coquettex desde el botón inferior derecho</li>
   </ul>
-  <div class="key-controls">
-    <span>ESPACIO: Mostrar/Ocultar instrucciones</span>
-  </div>
+  <div class="coquette-frame">✦ ──────── ୨ৎ :: sistema en modo estético :: ୨ৎ ──────── ✦</div>
+  
 </div>
 
 <div id="hud">Cargando...</div>
 <div id="console"></div>
 <div id="acciones">
-  <button class="bet-button" onclick="apostar(100)">Apostar $100</button>
-  <button class="bet-button" onclick="apostar(250)">Apostar $250</button>
-  <button class="bet-button" onclick="apostar(500)">Apostar $500</button>
-  <button class="bet-button" onclick="apostar(1000)">Apostar $1000</button>
+  <button class="bet-button" onclick="apostar(100)">Arriesgar 𖹭100</button>
+  <button class="bet-button" onclick="apostar(250)">Arriesgar 𖹭250</button>
+  <button class="bet-button" onclick="apostar(500)">Arriesgar 𖹭500</button>
+  <button class="bet-button" onclick="apostar(1000)">Arriesgar 𖹭1000</button>
   <button class="bet-button all-in" onclick="apostarTodo()">¡ALL IN!</button>
+  <button class="bet-button" onclick="toggleInstrucciones()">✦ Presiona Espacio para ver Instrucciones ✦</button>
 </div>
 
 <div class="music-player">
@@ -3596,28 +3617,30 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   const intro = [
-  "[C137_CONSOLE] >>> Boot sequence initiated...",
-  "[C137_CONSOLE] >>> Analizando coherencia multidimensional...",
-  "[RICK] *buuurp* M-morty, siento que mi código fuente tiene memoria RAM... ¡y resaca!",
-  "[MORTY] Uhhh, Rick, ¿eso es malo o... tipo, existencialista?",
-  "[RICK] ¿Existencialista? No, ¡es peor! Estamos atrapados en un juego de cartas interdimensional, Morty.",
-  "[SISTEMA] ALERTA: Anomalía C-137 alterando la secuencia lógica.",
-  "[RICK] Algún Rick del consejo se aburrió y convirtió nuestra realidad en un mazo bugueado.",
-  "[RICK] Y ahora todo es probabilidades, rarezas, glitches... como la vez que mezclé CSS con tequila.",
-  "[MORTY] ¡Oh jeez Rick! ¿El CSS también tiene bugs existenciales?",
-  "[RICK] Morty, en este multiverso hasta las cartas tienen traumas no resueltos.",
-  "[SISTEMA] ERROR: Detected overflow en la variable $escapatoria. Nivel crítico.",
-  "[RICK] ¿Ves esa baraja? Cada carta es una grieta en la realidad. Si jugamos bien, hackeamos la simulación.",
-  "[PC] Probabilidad de escape: 0.0137%. Consejo: ni te gastes.",
-  "[RICK] ¡CÁLLATE, SOFWARE DE CUARTA! Morty, necesitamos $3100 virtuales para un exploit interdimensional.",
-  "[PC] ERROR: Intento de acceso root denegado.",
-  "[RICK] ¿Recordás los fragmentos raros? Usalos, Morty. Son como parches de código en la Matrix.",
-  "[SISTEMA] INTEGRIDAD DE LA SIMULACIÓN: 78% y descendiendo... ¿Te asustás, Morty? Yo sí.",
-  "[MEMORIA] Flashback: los bugs de las salas anteriores se sienten como errores de RAM.",
-  "[RICK] ¡ATENCIÓN, MORTY! Cada elección importa. Si la pifiás, nos convertimos en variables huérfanas.",
-  "[C137_CONSOLE] >>> Protocolo de contención activado. Preparate para el caos.",
-  "[C137_CONSOLE] >>> Sugerencia: Apagá la compu... si te animás."
+  "[C137_CONSOLE] >>> Booting... Realidad inestable detectada. ⋅˚₊‧ ୨୧ ‧₊˚ ⋅",
+  "[C137_CONSOLE] >>> Escaneando coherencia interdimensional... ≽^• ˕ • ྀི≼",
+  "[RICK] Morty... siento que mi código fuente tiene lag emocional. °❀⋆.ೃ࿔*:･",
+  "[MORTY] ¿Eso es como... estar vivo o estar roto, Rick? ⋅˚₊‧",
+  "[RICK] Es peor. Estamos atrapados en un mazo cuántico decorado con glitter existencial. ୨ৎ",
+  "[SISTEMA] ALERTA: La anomalía C-137 altera toda lógica conocida. 愛",
+  "[RICK] Reescribieron nuestra realidad como si fuera una carta bugueada con moñitos. ⋅˚₊‧ ୨୧",
+  "[RICK] Todo es azar, glitches y CSS emocional. Bienvenidos al modo coquettex. ≽^• ˕ • ྀི≼",
+  "[MORTY] ¿¡Modo coquettex!? ¿Por qué todo tiene la vibra de un post de Tumblr de 2013? °❀⋆.ೃ࿔*:･",
+  "[RICK] Porque el hacker tiene buen gusto estético y traumas interdimensionales. ୨ৎ",
+  "[SISTEMA] ERROR: Variable $escapatoria al borde del overflow. Nivel CRÍTICO. ⋅˚₊‧ ୨୧",
+  "[RICK] ¿Ves esas cartas? Cada una es una herida estética en la realidad. 愛",
+  "[PC] Probabilidad de éxito: 0.0137%. Consejo: abrazá la estética o colapsá. ≽^• ˕ • ྀི≼",
+  "[RICK] ¡Silencio, tostadora de glitter! Morty, necesitamos $3100 virtuales para aplicar un patch con vibes. °❀⋆.ೃ࿔*:･",
+  "[PC] ERROR: Permiso root denegado. ✧ No tenés suficiente encanto pastel. ⋅˚₊‧",
+  "[RICK] Usá los fragmentos rotos, Morty. Son parches de memoria estética. ୨ৎ",
+  "[SISTEMA] INTEGRIDAD SIMULADA: 78% y cayendo. ♥ ¿Pánico? Recomendado. 愛",
+  "[MEMORIA] FLASHBACK: Los errores anteriores... eran mensajes con brillitos. ⋅˚₊‧ ୨୧",
+  "[RICK] Cada clic importa, Morty. Un bug más y nos convertimos en variables kawaii sin dueño. ≽^• ˕ • ྀི≼",
+  "[C137_CONSOLE] >>> Protocolo de caos habilitado. Entrando en modo coquettex. °❀⋆.ೃ࿔*:･",
+  "[C137_CONSOLE] >>> Sugerencia final: Abrazá el glitch. Y combiná bien los colores. ⋅˚₊‧"
 ];
+
+
 
   let i = 0;
   const escribirIntro = setInterval(() => {
@@ -3748,9 +3771,15 @@ window.addEventListener('DOMContentLoaded', () => {
         if (i === gameOverSequence.length - 1) {
           document.body.classList.add('reality-collapse');
           setTimeout(() => {
-            alert("Te quedaste sin dinero. Reiniciando sala...");
-            window.location.href = "/Home/Room7codex";
-          }, 1000);
+  const frases = [
+    "𖦹 [RICK] El sistema te rechazó como si fueras código basura... Reiniciando coquettex.slot() ⋆",
+    "✦ [C137_CONSOLE] Tu cuenta colapsó. Demasiado rosa, poca lógica. Restableciendo realidad...",
+    "୨ৎ [SISTEMA] Variables vacías detectadas. Reinicio emocional en curso..."
+  ];
+  
+  alert(frases[Math.floor(Math.random() * frases.length)]);
+  window.location.href = "/Home/Room7codex";
+}, 1000);
         }
       }, i * 800);
     });
@@ -3766,7 +3795,7 @@ window.addEventListener('DOMContentLoaded', () => {
     showMemoryEchoes();
     
     // Marcar Room7 como completada
-    fetch('/Home/CompleteRoom/7', {
+    fetch('/Home/CompleteRoom/7Codex','/Home/CompleteRoom/7', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -3786,7 +3815,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const newStyles = `
     .reality-glitch {
       position: fixed;
-      color: #0f0;
+      color: #ffc0cb;
       font-family: monospace;
       font-size: 24px;
       pointer-events: none;
@@ -4039,7 +4068,7 @@ class Carta {
     let flipRotation = this.flipProgress * PI;
     rotateY(flipRotation);
     if (this.correct) {
-      stroke(0, 255, 0, 100);
+      stroke(255,182,193, 100);
       strokeWeight(3);
     }
     if (this.wrong) {
@@ -4056,7 +4085,7 @@ class Carta {
     }
     if (this.hoverEffect > 0) {
       noFill();
-      stroke(0, 255, 0, this.hoverEffect * 100);
+      stroke(255,182,193, this.hoverEffect * 100);
       strokeWeight(2);
       rect(-this.w/2, -this.h/2, this.w, this.h);
     }
@@ -4256,7 +4285,7 @@ function draw() {
   // Matrix effect
   push();
   noFill();
-  stroke(0, 255, 0, 20);
+  stroke(255,182,193, 20);
   for (let i = 0; i < 50; i++) {
     let x = sin(frameCount * 0.01 + i) * width/2;
     let y = (frameCount + i * 20) % height - height/2;
@@ -4300,7 +4329,7 @@ function draw() {
   
   // Ambient glow
   ambientLight(100);
-  pointLight(0, 255, 0, sin(frameCount * 0.02) * 200, cos(frameCount * 0.02) * 200, 100);
+  pointLight(255,182,193, sin(frameCount * 0.02) * 200, cos(frameCount * 0.02) * 200, 100);
 }
 
 function apostar(cantidad) {
@@ -4377,7 +4406,7 @@ function mezclar() {
         top: ${mouseY}px;
         width: 100px;
         height: 100px;
-        background: radial-gradient(circle, rgba(0,255,0,0.5) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,182,193,0.5) 0%, transparent 70%);
         pointer-events: none;
         z-index: 1000;
         transform: translate(-50%, -50%);
@@ -4615,16 +4644,24 @@ function gameOver() {
   document.body.classList.add('reality-break');
   
   setTimeout(() => {
-    alert("Te quedaste sin dinero. Reiniciando sala...");
-    window.location.href = "/Home/Room7codex";
-  }, 2000);
+  const frases = [
+    "𖦹 [RICK] El sistema te rechazó como si fueras código basura... Reiniciando coquettex.slot() ⋆",
+    "✦ [C137_CONSOLE] Tu cuenta colapsó. Demasiado rosa, poca lógica. Restableciendo realidad...",
+    "୨ৎ [SISTEMA] Variables vacías detectadas. Reinicio emocional en curso..."
+  ];
+  
+  alert(frases[Math.floor(Math.random() * frases.length)]);
+  window.location.href = "/Home/Room7codex";
+}, 2000);
 }
 
 function actualizarHUD() {
   document.getElementById("hud").innerHTML = `
-    <div>Dinero: $${dinero}</div>
-    <div>Aciertos: ${aciertos}</div>
-    <div>Combo: x${combo}</div>
+  <div>𖹭──────୨ৎ──────𖹭</div>
+    <div> #000D1n3R0 = 𖹭${dinero}</div>
+    <div> #001AC13R705 = 𖹭${aciertos}</div>
+    <div> #002C0MB0: = 𖹭${combo}</div>
+      <div>𖹭──────୨ৎ──────𖹭</div>
   `;
   actualizarComboCircle();
   
@@ -4703,7 +4740,7 @@ function startGameOfLifeBG() {
   }
   function draw() {
     ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = '#0f0';
+    ctx.fillStyle = '#ffc0cb';
     for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
       if (grid[y][x]) ctx.fillRect(x * cell, y * cell, cell, cell);
     }
@@ -4900,7 +4937,7 @@ function mezclar() {
         top: ${mouseY}px;
         width: 100px;
         height: 100px;
-        background: radial-gradient(circle, rgba(0,255,0,0.5) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(255,182,193,0.5) 0%, transparent 70%);
         pointer-events: none;
         z-index: 1000;
         transform: translate(-50%, -50%);
@@ -5251,6 +5288,7 @@ document.addEventListener('mousemove', (e) => {
         card.style.setProperty('--rotateX', `${-(y - rect.height / 2) / 10}deg`);
     });
 });
+
 </script>
 </body>
 </html>

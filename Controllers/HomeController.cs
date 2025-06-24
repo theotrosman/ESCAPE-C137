@@ -360,6 +360,15 @@ namespace PrimerProyecto.Controllers
             if (access is RedirectToActionResult) return access;
             return View();
         }
+        public IActionResult CompleteRoom7Codex()
+{
+    MarkRoomAsCompleted(7);
+    HttpContext.Session.SetString("Room7Codex_Completed", "true");
+    UnlockAchievement(8); 
+
+    return Json(new { success = true });
+}
     }
+    
 }
 

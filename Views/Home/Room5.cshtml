@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="UTF-8">
-    <title>:3</title>
+    <title>☆☆☆</title>
   <link rel="stylesheet" href="~/css/site.css">
   <style>
     * { box-sizing: border-box; }
@@ -322,20 +322,18 @@ background: rgba(17, 17, 17, 0.90);
   <div class="reality-error"></div>
   <div id="intro">
     <div class="flash-screen"></div>
-    <div class="intro-contenido">
-      <h1 class="boom">💥 COLAPSO MULTIDIMENSIONAL CRÍTICO 💥</h1>
-      <div class="dialogo">
-        <p class="warning-text">[ALERTA DE FRAGMENTACIÓN DIMENSIONAL]</p>
-        <p><span class="rick">Rick:</span> "¡M-MORTY! *burp* ¡EL HACKER HA CORROMPIDO EL NÚCLEO CUÁNTICO! ¡LA REALIDAD SE ESTÁ DESINTEGRANDO!"</p>
-        <p><span class="morty">Morty:</span> "¡OH GEEZ RICK! ¡TODO SE ESTÁ DESDOBLANDO! ¡HAY DEMASIADAS VERSIONES!"</p>
-        <p><span class="rick">Rick:</span> "¡ESCUCHAME BIEN MORTY! Cada consola es una realidad que el hacker ha corrompido... *burp* ¡Son universos gritando en código binario!"</p>
-        <p><span class="morty">Morty:</span> "¡E-esto es una locura Rick! ¡Hay códigos por todas partes!"</p>
-        <p><span class="rick">Rick:</span> "¡CONCENTRATE MORTY! Tenés que encontrar el patrón antes que el hacker obtenga acceso total al sistema... ¡Y ESTA VEZ ES EN SERIO!"</p>
-        <p class="warning-text">[MÚLTIPLES ANOMALÍAS DETECTADAS]</p>
-        <p class="warning-text">[COLAPSO TOTAL INMINENTE: T-MINUS 60 SEGUNDOS]</p>
-        <p><span class="rick">Rick:</span> "¡LA REALIDAD MISMA DEPENDE DE VOS, MORTY! ¡NO LA CAGUES ESTA VEZ!"</p>
-      </div>
-    </div>
+<div class="intro-contenido">
+  <h1 class="boom glitch">C://FR4C7UR4/MULT1V3R54L</h1>
+  <div class="dialogo">
+    <p class="warning-text">[PROTOCOLO DE EMERGENCIA ACTIVADO]</p>
+    <p><span class="rick">Rick:</span> “Morty, el núcleo dimensional está roto. Las realidades se están colapsando unas sobre otras.”</p>
+    <p><span class="morty">Morty:</span> “¡Rick, hay códigos en todos lados! No sé qué hacer…”</p>
+    <p><span class="rick">Rick:</span> “Cada línea corrupta es un universo muriendo. Encontrá el patrón antes de que el sistema sea irreparable.”</p>
+    <p class="warning-text">[COLAPSO INMINENTE: 60 SEGUNDOS]</p>
+    <p><span class="rick">Rick:</span> “Todo depende de vos, Morty. No hay margen de error esta vez.”</p>
+  </div>
+</div>
+
   </div>
 
   <canvas id="letter-glitch-bg"></canvas>
@@ -556,8 +554,26 @@ Stewie: "Bravo, Peter. Has creado un nuevo dios. Y tiene tu cara... comiendo waf
         resultado.style.display = "block";
         input.disabled = true;
         troll.innerText = "";
-        setTimeout(() => window.location.href = "/Home/Room6", 5000);
-      } else {
+fetch('/Home/CompleteRoom/5', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+})
+.then(response => {
+    if (!response.ok) throw new Error('Error al completar la sala');
+    return response.json();
+})
+.then(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room6';
+    }, 5000);
+})
+.catch(() => {
+    setTimeout(() => {
+        window.location.href = '/Home/Room6';
+    }, 5000);
+});        } else {
         troll.innerText = "Rick: Esa base está mal, Morty. ¿Convertiste bien el total?";
         setTimeout(() => window.location.reload(), 4000); // reinicia si fallás
       }
