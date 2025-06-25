@@ -69,6 +69,12 @@ namespace PrimerProyecto.Controllers
                 return IsGameStartCompleted();
             }
 
+            // Room 3 siempre accesible
+            if (roomNumber == 3)
+            {
+                return true;
+            }
+
             // Room7Codex requiere completar Room 6
             if (roomName == "Room7Codex")
             {
@@ -193,6 +199,7 @@ namespace PrimerProyecto.Controllers
 
         public IActionResult GameStart()
         {
+            MarkRoomAsCompleted(2); // Marca Room2 como pasada al iniciar el juego
             return View();
         }
 
@@ -255,6 +262,12 @@ namespace PrimerProyecto.Controllers
             }
 
             MarkRoomAsCompleted(roomNumber);
+
+            // Si se completa la Room8, desbloquea Room9 inmediatamente
+            if (roomNumber == 8)
+            {
+                MarkRoomAsCompleted(9);
+            }
 
             if (roomNumber == 7 && Request.Query.ContainsKey("codex"))
             {

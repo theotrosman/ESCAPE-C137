@@ -19,14 +19,14 @@ let lastPipeSpawn = 0;
 let particles = [];
 let bird = null;
 let pipes = [];
+let PIPE_SPEED = 4;
+let speedInterval = null;
 
 // Configuración del juego
-const GRAVITY = 1.7;
-const LIFT_FORCE = -1.5;
-const FALL_FORCE = 1.3;
-const PIPE_SPEED = 8;
-const PIPE_SPAWN_INTERVAL = 900;
-const MAX_VELOCITY = 18;
+const GRAVITY = 0.5;
+const LIFT_FORCE = -20;
+const PIPE_SPAWN_INTERVAL = 1600;
+const MAX_VELOCITY = 6;
 
 // Ajustar tamaño del canvas
 function resizeCanvas() {
@@ -58,31 +58,26 @@ class Bird {
         this.rotation = 0;
         this.scale = 1;
         this.speedX = 0;
+        this.jumpQueued = false;
+        this.wantJump = false;
     }
 
-    move(isHandOpen) {
-        // Avance horizontal constante
+    move() {
         this.x += this.speedX;
-        if (this.x > canvas.width * 0.7) this.x = canvas.width * 0.7; // No dejar que se vaya del todo a la derecha
+        if (this.x > canvas.width * 0.7) this.x = canvas.width * 0.7;
 
-        // Control continuo basado en el estado de la mano
-        if (isHandOpen) {
-            this.velocity += LIFT_FORCE;
+        // Si se quiere saltar (mano abierta), salta cada frame mientras esté abierta
+        if (this.wantJump) {
+            this.velocity = LIFT_FORCE;
         } else {
-            this.velocity += FALL_FORCE;
+            this.velocity += GRAVITY;
         }
+        this.wantJump = false; // Se setea en updateGameState según la mano
 
         // Limitar la velocidad máxima
         this.velocity = Math.max(-MAX_VELOCITY, Math.min(MAX_VELOCITY, this.velocity));
-        
-        // Actualizar posición
         this.y += this.velocity;
-        
-        // Actualizar rotación basada en la velocidad
-        this.rotation = this.velocity * 5;  // Rotación suave basada en la velocidad
-        
-        // Mantener el pájaro dentro de los límites de la pantalla
-        this.y = Math.max(BIRD_SIZE, Math.min(canvas.height - BIRD_SIZE, this.y));
+        this.rotation = this.velocity * 5;
     }
 
     draw() {
@@ -109,35 +104,37 @@ class Pipe {
     constructor() {
         this.x = canvas.width;
         this.rams = [];
-        // Generar entre 2 y 4 RAMs por obstáculo
-        const ramCount = Math.floor(Math.random() * 3) + 2;
         // Definir un hueco vertical pasable
         const minGap = PIPE_GAP * 0.7;
         const gapY = Math.random() * (canvas.height - minGap * 1.5) + minGap * 0.75;
         const gapHeight = minGap + Math.random() * (PIPE_GAP * 0.5);
-        // Generar RAMs arriba del hueco
+        // Generar RAMs arriba del hueco (la mitad de densidad)
         let y = 0;
         while (y < gapY - 10) {
-            const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
-            this.rams.push({
-                x: this.x,
-                y: y,
-                width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
-                height: ramHeight
-            });
-            y += ramHeight + Math.random() * 20;
+            if (Math.random() < 0.5) { // Solo la mitad de las filas tendrán RAM
+                const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
+                this.rams.push({
+                    x: this.x,
+                    y: y,
+                    width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
+                    height: ramHeight
+                });
+            }
+            y += (PIPE_WIDTH * 0.7 + Math.random() * PIPE_WIDTH * 1.2) + Math.random() * 20;
         }
-        // Generar RAMs debajo del hueco
+        // Generar RAMs debajo del hueco (la mitad de densidad)
         y = gapY + gapHeight;
         while (y < canvas.height - 10) {
-            const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
-            this.rams.push({
-                x: this.x,
-                y: y,
-                width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
-                height: ramHeight
-            });
-            y += ramHeight + Math.random() * 20;
+            if (Math.random() < 0.5) {
+                const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
+                this.rams.push({
+                    x: this.x,
+                    y: y,
+                    width: PIPE_WIDTH * (0.7 + Math.random() * 0.6),
+                    height: ramHeight
+                });
+            }
+            y += (PIPE_WIDTH * 0.7 + Math.random() * PIPE_WIDTH * 1.2) + Math.random() * 20;
         }
         this.passed = false;
         this.scored = false;
@@ -175,20 +172,19 @@ function startGame() {
         console.log('El juego ya está corriendo');
         return;
     }
-    
     console.log('Iniciando juego...');
     isGameRunning = true;
     score = 0;
+    console.log('Score reiniciado a 0');
     scoreSpan.textContent = '0';
     lastPipeSpawn = 0;
-    
     bird = new Bird();
     pipes = [];
-    
     gameTitle.classList.remove('visible');
     startMessage.classList.remove('visible');
-    
     console.log('Comenzando game loop...');
+    PIPE_SPEED = 4; // Reinicia la velocidad al valor base
+    startSpeedIncreaseTimer();
     requestAnimationFrame(gameLoop);
 }
 
@@ -208,7 +204,7 @@ function gameLoop(timestamp) {
         
         // Actualizar y dibujar pájaro
         if (bird) {
-            bird.move(lastHandOpen);
+            bird.move();
             bird.draw();
         }
         
@@ -229,8 +225,9 @@ function gameLoop(timestamp) {
                 pipe.scored = true;
                 score++;
                 scoreSpan.textContent = score;
-                
-                if (score >= 15) {
+                console.log('Score incrementado:', score);
+                if (score >= 10) {
+                    console.log('Score llegó a 10, llamando a gameWon');
                     gameWon();
                     return;
                 }
@@ -254,11 +251,7 @@ function gameLoop(timestamp) {
 function checkCollisions() {
     // Colisión con el techo o suelo
     if (bird.y - BIRD_SIZE < 0 || bird.y + BIRD_SIZE > canvas.height) {
-        // Efecto visual de choque
-        ctx.save();
-        ctx.fillStyle = 'rgba(255,0,0,0.4)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        gameOver();
         return true;
     }
     // Colisión con tubos
@@ -270,13 +263,15 @@ function gameOver() {
     isGameRunning = false;
     gameTitle.classList.add('visible');
     startMessage.classList.add('visible');
+    if (speedInterval) clearInterval(speedInterval);
     setTimeout(() => {
         window.location.reload();
-    }, 1500);
+    }, 1000);
 }
 
 function gameWon() {
     isGameRunning = false;
+    if (speedInterval) clearInterval(speedInterval);
     fetch('/Home/CompleteRoom/8', {
         method: 'POST',
         headers: {
@@ -288,7 +283,16 @@ function gameWon() {
             setTimeout(() => {
                 window.location.href = "/Home/Room9";
             }, 1500);
+        } else {
+            setTimeout(() => {
+                window.location.href = "/Home/Room9";
+            }, 1500);
         }
+    })
+    .catch(() => {
+        setTimeout(() => {
+            window.location.href = "/Home/Room9";
+        }, 1500);
     });
 }
 
@@ -402,24 +406,23 @@ function checkHandOpen(hand) {
     return openFingers >= 2; // Considerar mano abierta si al menos 2 dedos están extendidos
 }
 
+let lastHandOpenForJump = false;
 function updateGameState(isHandOpen) {
     const prevHandOpen = lastHandOpen;
     lastHandOpen = isHandOpen;
-
-    console.log('Estado de la mano:', {
-        prevHandOpen,
-        isHandOpen,
-        isGameRunning
-    });
-
     statusDiv.textContent = `Estado: Mano ${isHandOpen ? 'Abierta' : 'Cerrada'}`;
     statusDiv.style.color = isHandOpen ? "#00ff00" : "#ff0000";
-
     // Iniciar juego cuando se detecta la mano abierta
     if (!isGameRunning && isHandOpen) {
-        console.log('Mano abierta detectada, iniciando juego...');
         startGame();
     }
+    // Si la mano está abierta, salta cada frame
+    if (isGameRunning && bird) {
+        if (isHandOpen) {
+            bird.wantJump = true;
+        }
+    }
+    lastHandOpenForJump = isHandOpen;
 }
 
 function drawHand(hand) {
@@ -451,6 +454,14 @@ function drawHand(hand) {
         handCtx.arc(point[0], point[1], 4, 0, 2 * Math.PI);
         handCtx.fill();
     });
+}
+
+// Aumentar la velocidad cada 15 segundos
+function startSpeedIncreaseTimer() {
+    if (speedInterval) clearInterval(speedInterval);
+    speedInterval = setInterval(() => {
+        PIPE_SPEED += 3;
+    }, 15000);
 }
 
 // Inicializar cuando el documento esté listo

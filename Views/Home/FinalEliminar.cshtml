@@ -150,6 +150,29 @@
             border: 1px solid #0f0;
             display: none;
         }
+
+        .ad-popup {
+            animation: popupIn 0.5s;
+        }
+
+        @@keyframes popupIn {
+            from { opacity: 0; transform: scale(0.7) rotate(-10deg); }
+            to { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .glitchy-move {
+            filter: hue-rotate(360deg) brightness(1.5) drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #0ff) drop-shadow(0 0 30px #f0f);
+            animation: rainbow-glitch 0.7s;
+        }
+
+        @@keyframes rainbow-glitch {
+            0% { filter: hue-rotate(0deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
+            20% { filter: hue-rotate(90deg) brightness(2) drop-shadow(0 0 20px #0ff); }
+            40% { filter: hue-rotate(180deg) brightness(2) drop-shadow(0 0 30px #f0f); }
+            60% { filter: hue-rotate(270deg) brightness(2) drop-shadow(0 0 20px #ff0); }
+            80% { filter: hue-rotate(360deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
+            100% { filter: hue-rotate(0deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
+        }
     </style>
 </head>
 <body>
@@ -226,6 +249,7 @@
                     fragment.style.transform = `rotate(${Math.random() * 360}deg) scale(0)`;
                 }, 1000 + Math.random() * 1000);
             }
+            showAdPopups();
         }
 
         function createMatrixRain() {
@@ -385,6 +409,120 @@
             audio.play();
         }
         
+    </script>
+
+    <!-- POPUPS DE ANUNCIOS -->
+    <script>
+    function showAdPopups() {
+        const images = [
+            '/img/anuncio3.jpg',
+            '/img/anuncio4.jpg',
+            '/img/anuncio5.jpg',
+            '/img/anuncio6.jpg',
+            '/img/anuncio7.jpg',
+            '/img/anuncio8.jpg'
+        ];
+        const popupW = 8; // vw
+        const popupH = 8; // vh
+        const total = 200;
+        const cols = 20, rows = 10; // 20x10 = 200
+        let popups = [];
+        for (let i = 0; i < total; i++) {
+            const popup = document.createElement('div');
+            popup.className = 'ad-popup';
+            popup.style.position = 'fixed';
+            // Distribución en cuadrícula perfecta
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+            const left = col * (100 / cols);
+            const top = row * (100 / rows);
+            popup.style.left = `calc(${left}vw)`;
+            popup.style.top = `calc(${top}vh)`;
+            popup.style.width = popupW + 'vw';
+            popup.style.height = popupH + 'vh';
+            popup.style.background = `#111 url('${images[i % images.length]}') center/cover no-repeat`;
+            popup.style.boxShadow = '0 0 20px #000';
+            popup.style.border = 'none';
+            popup.style.zIndex = 2000 + i;
+            popup.style.display = 'flex';
+            popup.style.flexDirection = 'column';
+            popup.style.justifyContent = 'flex-start';
+            popup.style.alignItems = 'flex-end';
+            popup.style.borderRadius = '18px';
+            popup.style.transition = 'opacity 0.3s, left 0.7s cubic-bezier(.68,-0.55,.27,1.55), top 0.7s cubic-bezier(.68,-0.55,.27,1.55), filter 0.7s';
+            // Botón de cierre (opcional, pero ahora se puede cerrar con click en cualquier parte)
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '✖';
+            closeBtn.style.background = 'rgba(0,0,0,0.7)';
+            closeBtn.style.color = '#fff';
+            closeBtn.style.border = 'none';
+            closeBtn.style.fontSize = '32px';
+            closeBtn.style.cursor = 'pointer';
+            closeBtn.style.margin = '8px 8px 0 0';
+            closeBtn.style.borderRadius = '50%';
+            closeBtn.style.width = '32px';
+            closeBtn.style.height = '32px';
+            closeBtn.onclick = (e) => {
+                e.stopPropagation();
+                popup.style.opacity = 0;
+                setTimeout(() => popup.remove(), 300);
+            };
+            popup.appendChild(closeBtn);
+            // Cerrar popup haciendo click en cualquier parte
+            popup.onclick = () => {
+                popup.style.opacity = 0;
+                setTimeout(() => popup.remove(), 300);
+            };
+            document.body.appendChild(popup);
+            popups.push(popup);
+        }
+
+        // Cada 5 segundos, reubica los popups que quedan y aplica efecto glitchy arcoiris
+        setInterval(() => {
+            // Filtra solo los popups que siguen en pantalla
+            popups = popups.filter(p => document.body.contains(p));
+            // Mezcla las posiciones
+            const indices = Array.from({length: popups.length}, (_, i) => i);
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            // Reasigna posiciones y aplica efecto
+            popups.forEach((popup, idx) => {
+                const col = indices[idx] % cols;
+                const row = Math.floor(indices[idx] / cols);
+                const left = col * (100 / cols);
+                const top = row * (100 / rows);
+                // Efecto glitchy arcoiris
+                popup.classList.add('glitchy-move');
+                popup.style.left = `calc(${left}vw)`;
+                popup.style.top = `calc(${top}vh)`;
+                setTimeout(() => popup.classList.remove('glitchy-move'), 700);
+            });
+            // Elimina 25 popups aleatorios de los que quedan
+            if (popups.length > 0) {
+                const toRemove = Math.min(25, popups.length);
+                const removeIndices = [];
+                while (removeIndices.length < toRemove) {
+                    const idx = Math.floor(Math.random() * popups.length);
+                    if (!removeIndices.includes(idx)) removeIndices.push(idx);
+                }
+                // Ordena de mayor a menor para evitar problemas al hacer splice
+                removeIndices.sort((a, b) => b - a);
+                for (const idx of removeIndices) {
+                    const popup = popups[idx];
+                    popup.style.opacity = 0;
+                    setTimeout(() => popup.remove(), 300);
+                    popups.splice(idx, 1);
+                }
+            }
+        }, 5000);
+    }
+    </script>
+
+    <!-- Mostrar los popups apenas se entra a la página -->
+    <script>
+    window.addEventListener('DOMContentLoaded', showAdPopups);
     </script>
 </body>
 </html> 

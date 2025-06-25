@@ -224,7 +224,7 @@ function updatePipes(timestamp) {
             score++;
             scoreSpan.textContent = score;
             
-            if (score >= 15) {
+            if (score >= 1) {
                 gameWon();
             }
         }
