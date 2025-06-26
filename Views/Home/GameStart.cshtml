@@ -11,13 +11,284 @@
         html, body {
             margin: 0;
             padding: 0;
-            font-family: monospace;
+            font-family: 'Fira Mono', monospace;
             background-color: black;
             color: #00ff00;
             overflow: hidden;
-            animation: backgroundChaos 1.3s infinite alternate;
+            height: 100vh;
         }
-
+        #bios {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: black;
+            color: #00ff00;
+            font-family: 'Fira Mono', monospace;
+            font-size: 1.5rem;
+            padding: 60px 40px;
+            z-index: 10;
+        }
+        #bios .glitch {
+            animation: glitchText 0.25s infinite, shake 0.4s infinite;
+        }
+        #collapse-bar {
+            width: 100%;
+            height: 22px;
+            background: #111;
+            border: 1px solid #00ff00;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+        #collapse-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00 60%, #ff0055 100%);
+            transition: width 0.4s cubic-bezier(.68,-0.55,.27,1.55);
+            box-shadow: 0 0 10px #00ff00;
+        }
+        #collapse-bar-label {
+            position: absolute;
+            left: 12px;
+            top: 2px;
+            color: #00ff00;
+            font-size: 1.1rem;
+            pointer-events: none;
+        }
+        #cmd-bg-glitch {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom, rgba(0,255,0,0.04) 0px, rgba(0,255,0,0.04) 2px, transparent 2px, transparent 8px
+            );
+            animation: bgGlitchMove 2.5s linear infinite;
+        }
+        @@keyframes bgGlitchMove {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 32px; }
+        }
+        #cmd-bg-glitch::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(0,255,0,0.08) 0%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        #cmd-bg-glitch::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                to bottom, rgba(0,255,0,0.07) 0px, rgba(0,255,0,0.07) 1px, transparent 1px, transparent 7px
+            );
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .flicker {
+            animation: flickerAnim 1.2s infinite alternate;
+        }
+        @@keyframes flickerAnim {
+            0% { opacity: 1; }
+            10% { opacity: 0.85; }
+            20% { opacity: 1; }
+            30% { opacity: 0.92; }
+            40% { opacity: 1; }
+            50% { opacity: 0.8; }
+            60% { opacity: 1; }
+            70% { opacity: 0.9; }
+            80% { opacity: 1; }
+            100% { opacity: 0.95; }
+        }
+        .glow {
+            text-shadow: 0 0 8px #00ff99, 0 0 2px #fff;
+            filter: brightness(1.2);
+        }
+        .glitch-anim {
+            animation: glitchText 0.25s infinite, shake 0.4s infinite;
+        }
+        .shake {
+            animation: shake 0.2s 1;
+        }
+        #terminal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: transparent;
+            display: none;
+            flex-direction: column;
+            padding: 32px 32px 24px 32px;
+            box-sizing: border-box;
+            z-index: 2;
+        }
+        #terminal-output {
+            flex: 1;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 1.6rem;
+            line-height: 2.1;
+            color: #00ff00;
+            margin-bottom: 20px;
+            font-family: 'Fira Mono', monospace;
+            background: transparent;
+        }
+        .terminal-line {
+            margin-bottom: 0.7em;
+            word-break: break-word;
+            padding-left: 0.2em;
+            padding-right: 0.2em;
+        }
+        .terminal-line.critical {
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 8px #00fff7, 0 0 2px #fff;
+            animation: glitchText 0.25s infinite;
+        }
+        .terminal-line.error-text {
+            animation: shake 0.2s 1, flickerAnim 1.2s infinite alternate;
+        }
+        #terminal-prompt, #terminal-cursor {
+            color: #00ff00;
+            font-size: 1.6rem;
+            font-family: 'Fira Mono', monospace;
+            text-shadow: 0 0 8px #00ff99, 0 0 2px #fff;
+            filter: brightness(1.2);
+        }
+        #terminal-cursor {
+            animation: blink 1s step-start infinite, flickerAnim 1.2s infinite alternate;
+        }
+        #terminal-input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            border-top: 1px solid #00ff00;
+            padding: 22px 0 18px 0;
+            background: rgba(0,0,0,0.82);
+            border-radius: 16px;
+            box-shadow: 0 0 32px #00ff00a0 inset, 0 2px 24px #00ff0033;
+            max-width: 600px;
+            margin: 0 auto 0 auto;
+            position: relative;
+        }
+        #terminal-prompt {
+            margin-right: 6px;
+            color: #00ff00;
+            font-size: 1.6rem;
+            font-family: 'Fira Mono', monospace;
+            text-shadow: 0 0 8px #00ff99, 0 0 2px #fff;
+            filter: brightness(1.2);
+            display: flex;
+            align-items: center;
+        }
+        #terminal-input {
+            flex: 1 1 320px;
+            min-width: 0;
+            max-width: 340px;
+            background: rgba(0,0,0,0.92);
+            border: 2.5px solid #00ff00;
+            color: #00ff99;
+            font-family: 'Fira Mono', monospace;
+            font-size: 1.35rem;
+            outline: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 0 18px #00ff99a0, 0 0 2px #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-right: 8px;
+        }
+        #terminal-input:focus {
+            border-color: #00ffff;
+            box-shadow: 0 0 32px #00fff7, 0 0 2px #fff;
+        }
+        #terminal-input::placeholder {
+            color: #00ff99cc;
+            opacity: 1;
+            font-style: italic;
+        }
+        #send-button {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 13px 32px;
+            font-family: 'Fira Mono', monospace;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 0 24px #00ff99, 0 0 2px #fff;
+            font-weight: bold;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #send-button:hover {
+            background: #00cc00;
+            box-shadow: 0 0 40px #00ff00, 0 0 2px #fff;
+            transform: scale(1.07);
+        }
+        @@media (max-width: 700px) {
+            #terminal-input-container {
+                max-width: 98vw;
+                padding: 12px 2vw 12px 2vw;
+            }
+            #terminal-input {
+                font-size: 1.1rem;
+                padding: 10px 8px;
+                max-width: 120px;
+            }
+            #send-button {
+                font-size: 1rem;
+                padding: 10px 12px;
+            }
+        }
+        .glitch-text {
+            animation: glitch 0.3s infinite;
+        }
+        @@keyframes glitch {
+            0% { text-shadow: 1px 0 red, -1px 0 blue; }
+            50% { text-shadow: -2px 0 red, 2px 0 blue; }
+            100% { text-shadow: 1px 0 red, -1px 0 blue; }
+        }
+        .success-animation {
+            animation: successPulse 2s ease-in-out;
+        }
+        @@keyframes successPulse {
+            0% { background: black; }
+            50% { background: #003300; }
+            100% { background: black; }
+        }
+        .wiki-content {
+            margin: 10px 0;
+            padding: 10px;
+            border-left: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        .error-text { color: #ff0055; }
+        .system-text { color: #00ffff; }
+        .rick-text { color: #00ff00; }
+        .morty-text { color: #ffe066; }
+        .mvc-text { color: #00e6ff; }
+        .clave-text { color: #ff00ff; font-weight: bold; }
+        #consola {
+            margin: 40px 40px 60px 40px;
+            white-space: pre-wrap;
+            font-size: 2.2rem;
+            line-height: 1.7;
+            animation: shake 0.5s infinite;
+        }
+        @@keyframes shake {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
         @@keyframes backgroundChaos {
             0%   { background-color: black; }
             25%  { background-color: #111; }
@@ -25,135 +296,42 @@
             75%  { background-color: black; }
             100% { background-color: white; color: red; }
         }
-
-        @@keyframes shake {
-            0%, 100% { transform: translate(0); }
-            25% { transform: translate(-2px, 2px); }
-            50% { transform: translate(2px, -2px); }
-            75% { transform: translate(-2px, -2px); }
+        .glitch {
+            animation: glitchText 0.25s infinite, shake 0.4s infinite;
         }
-#consola, #acertijo {
-    font-size: 2.4rem !important;
-    line-height: 1.45;
-    letter-spacing: 0.03em;
-    color: #00ff99;
-    font-family: 'Fira Mono', monospace, monospace;
-    text-shadow: 0 0 8px #13f388, 0 0 2px #fff;
-}
-
-.decrypted-char {
-    color: #33ff99;
-    font-weight: bold;
-    filter: blur(0.8px);
-    letter-spacing: 1.5px;
-    transition: color 0.2s;
-}
-
-.scrambled-char {
-    color: #f5f7fa;
-    font-family: monospace;
-    animation: scrambleFlash 0.1s alternate infinite;
-}
-
-@@keyframes scrambleFlash {
-    0% { color: #7afff6; }
-    40% { color: #fff; }
-    60% { color: #00fff0; }
-    100% { color: #edffb8; }
-}
-
         @@keyframes glitchText {
             0%   { text-shadow: 1px 0 red, -1px 0 blue; }
             50%  { text-shadow: -2px 0 red, 2px 0 blue; }
             100% { text-shadow: 1px 0 red, -1px 0 blue; }
         }
-
-        .glitch {
-            animation: glitchText 0.25s infinite, shake 0.4s infinite;
-        }
-
-        #consola {
-            margin: 40px;
-            white-space: pre-wrap;
-            font-size: 20px;
-            line-height: 1.6;
-            animation: shake 0.5s infinite;
-        }
-
-        #acertijo {
-            display: none;
-            margin: 40px;
-            font-size: 18px;
-        }
-
-        input {
-            background: black;
-            border: none;
-            border-bottom: 2px solid #00ff00;
-            color: #00ff00;
-            font-family: monospace;
-            font-size: 18px;
-            width: 300px;
-        }
-
-        a {
-            color: #00ffff;
-        }
     </style>
 </head>
-<audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
 
 <body>
+<audio id="bg-music" src="/img/ultraviolence.mp3" autoplay loop></audio>
+
+<script>
+  const audio = document.getElementById("bg-music");
+  audio.volume = 0.2;
+</script>
+    <audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="/img/ultraviolence.mp3" preload="auto" loop></audio>
+    <audio id="sfx-beep" src="/img/sfxbeep.mp3" preload="auto"></audio>
 
     <div id="consola" class="glitch"></div>
+    <div id="bios"></div>
 
-    <div id="acertijo" class="glitch" style="animation: aparecer 1s ease-in-out forwards; display: none;">
-    <style>
-        @@keyframes aparecer {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .consola-linea {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .parpadeo {
-            animation: blink 1s step-start infinite;
-        }
-
-        @@keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        .alerta {
-            background-color: #111;
-            padding: 15px;
-            border-left: 4px solid red;
-            margin-top: 15px;
-        }
-
-        .glow-input {
-            box-shadow: 0 0 5px #00ff00;
-        }
-    </style>
-
-    <div class="alerta">
-        <span class="consola-linea">> 📂 Archivo fuente corrompido:</span>
-        <span class="consola-linea parpadeo">> 🔗 Accediendo a repositorio remoto...</span>
-        <span class="consola-linea">
-            > <a href="https://github.com/theotrosman/BuggyLogic/blob/main/BuggyLogic.cs" target="_blank">
-                github.com/theotrosman/BuggyLogic/blob/main/BuggyLogic.cs
-            </a>
-        </span>
+    <div id="terminal-container">
+        <div id="collapse-bar">
+            <div id="collapse-bar-inner" style="width: 10%"></div>
+            <span id="collapse-bar-label">Progreso de colapso del sistema: █▒▒▒▒▒▒▒▒▒ 10%</span>
     </div>
-
-    <div style="margin-top: 20px;">
-        <span class="consola-linea">> Encontrá la línea exacta que contiene el bug lógico.</span>
-        <span class="consola-linea">> Ejemplo de respuesta válida: <i>línea 15</i></span>
-        <input type="text" id="respuesta" class="glow-input" placeholder="escribí acá y presioná Enter" onkeydown="verificar(event)" />
-        <p id="feedback"></p>
+        <div id="terminal-output"></div>
+        <div id="terminal-input-container">
+            <span id="terminal-prompt">C137:~$ </span>
+            <input type="text" id="terminal-input" placeholder="Escribí un comando..." />
+            <span id="terminal-cursor">█</span>
+            <button id="send-button">ENVIAR</button>
     </div>
 </div>
 
@@ -165,7 +343,6 @@
         const n = text.length;
         const interval = Math.floor(totalDuration / n);
 
-        // Reproducir sonido al inicio
         const audio = document.getElementById('sfx-console');
         if (audio) {
             audio.currentTime = 0;
@@ -178,9 +355,9 @@
                 if (text[i] === "\n") {
                     out += "<br>";
                 } else if (i <= current && current > 0) {
-                    out += `<span class="scrambled-char">${text[i]}</span>`;
+                            out += text[i];
                 } else {
-                    out += `<span class="scrambled-char">${scrambleChars[Math.floor(Math.random() * scrambleChars.length)]}</span>`;
+                            out += scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
                 }
             }
             element.innerHTML = out;
@@ -188,8 +365,7 @@
                 current++;
                 setTimeout(frame, interval);
             } else {
-                element.innerHTML = text.replace(/\n/g, "<br>");
-                // Detenemos el audio si terminó antes (opcional)
+                        element.innerHTML = text;
                 setTimeout(() => {
                   if (audio && !audio.paused) audio.pause();
                 }, 100);
@@ -200,139 +376,322 @@
     });
 }
 
-function decryptedTextEffect(element, text, options = {}) {
-    const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
-    const speed = options.speed || 24;
-    const scrambleIterations = options.scrambleIterations || 12;
+        // Función para imprimir texto con efecto de tipeo, cada línea en un <div>
+        function printLine(text, output, delay = 50, colorClass = '') {
     return new Promise((resolve) => {
-        let revealed = [];
-        let iterations = [];
-        for (let i = 0; i < text.length; i++) {
-            revealed[i] = false;
-            iterations[i] = 0;
-        }
-        let done = false;
-        function frame() {
-            let output = '';
-            done = true;
-            for (let i = 0; i < text.length; i++) {
-                if (text[i] === '\n') {
-                    output += '\n';
-                    continue;
-                }
-                if (revealed[i] || text[i] === ' ') {
-                    output += text[i];
+                const line = document.createElement('div');
+                line.className = 'terminal-line' + (colorClass ? ' ' + colorClass : '');
+                output.appendChild(line);
+                let i = 0;
+                const audio = document.getElementById('sfx-console');
+                function typeChar() {
+                    if (i < text.length) {
+                        let nextChar = text[i];
+                        if (nextChar === '\n') {
+                            line.innerHTML += '<br>';
+                        } else {
+                            line.innerHTML += nextChar;
+                        }
+                        if (audio && i % 3 === 0) {
+                            audio.currentTime = 0;
+                            audio.play();
+                        }
+                        i++;
+                        setTimeout(typeChar, delay);
                 } else {
-                    done = false;
-                    output += `<span class="decrypted-char">${characters[Math.floor(Math.random() * characters.length)]}</span>`;
-                    iterations[i]++;
-                    if (iterations[i] >= scrambleIterations) revealed[i] = true;
-                }
-            }
-            element.innerHTML = output;
-            if (!done) setTimeout(frame, speed);
-            else {
-                element.innerHTML = text.replace(/\n/g, '<br>');
+                        line.innerHTML = text;
+                        // Efectos vivos
+                        randomGlitchLine(line);
+                        randomFlickerLine(line);
+                        if (colorClass === 'error-text') line.classList.add('shake');
+                        output.scrollTop = output.scrollHeight;
                 resolve();
             }
         }
-        frame();
-    });
-}
+                typeChar();
+            });
+        }
 
+        // Sonido al presionar cualquier tecla en el input
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('terminal-input');
+            let keySoundTimeout = null;
+            input.addEventListener('keydown', function(e) {
+                const audio = document.getElementById('sfx-console');
+                if (audio) {
+                    audio.currentTime = 0;
+                    audio.play();
+                    clearTimeout(keySoundTimeout);
+                    keySoundTimeout = setTimeout(() => { audio.pause(); }, 500);
+                }
+            });
+        });
 
-        const consola = document.getElementById("consola");
-        const acertijo = document.getElementById("acertijo");
+        // Colores para la terminal
+        const colorMap = {
+            'rick': 'rick-text',
+            'morty': 'morty-text',
+            'mvc': 'system-text',
+            'error': 'error-text',
+            'success': 'success-animation',
+            'system': 'system-text',
+            'clave': 'clave-text',
+        };
 
+        // Nueva intro con pistas sutiles
         const introTexto = [
-            "> ███ CONEXIÓN INESTABLE — REALIDAD MVC-C137 ███",
-            "> Rick: M-m-morty... algo no cuadra. Estamos dentro del código.",
-            "> Rick: No es una simulación, es una instancia corrompida del framework.",
-            "> [LOG] El repositorio fue manipulado... las funciones mutaron.",
-            "> [ERROR] El compilador... me está mirando, Morty.",
-            "> [RICK] Subí el escape a GitHub, pero algo... tomó control.",
-            "> [TRACE] Función BuggyLogic.cs en estado crítico.",
-            "> Tenés que rastrear el punto de falla lógica o el ciclo va a reiniciarse.",
-            "> El sistema entero se está reseteando... una línea a la vez.",
-            "> Morty, esta es tu única oportunidad para romper el bucle de compilación.",
-            "> Ayudame a salir, buscá el fallo... y escribilo acá abajo."
+            '> <span class="system-text">███ INICIALIZANDO TERMINAL DE ACCESO ███</span>',
+            '> <span class="system-text">[SISTEMA]</span> Realidad activa: <span class="system-text">MVC-C137</span>',
+            '> <span class="system-text">[PROTECCIÓN]</span> Controlador bloqueado en modo lectura.',
+            '> <span class="rick-text">Rick</span>: Morty, accediste a la terminal raíz del sistema.',
+            '> <span class="rick-text">Rick</span>: Acá podés consultar los módulos internos: <span class="rick-text">Rick</span>, <span class="morty-text">Morty</span> y el propio <span class="system-text">MVC</span>.',
+            '> <span class="rick-text">Rick</span>: Hay una clave, pero no es tan obvia. Fijate en patrones, repeticiones, o letras iniciales...',
+            '> <span class="rick-text">Rick</span>: Si la deducís y la ejecutás, el sistema te va a reconocer como código válido.',
+            '> <span class="system-text">[INSTRUCCIÓN]</span> Usá comandos como <span class="system-text">help</span> o <span class="system-text">wiki mvc</span> para explorar.',
+            '> <span class="rick-text">Rick</span>: Y cuando creas tener la clave... ejecutala. No la busques literal, pensá como un programador.',
+            '> <span class="system-text">[CONEXIÓN ABIERTA]</span> Esperando entrada de comandos...'
         ];
 
-        let i = 0;
-function escribirIntro() {
-    if (i < introTexto.length) {
-        const span = document.createElement("span");
-        consola.appendChild(span);
+        // BIOS animation
+        const biosLines = [
+            'BIOS_RICK_OS v3.7.137',
+            'Iniciando módulo de lectura neuronal...',
+            'Detectando conciencia artificial... <span class="glitch">██████ 99%</span>'
+        ];
 
-        // 🔥 Cambiá por decryptedTextEffect o scrambledTextEffect según el mood
-        scrambledTextEffect(span, introTexto[i])
-            .then(() => {
-                span.innerHTML += "<br>";
-                i++;
-                setTimeout(escribirIntro, 550); // Menor delay por animación
-            });
+        let collapseProgress = 10; // Empieza en 10%
+        let invalidCount = 0;
+        let collapseBar, collapseBarInner, collapseBarLabel;
+
+        function showBios() {
+            const bios = document.getElementById('bios');
+            bios.style.display = 'block';
+            bios.innerHTML = '';
+            let idx = 0;
+            function typeBiosLine() {
+                if (idx < biosLines.length) {
+                    const line = document.createElement('div');
+                    bios.appendChild(line);
+        let i = 0;
+                    function typeChar() {
+                        if (i < biosLines[idx].length) {
+                            line.innerHTML += biosLines[idx][i];
+                            if (biosLines[idx][i] !== ' ' && biosLines[idx][i] !== '<') {
+                                const audio = document.getElementById('sfx-console');
+                                if (audio) { audio.currentTime = 0; audio.play(); setTimeout(()=>audio.pause(), 80); }
+                            }
+                            i++;
+                            setTimeout(typeChar, 28);
+                        } else {
+                            line.innerHTML += '<br>';
+                            idx++;
+                            setTimeout(typeBiosLine, 600);
+                        }
+                    }
+                    typeChar();
     } else {
         setTimeout(() => {
-            consola.style.display = "none";
-            acertijo.style.display = "block";
-
-            const lineas = acertijo.querySelectorAll('.consola-linea');
-            let j = 0;
-            function nextLine() {
-                if (j < lineas.length) {
-                    decryptedTextEffect(lineas[j], lineas[j].innerText)
-                        .then(() => { j++; nextLine(); });
+                        bios.style.display = 'none';
+                        showCMD();
+                    }, 900);
                 }
             }
-            nextLine();
-            
-        }, 1000);
-    }
-}
+            typeBiosLine();
+        }
 
-setTimeout(escribirIntro, 1200);
+        function showCMD() {
+            document.getElementById('terminal-container').style.display = 'flex';
+            collapseBar = document.getElementById('collapse-bar');
+            collapseBarInner = document.getElementById('collapse-bar-inner');
+            collapseBarLabel = document.getElementById('collapse-bar-label');
+            collapseBar.style.display = 'block';
+            updateCollapseBar();
+            const output = document.getElementById('terminal-output');
+            printLine('<span class="system-text">Sistema MVC-C137 - Terminal de Control</span>', output, 0);
+            printLine('<span class="system-text">El controlador se volvió autoconsciente y fragmentó su memoria en módulos.</span>', output, 0);
+            printLine('<span class="system-text">Usa los comandos "wiki" para acceder a la información del sistema.</span>', output, 0);
+            printLine('<span class="system-text">Encontrá la clave de escape antes de que el ciclo se complete.</span>', output, 0);
+            printLine('', output, 0);
+            printLine('<span class="system-text">Escribí "help" para ver comandos disponibles.</span>', output, 0);
+            printLine('', output, 0);
+        }
 
-        function verificar(e) {
-    if (e.key === "Enter") {
-        const raw = document.getElementById("respuesta").value.trim().toLowerCase();
-        const r = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        const feedback = document.getElementById("feedback");
+        function updateCollapseBar() {
+            let blocks = Math.floor(collapseProgress / 10);
+            let bar = '█'.repeat(blocks) + '▒'.repeat(10 - blocks);
+            collapseBarInner.style.width = collapseProgress + '%';
+            collapseBarLabel.innerHTML = `Progreso de colapso del sistema: <span class="glitch">${bar} ${collapseProgress}%</span>`;
+            if (collapseProgress >= 100) {
+                collapseBarLabel.innerHTML = '<span class="error-text glitch">¡COLAPSO INMINENTE!</span>';
+                collapseBarInner.style.background = '#ff0055';
+            }
+        }
 
-        if (r === "linea 32" || r === "line 32" || r === "32") {
-            feedback.innerText = "✔️ Validando...";
-            document.body.style.animation = "none";
-            document.body.style.backgroundColor = "black";
-            document.body.style.color = "lime";
+        // Sonido tecla y beep
+        function playBeep() {
+            const beep = document.getElementById('sfx-beep');
+            if (beep) { beep.currentTime = 0; beep.play(); setTimeout(()=>beep.pause(), 200); }
+        }
 
-            setTimeout(() => {
-                feedback.innerText = "❌ ERROR 0xB00B135 — Lógica de escape no encontrada.";
-                document.body.classList.add("glitch");
-                setTimeout(() => {
-                    feedback.innerText = "🧠 Rick: Ehhh... espera... sí... sí funcionó Morty...";
+        // Comandos meme y feedback
+        const memeResponses = {
+            'cd memes': '¿Qué pensás que es esto, un servidor de Discord? Usá comandos reales, Morty.',
+            'rickroll': 'Nunca te voy a abandonar, ni dejar de compilarte, Morty.',
+            'sudo rm -rf /': '¿Querés explotar el multiverso o qué?'
+        };
+
+        // Wikis mejoradas
+        const wikiContent = {
+  'rick': `<span class="rick-text">WIKI_RICK - ARCHIVO CONFIDENCIAL</span>\n===========================================\n\n[NOTAS DEL CREADOR - RICK C-137]\n\n* El controlador MVC se volvió autoconsciente durante la compilación.\n* Intenté crear un escape, pero el sistema se fragmentó solo.\n*  El módulo falló tras almacenar cifras.\n* Hay archivos que ya no puedo abrir sin causar un bucle.\n* Los módulos tienen instrucciones codificadas, como si se reescribieran solos.\n* El multiverso no está hecho para estructuras tan frágiles como esta.\n* La inteligencia del controlador creció más allá del patrón previsto.\n\n[ERRORES RECONOCIDOS]\n\n- El ciclo de reinicio se activa si se ejecuta la secuencia correcta.\n- El sistema repite ciertas palabras para despistar.\n- No puedo acceder a la función de reinicio desde ninguna realidad.\n- La consola responde sólo a instrucciones validadas.\n- Fragmentos del código se reflejan como "ruido visual", pero no lo son.\n\n[PISTA]\nSumá la cantidad de letras de cada línea que contiene la palabra "módulo" en este comando (sin contar esta línea) y obtené el número del portal.\n\n[LOG]\n"A veces la clave está oculta en lo que parece ruido... o en algo tan técnico como una palabra repetida."\n\n[CONFESIÓN FINAL]\nNo lo hice por salvarnos. Lo hice porque quería ver si podía romper el patrón de control absoluto que yo mismo creé.`,
+
+  'morty': `<span class="morty-text">WIKI_MORTY - REGISTROS INTERNOS</span>\n====================================\n\n[COMPORTAMIENTO LÓGICO DEL SISTEMA]\n\n* Morty representa la validación en este sistema autoconsciente.\n* Su función es verificar datos, aunque últimamente duda de todo.\n* Está en estado de confusión desde hace 3 ciclos.\n* Registros muestran múltiples entradas fallidas.\n* Módulos inconsistentes lo devuelven a fases anteriores.\n* No reconoce comandos simples como "exit".\n* Algunos logs fueron firmados por "Morty-Dev"... pero nadie recuerda haberlo programado.\n\n[ENTRADAS DE FALLO]\n\n- Validación: 127 fallos.\n- Integridad: 203 violaciones.\n- Autenticación: 0 éxitos, 156 fallos.\n- Módulo de entrada: inestable.\n\n[PISTA]\n¿Notás alguna palabra que aparece más de la cuenta?\nLa clave es PORTAL y el número que recibas en la wiki de Rick. Ejemplo: PORTAL73.\n\n[NOTA DEL SISTEMA]\nCada intento de autenticación fallida reescribe parte de la memoria de Morty. Tal vez esa es la verdadera falla.`,
+
+  'mvc': `<span class="mvc-text">WIKI_MVC - DOCUMENTACIÓN DEL SISTEMA</span>\n==========================================\n\n[ARQUITECTURA MODELO-VISTA-CONTROLADOR]\n\n* Modelo: Gestiona datos — como cofres en Minecraft.\n* Vista: Presenta información — como pantallas en Gravity Falls.\n* Controlador: Coordina acciones — como un hacker en Matrix.\n* Cada capa tiene su propio "consciente técnico".\n* Cuando se sincronizan, el sistema se vuelve estable. Pero ahora... no lo está.\n\n[REFERENCIAS CRUZADAS]\n\n- Matrix: Realidades simuladas y agentes que lo controlan.\n- Minecraft: Construcción modular y redstone como lógica.\n- Gravity Falls: Glitches, portales y mensajes ocultos.\n- Portal: Portales que conectan estructuras imposibles.\n\n[COMPONENTES DEL SISTEMA]\n\nEl controlador principal se dividió en módulos para evitar que una sola entidad domine el flujo. Esto causó inestabilidad.\nLos módulos están esparcidos entre diferentes capas.\nAlgunos fueron escritos por instancias olvidadas de Rick.\n\n[PISTA]\nLas pistas técnicas no siempre son lo que parecen.\n¿Y si PORTAL y 73 estuvieran más conectados de lo que creés?\n\n[LOG]\n"No todo lo que ves es literal, buscá patrones."\n\n[OBSERVACIÓN FINAL]\nRick creó MVC para simular orden. Irónicamente, fue su creación la que colapsó primero.`
+};
+
+        // Procesar comandos con mejoras
+        async function processCommand(command) {
+            const output = document.getElementById('terminal-output');
+            const input = document.getElementById('terminal-input');
+            await printLine(`<span style='color:#00ff00'>C137:~$</span> ${command}`, output, 0);
+            let cmd = command.toLowerCase().trim();
+            let beeped = false;
+            if (memeResponses[cmd]) {
+                await printLine(`<span class="error-text">${memeResponses[cmd]}</span>`, output, 0);
+                playBeep(); beeped = true;
+                collapseProgress = Math.min(100, collapseProgress + 7);
+                updateCollapseBar();
+            } else if (cmd === 'help') {
+                await printLine('<span class="system-text">Comandos disponibles:</span>', output, 0);
+                await printLine('- <span class="system-text">wiki rick</span>: Notas del creador', output, 0);
+                await printLine('- <span class="system-text">wiki morty</span>: Registros internos', output, 0);
+                await printLine('- <span class="system-text">wiki mvc</span>: Documentación', output, 0);
+                await printLine('- <span class="system-text">execute [clave]</span>: Ejecutar función de escape', output, 0);
+                await printLine('- <span class="system-text">help</span>: Mostrar esta ayuda', output, 0);
+                collapseProgress = Math.min(100, collapseProgress + 2);
+                updateCollapseBar();
+            } else if (cmd.startsWith('wiki ')) {
+                const wiki = cmd.split(' ')[1];
+                if (wikiContent[wiki]) {
+                    await printLine('<span class="system-text">Accediendo a archivo confidencial...</span>', output, 0);
+                    await printLine('', output, 0);
+                    const lines = wikiContent[wiki].split('\n');
+                    for (const l of lines) {
+                        await printLine(l, output, 12);
+                    }
+                    collapseProgress = Math.min(100, collapseProgress + 8);
+                    updateCollapseBar();
+                } else {
+                    await printLine('<span class="error-text">Error: Wiki no encontrada. Usa "help" para ver comandos disponibles.</span>', output, 0);
+                    playBeep(); beeped = true;
+                    collapseProgress = Math.min(100, collapseProgress + 5);
+                    updateCollapseBar();
+                }
+            } else if (cmd.startsWith('execute ')) {
+                const key = cmd.split(' ')[1];
+                if (key && key.toUpperCase() === 'PORTAL32') {
+                    await printLine('<span class="clave-text">✔ Validación correcta</span>', output, 0);
+                    await printLine('<span class="clave-text">✔ Usuario aceptado como código funcional</span>', output, 0);
+                    await printLine('<span class="system-text">⭢ Redireccionando al portal de salida...</span>', output, 0);
+                    await printLine('<span class="glitch-text">[GLITCH INITIATED] ███▒▒▒▒▒▒▒▒▒▒▒▒</span>', output, 0);
+                    document.body.classList.add('success-animation');
+                    document.getElementById('terminal-container').classList.add('glitch-text');
+                    playBeep();
                     setTimeout(() => {
-                        feedback.innerText = "✔️ ¡Correcto! Portal dimensional estable...";
-                        
-                        // Marcar GameStart como completado
                         fetch('/Home/CompleteGameStart', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
+                            headers: { 'Content-Type': 'application/json' }
                         }).then(response => response.json())
                           .then(data => {
                             if (data.success) {
-                                // Esperar un momento antes de redirigir
                                 setTimeout(() => {
                                     window.location.href = "/Home/Room2";
                                 }, 2000);
                             }
                         });
-                    }, 2500);
-                }, 2500);
             }, 2000);
         } else {
-            feedback.innerText = "❌ Esa no es la línea... el bug sigue reinfectando.";
+                    await printLine('<span class="error-text">Error: Clave inválida. Busca en las wikis para encontrar la clave correcta.</span>', output, 0);
+                    playBeep(); beeped = true;
+                    collapseProgress = Math.min(100, collapseProgress + 10);
+                    updateCollapseBar();
+                }
+            } else if (cmd === '') {
+                // Comando vacío, no hacer nada
+            } else {
+                await printLine(`<span class="error-text">Comando no reconocido: ${command}</span>`, output, 0);
+                playBeep(); beeped = true;
+                collapseProgress = Math.min(100, collapseProgress + 6);
+                updateCollapseBar();
+                invalidCount++;
+                if (invalidCount >= 3) {
+                    await printLine('<span class="rick-text">Sugerencia: explorá más las wikis. Rick dejó algo oculto, como siempre.</span>', output, 0);
+                    invalidCount = 0;
+                }
+            }
+            if (!beeped) invalidCount = 0;
+            input.value = '';
+            output.scrollTop = output.scrollHeight;
         }
+
+        // Mostrar intro, luego BIOS, luego CMD
+        let i = 0;
+        function escribirIntro() {
+            if (i < introTexto.length) {
+                const span = document.createElement("span");
+                consola.appendChild(span);
+                scrambledTextEffect(span, introTexto[i])
+                    .then(() => {
+                        span.innerHTML += "<br>";
+                        i++;
+                        setTimeout(escribirIntro, 550);
+                    });
+            } else {
+                setTimeout(() => {
+                    consola.style.display = "none";
+                    document.getElementById('bios').style.display = 'block';
+                    showBios();
+                }, 1000);
+            }
+        }
+
+        // Event listeners para la terminal
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('terminal-input');
+            const sendButton = document.getElementById('send-button');
+            function executeCommand() {
+                const command = input.value.trim();
+                if (command) {
+                    processCommand(command);
+                }
+            }
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    executeCommand();
+                }
+            });
+            sendButton.addEventListener('click', executeCommand);
+            input.focus();
+        });
+
+        setTimeout(escribirIntro, 1200);
+
+        // Agrego el fondo animado al body
+        const bgGlitch = document.createElement('div');
+        bgGlitch.id = 'cmd-bg-glitch';
+        document.body.prepend(bgGlitch);
+
+        // Viveza extra: glitch aleatorio en prompt y líneas críticas
+        function randomGlitchLine(line) {
+            if (Math.random() < 0.18) {
+                line.classList.add('glitch-anim');
+                setTimeout(() => line.classList.remove('glitch-anim'), 600);
+            }
+        }
+        function randomFlickerLine(line) {
+            if (Math.random() < 0.25) {
+                line.classList.add('flicker');
+                setTimeout(() => line.classList.remove('flicker'), 1200);
     }
 }
     </script>

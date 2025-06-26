@@ -5,524 +5,196 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>:3</title>
+    <title>Final</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background: #000;
             color: #fff;
-            font-family: 'Courier New', monospace;
+            font-family: 'Fira Mono', monospace;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
-            transition: all 2s;
-            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .container {
-            position: fixed;
+        #intro, #cine, #final-video {
+            position: absolute;
+            top: 0; left: 0;
             width: 100vw;
             height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #intro {
+            background: #000;
+            color: #fff;
+            font-size: 2.5rem;
+            text-align: center;
+            padding: 0 12vw;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.7s;
+            height: 100vh;
+            width: 100vw;
+            margin-left: -12.5%;
+        }
+        #intro-text {
+            min-height: 12em;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-
-        .confirm-dialog {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border: 2px solid #ff0000;
-            border-radius: 5px;
-            text-align: center;
-            z-index: 1000;
+        #intro-text p {
+            margin: 0 0 2.5em 0;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
         }
-
-        .btn {
-            margin: 10px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-delete {
-            background: #ff0000;
-            color: white;
-        }
-
-        .btn-cancel {
-            background: #333;
-            color: white;
-        }
-
-        .ghost-file {
-            position: absolute;
-            opacity: 0;
-            transition: all 2s;
-            animation: float 3s infinite;
-            cursor: pointer;
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0;
-        }
-
-        .message {
-            position: fixed;
-            opacity: 0;
-            transition: opacity 1s;
-            text-align: center;
-            width: 80%;
-            max-width: 600px;
-        }
-
-        .matrix-rain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-
-        .typing {
-            border-right: 2px solid #fff;
-            animation: blink 0.7s infinite;
-        }
-
-        .scramble {
-            animation: scramble 0.1s infinite;
-        }
-
-        .distortion {
-            animation: distortion 0.5s infinite;
-        }
-
-        @@keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        @@keyframes glitch {
-            0% { transform: translate(0); filter: hue-rotate(0deg); }
-            20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
-            40% { transform: translate(-2px, -2px); filter: hue-rotate(180deg); }
-            60% { transform: translate(2px, 2px); filter: hue-rotate(270deg); }
-            80% { transform: translate(2px, -2px); filter: hue-rotate(360deg); }
-            100% { transform: translate(0); filter: hue-rotate(0deg); }
-        }
-
-        @@keyframes blink {
-            50% { border-color: transparent; }
-        }
-
-        @@keyframes scramble {
-            0% { text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
-            25% { text-shadow: -2px 2px #ff0000, 2px -2px #00ff00; }
-            50% { text-shadow: 2px -2px #ff0000, -2px 2px #00ff00; }
-            75% { text-shadow: -2px -2px #ff0000, 2px 2px #00ff00; }
-            100% { text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
-        }
-
-        @@keyframes distortion {
-            0% { filter: blur(0px) hue-rotate(0deg); }
-            50% { filter: blur(2px) hue-rotate(180deg); }
-            100% { filter: blur(0px) hue-rotate(360deg); }
-        }
-
-        .confirm-input {
+        #final-video {
+            object-fit: cover;
             background: #000;
-            border: 1px solid #ff0000;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.7s;
+        }
+        #cine {
+            background: #000;
             color: #fff;
-            padding: 5px;
-            margin: 10px;
+            font-size: 3rem;
+            font-family: 'Fira Mono', monospace;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.7s;
+        }
+        #cine-creditos {
+            margin-top: 2.2em;
+            font-size: 1.1rem;
+            color: #fff;
+            opacity: 0.45;
             text-align: center;
+            font-family: 'Fira Mono', monospace;
+            letter-spacing: 0.04em;
         }
-
-        .minilog {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 10px;
-            border: 1px solid #0f0;
-            display: none;
-        }
-
-        .ad-popup {
-            animation: popupIn 0.5s;
-        }
-
-        @@keyframes popupIn {
-            from { opacity: 0; transform: scale(0.7) rotate(-10deg); }
-            to { opacity: 1; transform: scale(1) rotate(0deg); }
-        }
-
-        .glitchy-move {
-            filter: hue-rotate(360deg) brightness(1.5) drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #0ff) drop-shadow(0 0 30px #f0f);
-            animation: rainbow-glitch 0.7s;
-        }
-
-        @@keyframes rainbow-glitch {
-            0% { filter: hue-rotate(0deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
-            20% { filter: hue-rotate(90deg) brightness(2) drop-shadow(0 0 20px #0ff); }
-            40% { filter: hue-rotate(180deg) brightness(2) drop-shadow(0 0 30px #f0f); }
-            60% { filter: hue-rotate(270deg) brightness(2) drop-shadow(0 0 20px #ff0); }
-            80% { filter: hue-rotate(360deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
-            100% { filter: hue-rotate(0deg) brightness(1.5) drop-shadow(0 0 10px #fff); }
+        @@media (max-width: 700px) {
+            #intro { font-size: 1.2rem; padding: 0 3vw; }
+            #cine { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-<audio src="/img/teamo.mp3" autoplay loop></audio> 
-    <div class="container">
-        <div id="confirmDialog" class="confirm-dialog">
-            <h2>¿Estás seguro de eliminar a Morty.exe para siempre?</h2>
-            <p>Esta acción no se puede deshacer.</p>
-            <input type="text" id="confirmInput" class="confirm-input" placeholder="Escribe ELIMINAR para continuar">
-            <div>
-                <button class="btn btn-delete" onclick="startDeletion()">Sí, eliminar</button>
-                <button class="btn btn-cancel" onclick="cancelDeletion()">No, me arrepiento</button>
-            </div>
-        </div>
+    <div id="intro">
+        <div id="intro-text"></div>
+    </div>
+    <video id="final-video" src="/img/finaleliminar.mp4"></video>
+    <audio id="cine-audio" src="/img/fightclub.mp3"></audio>
+    <div id="cine">
+        En efecto, es cine.
+        <div id="cine-creditos">[ By Joaco Stock, Sebastian Calviño & Theo Trosman ]</div>
     </div>
 
-    <div id="minilog" class="minilog"></div>
-
     <script>
-        let deletionCount = localStorage.getItem('deletionCount') || 0;
-        let cancelCount = localStorage.getItem('cancelCount') || 0;
+        const intro = document.getElementById('intro');
+        const introText = document.getElementById('intro-text');
+        const video = document.getElementById('final-video');
+        const cine = document.getElementById('cine');
 
-        function startDeletion() {
-            const input = document.getElementById('confirmInput').value;
-            if (input.toUpperCase() !== 'ELIMINAR') {
-                showMessage("Debes escribir ELIMINAR para continuar", 2000);
-                return;
-            }
-
-            deletionCount = parseInt(deletionCount) + 1;
-            localStorage.setItem('deletionCount', deletionCount);
-
-            document.body.classList.add('distortion');
-            setTimeout(() => {
-                document.body.classList.remove('distortion');
-                document.body.style.background = '#000';
-                const container = document.querySelector('.container');
-                container.innerHTML = '';
-                
-                createShatterEffect();
-                playSound('shatter');
-                
-                showTypingMessage("SYSTEM ERROR: MORTY.EXE REMOVED", 2000);
-                setTimeout(() => showTypingMessage("ERROR: Reference to player process lost", 2000), 3000);
-                
-                if (deletionCount > 1) {
-                    setTimeout(() => showTypingMessage("No es la primera vez que me borrás...", 2000), 6000);
-                }
-
-                setTimeout(() => showTypingMessage("¿Eso era todo? ¿Un clic y termina?", 2000), 9000);
-                setTimeout(() => showTypingMessage("Hay cosas que no se pueden eliminar... ni siquiera yo.", 2000), 12000);
-                setTimeout(() => showTypingMessage("¿Te acordás de mí cuando cierres la pestaña?", 2000), 15000);
-                
-                setTimeout(createMatrixRain, 18000);
-                setTimeout(createGhostFile, 20000);
-            }, 2000);
-        }
-
-        function createShatterEffect() {
-            for (let i = 0; i < 50; i++) {
-                const fragment = document.createElement('div');
-                fragment.style.position = 'absolute';
-                fragment.style.width = '20px';
-                fragment.style.height = '20px';
-                fragment.style.background = '#fff';
-                fragment.style.left = Math.random() * window.innerWidth + 'px';
-                fragment.style.top = Math.random() * window.innerHeight + 'px';
-                fragment.style.transform = `rotate(${Math.random() * 360}deg)`;
-                fragment.style.animation = `float ${2 + Math.random() * 3}s infinite`;
-                document.body.appendChild(fragment);
-                
-                setTimeout(() => {
-                    fragment.style.opacity = '0';
-                    fragment.style.transform = `rotate(${Math.random() * 360}deg) scale(0)`;
-                }, 1000 + Math.random() * 1000);
-            }
-            showAdPopups();
-        }
-
-        function createMatrixRain() {
-            const matrix = document.createElement('div');
-            matrix.className = 'matrix-rain';
-            document.body.appendChild(matrix);
-            
-            for (let i = 0; i < 100; i++) {
-                const column = document.createElement('div');
-                column.style.position = 'absolute';
-                column.style.left = `${Math.random() * 100}%`;
-                column.style.top = '-20px';
-                column.style.color = '#0f0';
-                column.style.fontSize = '20px';
-                column.textContent = generateBinary();
-                matrix.appendChild(column);
-                
-                animateColumn(column);
-            }
-            
-            setTimeout(() => {
-                matrix.style.opacity = '1';
-                setTimeout(() => {
-                    matrix.style.opacity = '0';
-                    setTimeout(() => matrix.remove(), 1000);
-                }, 2000);
-            }, 100);
-        }
-
-        function generateBinary() {
-            return Array(20).fill(0).map(() => Math.random() > 0.5 ? '1' : '0').join('');
-        }
-
-        function animateColumn(column) {
-            let position = -20;
-            const speed = 2 + Math.random() * 3;
-            
-            function move() {
-                position += speed;
-                column.style.top = `${position}px`;
-                
-                if (position < window.innerHeight) {
-                    requestAnimationFrame(move);
-                } else {
-                    column.remove();
-                }
-            }
-            
-            move();
-        }
-
-        function showTypingMessage(text, duration) {
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.textContent = '';
-            document.body.appendChild(message);
-            
-            let i = 0;
-            const type = () => {
-                if (i < text.length) {
-                    message.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(type, 50);
-                } else {
-                    message.classList.add('typing');
-                    setTimeout(() => {
-                        message.classList.remove('typing');
-                        message.style.opacity = '0';
-                        setTimeout(() => message.remove(), 1000);
-                    }, duration);
-                }
-            };
-            
-            type();
-        }
-
-        function createGhostFile() {
-            const ghost = document.createElement('div');
-            ghost.className = 'ghost-file';
-            ghost.textContent = 'CLICKEAME!';
-            ghost.style.left = '50%';
-            ghost.style.top = '50%';
-            document.body.appendChild(ghost);
-            
-            ghost.addEventListener('click', () => {
-                const minilog = document.getElementById('minilog');
-                minilog.style.display = 'block';
-                minilog.textContent = "¿Por qué pensás que siempre hay algo que queda?";
-                setTimeout(() => {
-                    minilog.style.display = 'none';
-                }, 3000);
-            });
-            
-            ghost.addEventListener('mousedown', (e) => {
-                if (e.button === 2) {
-                    e.preventDefault();
-                    showMessage("Ya no podés modificar nada, pero podés recordar.", 2000);
-                }
-            });
-            
-            document.addEventListener('contextmenu', (e) => e.preventDefault());
-            
-            setTimeout(() => {
-                ghost.style.opacity = '1';
-                showTypingMessage("No queda nada... salvo tu huella.", 2000);
-                setTimeout(() => {
-                    showTypingMessage("Siempre que alguien borra una parte de sí mismo, algo persiste.", 2000);
-                    setTimeout(() => {
-                        showTypingMessage("Gracias por jugar. Gracias por eliminarme.", 2000);
-                        setTimeout(() => {
-                            const date = new Date();
-                            showTypingMessage(`[Final registrado en el sistema. Gracias por jugar, Theo. ${date.toLocaleString()}]`, 3000);
-                            setTimeout(() => {
-                                showTypingMessage("Fin de la simulación. O no.", 2000);
-                            }, 3000);
-                        }, 2000);
-                    }, 2000);
-                }, 2000);
-            }, 100);
-        }
-
-        function cancelDeletion() {
-  // Pausá el audio de fondo si existe
-  document.querySelector('audio')?.pause();
-
-  // Reproducí el video ledigo.mp4 en pantalla completa con sonido
-  Object.assign(
-    document.body.appendChild(
-      Object.assign(
-        document.createElement("video"),
-        {
-          src: "/img/ledigohola.mp4",
-          autoplay: true,
-          controls: false,
-          muted: false,
-          style: "position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
-        }
-      )
-    ),
-    {
-      oncanplay: function () {
-        this.requestFullscreen?.();
-        this.play();
-      }
-    }
-  );
-
-  // Si querés que redirija después de 7 segundos (opcional):
-  // setTimeout(() => { window.location.href = '/Home/Index'; }, 7000);
-}
-
-        function playSound(type) {
-            const audio = new Audio();
-            if (type === 'shatter') {
-                audio.src = 'data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU...';
-            }
-            audio.play();
-        }
-        
-    </script>
-
-    <!-- POPUPS DE ANUNCIOS -->
-    <script>
-    function showAdPopups() {
-        const images = [
-            '/img/anuncio3.jpg',
-            '/img/anuncio4.jpg',
-            '/img/anuncio5.jpg',
-            '/img/anuncio6.jpg',
-            '/img/anuncio7.jpg',
-            '/img/anuncio8.jpg'
+        const textoIntro = [
+            'El proceso de eliminación fue irreversible.\n',
+            'Rick y Morty, al intentar borrar morty.exe, desataron una reacción en cadena.\n',
+            'El sistema colapsó, los módulos se corrompieron y la realidad digital explotó.\n',
+            'No quedó nada. Ni Rick, ni Morty, ni siquiera el código.\n',
+            'Solo un eco en la memoria del multiverso...'
         ];
-        const popupW = 8; // vw
-        const popupH = 8; // vh
-        const total = 200;
-        const cols = 20, rows = 10; // 20x10 = 200
-        let popups = [];
-        for (let i = 0; i < total; i++) {
-            const popup = document.createElement('div');
-            popup.className = 'ad-popup';
-            popup.style.position = 'fixed';
-            // Distribución en cuadrícula perfecta
-            const col = i % cols;
-            const row = Math.floor(i / cols);
-            const left = col * (100 / cols);
-            const top = row * (100 / rows);
-            popup.style.left = `calc(${left}vw)`;
-            popup.style.top = `calc(${top}vh)`;
-            popup.style.width = popupW + 'vw';
-            popup.style.height = popupH + 'vh';
-            popup.style.background = `#111 url('${images[i % images.length]}') center/cover no-repeat`;
-            popup.style.boxShadow = '0 0 20px #000';
-            popup.style.border = 'none';
-            popup.style.zIndex = 2000 + i;
-            popup.style.display = 'flex';
-            popup.style.flexDirection = 'column';
-            popup.style.justifyContent = 'flex-start';
-            popup.style.alignItems = 'flex-end';
-            popup.style.borderRadius = '18px';
-            popup.style.transition = 'opacity 0.3s, left 0.7s cubic-bezier(.68,-0.55,.27,1.55), top 0.7s cubic-bezier(.68,-0.55,.27,1.55), filter 0.7s';
-            // Botón de cierre (opcional, pero ahora se puede cerrar con click en cualquier parte)
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '✖';
-            closeBtn.style.background = 'rgba(0,0,0,0.7)';
-            closeBtn.style.color = '#fff';
-            closeBtn.style.border = 'none';
-            closeBtn.style.fontSize = '32px';
-            closeBtn.style.cursor = 'pointer';
-            closeBtn.style.margin = '8px 8px 0 0';
-            closeBtn.style.borderRadius = '50%';
-            closeBtn.style.width = '32px';
-            closeBtn.style.height = '32px';
-            closeBtn.onclick = (e) => {
-                e.stopPropagation();
-                popup.style.opacity = 0;
-                setTimeout(() => popup.remove(), 300);
-            };
-            popup.appendChild(closeBtn);
-            // Cerrar popup haciendo click en cualquier parte
-            popup.onclick = () => {
-                popup.style.opacity = 0;
-                setTimeout(() => popup.remove(), 300);
-            };
-            document.body.appendChild(popup);
-            popups.push(popup);
+
+        function typeText(lines, container, cb) {
+            let lineIdx = 0;
+            function typeLine() {
+                if (lineIdx >= lines.length) { cb && cb(); return; }
+                let i = 0;
+                const p = document.createElement('p');
+                p.style.margin = '0 0 2.5em 0';
+                p.style.lineHeight = '1.7';
+                p.style.letterSpacing = '0.02em';
+                container.appendChild(p);
+                function typeChar() {
+                    if (i < lines[lineIdx].length) {
+                        let char = lines[lineIdx][i];
+                        if (char === '\n') char = '<br>';
+                        p.innerHTML += char;
+                        i++;
+                        setTimeout(typeChar, 45);
+                    } else {
+                        lineIdx++;
+                        setTimeout(typeLine, 700);
+                    }
+                }
+                typeChar();
+            }
+            typeLine();
         }
 
-        // Cada 5 segundos, reubica los popups que quedan y aplica efecto glitchy arcoiris
-        setInterval(() => {
-            // Filtra solo los popups que siguen en pantalla
-            popups = popups.filter(p => document.body.contains(p));
-            // Mezcla las posiciones
-            const indices = Array.from({length: popups.length}, (_, i) => i);
-            for (let i = indices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [indices[i], indices[j]] = [indices[j], indices[i]];
-            }
-            // Reasigna posiciones y aplica efecto
-            popups.forEach((popup, idx) => {
-                const col = indices[idx] % cols;
-                const row = Math.floor(indices[idx] / cols);
-                const left = col * (100 / cols);
-                const top = row * (100 / rows);
-                // Efecto glitchy arcoiris
-                popup.classList.add('glitchy-move');
-                popup.style.left = `calc(${left}vw)`;
-                popup.style.top = `calc(${top}vh)`;
-                setTimeout(() => popup.classList.remove('glitchy-move'), 700);
-            });
-            // Elimina 25 popups aleatorios de los que quedan
-            if (popups.length > 0) {
-                const toRemove = Math.min(25, popups.length);
-                const removeIndices = [];
-                while (removeIndices.length < toRemove) {
-                    const idx = Math.floor(Math.random() * popups.length);
-                    if (!removeIndices.includes(idx)) removeIndices.push(idx);
-                }
-                // Ordena de mayor a menor para evitar problemas al hacer splice
-                removeIndices.sort((a, b) => b - a);
-                for (const idx of removeIndices) {
-                    const popup = popups[idx];
-                    popup.style.opacity = 0;
-                    setTimeout(() => popup.remove(), 300);
-                    popups.splice(idx, 1);
-                }
-            }
-        }, 5000);
-    }
-    </script>
+        function fadeIn(el) {
+            el.style.display = 'flex';
+            setTimeout(() => { el.style.opacity = 1; }, 10);
+        }
+        function fadeOut(el, cb) {
+            el.style.opacity = 0;
+            setTimeout(() => { el.style.display = 'none'; if (cb) cb(); }, 700);
+        }
 
-    <!-- Mostrar los popups apenas se entra a la página -->
-    <script>
-    window.addEventListener('DOMContentLoaded', showAdPopups);
+        function playSegment(start, end, onEnd) {
+            video.currentTime = start;
+            video.play();
+            fadeIn(video);
+            const check = setInterval(() => {
+                if (video.currentTime >= end || video.ended) {
+                    video.pause();
+                    clearInterval(check);
+                    fadeOut(video, onEnd);
+                }
+            }, 200);
+        }
+
+        // Secuencia: intro tipeada -> video 0-40 -> video 90-fin -> texto final
+        function startSequence() {
+            const audio = document.getElementById('cine-audio');
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+            fadeIn(intro);
+            typeText(textoIntro, introText, () => {
+                setTimeout(() => {
+                    fadeOut(intro, () => {
+                        if (audio) audio.pause();
+                        playSegment(0, 40, () => {
+                            setTimeout(() => {
+                                playSegment(90, video.duration, () => {
+                                    fadeIn(cine);
+                                    if (audio) {
+                                        audio.currentTime = 15;
+                                        audio.play();
+                                    }
+                                });
+                            }, 600);
+                        });
+                    });
+                }, 1200);
+            });
+        }
+        startSequence();
     </script>
 </body>
 </html> 

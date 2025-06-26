@@ -7,7 +7,7 @@ CLAVE: adminmvc
 --- SOLUCIONES Y TIPS DE TODAS LAS ROOMS ---
 
 🌀 GameStart / Room1:
-  - Solución: Escribir "línea 32", "linea 32" o simplemente "32" (el bug está en esa línea).
+  - Solución: usar el comando "execute PORTAL32" en la consola
 
 💾 Room2:
   - Clave: 479
@@ -45,6 +45,10 @@ CLAVE: adminmvc
   - Abrí 9 aplicaciones (ventanas).
   - Cuando aparezca el pop-up de Morty malvado, elegí tu final favorito entre 3 opciones.
 
+Los 3 finales son:
+http://localhost:5088/home/finalreiniciar
+http://localhost:5088/home/finalunirse
+http://localhost:5088/home/finaleliminar
 ---
 Recomendaciones: 
 -> En algunas rooms vas a tener que hacer o deshacer zoom para poder ver todos los elementos en pantalla 

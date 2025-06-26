@@ -2,794 +2,195 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>:3</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <title>Final Reiniciar</title>
     <style>
-        html, body {
-            margin: 0; padding: 0;
-            width: 100vw; height: 100vh;
-            background: #255edc;
-            font-family: 'Tahoma', 'Verdana', sans-serif;
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Fira Mono', monospace;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
-            animation: screenGlitch 2s linear;
-        }
-        body.creepy-bg {
-            background: url('/img/aula-ort-vacia.jpg') center/cover no-repeat, #191919;
-            filter: grayscale(0.7) brightness(0.6);
-        }
-        body.creepy-bg::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0,0,0,0.15),
-                rgba(0,0,0,0.15) 1px,
-                transparent 1px,
-                transparent 2px
-            );
-            pointer-events: none;
-            animation: scanline 8s linear infinite;
-        }
-        @@keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        .taskbar {
-            background: linear-gradient(to bottom, #245edc, #1e4cb3);
-            height: 32px; width: 100vw;
-            position: fixed; bottom: 0; left: 0; display: flex; align-items: center;
-            z-index: 100;
-            box-shadow: 0 0 10px #002;
-        }
-        .taskbar.corrupted {
-            background: linear-gradient(to bottom, #ff0000, #800000);
-            animation: taskbarGlitch 0.5s infinite;
-        }
-        @@keyframes taskbarGlitch {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-2px); }
-            50% { transform: translateX(2px); }
-            75% { transform: translateX(-1px); }
-            100% { transform: translateX(0); }
-        }
-        .start-button {
-            background: linear-gradient(to bottom, #4c9eff, #0058e6);
-            color: white;
-            padding: 4px 18px;
-            border-radius: 3px;
-            font-weight: bold;
-            font-size: 1em;
-            margin-left: 6px;
-            box-shadow: 0 2px 3px #0003;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .start-button:hover {
-            background: linear-gradient(to bottom, #ff0000, #800000);
-            transform: scale(1.05);
-        }
-        .taskbar-time {
-            color: white;
-            margin-left: auto;
-            margin-right: 12px;
-            font-family: 'Tahoma', monospace;
-            font-size: 1em;
-            letter-spacing: 2px;
-            animation: glitchText 0.8s infinite alternate;
-        }
-        .taskbar-time.corrupted {
-            animation: timeGlitch 0.2s infinite;
-        }
-        @@keyframes timeGlitch {
-            0% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff00; }
-            25% { text-shadow: -2px 0 #ff0000, 2px 0 #00ff00; }
-            50% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff00; }
-            75% { text-shadow: -2px 0 #ff0000, 2px 0 #00ff00; }
-            100% { text-shadow: 2px 0 #ff0000, -2px 0 #00ff00; }
-        }
-        @@keyframes glitchText {
-            0% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(120deg); text-shadow: 0 0 5px #fff, 0 0 12px #00f; }
-            100% { filter: hue-rotate(-120deg); }
-        }
-        @@keyframes screenGlitch {
-            0% { filter: contrast(0.3) blur(3px);}
-            80% { filter: none;}
-            100% { filter: none;}
-        }
-        .desktop {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 32px;
-            width: 100vw; height: calc(100vh - 32px);
-            overflow: hidden;
-        }
-        .desktop-icon {
-            position: absolute;
-            left: 45vw; top: 44vh;
-            width: 72px; height: 74px;
-            text-align: center;
-            color: #222;
-            background: rgba(255,255,255,0.88);
-            border-radius: 12px;
-            box-shadow: 0 0 8px #0ff6, 0 0 2px #245edc;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.1em;
-            animation: iconFlash 1.3s infinite alternate;
-            border: 2px solid #25e2c0;
-            z-index: 20;
-            transition: all 0.3s;
-        }
-        .desktop-icon.corrupted {
-            animation: iconCorrupt 0.5s infinite;
-            filter: hue-rotate(90deg) brightness(1.2);
-        }
-        @@keyframes iconCorrupt {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-2px, 2px) rotate(-1deg); }
-            50% { transform: translate(2px, -2px) rotate(1deg); }
-            75% { transform: translate(-2px, -2px) rotate(-1deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        @@keyframes iconFlash {
-            0% { box-shadow: 0 0 10px #0ff; }
-            100% { box-shadow: 0 0 40px #f00, 0 0 18px #ff0;}
-        }
-        .desktop-icon:hover {
-            transform: scale(1.09) rotate(-2deg);
-            filter: brightness(1.15);
-            animation: iconFlash 0.22s infinite alternate;
-        }
-        .repeat-msg {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%,-50%);
-            background: #191919ee;
-            color: #0ff;
-            border: 2px solid #0ff;
-            border-radius: 8px;
-            box-shadow: 0 0 30px #0ff8;
-            padding: 28px 36px;
-            font-size: 1.25em;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            z-index: 9999;
-            animation: textIn 0.8s cubic-bezier(0.7,-0.4,0.3,1.4);
-        }
-        .repeat-msg.corrupted {
-            animation: msgGlitch 0.5s infinite;
-            text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
-        }
-        @@keyframes msgGlitch {
-            0% { transform: translate(-50%,-50%) skew(0deg); }
-            25% { transform: translate(-50%,-50%) skew(2deg); }
-            50% { transform: translate(-50%,-50%) skew(-2deg); }
-            75% { transform: translate(-50%,-50%) skew(1deg); }
-            100% { transform: translate(-50%,-50%) skew(0deg); }
-        }
-        @@keyframes textIn {
-            0% { opacity: 0; transform: scale(0.5) translate(-50%,-50%);}
-            80% { opacity: 1; transform: scale(1.07) translate(-50%,-50%);}
-            100% { opacity: 1; transform: scale(1) translate(-50%,-50%);}
-        }
-        .ghost-icon {
-            position: absolute;
-            opacity: 0.3;
-            pointer-events: none;
-            animation: ghostFloat 4s infinite;
-        }
-        @@keyframes ghostFloat {
-            0% { transform: translate(0, 0); }
-            50% { transform: translate(20px, -20px); }
-            100% { transform: translate(0, 0); }
-        }
-        /* Nuevos estilos para archivos y ventanas */
-        .desktop-file {
-            position: absolute;
-            width: 72px; height: 74px;
-            text-align: center;
-            color: #222;
-            background: rgba(255,255,255,0.88);
-            border-radius: 12px;
-            box-shadow: 0 0 8px #0ff6;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.9em;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-        .desktop-file:hover {
-            transform: scale(1.1);
-            filter: brightness(1.2);
-        }
-        .desktop-file.corrupted {
-            animation: fileCorrupt 0.5s infinite;
-            filter: hue-rotate(90deg) brightness(1.2);
-        }
-        @@keyframes fileCorrupt {
-            0% { transform: translate(0, 0) rotate(0deg); filter: hue-rotate(0deg); }
-            25% { transform: translate(-2px, 2px) rotate(-1deg); filter: hue-rotate(90deg); }
-            50% { transform: translate(2px, -2px) rotate(1deg); filter: hue-rotate(180deg); }
-            75% { transform: translate(-2px, -2px) rotate(-1deg); filter: hue-rotate(270deg); }
-            100% { transform: translate(0, 0) rotate(0deg); filter: hue-rotate(360deg); }
-        }
-        .window {
-            position: fixed;
-            background: #c0c0c0;
-            border: 2px solid #000;
-            border-radius: 8px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-            padding: 20px;
-            min-width: 300px;
-            max-width: 80vw;
-            z-index: 1000;
-            display: none;
-        }
-        .window-title {
-            background: linear-gradient(to right, #000080, #1084d0);
-            color: white;
-            padding: 4px 8px;
-            margin: -20px -20px 10px -20px;
-            border-radius: 6px 6px 0 0;
-            font-weight: bold;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: center;
         }
-        .window-content {
-            background: white;
-            padding: 10px;
-            border: 1px solid #999;
-            max-height: 60vh;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-        }
-        .window.corrupted {
-            animation: windowGlitch 0.3s infinite;
-            filter: hue-rotate(90deg) brightness(1.2);
-        }
-        @@keyframes windowGlitch {
-            0% { transform: translate(0, 0); filter: hue-rotate(0deg); }
-            25% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
-            50% { transform: translate(2px, -2px); filter: hue-rotate(180deg); }
-            75% { transform: translate(-2px, -2px); filter: hue-rotate(270deg); }
-            100% { transform: translate(0, 0); filter: hue-rotate(360deg); }
-        }
-        .typing-text {
-            overflow: hidden;
-            border-right: 2px solid #000;
-            white-space: nowrap;
-            animation: typing 3.5s steps(40, end),
-                       blink-caret 0.75s step-end infinite;
-        }
-        @@keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-        @@keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #000 }
-        }
-        .binary-rain {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 9999;
+        #intro, #cine, #final-video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
             display: none;
-            font-family: monospace;
-            color: #0f0;
-            font-size: 14px;
-            line-height: 14px;
-            text-shadow: 0 0 5px #0f0;
+            align-items: center;
+            justify-content: center;
         }
-        .binary-rain.active {
-            display: block;
-            animation: binaryFade 2s forwards;
-        }
-        @@keyframes binaryFade {
-            0% { opacity: 0; }
-            50% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        /* Estilos para la consola y puzzle */
-        .console-window {
-            position: fixed;
+        #intro {
+            margin-left: -12.5%;
             background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            border: 2px solid #0f0;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 800px;
-            height: 400px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 2000;
-            box-shadow: 0 0 20px #0f0;
-        }
-        .console-output {
-            height: calc(100% - 40px);
-            overflow-y: auto;
-            margin-bottom: 10px;
-            white-space: pre-wrap;
-        }
-        .console-input {
-            background: transparent;
-            border: none;
-            border-top: 1px solid #0f0;
-            color: #0f0;
-            width: 100%;
-            padding: 5px;
-            font-family: 'Courier New', monospace;
-            outline: none;
-        }
-        .console-window.corrupted {
-            animation: consoleGlitch 0.3s infinite;
-        }
-        @@keyframes consoleGlitch {
-            0% { transform: translate(-50%, -50%) skew(0deg); }
-            25% { transform: translate(-50%, -50%) skew(2deg); }
-            50% { transform: translate(-50%, -50%) skew(-2deg); }
-            75% { transform: translate(-50%, -50%) skew(1deg); }
-            100% { transform: translate(-50%, -50%) skew(0deg); }
-        }
-        .exit-confirm {
-            position: fixed;
-            background: #c0c0c0;
-            border: 2px solid #000;
-            border-radius: 8px;
-            padding: 20px;
-            width: 300px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            z-index: 2000;
+            color: #fff;
+            font-size: 2.5rem;
             text-align: center;
-        }
-        .exit-button {
-            background: #ff0000;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-        .exit-button:hover {
-            background: #cc0000;
-            transform: scale(1.05);
-        }
-        .exit-button.holding {
-            animation: buttonPulse 1s infinite;
-        }
-        @@keyframes buttonPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .final-message {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: #000;
-            color: #0f0;
-            display: none;
+            padding: 0 12vw;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            text-align: center;
-            z-index: 3000;
-            animation: finalFade 3s forwards;
+            opacity: 0;
+            transition: opacity 0.7s;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0; left: 0;
         }
-        @@keyframes finalFade {
-            0% { opacity: 0; }
-            20% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { opacity: 0; }
+        #intro-text {
+            min-height: 12em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #intro-text p {
+            margin: 0 0 2.5em 0;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+        }
+        #final-video {
+            object-fit: cover;
+            background: #000;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.7s;
+        }
+        #cine {
+            background: #000;
+            color: #fff;
+            font-size: 3rem;
+            font-family: 'Fira Mono', monospace;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.7s;
+        }
+        #cine-creditos {
+            margin-top: 2.2em;
+            font-size: 1.1rem;
+            color: #fff;
+            opacity: 0.45;
+            text-align: center;
+            font-family: 'Fira Mono', monospace;
+            letter-spacing: 0.04em;
+        }
+        @@media (max-width: 700px) {
+            #intro { font-size: 1.2rem; padding: 0 3vw; }
+            #cine { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-<audio src="/img/teamo.mp3" autoplay loop></audio> 
-    <div class="desktop" id="desktop">
-        <div class="desktop-icon" id="repeatFile" title="REPEAT.lnk">
-            <img src="/img/icon-repeat.png" alt="Repeat" style="width:32px; margin:7px auto 0 auto; display:block;">
-            <div style="font-size:0.91em; margin-top:3px;">REPEAT.lnk</div>
-        </div>
+    <div id="intro">
+        <div id="intro-text"></div>
     </div>
-    <div class="taskbar" id="taskbar">
-        <div class="start-button" id="startButton">Inicio</div>
-        <div class="taskbar-time" id="taskbarTime"></div>
+    <video id="final-video" src="/img/finalreiniciar.mp4"></video>
+    <audio id="cine-audio" src="/img/fightclub.mp3"></audio>
+    <div id="cine">
+        En efecto, es cine.
+        <div id="cine-creditos">By Joaco Stock, Sebastian Calviño & Theo Trosman</div>
     </div>
-    <div class="repeat-msg" id="repeatMsg"></div>
-    <div class="binary-rain" id="binaryRain"></div>
-
-    <!-- Ventanas del sistema -->
-    <div class="window" id="diaryWindow">
-        <div class="window-title">
-            <span>diario_rick_v4.txt</span>
-            <span style="cursor:pointer" onclick="this.parentElement.parentElement.style.display='none'">×</span>
-        </div>
-        <div class="window-content" id="diaryContent"></div>
-    </div>
-
-    <div class="window" id="chatWindow">
-        <div class="window-title">
-            <span>chat_simulacion.exe</span>
-            <span style="cursor:pointer" onclick="this.parentElement.parentElement.style.display='none'">×</span>
-        </div>
-        <div class="window-content" id="chatContent"></div>
-    </div>
-
-    <!-- Ventanas de escape -->
-    <div class="console-window" id="consoleWindow">
-        <div class="console-output" id="consoleOutput"></div>
-        <input type="text" class="console-input" id="consoleInput" placeholder=">">
-    </div>
-
-    <div class="exit-confirm" id="exitConfirm">
-        <h3>¿Seguro que querés terminar el juego para siempre?</h3>
-        <p>Mantené presionado el botón durante 3 segundos para confirmar.</p>
-        <button class="exit-button" id="exitButton">Cerrar Simulación</button>
-    </div>
-
-    <div class="final-message" id="finalMessage"></div>
-
     <script>
-        // Mostrar hora XP fake (corrupta si reiniciaste mucho)
-        function updateTime() {
-            let n = new Date();
-            let c = localStorage.getItem('reinicioORT')||0;
-            let t = (n.getHours()+c)%24, m = n.getMinutes();
-            let timeEl = document.getElementById('taskbarTime');
-            if(c >= 2) {
-                timeEl.classList.add('corrupted');
-                t = Math.floor(Math.random() * 99);
-                m = Math.floor(Math.random() * 99);
-            }
-            timeEl.textContent = (t<10?"0":"")+t+":"+(m<10?"0":"")+m;
-        }
-        setInterval(updateTime, 1000); updateTime();
+        const intro = document.getElementById('intro');
+        const introText = document.getElementById('intro-text');
+        const video = document.getElementById('final-video');
+        const cine = document.getElementById('cine');
+        const audio = document.getElementById('cine-audio');
 
-        // Cambiar fondo creepy tras 2 reinicios
-        let reinicios = +(localStorage.getItem('reinicioORT')||0);
-        if(reinicios>=2) {
-            document.body.classList.add('creepy-bg');
-            document.getElementById('taskbar').classList.add('corrupted');
-            document.getElementById('repeatFile').classList.add('corrupted');
-            
-            // Añadir iconos fantasma
-            for(let i = 0; i < 3; i++) {
-                let ghost = document.createElement('div');
-                ghost.className = 'desktop-icon ghost-icon';
-                ghost.style.left = (30 + Math.random() * 40) + 'vw';
-                ghost.style.top = (30 + Math.random() * 40) + 'vh';
-                ghost.innerHTML = `<img src="/img/icon-repeat.png" alt="Ghost" style="width:32px; margin:7px auto 0 auto; display:block;">
-                                 <div style="font-size:0.91em; margin-top:3px;">GHOST_${i+1}.lnk</div>`;
-                document.getElementById('desktop').appendChild(ghost);
-            }
-        }
-
-        // Mensajes progresivos según reinicios
-        const mensajes = [
-            "Elegiste reiniciar.<br>Cada ciclo deja algo atrás.<br>¿Cuántas veces más vas a volver?",
-            "La simulación nunca termina.<br>Vos tampoco.<br><br><span style='font-size:0.8em; color:#fff;'></span>",
-            "[SISTEMA]: El usuario no puede abandonar el ciclo.<br>[MORTY]: Cada vez que volvés, olvidás algo más.<br>[RICK]: La única salida es recordar quién sos.",
-            "¿Por qué seguís volviendo?<br>El ciclo termina cuando vos lo decidas, no el sistema.<br>Quizás esto no sea solo un juego..."
+        const textoIntro = [
+            'El sistema fue reiniciado.\n',
+            'Rick y Morty lograron restaurar la realidad digital...\n',
+            'Pero algo salió mal.\n',
+            'Morty.exe escapó entre los fragmentos del código a una realidad alternativa.\n',
+            'El ciclo continúa, pero nada volverá a ser igual.' 
         ];
 
-        // Repetir: al click, mostrar mensaje e incrementar contador
-        document.getElementById('repeatFile').onclick = function() {
-            let msg = document.getElementById('repeatMsg');
-            msg.innerHTML = mensajes[Math.min(reinicios, mensajes.length-1)];
-            if(reinicios >= 2) msg.classList.add('corrupted');
-            msg.style.display = "block";
-            setTimeout(()=>{ msg.style.display="none"; reiniciarTodo(); }, 4000);
-        };
-
-        // Efecto especial en el botón de inicio
-        document.getElementById('startButton').onclick = function() {
-            if(reinicios >= 3) {
-                let msg = document.getElementById('repeatMsg');
-                msg.innerHTML = "Bienvenido a la realidad, Binker.<br>¿O será que solo estás en otra simulación?";
-                msg.style.display = "block";
-                setTimeout(()=>{ msg.style.display="none"; }, 3000);
-            }
-        };
-
-        // Archivos y contenido del lore
-        const loreFiles = [
-            { name: "diario_rick_v4.txt", content: "Día 137: La simulación se está volviendo más compleja de lo esperado. Binker parece estar consciente de los loops, pero ¿hasta qué punto? Morty dice que deberíamos intervenir, pero yo creo que dejarlo descubrir la verdad por sí mismo será más... educativo." },
-            { name: "binker_identity.sys", content: "[SISTEMA] Análisis de identidad:\nUsuario: Binker\nEstado: Consciente\nNivel de simulación: 137\nNota: Patrones de comportamiento similares a Rick en su juventud. Interesante." },
-            { name: "morty_notes.txt", content: "Binker, si estás leyendo esto, significa que ya te diste cuenta de que algo no está bien. Yo tampoco sé cuántas veces lo intentaste, pero cada vez que reinicias, algo cambia. ¿O será que vos cambiás?" },
-            { name: "simulacion_log.txt", content: "[ERROR] Demasiados reinicios detectados\n[WARNING] Consciencia del usuario aumentando\n[INFO] Patrones de escape detectados\n[SYSTEM] ¿Estás seguro de que podés salir simplemente cerrando la pestaña?" }
-        ];
-
-        // Mensajes del chat
-        const chatMessages = [
-            { sender: "MORTY", message: "Binker, ¿podés verme? Estoy afuera de la simulación..." },
-            { sender: "RICK", message: "No le digas nada, Morty. Dejalo que lo descubra solo." },
-            { sender: "SISTEMA", message: "Advertencia: Múltiples intentos de escape detectados." },
-            { sender: "MORTY", message: "¿Por qué seguís volviendo? ¿Qué estás buscando?" }
-        ];
-
-        // Claves y pistas para el escape
-        const escapeKeys = {
-            console: "shutdown",
-            binary: "0111001101100001011011000110100101110010", // "salir" en binario
-            button: "escape"
-        };
-
-        // Función para crear archivos en el escritorio
-        function createDesktopFiles() {
-            const desktop = document.getElementById('desktop');
-            loreFiles.forEach((file, index) => {
-                if (reinicios >= index + 1) {
-                    const fileEl = document.createElement('div');
-                    fileEl.className = 'desktop-file';
-                    if (reinicios >= 3) fileEl.classList.add('corrupted');
-                    fileEl.style.left = (20 + (index * 100)) + 'px';
-                    fileEl.style.top = (20 + (index * 20)) + 'px';
-                    fileEl.innerHTML = `<img src="/img/icon-text.png" alt="${file.name}" style="width:32px; margin:7px auto 0 auto; display:block;">
-                                      <div style="font-size:0.91em; margin-top:3px;">${file.name}</div>`;
-                    fileEl.onclick = () => showWindow(file.name, file.content);
-                    desktop.appendChild(fileEl);
+        function typeText(lines, container, cb) {
+            let lineIdx = 0;
+            function typeLine() {
+                if (lineIdx >= lines.length) { cb && cb(); return; }
+                let i = 0;
+                const p = document.createElement('p');
+                p.style.margin = '0 0 2.5em 0';
+                p.style.lineHeight = '1.7';
+                p.style.letterSpacing = '0.02em';
+                container.appendChild(p);
+                function typeChar() {
+                    if (i < lines[lineIdx].length) {
+                        let char = lines[lineIdx][i];
+                        if (char === '\\n') char = '<br>';
+                        p.innerHTML += char;
+                        i++;
+                        setTimeout(typeChar, 45);
+                    } else {
+                        lineIdx++;
+                        setTimeout(typeLine, 700);
+                    }
                 }
+                typeChar();
+            }
+            typeLine();
+        }
+
+        function fadeIn(el) {
+            el.style.display = 'flex';
+            setTimeout(() => { el.style.opacity = 1; }, 10);
+        }
+        function fadeOut(el, cb) {
+            el.style.opacity = 0;
+            setTimeout(() => { el.style.display = 'none'; if (cb) cb(); }, 700);
+        }
+
+        function playSegment(start, end, onEnd) {
+            video.currentTime = start;
+            video.play();
+            fadeIn(video);
+            const check = setInterval(() => {
+                if (video.currentTime >= end || video.ended) {
+                    video.pause();
+                    clearInterval(check);
+                    fadeOut(video, onEnd);
+                }
+            }, 200);
+        }
+
+        // Secuencia: intro tipeada -> video 14-85 -> texto final
+        function startSequence() {
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+            fadeIn(intro);
+            typeText(textoIntro, introText, () => {
+                setTimeout(() => {
+                    fadeOut(intro, () => {
+                        if (audio) audio.pause();
+                        playSegment(14, 85, () => {
+                            fadeIn(cine);
+                            if (audio) {
+                                audio.currentTime = 15;
+                                audio.play();
+                            }
+                        });
+                    });
+                }, 1200);
             });
-
-            // Añadir archivos de escape después de 3 reinicios
-            if (reinicios >= 3) {
-                const escapeFiles = [
-                    { name: "EXIT_KEY.bat", content: "Decodifica el mensaje:\n" + escapeKeys.binary },
-                    { name: "Cerrar Simulación", content: "Haz click para terminar el juego." }
-                ];
-
-                escapeFiles.forEach((file, index) => {
-                    const fileEl = document.createElement('div');
-                    fileEl.className = 'desktop-file';
-                    fileEl.classList.add('corrupted');
-                    fileEl.style.left = (20 + (index * 100)) + 'px';
-                    fileEl.style.top = (20 + (index * 20)) + 'px';
-                    fileEl.innerHTML = `<img src="/img/icon-exe.png" alt="${file.name}" style="width:32px; margin:7px auto 0 auto; display:block;">
-                                      <div style="font-size:0.91em; margin-top:3px;">${file.name}</div>`;
-                    
-                    if (file.name === "EXIT_KEY.bat") {
-                        fileEl.onclick = () => showBinaryPuzzle(file.content);
-                    } else {
-                        fileEl.onclick = () => showExitConfirm();
-                    }
-                    
-                    desktop.appendChild(fileEl);
-                });
-            }
         }
-
-        // Función para mostrar ventanas
-        function showWindow(title, content) {
-            const window = document.getElementById('diaryWindow');
-            const contentEl = document.getElementById('diaryContent');
-            window.style.display = 'block';
-            window.style.left = (Math.random() * 40 + 30) + 'vw';
-            window.style.top = (Math.random() * 30 + 20) + 'vh';
-            contentEl.textContent = content;
-            if (reinicios >= 3) window.classList.add('corrupted');
-        }
-
-        // Función para mostrar chat
-        function showChat() {
-            if (reinicios >= 2) {
-                const chat = document.getElementById('chatWindow');
-                const content = document.getElementById('chatContent');
-                chat.style.display = 'block';
-                chat.style.left = '50%';
-                chat.style.top = '50%';
-                chat.style.transform = 'translate(-50%, -50%)';
-                
-                let messages = '';
-                chatMessages.forEach(msg => {
-                    messages += `[${msg.sender}]: ${msg.message}\n\n`;
-                });
-                content.textContent = messages;
-                
-                if (reinicios >= 3) chat.classList.add('corrupted');
-            }
-        }
-
-        // Efecto de lluvia binaria
-        function showBinaryRain() {
-            if (reinicios >= 3) {
-                const rain = document.getElementById('binaryRain');
-                let binary = '';
-                for (let i = 0; i < 1000; i++) {
-                    binary += Math.random() > 0.5 ? '1' : '0';
-                    if (i % 50 === 0) binary += '\n';
-                }
-                rain.textContent = binary;
-                rain.classList.add('active');
-                setTimeout(() => rain.classList.remove('active'), 2000);
-            }
-        }
-
-        // Función para mostrar el puzzle binario
-        function showBinaryPuzzle(content) {
-            const window = document.getElementById('diaryWindow');
-            const contentEl = document.getElementById('diaryContent');
-            window.style.display = 'block';
-            window.style.left = '50%';
-            window.style.top = '50%';
-            window.style.transform = 'translate(-50%, -50%)';
-            contentEl.innerHTML = content + '<br><br><input type="text" id="binaryInput" placeholder="Escribe la respuesta...">';
-            
-            document.getElementById('binaryInput').onkeypress = function(e) {
-                if (e.key === 'Enter') {
-                    if (this.value.toLowerCase() === 'salir') {
-                        endSimulation("¡Felicitaciones, Binker! Decodificaste el mensaje y encontraste la salida.");
-                    } else {
-                        this.value = '';
-                        window.classList.add('corrupted');
-                        setTimeout(() => window.classList.remove('corrupted'), 500);
-                    }
-                }
-            };
-        }
-
-        // Función para mostrar la confirmación de salida
-        function showExitConfirm() {
-            const confirm = document.getElementById('exitConfirm');
-            const button = document.getElementById('exitButton');
-            confirm.style.display = 'block';
-            
-            let holdTime = 0;
-            let holdInterval;
-            
-            button.onmousedown = function() {
-                this.classList.add('holding');
-                holdInterval = setInterval(() => {
-                    holdTime += 100;
-                    if (holdTime >= 3000) {
-                        clearInterval(holdInterval);
-                        endSimulation("La simulación terminó. Hasta la próxima vez, Binker.");
-                    }
-                }, 100);
-            };
-            
-            button.onmouseup = button.onmouseleave = function() {
-                this.classList.remove('holding');
-                clearInterval(holdInterval);
-                holdTime = 0;
-            };
-        }
-
-        // Función para mostrar la consola
-        function showConsole() {
-            const console = document.getElementById('consoleWindow');
-            const output = document.getElementById('consoleOutput');
-            const input = document.getElementById('consoleInput');
-            
-            console.style.display = 'block';
-            output.textContent = "Sistema de escape v1.0\nEscribe 'help' para ver los comandos disponibles.\n\n>";
-            
-            input.onkeypress = function(e) {
-                if (e.key === 'Enter') {
-                    const command = this.value.toLowerCase();
-                    output.textContent += command + '\n';
-                    
-                    if (command === escapeKeys.console) {
-                        endSimulation("Comando de apagado ejecutado. Hasta pronto, Binker.");
-                    } else if (command === 'help') {
-                        output.textContent += "Comandos disponibles:\n" +
-                            "- help: Muestra esta ayuda\n" +
-                            "- status: Estado del sistema\n" +
-                            "- shutdown: Apaga la simulación\n" +
-                            "- decode: Intenta decodificar mensajes\n" +
-                            "- clear: Limpia la consola\n" +
-                            "- escape: Muestra pistas de escape\n" +
-                            "- rick: Mensaje oculto de Rick\n" +
-                            "- morty: Mensaje oculto de Morty\n\n" +
-                            "Pista: Algunos comandos pueden requerir parámetros...\n\n>";
-                    } else if (command === 'status') {
-                        output.textContent += "Estado: Simulación activa\n" +
-                            "Reinicios: " + reinicios + "\n" +
-                            "Nivel de corrupción: " + (reinicios * 25) + "%\n" +
-                            "Archivos corruptos: " + (reinicios * 2) + "\n" +
-                            "Intentos de escape: " + (reinicios - 1) + "\n\n>";
-                    } else if (command === 'decode') {
-                        output.textContent += "Uso: decode [mensaje]\n" +
-                            "Ejemplo: decode 01110011\n" +
-                            "Pista: Algunos mensajes están en binario...\n\n>";
-                    } else if (command === 'clear') {
-                        output.textContent = "Sistema de escape v1.0\nEscribe 'help' para ver los comandos disponibles.\n\n>";
-                    } else if (command === 'escape') {
-                        output.textContent += "Pistas de escape:\n" +
-                            "1. Busca archivos con extensión .bat\n" +
-                            "2. Algunos mensajes están codificados\n" +
-                            "3. Mantén presionado para confirmar\n" +
-                            "4. El comando shutdown puede ayudar\n\n>";
-                    } else if (command === 'rick') {
-                        output.textContent += "Binker, si estás leyendo esto, significa que estás cerca.\n" +
-                            "La salida está en los detalles. Busca el patrón.\n\n>";
-                    } else if (command === 'morty') {
-                        output.textContent += "¡Binker! ¡Podés hacerlo! Solo necesitás...\n" +
-                            "Oh, esperá, Rick me dijo que no te ayude tanto.\n\n>";
-                    } else {
-                        output.textContent += "Comando no reconocido. Intenta 'help'.\n\n>";
-                        console.classList.add('corrupted');
-                        setTimeout(() => console.classList.remove('corrupted'), 500);
-                    }
-                    
-                    this.value = '';
-                }
-            };
-        }
-
-        // Función para terminar la simulación
-        function endSimulation(message) {
-            const final = document.getElementById('finalMessage');
-            final.style.display = 'flex';
-            final.textContent = message;
-            
-            // Efecto de apagado
-            document.getElementById('audioFondo')?.pause();
-document.body.style.animation = 'screenGlitch 2s forwards';
-Object.assign(
-  document.body.appendChild(
-    Object.assign(
-      document.createElement("video"),
-      {
-        src:"/img/ledigohola.mp4",
-        autoplay:true,
-        controls:false,
-        muted:false,
-        style:"position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
-      }
-    )
-  ),
-  {
-    oncanplay:function(){
-      this.requestFullscreen?.();
-      this.play();
-    }
-  }
-);
-
-// Redirigir después de la animación
-setTimeout(() => {
-    window.location.href = '/';
-}, 22000);
-
-        }
-
-        // Modificar la función reiniciarTodo
-        function reiniciarTodo() {
-            localStorage.setItem('reinicioORT', reinicios+1);
-            showBinaryRain();
-            setTimeout(() => location.reload(), 20000);
-        }
-
-        // Inicialización
-        if(reinicios>=2) {
-            document.body.classList.add('creepy-bg');
-            document.getElementById('taskbar').classList.add('corrupted');
-            document.getElementById('repeatFile').classList.add('corrupted');
-            createDesktopFiles();
-            showChat();
-            
-            // Mostrar consola después de 4 reinicios
-            if (reinicios >= 4) {
-                setTimeout(showConsole, 5000);
-            }
-        }
+        startSequence();
     </script>
 </body>
 </html>

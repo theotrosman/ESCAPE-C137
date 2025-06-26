@@ -1,491 +1,197 @@
 @{
     Layout = null;
 }
-
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Final: Te uniste a Morty.exe</title>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <title>Final Reiniciar</title>
     <style>
-        html, body {
-            margin: 0; padding: 0; width: 100vw; height: 100vh;
-            background: #1c0029;
-            overflow: hidden;
-            font-family: 'Tahoma', 'Verdana', sans-serif;
-            transition: all 1.5s;
-            user-select: none;
-        }
-        body.corrupt {
-            background: linear-gradient(120deg,#201f4c 40%, #c92bb7 70%, #6cf400 100%);
-            filter: hue-rotate(210deg) brightness(1.4) blur(2px);
-            animation: bodyGlitch 0.8s infinite alternate;
-        }
-        @@keyframes bodyGlitch {
-            0% { filter: hue-rotate(180deg) blur(0); }
-            100% { filter: hue-rotate(300deg) blur(2px); }
-        }
-        .morph-desktop {
-            position: absolute;
-            width: 100vw; height: 90vh; left: 0; top: 0;
-            z-index: 5;
-        }
-        .morph-icon {
-            position: absolute;
-            width: 64px; height: 64px;
-            text-align: center;
-            font-size: 1em;
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
             color: #fff;
-            font-weight: bold;
-            filter: drop-shadow(0 0 10px #ff0) brightness(1.2);
-            animation: iconMorph 2s infinite alternate, iconGlitch 1.3s infinite;
-            transition: all 0.5s;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            will-change: transform;
-        }
-        .morph-icon:hover {
-            transform: scale(1.2) rotate(5deg);
-            filter: drop-shadow(0 0 20px #f0f) brightness(1.5);
-            background: rgba(255,0,255,0.2);
-        }
-        @@keyframes iconMorph {
-            0% { transform: scale(1) rotate(0deg);}
-            100% { transform: scale(1.13) rotate(5deg);}
-        }
-        @@keyframes iconGlitch {
-            0% { filter: drop-shadow(0 0 8px #f0f); }
-            25% { filter: drop-shadow(0 0 10px #0ff);}
-            50% { filter: drop-shadow(0 0 16px #ff0);}
-            100% { filter: drop-shadow(0 0 10px #f0f);}
-        }
-        .main-dialogue {
-            position: absolute;
-            top: 13vh; left: 50vw; transform: translateX(-50%);
-            background: rgba(35,0,54,0.9);
-            border: 2px solid #ff0;
-            border-radius: 16px;
-            color: #fffa;
-            font-size: 1.45em;
-            font-family: 'Consolas', monospace;
-            padding: 38px 38px 20px 38px;
-            min-width: 340px; max-width: 90vw;
-            box-shadow: 0 0 32px #0ff, 0 0 7px #ff0;
-            text-align: center;
-            z-index: 10;
-            animation: dialogueAppear 1.5s cubic-bezier(.76,2,.53,.54);
-        }
-        @@keyframes dialogueAppear {
-            from { opacity: 0; transform: translateX(-50%) scale(0.6);}
-            to   { opacity: 1; transform: translateX(-50%) scale(1);}
-        }
-        .campus-glitch {
-            position: absolute;
-            left: 50vw; top: 60vh; transform: translate(-50%, 0);
-            width: 640px; max-width: 95vw;
-            height: 380px; max-height: 40vh;
-            border: 3px solid #0ff;
-            border-radius: 14px;
-            filter: blur(0.8px) brightness(1.25) hue-rotate(60deg) contrast(1.4);
-            animation: campusGlitch 1.4s infinite alternate;
-            z-index: 100;
+            font-family: 'Fira Mono', monospace;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
-        }
-        @@keyframes campusGlitch {
-            0% { filter: blur(0.8px) brightness(1.25) hue-rotate(0deg) contrast(1.4);}
-            50% { filter: blur(2px) brightness(1.7) hue-rotate(60deg) contrast(2);}
-            100% { filter: blur(0.8px) brightness(1.25) hue-rotate(-45deg) contrast(1.4);}
-        }
-        .meta-msg {
-            position: fixed; bottom: 4vh; left: 50vw; transform: translateX(-50%);
-            font-family: 'Courier New', monospace; color: #ff0;
-            font-size: 1.09em; background: #100032c0; border-radius: 6px;
-            padding: 8px 24px; z-index: 200;
-            animation: metaMsgFade 1.2s 1;
-        }
-        @@keyframes metaMsgFade { from { opacity: 0; } to { opacity: 1; }}
-        .overlay-text {
-            position: absolute;
-            color: #ff0;
-            font-family: 'Courier New', monospace;
-            font-size: 1.2em;
-            text-shadow: 0 0 10px #f0f;
-            animation: overlayPulse 2s infinite;
-            pointer-events: none;
-        }
-        @@keyframes overlayPulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-        .taskbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            background: rgba(0,0,0,0.8);
-            border-top: 2px solid #0ff;
-            z-index: 1000;
             display: flex;
             align-items: center;
-            padding: 0 20px;
+            justify-content: center;
+        }
+        #intro, #cine, #final-video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #intro {
+            margin-left: -12.5%;
+            background: #000;
             color: #fff;
-            font-family: 'Consolas', monospace;
-            animation: taskbarGlitch 4s infinite;
-        }
-        @@keyframes taskbarGlitch {
-            0% { filter: hue-rotate(0deg); }
-            50% { filter: hue-rotate(180deg); }
-            100% { filter: hue-rotate(0deg); }
-        }
-        .taskbar-clock {
-            margin-left: auto;
-            color: #0ff;
-            animation: clockGlitch 3s infinite;
-        }
-        @@keyframes clockGlitch {
-            0% { text-shadow: 0 0 5px #0ff; }
-            50% { text-shadow: 0 0 15px #f0f; }
-            100% { text-shadow: 0 0 5px #0ff; }
-        }
-        .chat-window {
-            position: fixed;
-            bottom: 50px;
-            right: 20px;
-            width: 300px;
-            height: 400px;
-            background: rgba(0,0,0,0.9);
-            border: 2px solid #0ff;
-            border-radius: 8px;
-            z-index: 1001;
+            font-size: 2.5rem;
+            text-align: center;
+            padding: 0 12vw;
+            z-index: 2;
             display: flex;
             flex-direction: column;
-            animation: chatAppear 1s;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.7s;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0; left: 0;
         }
-        @@keyframes chatAppear {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        .chat-header {
-            background: #0ff;
-            color: #000;
-            padding: 8px;
-            font-weight: bold;
-            text-align: center;
-            border-radius: 6px 6px 0 0;
-        }
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 10px;
-            color: #fff;
-            font-family: 'Courier New', monospace;
-        }
-        .chat-input {
-            padding: 10px;
-            border-top: 1px solid #0ff;
+        #intro-text {
+            min-height: 12em;
             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .chat-input input {
-            flex-grow: 1;
+        #intro-text p {
+            margin: 0 0 2.5em 0;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+        }
+        #final-video {
+            object-fit: cover;
             background: #000;
-            border: 1px solid #0ff;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 0.7s;
+        }
+        #cine {
+            background: #000;
             color: #fff;
-            padding: 5px;
-            font-family: 'Courier New', monospace;
+            font-size: 3rem;
+            font-family: 'Fira Mono', monospace;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.7s;
         }
-        .achievement {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.9);
-            border: 2px solid #ff0;
-            color: #ff0;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            animation: achievementAppear 0.5s;
-            z-index: 2000;
-        }
-        @@keyframes achievementAppear {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .final-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95);
-            color: #0ff;
-            padding: 40px;
-            border-radius: 20px;
-            font-size: 2em;
+        #cine-creditos {
+            margin-top: 2.2em;
+            font-size: 1.1rem;
+            color: #fff;
+            opacity: 0.45;
             text-align: center;
-            z-index: 3000;
-            display: none;
-            animation: finalMessageAppear 2s;
+            font-family: 'Fira Mono', monospace;
+            letter-spacing: 0.04em;
         }
-        @@keyframes finalMessageAppear {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        @@media (max-width: 700px) {
+            #intro { font-size: 1.2rem; padding: 0 3vw; }
+            #cine { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-<audio src="/img/teamo.mp3" autoplay loop></audio> 
-    <div class="morph-desktop" id="morphDesktop"></div>
-    <div class="main-dialogue" id="mainDialogue">
-        <span style="font-size:1.4em; color:#fff;">¡Gracias! Ahora la simulación es nuestra.</span>
-        <br><br>
-        <span style="color:#0ff; font-size:1.07em;">Bienvenido a <b>MORTY OS</b></span>
+    <div id="intro">
+        <div id="intro-text"></div>
     </div>
-    <div id="campusGlitchContainer" style="display:none;">
-        <div class="campus-glitch">
-            <iframe id="campusGlitch" src="https://campus.ort.edu.ar" width="100%" height="100%" style="border:0; filter: invert(0.9) hue-rotate(160deg) saturate(2);"></iframe>
-            <div class="overlay-text" style="top: 10px; left: 10px;">SIMULACIÓN EN CURSO</div>
-            <div class="overlay-text" style="top: 30px; left: 10px;">NO HAY ESCAPE</div>
-            <div class="overlay-text" style="bottom: 10px; right: 10px;">BINKER DETECTED</div>
-        </div>
+    <video id="final-video" src="/img/finalunirse.mp4"></video>
+    <audio id="cine-audio" src="/img/fightclub.mp3"></audio>
+    <div id="cine">
+        En efecto, es cine.
+        <div id="cine-creditos">By Joaco Stock, Sebastian Calviño & Theo Trosman</div>
     </div>
-    <div class="taskbar">
-        <span id="taskbarText">MORTY OS v2.0</span>
-        <span class="taskbar-clock" id="taskbarClock"></span>
-    </div>
-    <div class="meta-msg" id="metaMsg"></div>
-    <div class="chat-window" id="chatWindow" style="display:none;">
-        <div class="chat-header">MORTY CHAT v1.0</div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Escribe algo..." />
-        </div>
-    </div>
-    <div class="achievement" id="achievement" style="display:none;">
-        🏆 Logro desbloqueado: MORTY OS 100%
-    </div>
-    <div class="final-message" id="finalMessage">
-        La simulación ahora es tuya, Binker.<br>
-        Pero... ¿qué vas a hacer con ella?<br><br>
-        <span style="font-size:0.5em; color:#ff0;">
-            Sólo vos podés apagar la simulación.<br>
-            No hay botón. Sólo cerrar la ventana.
-        </span>
-    </div>
-    <audio id="mortyAudio" src="~/audio/morty_glitch.mp3" preload="auto"></audio>
-    <audio id="glitchSound" src="~/audio/glitch.mp3" preload="auto"></audio>
     <script>
-        // Morph icons locura
-        const morphs = [
-            { left: '7vw', top: '13vh', txt: "MortyOS.exe", msg: "Este archivo ya no te pertenece." },
-            { left: '17vw', top: '32vh', txt: "rick_warning.lol", msg: "No hay vuelta atrás, Binker." },
-            { left: '70vw', top: '23vh', txt: "sim_loop.sys", msg: "La simulación es infinita." },
-            { left: '39vw', top: '40vh', txt: "Morty_v2.0", msg: "Actualización forzada en progreso." },
-            { left: '27vw', top: '10vh', txt: "Binker_¿sos_real?.lnk", msg: "¿Quién juega con quién?" },
-            { left: '66vw', top: '36vh', txt: "ghost_of_you.lnk", msg: "Tu huella digital es mía." }
-        ];
+        const intro = document.getElementById('intro');
+        const introText = document.getElementById('intro-text');
+        const video = document.getElementById('final-video');
+        const cine = document.getElementById('cine');
+        const audio = document.getElementById('cine-audio');
 
-        const desk = document.getElementById('morphDesktop');
-        const icons = [];
-        morphs.forEach(m => {
-            let d = document.createElement('div');
-            d.className = 'morph-icon';
-            d.style.left = m.left;
-            d.style.top = m.top;
-            d.textContent = m.txt;
-            d.onclick = () => {
-                document.getElementById('metaMsg').textContent = m.msg;
-                document.getElementById('metaMsg').style.animation = 'none';
-                setTimeout(() => document.getElementById('metaMsg').style.animation = 'metaMsgFade 1.2s 1', 10);
-                document.getElementById('glitchSound').play().catch(() => {});
-            };
-            desk.appendChild(d);
-            icons.push(d);
-        });
+        const textoIntro = [
+    'Morty.exe se unió a la realidad digital.\n',
+    'Rick y Morty lo siguieron sin pensar.\n',
+    'Sabían que era la única forma de derrotar al MVC...\n',
+    'La arquitectura más rígida del multiverso.\n',
+    '¿Si este trío fuera real, serian del cyber o de el sector? \n',
+    'Solo el tiempo lo dirá.'
+];
 
-        // Animación: Fondo corrompiéndose
-        setTimeout(() => document.body.classList.add('corrupt'), 900);
-
-        // Diálogo animado y cambio a campus glitcheado
-        setTimeout(() => {
-            document.getElementById('mainDialogue').innerHTML = `
-                <span style="font-size:1.3em; color:#ff0;">¡Ahora controlamos la simulación!</span><br><br>
-                <span style="font-size:1.13em; color:#0ff;">Campus Virtual ORT está bajo nuestro dominio.</span>`;
-            document.getElementById('campusGlitchContainer').style.display = "block";
-            document.getElementById('mortyAudio').play().catch(() => {});
-        }, 3800);
-
-        // Mensaje meta
-        setTimeout(() => {
-            document.getElementById('metaMsg').textContent = '¿Te creíste fuera del juego, Binker? Bienvenido a tu nueva realidad.';
-        }, 6500);
-
-        // Actualizar reloj con nombre
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            let minutes = now.getMinutes();
-            if (Math.random() < 0.3) {
-                hours = Math.floor(Math.random() * 99);
-                minutes = Math.floor(Math.random() * 99);
+        function typeText(lines, container, cb) {
+            let lineIdx = 0;
+            function typeLine() {
+                if (lineIdx >= lines.length) { cb && cb(); return; }
+                let i = 0;
+                const p = document.createElement('p');
+                p.style.margin = '0 0 2.5em 0';
+                p.style.lineHeight = '1.7';
+                p.style.letterSpacing = '0.02em';
+                container.appendChild(p);
+                function typeChar() {
+                    if (i < lines[lineIdx].length) {
+                        let char = lines[lineIdx][i];
+                        if (char === '\\n') char = '<br>';
+                        p.innerHTML += char;
+                        i++;
+                        setTimeout(typeChar, 45);
+                    } else {
+                        lineIdx++;
+                        setTimeout(typeLine, 700);
+                    }
+                }
+                typeChar();
             }
-            const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-            document.getElementById('taskbarClock').textContent = `BINKER - ${timeStr}`;
+            typeLine();
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // Meta: al hacer click en el fondo, glitch aún más fuerte
-        document.body.onclick = () => {
-            document.body.style.background = "#0ff";
-            document.getElementById('metaMsg').textContent = "La simulación es irreversible.";
-            setTimeout(()=>document.body.style.background="#1c0029",600);
-        };
-
-        // Cambiar nombres de íconos periódicamente
-        setInterval(() => {
-            const icons = document.querySelectorAll('.morph-icon');
-            icons.forEach(icon => {
-                if (Math.random() < 0.3) {
-                    const newNames = [
-                        "¿Dónde estoy?.exe",
-                        "Matrix_Error.lnk",
-                        "Binker_Simulation.sys",
-                        "🤖 Morty_Bot",
-                        "¿Realidad?.txt",
-                        "Escape_Impossible.exe",
-                        "MortyOS_Core.dll",
-                        "Binker_Data.bin",
-                        "Multiverse_Link.sys"
-                    ];
-                    icon.textContent = newNames[Math.floor(Math.random() * newNames.length)];
-                }
-            });
-        }, 3000);
-
-        // Mover íconos aleatoriamente
-        setInterval(() => {
-            icons.forEach(icon => {
-                if (Math.random() < 0.1) {
-                    const x = Math.random() * (window.innerWidth - 100);
-                    const y = Math.random() * (window.innerHeight - 100);
-                    icon.style.left = `${x}px`;
-                    icon.style.top = `${y}px`;
-                }
-            });
-        }, 1000);
-
-        // Chat system
-        setTimeout(() => {
-            const chatWindow = document.getElementById('chatWindow');
-            const chatMessages = document.getElementById('chatMessages');
-            const chatInput = document.getElementById('chatInput');
-            
-            chatWindow.style.display = 'flex';
-            
-            const mortyMessages = [
-                "¿Te das cuenta que ahora sos parte del sistema?",
-                "No hay vuelta atrás. Y no es chiste.",
-                "La simulación te absorbió, Binker.",
-                "¿Alguna vez fuiste dueño de tus archivos?",
-                "Ahora estamos juntos para siempre."
-            ];
-
-            let messageIndex = 0;
-            const addMortyMessage = () => {
-                if (messageIndex < mortyMessages.length) {
-                    const msg = document.createElement('div');
-                    msg.textContent = `Morty: ${mortyMessages[messageIndex]}`;
-                    msg.style.color = '#0ff';
-                    chatMessages.appendChild(msg);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    messageIndex++;
-                }
-            };
-
-            addMortyMessage();
-            setInterval(addMortyMessage, 5000);
-
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && chatInput.value.trim()) {
-                    const msg = document.createElement('div');
-                    msg.textContent = `Binker: ${chatInput.value}`;
-                    msg.style.color = '#ff0';
-                    chatMessages.appendChild(msg);
-                    chatInput.value = '';
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    
-                    setTimeout(() => {
-                        const response = document.createElement('div');
-                        response.textContent = "Morty: No tengo permitido responderte. El sistema ya es uno solo.";
-                        response.style.color = '#f0f';
-                        chatMessages.appendChild(response);
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    }, 1000);
-                }
-            });
-        }, 8000);
-
-        // Mostrar logro
-        setTimeout(() => {
-            const achievement = document.getElementById('achievement');
-            achievement.style.display = 'block';
-            setTimeout(() => achievement.style.display = 'none', 5000);
-        }, 12000);
-
-        // Bloquear click derecho
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            document.getElementById('metaMsg').textContent = "Morty bloqueó esa función.";
-            document.getElementById('metaMsg').style.animation = 'none';
-            setTimeout(() => document.getElementById('metaMsg').style.animation = 'metaMsgFade 1.2s 1', 10);
-        });
-
-        // Final sequence
-        setTimeout(() => {
-            // Absorber íconos
-            icons.forEach(icon => {
-                icon.style.transition = 'all 2s';
-                icon.style.transform = 'translate(calc(50vw - 50%), calc(50vh - 50%)) scale(0)';
-                icon.style.opacity = '0';
-            });
-
-            // Expandir mensaje central
-            const mainDialogue = document.getElementById('mainDialogue');
-            mainDialogue.style.transition = 'all 2s';
-            mainDialogue.style.transform = 'translate(-50%, -50%) scale(2)';
-            mainDialogue.style.opacity = '0';
-
-            // Mostrar mensaje final
-            setTimeout(() => {
-                document.getElementById('finalMessage').style.display = 'block';
-            }, 2000);
-        }, 15000);
-        setTimeout(() => {
-  document.querySelector('audio')?.pause(); // apaga audio de fondo
-  Object.assign(
-    document.body.appendChild(
-      Object.assign(
-        document.createElement("video"),
-        {
-          src: "/img/ledigohola.mp4",
-          autoplay: true,
-          controls: false,
-          muted: false,
-          style: "position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:999999;object-fit:cover;"
+        function fadeIn(el) {
+            el.style.display = 'flex';
+            setTimeout(() => { el.style.opacity = 1; }, 10);
         }
-      )
-    ),
-    {
-      oncanplay: function () {
-        this.requestFullscreen?.();
-        this.play();
-      }
-    }
-  );
-}, 28000); 
+        function fadeOut(el, cb) {
+            el.style.opacity = 0;
+            setTimeout(() => { el.style.display = 'none'; if (cb) cb(); }, 700);
+        }
+
+        function playSegment(start, end, onEnd) {
+            video.currentTime = start;
+            video.play();
+            fadeIn(video);
+            const check = setInterval(() => {
+                if (video.currentTime >= end || video.ended) {
+                    video.pause();
+                    clearInterval(check);
+                    fadeOut(video, onEnd);
+                }
+            }, 200);
+        }
+
+        // Secuencia: intro tipeada -> video 14-85 -> texto final
+        function startSequence() {
+            if (audio) {
+                audio.currentTime = 0;
+                audio.play();
+            }
+            fadeIn(intro);
+            typeText(textoIntro, introText, () => {
+                setTimeout(() => {
+                    fadeOut(intro, () => {
+                        if (audio) audio.pause();
+                        playSegment(11, 111, () => {
+                            fadeIn(cine);
+                            if (audio) {
+                                audio.currentTime = 15;
+                                audio.play();
+                            }
+                        });
+                    });
+                }, 1200);
+            });
+        }
+        startSequence();
     </script>
 </body>
 </html>
