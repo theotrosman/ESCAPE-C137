@@ -278,9 +278,7 @@ function volverSinIntro(e) {
             </div>
             <h2 class="member-name">Theo Trosman</h2>
             <div class="member-role">Científico Loco Principal</div>
-            <p class="member-desc">Creador del portal interdimensional y experto en caos cuántico. </p>
-                        <p class="member-desc">"No hay mal que por bien no venga"</p>
-
+            <p class="member-desc"><em>Frase célebre:</em> "No hay mal que por bien no venga, pero sí hay bugs que por bien no compilan."</p>
         </div>
 
         <div class="team-member">
@@ -288,10 +286,8 @@ function volverSinIntro(e) {
                 <img src="/img/member3.jpg" alt="Desarrollador 2">
             </div>
             <h2 class="member-name">Sebastian Calviño</h2>
-            <div class="member-role">Asistente Involuntario</div>
-            <p class="member-desc">Especialista en pánico y situaciones de alto estrés.</p>
-                                    <p class="member-desc">"El tiempo todo lo da y todo lo quita"</p>
-
+            <div class="member-role">Asistente Involuntario & Guardián del Pánico</div>
+            <p class="member-desc"><em>Frase célebre:</em> "El tiempo todo lo da y todo lo quita, pero el bug siempre vuelve."</p>
         </div>
 
         <div class="team-member">
@@ -299,11 +295,17 @@ function volverSinIntro(e) {
                 <img src="/img/member2.jpg" alt="Desarrollador 3">
             </div>
             <h2 class="member-name">Joaco Stock</h2>
-            <div class="member-role">Especialista en Caos Social</div>
-            <p class="member-desc">Experto en manejo de crisis existenciales y redes sociales interdimensionales.</p>
-                                    <p class="member-desc">"Un amigo sin igual."</p>
-
+            <div class="member-role">Especialista en Caos Social & Hacker de Realidades</div>
+            <p class="member-desc"><em>Frase célebre:</em> "Un amigo sin igual, pero con backup."</p>
         </div>
+    </div>
+    <div style="width:100%;display:flex;justify-content:center;margin:60px 0 40px 0;">
+        <button id="show-flappy" style="background: #000; color: #00ffff; border: 2px solid #00ffff; font-family: 'VT323', monospace; font-size: 2rem; padding: 18px 38px; border-radius: 12px; box-shadow: 0 0 18px #00ffff88; cursor: pointer; transition: all 0.2s;">Ver video secreto</button>
+    </div>
+    <div id="flappy-container" style="display:none; width:100%; text-align:center; margin-bottom:60px;">
+        <video id="flappy-video" src="/img/flappybird1.mp4" controls style="max-width:900px;width:90vw; margin:0 auto; border:3px solid #00ffff; border-radius:16px; box-shadow:0 0 24px #00ffff88;"></video>
+        <br>
+        <button id="close-flappy" style="margin-top:18px; background:#000; color:#ff00ff; border:2px solid #ff00ff; font-family:'VT323', monospace; font-size:1.3rem; padding:8px 24px; border-radius:8px; cursor:pointer;">Cerrar video</button>
     </div>
 
     <script>
@@ -345,6 +347,17 @@ function volverSinIntro(e) {
             }, 3000);
         }, 200);
         
+        document.getElementById('show-flappy').onclick = function() {
+            document.getElementById('flappy-container').style.display = 'block';
+            document.getElementById('show-flappy').style.display = 'none';
+            document.getElementById('flappy-video').currentTime = 0;
+            document.getElementById('flappy-video').play();
+        };
+        document.getElementById('close-flappy').onclick = function() {
+            document.getElementById('flappy-container').style.display = 'none';
+            document.getElementById('show-flappy').style.display = 'inline-block';
+            document.getElementById('flappy-video').pause();
+        };
     </script>
 </body>
 </html> 
