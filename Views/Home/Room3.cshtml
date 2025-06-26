@@ -11,6 +11,7 @@
     <meta charset="utf-8" />
     <title>☀︎</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
     <style>
         body {
             margin: 0;
@@ -24,6 +25,7 @@
             align-items: center;
             min-height: 100vh;
             transition: background-color 0.2s ease-in-out;
+            cursor: url('/img/cursor-xp.png'), auto !important;
         }
 
         #rickGif {
@@ -698,6 +700,7 @@
     <div class="mutation-flash"></div>
     <div class="victory-helix"></div>
 
+    <script src="~/js/site.js"></script>
     <script>
         let errores = 0;
         const correcto = "@secuenciaCorrecta";
@@ -705,7 +708,7 @@
         let timerStarted = false;
         let interval;
 
-        const intro = `>>> CARGANDO SALA 3...\n>>> ERROR: Morty eligió el camino fácil en la Room2\n>>> ACTIVANDO CASTIGO GENÉTICO\n>>> Rick: ¡¿QUÉ HICISTE, MORTY?!\n>>> La computadora ahora controla la realidad.\n>>> Buscá la única columna genética estable EN VERTICAL, Morty. No horizontal. COLUMNAS. TOCA f12 MORTYYYYYY`;
+        const intro = `>>> CARGANDO SALA 3...\n>>> ERROR: Morty eligió el camino fácil en la Room2\n>>> ACTIVANDO CASTIGO GENÉTICO\n>>> Rick: ¡¿QUÉ HICISTE, MORTY?!\n>>> La computadora ahora controla la realidad.\n>>> Buscá la única columna genética estable EN VERTICAL, Morty. No horizontal. ⚠ COLUMNAS. TOCA f12 MORTYYYYYY`;
 
         function escribirIntro() {
             const intro = [
@@ -725,7 +728,7 @@
                 ">>> ⚠⚠⚠ CARGANDO PATRÓN DE REPARACIÓN ⚠⚠⚠",
                 ">>> Morty: RICK... ¡¡EL CÓDIGO GENÉTICO SE ESTÁ ROMPIENDO!!",
                 ">>> Rick: Buscá en las COLUMNAS... no las filas, Morty. TOCA f12 MORTYYYYYY",
-                ">>> Rick: El hacker está usando el ADN como vector de ataque. TOCA f12 MORTYYYYYY",
+                ">>> Rick: El hacker está usando el ADN como vector de ataque. TOCA f12 ⚠ MORTYYYYYY",
             ];
 
             let i = 0;
@@ -1103,6 +1106,23 @@
         if (errores === 0) {
             showVictorySequence();
         }
+
+        function reemplazarNombre(texto) {
+            return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+        }
+        window.nombreJugador = 'Morty';
+        window.obtenerNombreJugador(function(nombre) {
+            window.nombreJugador = nombre;
+            // Reemplazar en los diálogos finales
+            var consola = document.getElementById('consoleFinal');
+            if (consola) {
+                consola.innerHTML = reemplazarNombre(consola.innerHTML);
+            }
+            // Reemplazar en los diálogos de la intro si existen
+            document.querySelectorAll('.dialogo, .rick, .morty').forEach(function(div) {
+                div.innerHTML = reemplazarNombre(div.innerHTML);
+            });
+        });
     </script>
 </body>
 <!-- 

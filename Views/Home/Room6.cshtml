@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
     <title>｡𖦹°‧</title>
+  <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
   <style>
     :root {
       --bg: #000;
@@ -22,6 +23,7 @@
       color: var(--fg);
       overflow: hidden;
       height: 100vh;
+      cursor: url('/img/cursor-xp.png'), auto !important;
     }
     canvas, .crazyLight, .flashOverlay {
       position: fixed;
@@ -626,6 +628,7 @@
 <div class="reality-distortion"></div>
 <div class="portal-ring"></div>
 <div class="victory-effect"></div>
+<script src="~/js/site.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const consoleDiv = document.getElementById('console');
@@ -1181,6 +1184,17 @@ setInterval(() => {
 setInterval(() => {
   if (Math.random() < 0.2) triggerScreenDistortion();
 }, 4500);
+
+function reemplazarNombre(texto) {
+    return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+}
+window.nombreJugador = 'Morty';
+window.obtenerNombreJugador(function(nombre) {
+    window.nombreJugador = nombre;
+    // Reemplazar en los diálogos de la terminal
+    var terminal = document.querySelector('.terminal');
+    if (terminal) terminal.innerHTML = reemplazarNombre(terminal.innerHTML);
+});
 </script>
 
 </body>

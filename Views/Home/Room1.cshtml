@@ -7,6 +7,7 @@
     <meta charset="utf-8" />
     <title>ʚɞ</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
     <style>
         html, body {
             background-color: black;
@@ -15,6 +16,7 @@
             padding: 30px;
             overflow: hidden;
             animation: backgroundFlash 0.4s infinite;
+            cursor: url('/img/cursor-xp.png'), auto !important;
         }
 
         @@keyframes backgroundFlash {
@@ -104,6 +106,11 @@
 
     <div id="input-line">
         > ¿Entendiste? (y/n): <input id="respuesta" maxlength="1" autofocus />
+    </div>
+
+    <div id="nombre-line" style="display:none; margin-top:20px;">
+        > ¿Cómo te llamás? <input id="nombreJugador" maxlength="20" autofocus />
+        <button id="btnNombre">Aceptar</button>
     </div>
 
     <div id="error-mode"></div>
@@ -230,44 +237,38 @@ function escribirLinea() {
         input.addEventListener("input", function () {
             const val = input.value.toLowerCase();
             if (val === "y") {
-                terminal.innerHTML = "✔️ Iniciando secuencia de escape...";
                 inputLine.style.display = "none";
-                
-                // Marcar Room1 como completada
-                fetch('/Home/CompleteRoom/1', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        terminal.innerHTML += "\n🌀 Portal estable detectado...";
-                        setTimeout(() => {
-                            window.location.href = "/Home/GameStart";
-                        }, 1000);
-                    } else {
-                        throw new Error('Room completion failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    terminal.innerHTML = "❌ ERROR: Fallo en la secuencia de escape. Reintentando...";
-                    setTimeout(() => {
-                            window.location.href = "/Home/GameStart";
-                    }, 2000);
-                });
+                document.getElementById("nombre-line").style.display = "block";
+                document.getElementById("nombreJugador").focus();
             } else if (val === "n") {
                 mostrarErrorRick();
             } else {
                 input.value = "";
             }
+        });
+
+        document.getElementById("btnNombre").addEventListener("click", function () {
+            const nombre = document.getElementById("nombreJugador").value.trim();
+            if (nombre.length < 1) {
+                alert("Por favor, ingresa tu nombre.");
+                return;
+            }
+            fetch('/Home/SetPlayerName', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nombre)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    terminal.innerHTML = `✔️ Bienvenido, ${nombre}! Iniciando secuencia de escape...`;
+                    setTimeout(() => {
+                        window.location.href = "/Home/GameStart";
+                    }, 1200);
+                } else {
+                    alert("Error al guardar el nombre. Intenta de nuevo.");
+                }
+            });
         });
 
         // Glitch audio system

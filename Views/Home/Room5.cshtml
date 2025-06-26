@@ -8,6 +8,7 @@
   <meta charset="UTF-8">
     <title>☆☆☆</title>
   <link rel="stylesheet" href="~/css/site.css">
+  <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
   <style>
     * { box-sizing: border-box; }
     html, body {
@@ -19,6 +20,7 @@ background: transparent !important;
       transition: all 0.8s ease-in-out;
       overflow-y: auto;
       overflow-x: hidden;
+      cursor: url('/img/cursor-xp.png'), auto !important;
     }
 
     .invertido {
@@ -326,11 +328,11 @@ background: rgba(17, 17, 17, 0.90);
   <h1 class="boom glitch">C://FR4C7UR4/MULT1V3R54L</h1>
   <div class="dialogo">
     <p class="warning-text">[PROTOCOLO DE EMERGENCIA ACTIVADO]</p>
-    <p><span class="rick">Rick:</span> “Morty, el núcleo dimensional está roto. Las realidades se están colapsando unas sobre otras.”</p>
-    <p><span class="morty">Morty:</span> “¡Rick, hay códigos en todos lados! No sé qué hacer…”</p>
-    <p><span class="rick">Rick:</span> “Cada línea corrupta es un universo muriendo. Encontrá el patrón antes de que el sistema sea irreparable.”</p>
+    <p><span class="rick">Rick:</span> "Morty, el núcleo dimensional está roto. Las realidades se están colapsando unas sobre otras."</p>
+    <p><span class="morty">Morty:</span> "¡Rick, hay códigos en todos lados! No sé qué hacer…"</p>
+    <p><span class="rick">Rick:</span> "Cada línea corrupta es un universo muriendo. Encontrá el patrón antes de que el sistema sea irreparable."</p>
     <p class="warning-text">[COLAPSO INMINENTE: 60 SEGUNDOS]</p>
-    <p><span class="rick">Rick:</span> “Todo depende de vos, Morty. No hay margen de error esta vez.”</p>
+    <p><span class="rick">Rick:</span> "Todo depende de vos, Morty. No hay margen de error esta vez."</p>
   </div>
 </div>
 
@@ -742,6 +744,21 @@ function animate() {
   animationFrameId = requestAnimationFrame(animate);
 }
 animate();
+
+function reemplazarNombre(texto) {
+    return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+}
+window.nombreJugador = 'Morty';
+window.obtenerNombreJugador(function(nombre) {
+    window.nombreJugador = nombre;
+    // Reemplazar en los diálogos
+    document.querySelectorAll('.dialogo, .rick, .morty').forEach(function(div) {
+        div.innerHTML = reemplazarNombre(div.innerHTML);
+    });
+    // Reemplazar en la consola final
+    var resultado = document.getElementById('resultadoFinal');
+    if (resultado) resultado.innerHTML = reemplazarNombre(resultado.innerHTML);
+});
 
 </script>
 

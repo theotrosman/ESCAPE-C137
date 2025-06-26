@@ -12,6 +12,7 @@ namespace PrimerProyecto.Controllers
         private const string GAMESTART_COMPLETED = "GameStart_Completed";
         private const string ROOM7_CODEX_COMPLETED = "Room7Codex_Completed";
         private const string ACHIEVEMENT_PREFIX = "Achievement_";
+        private const string PLAYER_NAME_KEY = "PlayerName";
 
         private bool IsRoomCompleted(int roomNumber)
         {
@@ -374,14 +375,31 @@ namespace PrimerProyecto.Controllers
             return View();
         }
         public IActionResult CompleteRoom7Codex()
-{
-    MarkRoomAsCompleted(7);
-    HttpContext.Session.SetString("Room7Codex_Completed", "true");
-    UnlockAchievement(8); 
+        {
+            MarkRoomAsCompleted(7);
+            HttpContext.Session.SetString("Room7Codex_Completed", "true");
+            UnlockAchievement(8); 
 
-    return Json(new { success = true });
-}
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public IActionResult SetPlayerName([FromBody] string playerName)
+        {
+            if (!string.IsNullOrWhiteSpace(playerName))
+            {
+                HttpContext.Session.SetString(PLAYER_NAME_KEY, playerName);
+                return Json(new { success = true });
+            }
+            return Json(new { success = false });
+        }
+
+        [HttpGet]
+        public IActionResult GetPlayerName()
+        {
+            var name = HttpContext.Session.GetString(PLAYER_NAME_KEY) ?? "Morty";
+            return Json(new { name });
+        }
     }
-    
 }
 

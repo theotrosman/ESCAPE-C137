@@ -7,6 +7,7 @@
     <meta charset="utf-8" />
     <title>:3</title>
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
     <style>
         html, body {
             margin: 0;
@@ -16,6 +17,7 @@
             color: #00ff00;
             overflow: hidden;
             height: 100vh;
+            cursor: url('/img/cursor-xp.png'), auto !important;
         }
         #bios {
             display: none;
@@ -335,6 +337,7 @@
     </div>
 </div>
 
+    <script src="~/js/site.js"></script>
     <script>
     function scrambledTextEffect(element, text, scrambleChars = ".:|#%$", totalDuration = 4000) {
     return new Promise((resolve) => {
@@ -694,6 +697,21 @@
                 setTimeout(() => line.classList.remove('flicker'), 1200);
     }
 }
+
+function reemplazarNombre(texto) {
+    return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+}
+window.nombreJugador = 'Morty';
+window.obtenerNombreJugador(function(nombre) {
+    window.nombreJugador = nombre;
+    // Reemplazar en introTexto
+    if (window.introTexto && window.introTexto.length > 3) {
+        window.introTexto[3] = `> <span class="rick-text">Rick</span>: ${nombre}, accediste a la terminal raíz del sistema.`;
+    }
+    // Reemplazar en la terminal si ya está impreso
+    var terminal = document.getElementById('terminal-output');
+    if (terminal) terminal.innerHTML = reemplazarNombre(terminal.innerHTML);
+});
     </script>
 </body>
 </html>

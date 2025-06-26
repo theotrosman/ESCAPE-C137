@@ -7,6 +7,7 @@
   <meta charset="UTF-8">
     <title>:3</title>
   <link rel="stylesheet" href="~/css/site.css" />
+  <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
   <audio id="background-music" autoplay loop>
     <source src="~/img/forgether.mp3" type="audio/mpeg">
   </audio>
@@ -18,6 +19,7 @@
       overflow: hidden;
       font-family: 'Courier New', monospace;
       color: #0f0;
+      cursor: url('/img/cursor-xp.png'), auto !important;
     }
 
     #flash {
@@ -1473,6 +1475,7 @@
     </div>
   </div>
 
+  <script src="~/js/site.js"></script>
   <script>
     const nave = document.getElementById('nave');
     const consoleDiv = document.getElementById('console');
@@ -2010,7 +2013,7 @@ Anclar la simulación manualmente desde el BIOS si algo se pone raro.`
 {
   title: "Nota #6",
   content: `El sistema de respaldo falló anoche.  
-Backup inconsistente. Registro: “M0R7Y_B4D_L00P”.  
+Backup inconsistente. Registro: "M0R7Y_B4D_L00P".  
 Si ves esto, no reinicies el sistema.  
 NO. REINICIES. EL. SISTEMA.  
 (Esta nota debería autodestruirse. Si sigue acá, bueno… cagaste).`
@@ -2019,13 +2022,13 @@ NO. REINICIES. EL. SISTEMA.
   title: "Nota #7",
   content: `Encontré rastros de conciencia residual en los procesos cerrados.  
 ¿Morty.exe está infectando otros ejecutables?  
-Si la variable “isMorty” aparece en procesos que no sean suyos, correr comando: DEL /F /Q.  
+Si la variable "isMorty" aparece en procesos que no sean suyos, correr comando: DEL /F /Q.  
 Si no funciona, desconectá el server y rezá.`
 },
 {
   title: "Nota #8",
   content: `Intenté borrar a Morty.exe usando el comando clásico.  
-Respuesta del sistema: “¿Por qué querés borrarme si yo soy vos?”  
+Respuesta del sistema: "¿Por qué querés borrarme si yo soy vos?"  
 OK, eso es nuevo.  
 Nota mental: dejar de usar vodka como refrigerante del servidor.`
 }
@@ -3239,6 +3242,28 @@ function getFakeAppHTML(app) {
     <video id="ledigoholaVideo" src="/img/ledigohola.mp4" controls style="width:100%;height:100%;background:black;border-radius:0 0 8px 8px;"></video>
   </div>
 </div>
+
+<script>
+    // ... existing code ...
+    function reemplazarNombre(texto) {
+        return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+    }
+    window.nombreJugador = 'Morty';
+    window.obtenerNombreJugador(function(nombre) {
+        window.nombreJugador = nombre;
+        // Reemplazar en los logs
+        if (window.logs) {
+            window.logs = window.logs.map(function(log) {
+                if (log.text) log.text = reemplazarNombre(log.text);
+                return log;
+            });
+        }
+        // Reemplazar en la consola
+        var consoleDiv = document.getElementById('console');
+        if (consoleDiv) consoleDiv.innerHTML = reemplazarNombre(consoleDiv.innerHTML);
+    });
+    // ... existing code ...
+    </script>
 
 </body>
 </html>

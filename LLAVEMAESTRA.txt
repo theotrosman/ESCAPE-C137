@@ -11,7 +11,8 @@ CLAVE: adminmvc
 
 💾 Room2:
   - Clave: 479
-  - (La podés deducir revisando el Source y la pista de Rick.)
+  - Se consigue abriendo el F12 y resolviendo esto:
+  [ENIGMA] x = a³ - b³, con a=7 y b=4. ¿Qué número te da si sumás 200 a ese resultado? Ese número es la clave...
 
 🧬 Room3:
   - Secuencia genética correcta: **ATGCGTACGC**
