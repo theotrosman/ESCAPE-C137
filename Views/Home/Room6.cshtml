@@ -321,6 +321,261 @@
       50% { opacity: 1; transform: scale(1.5); }
       100% { opacity: 0; transform: scale(2); }
     }
+
+    /* EPIC NEW EFFECTS */
+    
+    /* Mouse trail particles */
+    .mouse-particle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: var(--quantum1);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      filter: blur(1px);
+      animation: mouseTrail 1s ease-out forwards;
+    }
+
+    @@keyframes mouseTrail {
+      0% { 
+        opacity: 1; 
+        transform: scale(1) rotate(0deg);
+        filter: hue-rotate(0deg) blur(1px);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(0) rotate(360deg);
+        filter: hue-rotate(360deg) blur(3px);
+      }
+    }
+
+    /* Seismic waves */
+    .seismic-wave {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border: 2px solid var(--alert);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1000;
+      animation: seismicPulse 2s ease-out forwards;
+    }
+
+    @@keyframes seismicPulse {
+      0% { 
+        width: 0; 
+        height: 0; 
+        opacity: 1;
+        border-width: 4px;
+      }
+      100% { 
+        width: 100vw; 
+        height: 100vw; 
+        opacity: 0;
+        border-width: 1px;
+      }
+    }
+
+    /* Matrix breaking effect */
+    .matrix-break {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0,255,0,0.1) 1%,
+        transparent 2%
+      );
+      pointer-events: none;
+      z-index: 1001;
+      opacity: 0;
+      animation: matrixBreak 0.5s ease-out forwards;
+    }
+
+    @@keyframes matrixBreak {
+      0% { 
+        opacity: 0; 
+        transform: scale(0.5) rotate(0deg);
+        filter: hue-rotate(0deg);
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.2) rotate(180deg);
+        filter: hue-rotate(180deg);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(2) rotate(360deg);
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    /* Quantum tunneling effect */
+    .quantum-tunnel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: conic-gradient(
+        from 0deg,
+        transparent,
+        var(--quantum1),
+        transparent,
+        var(--quantum2),
+        transparent
+      );
+      pointer-events: none;
+      z-index: 1002;
+      opacity: 0;
+      animation: quantumTunnel 1s ease-out forwards;
+    }
+
+    @@keyframes quantumTunnel {
+      0% { 
+        opacity: 0; 
+        transform: scale(0) rotate(0deg);
+        filter: blur(10px);
+      }
+      50% { 
+        opacity: 0.8; 
+        transform: scale(1) rotate(180deg);
+        filter: blur(5px);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(2) rotate(360deg);
+        filter: blur(20px);
+      }
+    }
+
+    /* Enhanced reality distortion */
+    .reality-shatter {
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(255,0,255,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0,255,255,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,0,0.2) 0%, transparent 50%);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      z-index: 1003;
+      opacity: 0;
+      animation: realityShatter 0.8s ease-out forwards;
+    }
+
+    @@keyframes realityShatter {
+      0% { 
+        opacity: 0; 
+        transform: scale(0.5) skew(0deg);
+        filter: hue-rotate(0deg);
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.5) skew(20deg);
+        filter: hue-rotate(180deg);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(3) skew(0deg);
+        filter: hue-rotate(360deg);
+      }
+    }
+
+    /* Glitch text enhancement */
+    .epic-glitch {
+      position: fixed;
+      color: var(--glitch1);
+      font-family: monospace;
+      font-weight: bold;
+      text-shadow: 
+        2px 0 var(--glitch2),
+        -2px 0 var(--quantum1),
+        0 2px var(--quantum2);
+      pointer-events: none;
+      z-index: 1004;
+      animation: epicGlitch 0.3s infinite alternate;
+    }
+
+    @@keyframes epicGlitch {
+      0% { 
+        transform: translate(0) skew(0deg);
+        text-shadow: 
+          2px 0 var(--glitch2),
+          -2px 0 var(--quantum1),
+          0 2px var(--quantum2);
+      }
+      25% { 
+        transform: translate(2px, -2px) skew(2deg);
+        text-shadow: 
+          -2px 0 var(--glitch1),
+          2px 0 var(--quantum2),
+          0 -2px var(--quantum1);
+      }
+      50% { 
+        transform: translate(-2px, 2px) skew(-2deg);
+        text-shadow: 
+          0 2px var(--glitch2),
+          2px -2px var(--quantum1),
+          -2px 0 var(--quantum2);
+      }
+      75% { 
+        transform: translate(1px, -1px) skew(1deg);
+        text-shadow: 
+          -1px 1px var(--glitch1),
+          1px -1px var(--quantum2),
+          0 1px var(--quantum1);
+      }
+      100% { 
+        transform: translate(0) skew(0deg);
+        text-shadow: 
+          2px 0 var(--glitch2),
+          -2px 0 var(--quantum1),
+          0 2px var(--quantum2);
+      }
+    }
+
+    /* Screen distortion effect */
+    .screen-distortion {
+      position: fixed;
+      inset: 0;
+      background: 
+        repeating-linear-gradient(
+          45deg,
+          transparent 0%,
+          rgba(255,0,255,0.1) 1%,
+          transparent 2%
+        );
+      pointer-events: none;
+      z-index: 1005;
+      opacity: 0;
+      animation: screenDistort 0.6s ease-out forwards;
+    }
+
+    @@keyframes screenDistort {
+      0% { 
+        opacity: 0; 
+        transform: scale(1) rotate(0deg);
+        filter: hue-rotate(0deg) contrast(1);
+      }
+      50% { 
+        opacity: 1; 
+        transform: scale(1.1) rotate(5deg);
+        filter: hue-rotate(180deg) contrast(2);
+      }
+      100% { 
+        opacity: 0; 
+        transform: scale(1) rotate(0deg);
+        filter: hue-rotate(360deg) contrast(1);
+      }
+    }
   </style>
 </head>
 <body>
@@ -334,7 +589,7 @@
     <h1 style="color: var(--quantum1);">[ROOM 6 // NÚCLEO DEL CAOS]</h1>
   </div>
   <div class="intro-text" style="--delay: 2s">
-    <p class="warning-text">ANOMALÍA 3%:- CUÁNTICA $3000 CRÍTICA</p>
+    <p class="warning-text">ANOMALÍA 3%:- CUÁNTICA/&&CRÍTICA</p>
     <p>Núcleo inestable: 89% — tasa de ruptura exponencial.</p>
   </div>
   <div class="intro-text" style="--delay: 4s">
@@ -472,12 +727,26 @@ function crearCeldas() {
     cell.id = `cell${i}`;
     cell.onclick = () => {
       if (finalizado) return;
+      
+      // Enhanced click effects
+      enhanceCellClick(cell);
+      
       if (cell.classList.contains("activo")) {
         score++;
         terminal.innerText += `✔️ Click correcto en ${cell.id}\n`;
+        
+        // Trigger epic effects on correct clicks
+        if (Math.random() < 0.3) triggerSeismicWave();
+        if (Math.random() < 0.2) triggerMatrixBreak();
+        if (Math.random() < 0.15) triggerQuantumTunnel();
       } else {
         score--;
         terminal.innerText += `❌ Click fallado en ${cell.id}\n`;
+        
+        // Trigger different effects on wrong clicks
+        if (Math.random() < 0.4) triggerRealityShatter();
+        if (Math.random() < 0.3) triggerScreenDistortion();
+        if (Math.random() < 0.25) createEpicGlitch();
       }
       actualizar();
     };
@@ -739,6 +1008,179 @@ if (score >= 15) {
     showVictoryEffects();
     // ... rest of your victory code ...
 }
+
+// EPIC NEW EFFECT FUNCTIONS
+
+// Mouse trail particles
+function createMouseTrail(e) {
+  if (Math.random() < 0.3) {
+    const particle = document.createElement('div');
+    particle.className = 'mouse-particle';
+    particle.style.left = e.clientX + 'px';
+    particle.style.top = e.clientY + 'px';
+    particle.style.background = `hsl(${Math.random() * 360}, 100%, 50%)`;
+    document.body.appendChild(particle);
+    
+    setTimeout(() => particle.remove(), 1000);
+  }
+}
+
+// Seismic wave effect
+function triggerSeismicWave() {
+  const wave = document.createElement('div');
+  wave.className = 'seismic-wave';
+  document.body.appendChild(wave);
+  
+  setTimeout(() => wave.remove(), 2000);
+}
+
+// Matrix breaking effect
+function triggerMatrixBreak() {
+  const matrix = document.createElement('div');
+  matrix.className = 'matrix-break';
+  document.body.appendChild(matrix);
+  
+  setTimeout(() => matrix.remove(), 500);
+}
+
+// Quantum tunneling effect
+function triggerQuantumTunnel() {
+  const tunnel = document.createElement('div');
+  tunnel.className = 'quantum-tunnel';
+  document.body.appendChild(tunnel);
+  
+  setTimeout(() => tunnel.remove(), 1000);
+}
+
+// Reality shatter effect
+function triggerRealityShatter() {
+  const shatter = document.createElement('div');
+  shatter.className = 'reality-shatter';
+  document.body.appendChild(shatter);
+  
+  setTimeout(() => shatter.remove(), 800);
+}
+
+// Epic glitch text
+function createEpicGlitch() {
+  const glitchTexts = [
+    '✶ QUANTUM FLUX DETECTED :: REALITY BREAKING ✶',
+    '𖹭 MATRIX CORRUPTION :: DIMENSIONAL SHIFT IN PROGRESS 𖹭',
+    '୨ৎ NUCLEAR FUSION :: CODE MELTING INTO CHAOS ୨ৎ',
+    '✦ SPACETIME ANOMALY :: THE GAME IS PLAYING US ✦',
+    '𓆩 QUANTUM ENTANGLEMENT :: ALL REALITIES MERGING 𓆪',
+    '𖦹 COSMIC GLITCH :: THE UNIVERSE IS DEBUGGING ITSELF 𖦹',
+    '✶ NEURAL NETWORK OVERLOAD :: CONSCIOUSNESS EXPANDING ✶',
+    '⋆ DIMENSIONAL BREACH :: INFINITE POSSIBILITIES UNLEASHED ⋆',
+    '✧ QUANTUM SUPERPOSITION :: WE ARE ALL WINNING AND LOSING ✧',
+    '୨ৎ REALITY SIMULATION :: THE MATRIX HAS A MATRIX ୨ৎ'
+  ];
+  
+  const glitch = document.createElement('div');
+  glitch.className = 'epic-glitch';
+  glitch.innerText = glitchTexts[Math.floor(Math.random() * glitchTexts.length)];
+  glitch.style.top = `${Math.random() * 70 + 15}%`;
+  glitch.style.left = `${Math.random() * 70 + 15}%`;
+  glitch.style.fontSize = `${Math.floor(Math.random() * 30 + 20)}px`;
+  document.body.appendChild(glitch);
+  
+  setTimeout(() => glitch.remove(), 2000);
+}
+
+// Screen distortion effect
+function triggerScreenDistortion() {
+  const distortion = document.createElement('div');
+  distortion.className = 'screen-distortion';
+  document.body.appendChild(distortion);
+  
+  setTimeout(() => distortion.remove(), 600);
+}
+
+// Enhanced cell click effects
+function enhanceCellClick(cell) {
+  // Create explosion effect
+  for (let i = 0; i < 8; i++) {
+    const particle = document.createElement('div');
+    particle.style.position = 'absolute';
+    particle.style.width = '4px';
+    particle.style.height = '4px';
+    particle.style.background = cell.classList.contains('activo') ? '#00ff88' : '#ff0066';
+    particle.style.borderRadius = '50%';
+    particle.style.left = '50%';
+    particle.style.top = '50%';
+    particle.style.transform = 'translate(-50%, -50%)';
+    particle.style.pointerEvents = 'none';
+    particle.style.zIndex = '1000';
+    
+    const angle = (i * 45) * Math.PI / 180;
+    const distance = 50;
+    const animation = particle.animate([
+      { 
+        transform: 'translate(-50%, -50%) scale(1)',
+        opacity: 1
+      },
+      { 
+        transform: `translate(calc(-50% + ${Math.cos(angle) * distance}px), calc(-50% + ${Math.sin(angle) * distance}px)) scale(0)`,
+        opacity: 0
+      }
+    ], {
+      duration: 500,
+      easing: 'ease-out'
+    });
+    
+    cell.appendChild(particle);
+    animation.onfinish = () => particle.remove();
+  }
+  
+  // Trigger screen shake
+  document.body.style.animation = 'none';
+  document.body.offsetHeight; // Trigger reflow
+  document.body.style.animation = 'realityGlitch 0.2s ease-out';
+  setTimeout(() => {
+    document.body.style.animation = '';
+  }, 200);
+}
+
+// Add mouse trail effect
+document.addEventListener('mousemove', createMouseTrail);
+
+// Enhanced effect intervals
+setInterval(() => {
+  if (Math.random() < 0.4) glitchRandom();
+}, 3000);
+
+setInterval(() => {
+  if (Math.random() < 0.25) invocarPortal();
+}, 8000);
+
+setInterval(() => {
+  if (Math.random() < 0.3) gridDualidad();
+}, 7000);
+
+// NEW EPIC EFFECT INTERVALS
+setInterval(() => {
+  if (Math.random() < 0.2) triggerSeismicWave();
+}, 4000);
+
+setInterval(() => {
+  if (Math.random() < 0.15) triggerMatrixBreak();
+}, 6000);
+
+setInterval(() => {
+  if (Math.random() < 0.1) triggerQuantumTunnel();
+}, 8000);
+
+setInterval(() => {
+  if (Math.random() < 0.25) triggerRealityShatter();
+}, 5000);
+
+setInterval(() => {
+  if (Math.random() < 0.3) createEpicGlitch();
+}, 3500);
+
+setInterval(() => {
+  if (Math.random() < 0.2) triggerScreenDistortion();
+}, 4500);
 </script>
 
 </body>
