@@ -1,6 +1,6 @@
 <h1 align="center">꩜ESCAPE-C137꩜
 
-<p align="center">
+<p align="center"> 
   <code>[REPOSITORIO CORROMPIDO]</code><br>
   <sub>Archivo README interceptado. Canal seguro comprometido.</sub>
 </p>
