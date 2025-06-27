@@ -94,6 +94,13 @@ namespace PrimerProyecto.Controllers
                 return IsRoomCompleted(8);
             }
 
+            // Permitir acceso a Room4 si vienes de Room3 con flag especial
+            if (roomNumber == 4 && HttpContext.Session.GetString("FromRoom3") == "true")
+            {
+                HttpContext.Session.Remove("FromRoom3"); // Eliminar el flag después de usarlo
+                return true;
+            }
+
             // Las demás rooms requieren completar la anterior
             return IsRoomCompleted(roomNumber - 1);
         }
@@ -399,6 +406,14 @@ namespace PrimerProyecto.Controllers
         {
             var name = HttpContext.Session.GetString(PLAYER_NAME_KEY) ?? "Morty";
             return Json(new { name });
+        }
+
+        [HttpPost]
+        public IActionResult SetFromRoom3()
+        {
+            HttpContext.Session.SetString("FromRoom3", "true");
+            MarkRoomAsCompleted(3); // Marcar Room3 como completada
+            return Ok();
         }
     }
 }

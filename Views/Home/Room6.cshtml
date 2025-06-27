@@ -619,7 +619,7 @@
   <h2>NÚCLEO EN COLAPSO</h2>
   <p><strong>[RICK]</strong> Morty, esta es la zona cero. Las leyes de la física dejaron de tener sentido. El código se reescribe, los bugs evolucionan. No hay reglas… solo caos.</p>
   <p><strong>OBJETIVO:</strong> Interceptá los <span style="color:#ff66cc">CUADRADOS ACTIVOS</span> antes de que el sistema caiga. Cada acierto estabiliza el núcleo. Cada error lo corrompe más.</p>
-  <p><strong>15 puntos o menos… y el multiverso colapsa.</strong> Tenés 60 segundos. Empezá a jugar. Ahora.</p>
+  <p><strong>5 puntos o menos… y el multiverso colapsa.</strong> Tenés 60 segundos. Empezá a jugar. Ahora.</p>
 </div>
 <div class="grid" id="grid"></div>
 <div id="score">Puntaje: 0</div>
@@ -773,7 +773,7 @@ function activarRandom() {
 
 function actualizar() {
   scoreDisplay.innerText = `Puntaje: ${score}`;
-  if (score >= 15 && !finalizado) {
+  if (score >= 5 && !finalizado) {
     finalizado = true;
     clearInterval(intervalo);
     document.body.innerHTML = `
@@ -1007,7 +1007,7 @@ function showVictoryEffects() {
 createQuantumParticles();
 
 // Add to your existing victory condition
-if (score >= 15) {
+if (score >= 5) {
     showVictoryEffects();
     // ... rest of your victory code ...
 }

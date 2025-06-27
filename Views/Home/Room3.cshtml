@@ -927,26 +927,52 @@
             }, 4000);
 
             fetch('/Home/CompleteRoom/3', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    }
-})
-.then(response => {
-    if (!response.ok) throw new Error('Error al completar la sala');
-    return response.json();
-})
-.then(() => {
-    setTimeout(() => {
-        window.location.href = '/Home/Room4';
-    }, 7000);
-})
-.catch(() => {
-    setTimeout(() => {
-        window.location.href = '/Home/Room4';
-    }, 7000);
-});
-
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Error al completar la sala');
+                return response.json();
+            })
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = '/Home/Room4';
+                }, 7000);
+            })
+            .catch(() => {
+                // Reintentar hasta 3 veces antes de redirigir
+                let intentos = 1;
+                function reintentarFetch() {
+                    fetch('/Home/CompleteRoom/3', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error al completar la sala');
+                        return response.json();
+                    })
+                    .then(() => {
+                        setTimeout(() => {
+                            window.location.href = '/Home/Room4';
+                        }, 7000);
+                    })
+                    .catch(() => {
+                        intentos++;
+                        if (intentos < 4) {
+                            setTimeout(reintentarFetch, 1000);
+                        } else {
+                            setTimeout(() => {
+                                window.location.href = '/Home/Room4';
+                            }, 7000);
+                        }
+                    });
+                }
+                reintentarFetch();
+            });
         }
 
         function lanzarPopUp() {
@@ -1123,6 +1149,12 @@
                 div.innerHTML = reemplazarNombre(div.innerHTML);
             });
         });
+
+        // Antes de redirigir a Room4, setea el flag en la sesión
+        fetch('/Home/SetFromRoom3', { method: 'POST' })
+            .then(() => {
+                window.location.href = '/Home/Room4';
+            });
     </script>
 </body>
 <!-- 
