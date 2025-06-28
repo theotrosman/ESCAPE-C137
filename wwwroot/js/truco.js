@@ -500,11 +500,19 @@ function animacionVictoria() {
     overlay.style.display = 'flex';
     victory.style.display = 'block';
     // Desbloquear Room2
-    fetch('/Home/CompleteRoom?roomNumber=2', { method: 'POST' })
-        .then(()=>{
-            setTimeout(()=>{ window.location.href = '/Home/Room2'; }, 4000);
-        });
+    fetch('/Home/CompleteGameStart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    }).then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            setTimeout(() => {
+                window.location.href = "/Home/Room2";
+            }, 2000);
+        }
+    });
 }
+
 
 function animacionDerrota() {
     let overlay = document.getElementById('game-over-overlay');
