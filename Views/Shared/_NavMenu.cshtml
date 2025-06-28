@@ -1,0 +1,529 @@
+@{
+    // Partial view para el menú lateral hacker/glitch
+    // Se puede incluir directamente en cualquier página con: @Html.Partial("_NavMenu")
+}
+
+<style>
+    .hacker-nav-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+    }
+
+    .hacker-nav-container.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .hacker-nav-panel {
+        position: absolute;
+        top: 0;
+        left: -450px;
+        width: 450px;
+        height: 100%;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+        border-right: 3px solid #00ff41;
+        box-shadow: 
+            0 0 30px rgba(0, 255, 65, 0.3),
+            inset 0 0 50px rgba(0, 255, 65, 0.05);
+        transition: left 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        overflow: hidden;
+    }
+
+    .hacker-nav-container.active .hacker-nav-panel {
+        left: 0;
+    }
+
+    .hacker-nav-panel::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #00ff41, transparent);
+        animation: scanline 2s linear infinite;
+    }
+
+    @@keyframes scanline {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .hacker-nav-content {
+        padding: 80px 40px 40px 40px;
+        color: #00ff41;
+        font-family: 'Courier New', monospace;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hacker-nav-title {
+        font-size: 24px;
+        text-align: center;
+        margin-bottom: 50px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        text-shadow: 0 0 10px #00ff41;
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .hacker-nav-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: #00ff41;
+        box-shadow: 0 0 10px #00ff41;
+    }
+
+    .hacker-nav-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .hacker-nav-item {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .hacker-nav-link {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 18px 25px;
+        border: 1px solid rgba(0, 255, 65, 0.3);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        background: rgba(0, 255, 65, 0.05);
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    .hacker-nav-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .hacker-nav-link:hover::before {
+        left: 100%;
+    }
+
+    .hacker-nav-link:hover {
+        border-color: #00ff41;
+        color: #00ff41;
+        background: rgba(0, 255, 65, 0.1);
+        box-shadow: 
+            0 0 20px rgba(0, 255, 65, 0.3),
+            inset 0 0 20px rgba(0, 255, 65, 0.1);
+        transform: translateX(5px);
+    }
+
+    .hacker-nav-link.scrambling {
+        animation: scramble 0.8s ease-in-out;
+    }
+
+    .hacker-nav-link.decrypting {
+        animation: decrypt 1.2s ease-in-out;
+    }
+
+    @@keyframes scramble {
+        0% { opacity: 1; }
+        25% { 
+            opacity: 0.3; 
+            transform: translateX(-5px) skewX(-5deg);
+            filter: blur(1px);
+        }
+        50% { 
+            opacity: 0.7; 
+            transform: translateX(5px) skewX(5deg);
+            filter: blur(0.5px);
+        }
+        75% { 
+            opacity: 0.3; 
+            transform: translateX(-3px) skewX(-3deg);
+            filter: blur(1px);
+        }
+        100% { 
+            opacity: 1; 
+            transform: translateX(0) skewX(0deg);
+            filter: blur(0px);
+        }
+    }
+
+    @@keyframes decrypt {
+        0% { 
+            opacity: 0.3; 
+            transform: scale(0.95);
+            filter: blur(2px) contrast(0.5);
+        }
+        50% { 
+            opacity: 0.8; 
+            transform: scale(1.05);
+            filter: blur(0.5px) contrast(1.2);
+        }
+        100% { 
+            opacity: 1; 
+            transform: scale(1);
+            filter: blur(0px) contrast(1);
+        }
+    }
+
+    .menu-icon {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        z-index: 3;
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+
+    .menu-icon:hover {
+        opacity: 1;
+    }
+
+    .menu-icon::before,
+    .menu-icon::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 3px;
+        background: #00ff41;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 5px #00ff41;
+    }
+
+    .menu-icon::before {
+        top: 8px;
+    }
+
+    .menu-icon::after {
+        bottom: 8px;
+    }
+
+    .hacker-nav-container.active .menu-icon::before {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hacker-nav-container.active .menu-icon::after {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .glitch-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 2px,
+            rgba(0, 255, 65, 0.03) 2px,
+            rgba(0, 255, 65, 0.03) 4px
+        );
+        animation: glitchScan 0.1s infinite;
+    }
+
+    .hacker-nav-container.active .glitch-overlay {
+        opacity: 1;
+    }
+
+    @@keyframes glitchScan {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(1px); }
+    }
+
+    body.menu-open {
+        overflow: hidden;
+    }
+
+    .nav-history-indicator {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-size: 12px;
+        color: #00ff41;
+        opacity: 0.7;
+        font-family: monospace;
+    }
+
+    .back-option {
+        border-left: 4px solid #ff6b35 !important;
+        background: rgba(255, 107, 53, 0.1) !important;
+    }
+
+    .back-option:hover {
+        border-color: #ff6b35 !important;
+        color: #ff6b35 !important;
+        box-shadow: 
+            0 0 20px rgba(255, 107, 53, 0.3),
+            inset 0 0 20px rgba(255, 107, 53, 0.1) !important;
+    }
+</style>
+
+<div class="hacker-nav-container" id="hackerNav">
+    <div class="hacker-nav-panel">
+        <div class="glitch-overlay"></div>
+        <div class="menu-icon" onclick="toggleMenu()"></div>
+        <div class="nav-history-indicator" id="navHistoryIndicator">
+            [NAV_HISTORY_ACTIVE]
+        </div>
+        <div class="hacker-nav-content">
+            <div class="hacker-nav-title">SISTEMA DE NAVEGACIÓN</div>
+            <ul class="hacker-nav-menu">
+                <li class="hacker-nav-item">
+                    <a href="javascript:void(0)" class="hacker-nav-link back-option" data-action="back" id="backOption">
+                        Volver a la sala anterior
+                    </a>
+                </li>
+                <li class="hacker-nav-item">
+                    <a href="javascript:void(0)" class="hacker-nav-link" data-action="reload">
+                        Reiniciar Sala
+                    </a>
+                </li>
+                <li class="hacker-nav-item">
+                    <a href="javascript:void(0)" class="hacker-nav-link" data-action="restart">
+                        Reiniciar Escape Room
+                    </a>
+                </li>
+                <li class="hacker-nav-item">
+                    <a href="javascript:void(0)" class="hacker-nav-link" data-action="achievements">
+                        Ver Logros
+                    </a>
+                </li>
+                <li class="hacker-nav-item">
+                    <a href="javascript:void(0)" class="hacker-nav-link" data-action="tutorial">
+                        Tutorial
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    console.log('Enhanced Hacker Nav Menu Script Loaded!');
+    
+    let isMenuOpen = false;
+    let navigationHistory = [];
+    const navContainer = document.getElementById('hackerNav');
+    const backOption = document.getElementById('backOption');
+    const navHistoryIndicator = document.getElementById('navHistoryIndicator');
+    
+    // Initialize navigation history from sessionStorage or create default
+    function initializeNavigationHistory() {
+        const savedHistory = sessionStorage.getItem('escapeRoomNavHistory');
+        if (savedHistory) {
+            navigationHistory = JSON.parse(savedHistory);
+        } else {
+            // Default history based on common flow
+            navigationHistory = ['/Home/Index', '/Home/GameStart'];
+        }
+        updateBackButton();
+    }
+    
+    // Add current page to history
+    function addToHistory(currentPath) {
+        if (!navigationHistory.includes(currentPath)) {
+            navigationHistory.push(currentPath);
+            // Keep only last 10 entries
+            if (navigationHistory.length > 10) {
+                navigationHistory = navigationHistory.slice(-10);
+            }
+            sessionStorage.setItem('escapeRoomNavHistory', JSON.stringify(navigationHistory));
+        }
+        updateBackButton();
+    }
+    
+    // Update back button visibility and text
+    function updateBackButton() {
+        if (navigationHistory.length > 1) {
+            const previousPage = navigationHistory[navigationHistory.length - 2];
+            const currentPage = navigationHistory[navigationHistory.length - 1];
+            
+            if (previousPage && previousPage !== currentPage) {
+                backOption.style.display = 'block';
+                backOption.setAttribute('data-previous-url', previousPage);
+                
+                // Update indicator text
+                const pageName = getPageName(previousPage);
+                navHistoryIndicator.textContent = `[PREV: ${pageName}]`;
+            } else {
+                backOption.style.display = 'none';
+                navHistoryIndicator.textContent = '[NAV_HISTORY_EMPTY]';
+            }
+        } else {
+            backOption.style.display = 'none';
+            navHistoryIndicator.textContent = '[NAV_HISTORY_EMPTY]';
+        }
+    }
+    
+    // Get readable page name from URL
+    function getPageName(url) {
+        const pageMap = {
+            '/Home/Index': 'INICIO',
+            '/Home/GameStart': 'GAME_START',
+            '/Home/Room1': 'ROOM_1',
+            '/Home/Room2': 'ROOM_2',
+            '/Home/Room3': 'ROOM_3',
+            '/Home/Room4': 'ROOM_4',
+            '/Home/Room5': 'ROOM_5',
+            '/Home/Room6': 'ROOM_6',
+            '/Home/Room7': 'ROOM_7',
+            '/Home/Room8': 'ROOM_8',
+            '/Home/Room9': 'ROOM_9',
+            '/Home/Tutorial': 'TUTORIAL',
+            '/Home/Logros': 'LOGROS'
+        };
+        return pageMap[url] || 'UNKNOWN';
+    }
+    
+    // Scramble effect for menu items
+    function scrambleText(element, finalText) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()';
+        const originalText = element.textContent;
+        let iterations = 0;
+        const maxIterations = 20;
+        
+        element.classList.add('scrambling');
+        
+        const interval = setInterval(() => {
+            element.textContent = finalText.split('').map((char, index) => {
+                if (index < iterations) {
+                    return finalText[index];
+                }
+                return chars[Math.floor(Math.random() * chars.length)];
+            }).join('');
+            
+            iterations++;
+            
+            if (iterations >= maxIterations) {
+                clearInterval(interval);
+                element.textContent = finalText;
+                element.classList.remove('scrambling');
+                element.classList.add('decrypting');
+                setTimeout(() => {
+                    element.classList.remove('decrypting');
+                }, 1200);
+            }
+        }, 50);
+    }
+    
+    function openMenu() {
+        console.log('Opening enhanced menu...');
+        isMenuOpen = true;
+        document.body.classList.add('menu-open');
+        navContainer.classList.add('active');
+        
+        // Scramble effect for menu items
+        const menuItems = document.querySelectorAll('.hacker-nav-link');
+        menuItems.forEach((item, index) => {
+            const originalText = item.textContent;
+            setTimeout(() => {
+                scrambleText(item, originalText);
+            }, index * 200);
+        });
+    }
+    
+    function closeMenu() {
+        console.log('Closing enhanced menu...');
+        isMenuOpen = false;
+        document.body.classList.remove('menu-open');
+        navContainer.classList.remove('active');
+    }
+    
+    function toggleMenu() {
+        if (isMenuOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    }
+    
+    // Handle menu actions
+    function handleMenuAction(action) {
+        closeMenu();
+        
+        switch(action) {
+            case 'back':
+                const previousUrl = backOption.getAttribute('data-previous-url');
+                if (previousUrl) {
+                    window.location.href = previousUrl;
+                }
+                break;
+            case 'reload':
+                window.location.reload();
+                break;
+            case 'restart':
+                // Clear history when restarting
+                sessionStorage.removeItem('escapeRoomNavHistory');
+                window.location.href = '/Home/GameStart';
+                break;
+            case 'achievements':
+                window.location.href = '/Home/Logros';
+                break;
+            case 'tutorial':
+                window.location.href = '/Home/Tutorial';
+                break;
+        }
+    }
+    
+    // Event listeners
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            toggleMenu();
+        }
+    });
+    
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('hacker-nav-link')) {
+            event.preventDefault();
+            const action = event.target.getAttribute('data-action');
+            console.log('Menu action:', action);
+            handleMenuAction(action);
+        }
+    });
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeNavigationHistory();
+        addToHistory(window.location.pathname);
+    });
+    
+    // Track page changes
+    window.addEventListener('beforeunload', function() {
+        addToHistory(window.location.pathname);
+    });
+    
+    console.log('Enhanced event listeners registered');
+</script> 
