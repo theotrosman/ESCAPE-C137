@@ -108,17 +108,13 @@
         > ¿Entendiste? (y/n): <input id="respuesta" maxlength="1" autofocus />
     </div>
 
-    <div id="nombre-line" style="display:none; margin-top:20px;">
-        > ¿Cómo te llamás? <input id="nombreJugador" maxlength="20" autofocus />
-        <button id="btnNombre">Aceptar</button>
-    </div>
-
     <div id="error-mode"></div>
 
     <script>
     function decryptedTextEffect(element, text, options = {}) {
     const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
-    const speed = options.speed || 10;
+    const baseSpeed = options.speed || 10;
+    const fastSpeed = 5; // velocidad rápida pero visible cuando el mouse está presionado
     const scrambleIterations = options.scrambleIterations || 6;
     const audio = document.getElementById('sfx-console');
         // Reproducir audio desde el principio sincronizado
@@ -154,7 +150,7 @@
                 }
             }
             element.innerHTML = output;
-            if (!done) setTimeout(frame, speed);
+            if (!done) setTimeout(frame, mouseDown ? fastSpeed : baseSpeed);
             else {
                 element.innerHTML = text.replace(/\n/g, '<br>');
                 resolve();
@@ -190,6 +186,10 @@
     "¿Entendiste? (y/n)"
 ];
 
+        let mouseDown = false;
+        document.addEventListener('mousedown', () => { mouseDown = true; });
+        document.addEventListener('mouseup', () => { mouseDown = false; });
+
         let i = 0;
 function escribirLinea() {
     if (i < texto.length) {
@@ -199,7 +199,11 @@ function escribirLinea() {
             .then(() => {
                 span.innerHTML += "<br>";
                 i++;
-                setTimeout(escribirLinea, 1400);
+                if (mouseDown) {
+                    escribirLinea(); // Avanza inmediatamente si el mouse está presionado
+                } else {
+                    setTimeout(escribirLinea, 1400);
+                }
             });
     } else {
         inputLine.style.display = "block";
@@ -238,37 +242,15 @@ function escribirLinea() {
             const val = input.value.toLowerCase();
             if (val === "y") {
                 inputLine.style.display = "none";
-                document.getElementById("nombre-line").style.display = "block";
-                document.getElementById("nombreJugador").focus();
+                terminal.innerHTML = `✔️ Bienvenido, Morty! Iniciando secuencia de escape...`;
+                setTimeout(() => {
+                    window.location.href = "/Home/GameStart";
+                }, 1200);
             } else if (val === "n") {
                 mostrarErrorRick();
             } else {
                 input.value = "";
             }
-        });
-
-        document.getElementById("btnNombre").addEventListener("click", function () {
-            const nombre = document.getElementById("nombreJugador").value.trim();
-            if (nombre.length < 1) {
-                alert("Por favor, ingresa tu nombre.");
-                return;
-            }
-            fetch('/Home/SetPlayerName', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(nombre)
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    terminal.innerHTML = `✔️ Bienvenido, ${nombre}! Iniciando secuencia de escape...`;
-                    setTimeout(() => {
-                        window.location.href = "/Home/GameStart";
-                    }, 1200);
-                } else {
-                    alert("Error al guardar el nombre. Intenta de nuevo.");
-                }
-            });
         });
 
         // Glitch audio system

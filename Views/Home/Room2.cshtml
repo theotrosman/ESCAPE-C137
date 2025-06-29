@@ -710,67 +710,9 @@
 
     <script src="~/js/site.js"></script>
     <script>
-    // Reemplazo dinámico de nombre en los textos de Rick y consola
     function reemplazarNombre(texto) {
-        return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+        return texto.replace(/Morty/g, 'Morty');
     }
-    window.nombreJugador = 'Morty';
-    window.obtenerNombreJugador(function(nombre) {
-        window.nombreJugador = nombre;
-        // Reemplazar en los diálogos de la intro
-        document.querySelectorAll('.intro-text').forEach(function(div) {
-            div.innerHTML = reemplazarNombre(div.innerHTML);
-        });
-        // Reemplazar en las pistas de Rick
-        if (window.pistasRick) {
-            window.pistasRick = window.pistasRick.map(reemplazarNombre);
-        }
-        // Reemplazar en la consola de ayuda
-        var hint = document.querySelector('.rick-console-hint');
-        if (hint) hint.innerHTML = reemplazarNombre(hint.innerHTML);
-    });
-
-    // Mensajes épicos y enigmáticos para la consola (F12)
-    window.addEventListener('DOMContentLoaded', function() {
-        setTimeout(function() {
-            const styleEpic = 'color: #00ff00; font-size: 18px; font-family: monospace; background: #111; padding: 8px; border-radius: 6px;';
-            const styleRick = 'color: #00ffff; font-size: 16px; font-family: monospace; background: #001122; border-left: 4px solid #00ffff; padding: 8px; border-radius: 6px;';
-            const styleWarning = 'color: #ff00ff; font-size: 15px; font-family: monospace; background: #220022; border-left: 4px solid #ff00ff; padding: 8px; border-radius: 6px;';
-            const styleAscii = 'color: #00ff00; font-size: 12px; font-family: monospace; background: #000;';
-            const nombre = window.nombreJugador || 'Morty';
-            
-            // ASCII art épico
-            console.log('%c\n████████████████████████████████████████████████████████████████████████████████\n██                                                                            ██\n██   BIENVENIDO AL NÚCLEO DEL CÓDIGO, ' + nombre.toUpperCase() + '   ██\n██                                                                            ██\n████████████████████████████████████████████████████████████████████████████████\n', styleAscii);
-            
-            // Mensaje principal
-            console.log('%c[SOURCE ALERT] Has entrado al verdadero corazón de la realidad.', styleEpic);
-            console.log('%c[INSTRUCCIÓN SECRETA] Solo los elegidos abren la consola. Aquí, el código fuente es tu mapa, tu espada y tu destino.', styleRick);
-            console.log('%cRick: ' + nombre + ', si estás leyendo esto, es porque entendiste que el verdadero poder está en el SOURCE. No todos llegan tan lejos.', styleRick);
-            console.log('%c[GLITCH WARNING] El hacker dejó pistas entre los comentarios, variables y funciones. ¡No te fíes de lo que ves en pantalla!', styleWarning);
-            console.log('%c[EPIC QUEST] Busca patrones, busca anomalías, busca TODO. El multiverso depende de tu curiosidad y tu ingenio.', styleEpic);
-            // Pista enigmática
-            console.log('%c[RICK TIP] La clave no es directa. Probá resolver esto: Si x = 7*7*7 - 4*4*4, ¿cuánto vale x + 200? (No te olvides de mirar los elementos en F12, hay más de lo que parece...)', styleRick);
-            // Pista matemática
-            console.log('%c[ENIGMA] x = a³ - b³, con a=7 y b=4. ¿Qué número te da si sumás 200 a ese resultado? Ese número es la clave...', styleWarning);
-            // Mensaje final
-            console.log('%c[CONSEJO FINAL] Si logras descifrar el mensaje oculto en el source, desbloquearás el verdadero final. ¡No te detengas, ' + nombre + '!', styleEpic);
-        }, 1000);
-
-        // Pista oculta en Elements
-        setTimeout(function() {
-            var pista = document.createElement('div');
-            pista.innerHTML = '<pre style="color:#00ff00;font-family:monospace;font-size:15px;background:#111;padding:10px;border-radius:8px;">' +
-                'RICK TE SUSURRA DESDE EL SOURCE:\n' +
-                'La clave está en la ecuación: x = 7³ - 4³; clave = x + 200\n' +
-                'No te fíes de los comentarios fáciles. El multiverso premia a los que piensan.' +
-                '</pre>';
-            pista.style.display = 'none';
-            pista.id = 'rick-source-hint';
-            document.body.appendChild(pista);
-            // Para que el usuario la vea en Elements
-            // También se puede buscar por id="rick-source-hint"
-        }, 1200);
-        });
     </script>
 
     <script>

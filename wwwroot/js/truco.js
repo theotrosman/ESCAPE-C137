@@ -40,6 +40,107 @@ let state = {
 
 let envidoBloqueado = false;
 
+// --- Lógica de chat funcional con IA y narrador ---
+const chatMessages = [
+  // El chat inicia vacío o solo con el narrador si hay evento real
+];
+
+function renderChat() {
+  const chatDiv = document.getElementById('chat-messages');
+  if (!chatDiv) return;
+  chatDiv.innerHTML = '';
+  chatMessages.forEach(msg => {
+    const bubble = document.createElement('div');
+    if (msg.narrator) {
+      bubble.className = 'chat-bubble narrator';
+      bubble.innerHTML = `<div class="chat-content" style="background:#222;color:#aaa;font-style:italic;">${msg.text}</div>`;
+    } else {
+      bubble.className = 'chat-bubble ' + (msg.sender === 'Vos' ? 'right' : 'left');
+      bubble.innerHTML = `
+        <img src="${msg.avatar}" class="chat-avatar" alt="${msg.sender}">
+        <div class="chat-content">
+          <span class="chat-name">${msg.sender}</span>
+          <span class="chat-text">${msg.text}</span>
+        </div>
+      `;
+    }
+    chatDiv.appendChild(bubble);
+  });
+  chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+function addPlayerMessage(text) {
+  chatMessages.push({ sender: 'Vos', avatar: '/img/mortyHacker.png', text });
+  renderChat();
+  setTimeout(() => botReply(text), 900);
+}
+
+function botReply(playerText) {
+  // IA contextual
+  let response = '';
+  let sender = 'Rick';
+  let avatar = '/img/rickHacker.png';
+  if (playerText.includes('Truco')) {
+    response = '¡Eso, Morty! ¡Mostrales quién manda!';
+  } else if (playerText.includes('Envido')) {
+    response = '¿Seguro, Morty? No te confíes...';
+  } else if (playerText.includes('Mazo')) {
+    response = 'A veces hay que saber retirarse, Morty.';
+  } else if (playerText.includes('Buen juego')) {
+    response = '¡Buena onda, Morty!';
+  } else if (playerText.includes('No quiero')) {
+    response = '¡Cobarde!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
+  } else if (playerText.includes('Quiero')) {
+    response = '¡Así se juega!'; sender = 'Código'; avatar = '/img/hackerVerde.png';
+  } else if (playerText.includes('flor')) {
+    response = '¿Flor? ¡Eso no vale acá!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
+  } else if (playerText.includes('Te toca')) {
+    response = '¡No te hagas el distraído!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
+  } else if (playerText.includes('Qué mano')) {
+    response = '¡Mano difícil, Morty!'; sender = 'Código'; avatar = '/img/hackerVerde.png';
+  } else if (playerText.includes('Vamos equipo')) {
+    response = '¡Eso, motivación!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
+  } else if (playerText.includes('Quién canta')) {
+    response = '¡Canto yo!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
+  } else if (playerText.includes('suerte')) {
+    response = 'La suerte es para los débiles.'; sender = 'Código'; avatar = '/img/hackerVerde.png';
+  } else if (playerText.includes('no lo puedo creer')) {
+    response = '¡Créelo, Morty!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
+  } else {
+    // Respuesta random de los bots
+    const bots = [
+      { sender: 'Código', avatar: '/img/hackerVerde.png', frases: ['No te la creas tanto...', '¿Eso es todo?', 'Te va a costar ganar, Morty.'] },
+      { sender: 'Hacker', avatar: '/img/hackerRojo.png', frases: ['¿Listo para perder?', 'No vas a poder con nosotros.', '¿Te animás a cantar?'] }
+    ];
+    const bot = bots[Math.floor(Math.random() * bots.length)];
+    sender = bot.sender;
+    avatar = bot.avatar;
+    response = bot.frases[Math.floor(Math.random() * bot.frases.length)];
+  }
+  chatMessages.push({ sender, avatar, text: response });
+  renderChat();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderChat();
+  const chatSelect = document.getElementById('chat-phrases');
+  const chatSend = document.getElementById('chat-send');
+  if (chatSend && chatSelect) {
+    chatSend.onclick = () => {
+      if (chatSelect.value && chatSelect.value !== '') {
+        addPlayerMessage(chatSelect.value);
+        chatSelect.selectedIndex = 0;
+      }
+    };
+    chatSelect.addEventListener('keypress', e => {
+      if (e.key === 'Enter' && chatSelect.value && chatSelect.value !== '') {
+        addPlayerMessage(chatSelect.value);
+        chatSelect.selectedIndex = 0;
+      }
+    });
+  }
+});
+
 function crearMazo() {
     let mazo = [];
     for(let s of SUITS) for(let v of VALUES) mazo.push({suit:s, value:v});
@@ -152,24 +253,19 @@ function render() {
     document.getElementById('canto-buttons').style.display = (state.turnPlayer==='player'&&!state.truco.pendiente&&!state.envido.pendiente&&!state.mazo&&!hayMazoPendiente)?'flex':'none';
     document.getElementById('mazo-buttons').style.display = (state.turnPlayer==='player'&&!state.mazo&&!hayMazoPendiente)?'flex':'none';
     
-    // Mostrar botones de respuesta según el tipo de canto
+    // Mostrar botones de respuesta SOLO si el jugador debe responder a un canto de la IA rival
+    let showResponse = false;
     if (state.truco.pendiente) {
-        document.getElementById('response-buttons').style.display = 'flex';
-        document.getElementById('btn-accept').style.display = 'inline-block';
-        document.getElementById('btn-reject').style.display = 'inline-block';
-        document.getElementById('btn-raise').style.display = 'inline-block';
-        document.getElementById('btn-real-envido').style.display = 'none';
-        document.getElementById('btn-falta-envido').style.display = 'none';
+        // Si el canto pendiente NO lo hizo el jugador ni su compañero
+        if (TEAM_ENEMY.includes(state.truco.quien)) {
+            showResponse = true;
+        }
     } else if (state.envido.pendiente) {
-        document.getElementById('response-buttons').style.display = 'flex';
-        document.getElementById('btn-accept').style.display = 'inline-block';
-        document.getElementById('btn-reject').style.display = 'inline-block';
-        document.getElementById('btn-raise').style.display = 'none';
-        document.getElementById('btn-real-envido').style.display = 'inline-block';
-        document.getElementById('btn-falta-envido').style.display = 'inline-block';
-    } else {
-        document.getElementById('response-buttons').style.display = 'none';
+        if (TEAM_ENEMY.includes(state.envido.quien)) {
+            showResponse = true;
+        }
     }
+    document.getElementById('response-buttons').style.display = showResponse ? 'flex' : 'none';
     
     document.getElementById('btn-envido').disabled = !puedeCantarEnvido;
 }
@@ -422,7 +518,9 @@ function iaTurno() {
                     state.envido.pendiente = true;
                     state.envido.quien = p;
                     log(nombre(p)+' canta Envido','enemy');
+                    chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(p)} canta Envido*`, narrator: true });
                     render();
+                    renderChat();
                     setTimeout(() => iaEnvidoRespuesta(), 1200);
                     return;
                 }
@@ -438,7 +536,9 @@ function iaTurno() {
                     state.truco.pendiente = true;
                     state.truco.quien = p;
                     log(nombre(p)+' canta '+['Truco','Retruco','Vale Cuatro'][state.truco.level-1],'enemy');
+                    chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(p)} canta ${['Truco','Retruco','Vale Cuatro'][state.truco.level-1]}*`, narrator: true });
                     render();
+                    renderChat();
                     setTimeout(() => iaTrucoRespuesta(), 1200);
                     return;
                 }
@@ -471,6 +571,14 @@ function iaTurno() {
 }
 
 function iaTrucoRespuesta() {
+    // Determinar quién cantó el Truco
+    const quienCanto = state.truco.quien;
+    // Si la IA es del mismo equipo que quien cantó, no debe responder
+    if ((TEAM_PLAYER.includes(state.turnPlayer) && TEAM_PLAYER.includes(quienCanto)) ||
+        (TEAM_ENEMY.includes(state.turnPlayer) && TEAM_ENEMY.includes(quienCanto))) {
+        // No responde, espera al rival
+        return;
+    }
     let r = Math.random();
     // IA más realista: puede rechazar truco
     if(r<0.4) {
@@ -480,15 +588,15 @@ function iaTrucoRespuesta() {
     } else if(r<0.7 && state.truco.level<3) {
         state.truco.level++;
         state.truco.pendiente = true;
-        state.truco.quien = 'ia';
+        state.truco.quien = state.turnPlayer;
         log('IA: ¡'+['Retruco','Vale Cuatro'][state.truco.level-2]+'!','enemy');
         render();
     } else {
         // IA rechaza y se va al mazo
         let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
-        let equipoGanador = 'enemy';
+        let equipoGanador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
         state.teamScore[equipoGanador]+=pts;
-        log('IA: No quiero. +'+pts+' para CÓDIGO+HACKER','error');
+        log('IA: No quiero. +'+pts+' para '+(equipoGanador==='enemy'?'CÓDIGO+HACKER':'MORTY+RICK'),'error');
         state.truco.pendiente = false;
         setTimeout(()=>nuevaMano(),2000);
     }
@@ -576,12 +684,16 @@ function iniciarTruco() {
             state.mazoPendiente.player = true;
             state.mazoEquipo = 'player';
             log('MORTY.EXE quiere irse al mazo. Esperando acuerdo de RICK.EXE...','player');
+            chatMessages.push({ sender: '*Narrador*', avatar: '', text: '*Morty quiere irse al mazo*', narrator: true });
             render();
+            renderChat();
         } else if (state.turnPlayer === 'morty') {
             state.mazoPendiente.morty = true;
             state.mazoEquipo = 'player';
             log('RICK.EXE quiere irse al mazo. Esperando acuerdo de MORTY.EXE...','player');
+            chatMessages.push({ sender: '*Narrador*', avatar: '', text: '*Rick quiere irse al mazo*', narrator: true });
             render();
+            renderChat();
         }
         
         // Verificar si todo el equipo está de acuerdo
@@ -599,7 +711,10 @@ function iniciarTruco() {
             state.truco.pendiente = true;
             state.truco.quien = state.turnPlayer;
             log(nombre(state.turnPlayer)+' canta '+['Truco','Retruco','Vale Cuatro'][state.truco.level-1],'player');
+            chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(state.turnPlayer)} canta ${['Truco','Retruco','Vale Cuatro'][state.truco.level-1]}*`, narrator: true });
             render();
+            renderChat();
+            // Si el jugador cantó, la IA rival responde automáticamente
             if(state.turnPlayer==='player') {
                 setTimeout(()=>iaTrucoRespuesta(), 1200);
             }
@@ -643,8 +758,13 @@ function iniciarTruco() {
         state.envido.pendiente = true;
         state.envido.quien = state.turnPlayer;
         log(nombre(state.turnPlayer)+' canta Envido','player');
+        chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(state.turnPlayer)} canta Envido*`, narrator: true });
         render();
-        setTimeout(()=>iaEnvidoRespuesta(),1200);
+        renderChat();
+        // Si el jugador cantó, la IA rival responde automáticamente
+        if(state.turnPlayer==='player') {
+            setTimeout(()=>iaEnvidoRespuesta(),1200);
+        }
     };
     
     document.getElementById('btn-raise').onclick = ()=>{

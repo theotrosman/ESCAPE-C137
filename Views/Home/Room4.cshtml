@@ -719,20 +719,53 @@ setTimeout(() => {
 }, 20000);
 
 function reemplazarNombre(texto) {
-    return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
+    return texto.replace(/Morty/g, 'Morty');
 }
-window.nombreJugador = 'Morty';
-window.obtenerNombreJugador(function(nombre) {
-    window.nombreJugador = nombre;
-    // Reemplazar en los diálogos de la intro
-    var introDiv = document.getElementById('introText');
-    if (introDiv) {
-        introDiv.innerHTML = reemplazarNombre(introDiv.innerHTML);
-    }
-    // Reemplazar en la consola
-    var cons = document.getElementById('console');
-    if (cons) cons.innerHTML = reemplazarNombre(cons.innerHTML);
-});
+
+let mouseDown = false;
+document.addEventListener('mousedown', () => { mouseDown = true; });
+document.addEventListener('mouseup', () => { mouseDown = false; });
+
+function decryptedTextEffect(element, text, options = {}) {
+    const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
+    const baseSpeed = options.speed || 10;
+    const fastSpeed = 5;
+    const scrambleIterations = options.scrambleIterations || 6;
+    return new Promise((resolve) => {
+        let revealed = [];
+        let iterations = [];
+        for (let i = 0; i < text.length; i++) {
+            revealed[i] = false;
+            iterations[i] = 0;
+        }
+        let done = false;
+        function frame() {
+            let output = '';
+            done = true;
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === '\n') {
+                    output += '\n';
+                    continue;
+                }
+                if (revealed[i] || text[i] === ' ') {
+                    output += text[i];
+                } else {
+                    done = false;
+                    output += `<span class='decrypted-char'>${characters[Math.floor(Math.random() * characters.length)]}</span>`;
+                    iterations[i]++;
+                    if (iterations[i] >= scrambleIterations) revealed[i] = true;
+                }
+            }
+            element.innerHTML = output;
+            if (!done) setTimeout(frame, mouseDown ? fastSpeed : baseSpeed);
+            else {
+                element.innerHTML = text.replace(/\n/g, '<br>');
+                resolve();
+            }
+        }
+        frame();
+    });
+}
     </script>
     
     @Html.Partial("_NavMenu")
