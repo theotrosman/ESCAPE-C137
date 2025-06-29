@@ -763,7 +763,7 @@ function iniciarTruco() {
         renderChat();
         // Si el jugador cantó, la IA rival responde automáticamente
         if(state.turnPlayer==='player') {
-            setTimeout(()=>iaEnvidoRespuesta(),1200);
+        setTimeout(()=>iaEnvidoRespuesta(),1200);
         }
     };
     

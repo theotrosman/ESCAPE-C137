@@ -36,25 +36,25 @@
     <div id="truco-main-layout" style="display: flex; height: 100vh;">
         <!-- Columna izquierda: juego -->
         <div id="game-container" style="flex: 2; display: flex; flex-direction: column; background: url('/img/bg-xp.jpg') center/cover; position: relative;">
-            <!-- HUD superior -->
-            <div id="game-hud">
-                <div class="team-score team-player">
-                    <span class="team-label">EQUIPO HUMANO</span>
-                    <span class="team-name">MORTY.EXE + RICK.EXE</span>
-                    <span class="score" id="player-score">0</span>
-                </div>
-                <div class="game-status">
-                    <span id="current-turn">Turno: Tu turno</span>
-                    <span id="game-phase">Fase: Repartiendo</span>
-                    <span id="mano-indicator"></span>
-                    <span id="pie-indicator"></span>
-                </div>
-                <div class="team-score team-enemy">
-                    <span class="team-label">EQUIPO HACKER</span>
-                    <span class="team-name">CÓDIGO.EXE + HACKER.EXE</span>
-                    <span class="score" id="enemy-score">0</span>
-                </div>
+        <!-- HUD superior -->
+        <div id="game-hud">
+            <div class="team-score team-player">
+                <span class="team-label">EQUIPO HUMANO</span>
+                <span class="team-name">MORTY.EXE + RICK.EXE</span>
+                <span class="score" id="player-score">0</span>
             </div>
+            <div class="game-status">
+                <span id="current-turn">Turno: Tu turno</span>
+                <span id="game-phase">Fase: Repartiendo</span>
+                <span id="mano-indicator"></span>
+                <span id="pie-indicator"></span>
+            </div>
+            <div class="team-score team-enemy">
+                <span class="team-label">EQUIPO HACKER</span>
+                <span class="team-name">CÓDIGO.EXE + HACKER.EXE</span>
+                <span class="score" id="enemy-score">0</span>
+            </div>
+        </div>
             <div id="mesa-truco" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; background: url('/img/aula-ort-vacia.jpg') center/cover;">
                 <!-- Jugadores arriba -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 48px 0 48px;">
@@ -73,11 +73,11 @@
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1;">
                     <div id="mazo-mesa" style="margin-bottom: 18px;"></div>
                     <div id="played-cards" style="display: flex; gap: 32px; margin-bottom: 18px;">
-                        <div class="played-card-slot" id="slot-0"></div>
-                        <div class="played-card-slot" id="slot-1"></div>
-                        <div class="played-card-slot" id="slot-2"></div>
-                        <div class="played-card-slot" id="slot-3"></div>
-                    </div>
+                    <div class="played-card-slot" id="slot-0"></div>
+                    <div class="played-card-slot" id="slot-1"></div>
+                    <div class="played-card-slot" id="slot-2"></div>
+                    <div class="played-card-slot" id="slot-3"></div>
+                </div>
                 </div>
                 <!-- Jugadores abajo -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 120px 32px 120px;">
@@ -85,45 +85,45 @@
                         <img src="/img/rickHacker.png" class="profile-mesa" alt="Rick" />
                         <span class="player-nombre">RICK.EXE</span>
                         <div class="cartas-mesa cartas-dorso" id="morty-hand"></div>
-                    </div>
+            </div>
                     <div class="player-mesa" style="display: flex; flex-direction: column; align-items: center;">
                         <img src="/img/mortyHacker.png" class="profile-mesa" alt="Morty" />
                         <span class="player-nombre">MORTY.EXE (Vos)</span>
                         <div class="cartas-mesa cartas-frente" id="player-hand"></div>
-                    </div>
+                </div>
                 </div>
             </div>
-            <div id="controls-panel">
-                <!-- Botones de cantos -->
-                <div id="canto-buttons" style="display: none;">
-                    <button id="btn-envido" class="canto-btn">ENVIDO</button>
-                    <button id="btn-truco" class="canto-btn">TRUCO</button>
-                    <button id="btn-retruco" class="canto-btn" style="display: none;">RETRUCO</button>
-                    <button id="btn-vale-cuatro" class="canto-btn" style="display: none;">VALE CUATRO</button>
-                </div>
-
-                <!-- Botones de respuesta -->
-                <div id="response-buttons" style="display: none;">
-                    <button id="btn-accept" class="response-btn">ACEPTAR</button>
-                    <button id="btn-reject" class="response-btn">RECHAZAR</button>
-                    <button id="btn-raise" class="response-btn">SUBIR</button>
-                    <button id="btn-real-envido" class="response-btn" style="display: none;">REAL ENVIDO</button>
-                    <button id="btn-falta-envido" class="response-btn" style="display: none;">FALTA ENVIDO</button>
-                </div>
-
-                <!-- Botón de irse al mazo -->
-                <div id="mazo-buttons" style="display: none;">
-                    <button id="btn-mazo" class="mazo-btn">IRSE AL MAZO</button>
-                </div>
-
-                <!-- Botón de continuar -->
-                <div id="continue-buttons" style="display: none;">
-                    <button id="btn-continue" class="continue-btn">CONTINUAR</button>
-                </div>
+        <div id="controls-panel">
+            <!-- Botones de cantos -->
+            <div id="canto-buttons" style="display: none;">
+                <button id="btn-envido" class="canto-btn">ENVIDO</button>
+                <button id="btn-truco" class="canto-btn">TRUCO</button>
+                <button id="btn-retruco" class="canto-btn" style="display: none;">RETRUCO</button>
+                <button id="btn-vale-cuatro" class="canto-btn" style="display: none;">VALE CUATRO</button>
             </div>
-            <div id="console">
-                <div id="console-output"></div>
-                <div id="console-highlight"></div>
+
+            <!-- Botones de respuesta -->
+            <div id="response-buttons" style="display: none;">
+                <button id="btn-accept" class="response-btn">ACEPTAR</button>
+                <button id="btn-reject" class="response-btn">RECHAZAR</button>
+                <button id="btn-raise" class="response-btn">SUBIR</button>
+                <button id="btn-real-envido" class="response-btn" style="display: none;">REAL ENVIDO</button>
+                <button id="btn-falta-envido" class="response-btn" style="display: none;">FALTA ENVIDO</button>
+            </div>
+
+            <!-- Botón de irse al mazo -->
+            <div id="mazo-buttons" style="display: none;">
+                <button id="btn-mazo" class="mazo-btn">IRSE AL MAZO</button>
+            </div>
+
+            <!-- Botón de continuar -->
+            <div id="continue-buttons" style="display: none;">
+                <button id="btn-continue" class="continue-btn">CONTINUAR</button>
+            </div>
+        </div>
+        <div id="console">
+            <div id="console-output"></div>
+            <div id="console-highlight"></div>
             </div>
         </div>
         <!-- Columna derecha: chat -->

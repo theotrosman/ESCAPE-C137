@@ -1280,9 +1280,9 @@
   <img src="/img/video-file.png" alt="Video File">
   <div>ledigohola.mp4</div>
 </div>
-<div class="desktop-icon" style="top:20px; left:920px;" onclick="openAppWindow('campus')">
-  <img src="/img/google-icon.png" alt="Google">
-  <div>Campus ORT</div>
+<div class="desktop-icon" style="top:300px; left:900px;" onclick="openAppWindow('camara')">
+  <img src="/img/camaraLogo.png" alt="Cámara">
+  <div>Cámara</div>
 </div>
 
 <div class="desktop-icon" style="top:660px; left:920px;" onclick="openAppWindow('calculadora')">
@@ -1475,6 +1475,30 @@
     </div>
   </div>
 
+  <!-- App de Cámara -->
+  <div id="cameraApp" class="app-window" style="display: none; width: 600px; height: 500px;">
+    <div class="app-header">
+      <span>Cámara</span>
+      <button onclick="closeWindow('cameraApp')">×</button>
+    </div>
+    <div class="app-content">
+      <div id="camera-view" style="text-align:center;">
+        <video id="camera-video" autoplay playsinline style="width:90%;max-width:500px;border-radius:8px;background:#000;"></video>
+        <div style="margin:10px 0;">
+          <button id="take-photo-btn" style="margin:5px;padding:8px 15px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">📸 Foto</button>
+          <button id="start-record-btn" style="margin:5px;padding:8px 15px;background:#f44336;color:white;border:none;border-radius:4px;cursor:pointer;">🔴 Grabar</button>
+          <button id="stop-record-btn" style="display:none;margin:5px;padding:8px 15px;background:#ff9800;color:white;border:none;border-radius:4px;cursor:pointer;">⏹️ Detener</button>
+        </div>
+        <canvas id="photo-canvas" style="display:none;"></canvas>
+      </div>
+      <hr>
+      <div>
+        <h4>Galería</h4>
+        <div id="gallery" style="display:flex;flex-wrap:wrap;gap:10px;max-height:200px;overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+
   <script src="~/js/site.js"></script>
   <script>
     const nave = document.getElementById('nave');
@@ -1539,23 +1563,27 @@
       setTimeout(() => flash.remove(), 500);
     }
 
+    let mouseDown = false;
+    document.addEventListener('mousedown', () => { mouseDown = true; });
+    document.addEventListener('mouseup', () => { mouseDown = false; });
+
     async function typeText(element, text, type = "normal") {
       const finalText = text;
       element.classList.add('console-line');
-      
+      let scrambleSpeed = () => mouseDown ? 10 : 50;
+      let typeSpeed = () => mouseDown ? 5 : 30;
+
       if (type === "error" || type === "alert" || type === "morty") {
         // First show scrambled text
         for (let i = 0; i < 20; i++) {
           element.textContent = scrambleText(finalText);
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(resolve => setTimeout(resolve, scrambleSpeed()));
         }
-        
         // Then decrypt it
         for (let i = 0; i <= finalText.length; i++) {
           element.textContent = decryptText(finalText, i);
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(resolve => setTimeout(resolve, scrambleSpeed()));
         }
-
         if (type === "error") {
           element.classList.add('error');
           const flash = document.createElement('div');
@@ -1573,7 +1601,7 @@
         // Regular typing effect
         for (let i = 0; i <= finalText.length; i++) {
           element.textContent = finalText.substring(0, i);
-          await new Promise(resolve => setTimeout(resolve, 30));
+          await new Promise(resolve => setTimeout(resolve, typeSpeed()));
         }
       }
     }
@@ -3176,6 +3204,9 @@ function closeVideoWindow() {
     case 'word':
       fake = true;
       break;
+    case 'camara':
+      openCameraApp();
+      return;
     default:
       url = 'https://www.google.com/';
       filter = '';
@@ -3249,19 +3280,19 @@ function getFakeAppHTML(app) {
         return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
     }
     window.nombreJugador = 'Morty';
-    window.obtenerNombreJugador(function(nombre) {
-        window.nombreJugador = nombre;
-        // Reemplazar en los logs
-        if (window.logs) {
-            window.logs = window.logs.map(function(log) {
-                if (log.text) log.text = reemplazarNombre(log.text);
-                return log;
-            });
-        }
-        // Reemplazar en la consola
-        var consoleDiv = document.getElementById('console');
-        if (consoleDiv) consoleDiv.innerHTML = reemplazarNombre(consoleDiv.innerHTML);
-    });
+    // window.obtenerNombreJugador(function(nombre) {
+    //     window.nombreJugador = nombre;
+    //     // Reemplazar en los logs
+    //     if (window.logs) {
+    //         window.logs = window.logs.map(function(log) {
+    //             if (log.text) log.text = reemplazarNombre(log.text);
+    //             return log;
+    //         });
+    //     }
+    //     // Reemplazar en la consola
+    //     var consoleDiv = document.getElementById('console');
+    //     if (consoleDiv) consoleDiv.innerHTML = reemplazarNombre(consoleDiv.innerHTML);
+    // });
     // ... existing code ...
     </script>
  
