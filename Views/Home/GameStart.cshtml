@@ -55,7 +55,7 @@
                 <span class="score" id="enemy-score">0</span>
             </div>
         </div>
-            <div id="mesa-truco" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; background: url('/img/aula-ort-vacia.jpg') center/cover;">
+            <div id="mesa-truco" style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; position: relative; background: url('/img/aula-ort-vacia.jpeg') center/cover;">
                 <!-- Jugadores arriba -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 24px 48px 0 48px;">
                     <div class="player-mesa" style="display: flex; flex-direction: column; align-items: center;">
@@ -138,21 +138,43 @@
             <div id="chat-input-area" style="padding: 12px; border-top: 1px solid #444; display: flex; gap: 8px; align-items: center; background: #181818;">
                 <select id="chat-phrases" style="flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #333; background: #222; color: #eee; outline: none;">
                     <option value="">Selecciona una frase...</option>
-                    <option>¡Buen juego!</option>
-                    <option>¿Quién canta?</option>
-                    <option>¡Vamos equipo!</option>
-                    <option>¿Tenés flor?</option>
-                    <option>¡Cantá Truco!</option>
-                    <option>¡Envido!</option>
-                    <option>¡Real Envido!</option>
-                    <option>¡Falta Envido!</option>
-                    <option>¡No quiero!</option>
-                    <option>¡Quiero!</option>
-                    <option>¡Mazo!</option>
-                    <option>¡Qué mano!</option>
-                    <option>¡Te toca!</option>
-                    <option>¡Qué suerte!</option>
-                    <option>¡No lo puedo creer!</option>
+                    <option>Y bueno... se hace lo que se puede</option>
+                    <option>Jugamos con el corazón, no con las cartas</option>
+                    <option>Alta mística hoy</option>
+                    <option>Mirá que me levanto y me voy, eh</option>
+                    <option>Tiré fruta y funcionó</option>
+                    <option>Ni lo leí pero lo sentí</option>
+                    <option>Esto lo soñé anoche</option>
+                    <option>¿Sabés lo que cuesta pensar a esta hora?</option>
+                    <option>Estoy jugando con la energía del universo</option>
+                    <option>¡Arriesgá, cagón!</option>
+                    <option>Mi carta se llama fe</option>
+                    <option>Hoy me desperté con ganas de ganar</option>
+                    <option>¿Vos también sentís que el mate tiene memoria?</option>
+                    <option>Esto es pura vibra, nada más</option>
+                    <option>Me juego el honor de mi abuela</option>
+                    <option>¿Alguien más siente que Rick está más loco que nunca?</option>
+                    <option>Hoy el universo conspira a mi favor</option>
+                    <option>¿Y si las cartas nos están usando a nosotros?</option>
+                    <option>Yo gané una partida solo pensando fuerte</option>
+                    <option>Lo importante es que traje bizcochitos</option>
+                    <option>¿Alguien más siente que Morty se volvió a clonar?</option>
+                    <option>Ayer vi un colectivo que dobló en 4D</option>
+                    <option>Che, ¿vieron que desapareció la empanada del hacker?</option>
+                    <option>A mí me gusta jugar los miércoles. Tienen otra vibra</option>
+                    <option>¿Por qué todo me recuerda al pan relleno?</option>
+                    <option>Siento que este mazo huele a lluvia...</option>
+                    <option>Hoy soñé que Rick era una milanesa</option>
+                    <option>¿Es normal que el mate de hoy me supo a nostalgia?</option>
+                    <option>Extraño cuando el wifi tenía alma</option>
+                    <option>¿Vos también viste ese colectivo que desaparece en la esquina?</option>
+                    <option>Me acuerdo cuando el hacker se comió 5 facturas sin respirar</option>
+                    <option>¿Es normal que Morty esté llorando desde la ronda 1?</option>
+                    <option>Te juro que el café de hoy tenía gusto a nostalgia...</option>
+                    <option>Posta, yo sentí que era como un mate con PTSD</option>
+                    <option>Yo desayuné error 404</option>
+                    <option>¿Alguien más soñó con empanadas gigantes ayer?</option>
+                    <option>¿Por qué el mate de hoy me supo a cloro?</option>
                 </select>
                 <button id="chat-send" style="padding: 8px 18px; border-radius: 20px; background: #0f0; color: #222; font-weight: bold; border: none; cursor: pointer;">Enviar</button>
                 <input id="chat-input" type="text" placeholder="Escribe un mensaje..." style="display:none;" disabled>
@@ -198,11 +220,11 @@
 .chat-bubble.right .chat-content { background: #0f0; color: #222; }
 .chat-name { font-size: 0.95em; font-weight: bold; display: block; margin-bottom: 2px; }
 .chat-text { font-size: 1em; display: block; }
-#mesa-truco { background: url('/img/aula-ort-vacia.jpg') center/cover; }
+#mesa-truco { background: url('/img/aula-ort-vacia.jpeg') center/cover; }
 .profile-mesa { width: 64px; height: 64px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 2px 8px #0008; margin-bottom: 6px; }
 .player-nombre { color: #fff; font-weight: bold; text-shadow: 0 1px 4px #000; margin-bottom: 4px; }
 .cartas-mesa { display: flex; gap: 8px; margin-top: 4px; }
-.cartas-frente .carta { width: 90px; height: 140px; }
-.cartas-dorso .carta { width: 60px; height: 90px; filter: brightness(0.7); }
-#mazo-mesa { width: 60px; height: 90px; background: url('/img/dorsocard.png') center/cover; border-radius: 8px; box-shadow: 0 2px 8px #0008; }
+.cartas-frente .carta { width: 110px; height: 160px; }
+.cartas-dorso .carta { width: 75px; height: 110px; filter: brightness(0.7); }
+#mazo-mesa { width: 75px; height: 110px; background: url('/img/dorsocard.png') center/cover; border-radius: 8px; box-shadow: 0 2px 8px #0008; }
 </style>

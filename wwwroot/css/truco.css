@@ -274,8 +274,8 @@ html, body {
 
 /* Cartas */
 .card {
-    width: 50px;
-    height: 70px;
+    width: 80px;
+    height: 112px;
     border: 2px solid var(--neon-green);
     border-radius: 6px;
     background-color: var(--card-bg);
@@ -320,6 +320,25 @@ html, body {
 .card-special {
     animation: glitch 0.1s infinite;
     color: var(--glitch-color);
+}
+
+.cartas-frente .carta {
+    width: 130px;
+    height: 190px;
+}
+
+.cartas-dorso .carta {
+    width: 95px;
+    height: 140px;
+    filter: brightness(0.7);
+}
+
+#mazo-mesa {
+    width: 95px;
+    height: 140px;
+    background: url('/img/dorsocard.png') center/cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px #0008;
 }
 
 /* Panel de controles */

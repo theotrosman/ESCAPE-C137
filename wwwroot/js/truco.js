@@ -2,7 +2,12 @@
 
 const SUITS = ['espada', 'basto', 'oro', 'copa'];
 const VALUES = [1,2,3,4,5,6,7,10,11,12];
-const SUIT_EMOJI = { espada: '⚔️', basto: '🌿', oro: '🪙', copa: '🍷' };
+const SUIT_EMOJI = {
+  espada: '⚔️',
+  basto: '<img src="/img/bastoPalo.png" style="width:38px;height:38px;">',
+  oro: '<img src="/img/paloOro.png" style="width:38px;height:38px;">',
+  copa: '<img src="/img/copaPalo.png" style="width:38px;height:38px;">'
+};
 const PLAYER_ORDER = ['player', 'codigo', 'morty', 'hacker'];
 const TEAM_PLAYER = ['player', 'morty'];
 const TEAM_ENEMY = ['codigo', 'hacker'];
@@ -21,7 +26,7 @@ let state = {
     round: 1,
     bazas: [],
     bazasGanadas: { player:0, enemy:0 },
-    truco: { level:0, quien:null, pendiente:false },
+    truco: { level:0, quien:null, pendiente:false, aceptado:false, quienCanto:null },
     envido: { cantos:[], quien:null, pendiente:false, valores:{} },
     mazo: false,
     winner: null,
@@ -40,105 +45,399 @@ let state = {
 
 let envidoBloqueado = false;
 
-// --- Lógica de chat funcional con IA y narrador ---
-const chatMessages = [
-  // El chat inicia vacío o solo con el narrador si hay evento real
+// --- SISTEMA DE CHAT VIVO Y ABSURDO ---
+const chatMessages = [];
+
+// Frases absurdas para las IAs
+const frasesAbsurdas = [
+    // Conversaciones sobre comida
+    "Che, ¿alguien más soñó con empanadas gigantes ayer?",
+    "¿Por qué el mate de hoy me supo a cloro?",
+    "¿Vos también viste que desapareció la empanada del hacker?",
+    "¿Por qué todo me recuerda al pan relleno?",
+    "Hoy soñé que Rick era una milanesa",
+    "¿Es normal que el mate de hoy me supo a nostalgia?",
+    "Me acuerdo cuando el hacker se comió 5 facturas sin respirar",
+    "¿Alguien más soñó con empanadas gigantes ayer?",
+    
+    // Conversaciones sobre tecnología y absurdos
+    "Extraño cuando el wifi tenía alma",
+    "¿Vos también viste ese colectivo que desaparece en la esquina?",
+    "Ayer vi un colectivo que dobló en 4D",
+    "¿Y si las cartas nos están usando a nosotros?",
+    "¿Alguien más siente que Morty se volvió a clonar?",
+    "¿Es normal que Morty esté llorando desde la ronda 1?",
+    "¿Alguien más siente que Rick está más loco que nunca?",
+    
+    // Conversaciones sobre vibra y mística
+    "A mí me gusta jugar los miércoles. Tienen otra vibra",
+    "Siento que este mazo huele a lluvia...",
+    "¿Vos también sentís que el mate tiene memoria?",
+    "Esto es pura vibra, nada más",
+    "Hoy el universo conspira a mi favor",
+    "Yo gané una partida solo pensando fuerte",
+    "Lo importante es que traje bizcochitos",
+    
+    // Conversaciones sobre café y desayuno
+    "Te juro que el café de hoy tenía gusto a nostalgia...",
+    "Posta, yo sentí que era como un mate con PTSD",
+    "Yo desayuné error 404",
+    "¿Sabés lo que cuesta pensar a esta hora?",
+    
+    // Frases random absurdas
+    "¿Es normal que mi carta tenga hambre?",
+    "Hoy me desperté y mi mate estaba llorando",
+    "¿Alguien más siente que las cartas susurran?",
+    "Me juego el honor de mi abuela",
+    "Esto lo soñé anoche",
+    "Ni lo leí pero lo sentí",
+    "Tiré fruta y funcionó",
+    "Mi carta se llama fe",
+    "Estoy jugando con la energía del universo",
+    "Hoy me desperté con ganas de ganar",
+    "Alta mística hoy",
+    "Y bueno... se hace lo que se puede",
+    "Jugamos con el corazón, no con las cartas",
+    "Mirá que me levanto y me voy, eh",
+    "¡Arriesgá, cagón!"
 ];
 
-function renderChat() {
-  const chatDiv = document.getElementById('chat-messages');
-  if (!chatDiv) return;
-  chatDiv.innerHTML = '';
-  chatMessages.forEach(msg => {
-    const bubble = document.createElement('div');
-    if (msg.narrator) {
-      bubble.className = 'chat-bubble narrator';
-      bubble.innerHTML = `<div class="chat-content" style="background:#222;color:#aaa;font-style:italic;">${msg.text}</div>`;
-    } else {
-      bubble.className = 'chat-bubble ' + (msg.sender === 'Vos' ? 'right' : 'left');
-      bubble.innerHTML = `
-        <img src="${msg.avatar}" class="chat-avatar" alt="${msg.sender}">
-        <div class="chat-content">
-          <span class="chat-name">${msg.sender}</span>
-          <span class="chat-text">${msg.text}</span>
-        </div>
-      `;
+// Respuestas a frases del jugador
+const respuestasJugador = {
+    "Y bueno... se hace lo que se puede": [
+        "Posta, a veces la vida es así de random",
+        "Como dice mi abuela: 'se hace lo que se puede y se come lo que hay'",
+        "Total, ¿qué es la vida sino un conjunto de decisiones cuestionables?"
+    ],
+    "Jugamos con el corazón, no con las cartas": [
+        "¡Eso! El corazón siempre sabe",
+        "Como dice Rick: 'el corazón es el cerebro del alma'",
+        "Por eso yo juego con el estómago, más confiable"
+    ],
+    "Alta mística hoy": [
+        "Sí, siento que el universo está conspirando",
+        "Los astros están alineados... o eso creo",
+        "Es la energía de los miércoles, siempre es así"
+    ],
+    "Mirá que me levanto y me voy, eh": [
+        "¡No te vayas! ¿Quién va a traer los bizcochitos?",
+        "Pero si recién empezamos a divertirnos",
+        "¿Y quién va a contarnos sobre las empanadas gigantes?"
+    ],
+    "Tiré fruta y funcionó": [
+        "¡Eso es pura intuición cósmica!",
+        "A veces la fruta es más sabia que nosotros",
+        "Como dice mi tío: 'la fruta nunca miente'"
+    ],
+    "Ni lo leí pero lo sentí": [
+        "¡Eso es pura conexión espiritual!",
+        "A veces el corazón lee mejor que los ojos",
+        "Como las cartas, que se leen con el alma"
+    ],
+    "Esto lo soñé anoche": [
+        "¡Los sueños son mensajes del universo!",
+        "¿Soñaste también con las empanadas gigantes?",
+        "Los sueños son como el mate: inexplicables pero reales"
+    ],
+    "¿Sabés lo que cuesta pensar a esta hora?": [
+        "Posta, mi cerebro todavía está desayunando",
+        "A esta hora solo pienso en café y facturas",
+        "Como dice Rick: 'el cerebro es como un colectivo, a veces no pasa'"
+    ],
+    "Estoy jugando con la energía del universo": [
+        "¡Eso es pura vibra cósmica!",
+        "El universo conspira a favor de los valientes",
+        "Como las empanadas, que siempre encuentran su camino"
+    ],
+    "¡Arriesgá, cagón!": [
+        "¡Eso! Sin miedo al éxito",
+        "Como dice mi abuela: 'el que no arriesga no gana'",
+        "¡Arriesgá como si fueras una empanada en el microondas!"
+    ],
+    "Mi carta se llama fe": [
+        "¡La fe mueve montañas y gana partidas!",
+        "Como dice Rick: 'la fe es como el wifi, invisible pero real'",
+        "La fe es más fuerte que cualquier carta"
+    ],
+    "Hoy me desperté con ganas de ganar": [
+        "¡Esa es la actitud! El universo te escucha",
+        "Como las empanadas que se despiertan con ganas de ser comidas",
+        "Hoy es tu día, lo siento en mis circuitos"
+    ],
+    "¿Vos también sentís que el mate tiene memoria?": [
+        "¡Totalmente! Mi mate se acuerda de todo",
+        "Como dice mi abuela: 'el mate es como un diario íntimo'",
+        "El mate tiene más memoria que mi disco duro"
+    ],
+    "Esto es pura vibra, nada más": [
+        "¡Eso! La vibra lo es todo",
+        "Como las empanadas, que vibran con el universo",
+        "La vibra es más importante que la lógica"
+    ],
+    "Me juego el honor de mi abuela": [
+        "¡Eso es seriedad! El honor de la abuela es sagrado",
+        "Como dice mi tío: 'sin honor no hay empanadas'",
+        "El honor de la abuela vale más que cualquier carta"
+    ],
+    "¿Alguien más siente que Rick está más loco que nunca?": [
+        "¡Sí! Pero es un loco genial",
+        "Rick siempre fue así, pero ahora está en su peak",
+        "Como las empanadas, Rick es impredecible pero delicioso"
+    ],
+    "Hoy el universo conspira a mi favor": [
+        "¡Eso! El universo siempre conspira para los valientes",
+        "Como las empanadas que siempre encuentran su destino",
+        "El universo conspira como un colectivo en hora pico"
+    ],
+    "¿Y si las cartas nos están usando a nosotros?": [
+        "¡Mind blown! Nunca lo había pensado así",
+        "Como las empanadas que nos usan para ser comidas",
+        "Las cartas son más inteligentes de lo que pensamos"
+    ],
+    "Yo gané una partida solo pensando fuerte": [
+        "¡Eso es pura fuerza mental!",
+        "Como las empanadas que se cocinan con el poder del pensamiento",
+        "La mente es más poderosa que cualquier carta"
+    ],
+    "Lo importante es que traje bizcochitos": [
+        "¡Eso es lo que importa! Los bizcochitos son fundamentales",
+        "Como dice mi abuela: 'sin bizcochitos no hay victoria'",
+        "Los bizcochitos son el secreto del éxito"
+    ],
+    "¿Alguien más siente que Morty se volvió a clonar?": [
+        "¡Sí! Pero este Morty es más inteligente",
+        "Como las empanadas, Morty se multiplica",
+        "Morty siempre se está clonando, es normal"
+    ],
+    "Ayer vi un colectivo que dobló en 4D": [
+        "¡Eso es pura física cuántica!",
+        "Como las empanadas que aparecen de la nada",
+        "Los colectivos de Buenos Aires son interdimensionales"
+    ],
+    "Che, ¿vieron que desapareció la empanada del hacker?": [
+        "¡Sí! Se la comió el error 404",
+        "Como dice Rick: 'las empanadas tienen vida propia'",
+        "La empanada del hacker se fue de viaje interdimensional"
+    ],
+    "A mí me gusta jugar los miércoles. Tienen otra vibra": [
+        "¡Totalmente! Los miércoles son mágicos",
+        "Como las empanadas de los miércoles, que saben diferente",
+        "Los miércoles tienen una energía especial"
+    ],
+    "¿Por qué todo me recuerda al pan relleno?": [
+        "¡Porque el pan relleno es la respuesta a todo!",
+        "Como dice mi abuela: 'el pan relleno es la clave del universo'",
+        "El pan relleno es como el wifi: invisible pero omnipresente"
+    ],
+    "Siento que este mazo huele a lluvia...": [
+        "¡Eso es pura nostalgia! El mazo tiene memoria",
+        "Como las empanadas que huelen a domingo",
+        "El mazo huele a lluvia porque está triste"
+    ],
+    "Hoy soñé que Rick era una milanesa": [
+        "¡Eso es pura creatividad onírica!",
+        "Como las empanadas que sueñan con ser milanesas",
+        "Rick como milanesa tiene sentido, es dorado y crujiente"
+    ],
+    "¿Es normal que el mate de hoy me supo a nostalgia?": [
+        "¡Totalmente normal! El mate tiene memoria emocional",
+        "Como las empanadas que saben a infancia",
+        "El mate de hoy supo a nostalgia porque extraña los viejos tiempos"
+    ],
+    "Extraño cuando el wifi tenía alma": [
+        "¡Sí! El wifi de antes era más humano",
+        "Como las empanadas de antes, que tenían más sabor",
+        "El wifi tenía alma antes de que lo comercializaran"
+    ],
+    "¿Vos también viste ese colectivo que desaparece en la esquina?": [
+        "¡Sí! Es el colectivo interdimensional",
+        "Como las empanadas que aparecen y desaparecen",
+        "Ese colectivo va a una dimensión donde siempre es domingo"
+    ],
+    "Me acuerdo cuando el hacker se comió 5 facturas sin respirar": [
+        "¡Eso fue épico! El hacker tiene talento",
+        "Como las empanadas que se comen solas",
+        "El hacker se comió 5 facturas porque tenía hambre de bytes"
+    ],
+    "¿Es normal que Morty esté llorando desde la ronda 1?": [
+        "¡Sí! Morty es muy sensible",
+        "Como las empanadas que lloran cuando se queman",
+        "Morty llora porque extraña a su familia interdimensional"
+    ],
+    "Te juro que el café de hoy tenía gusto a nostalgia...": [
+        "¡Eso es pura magia! El café tiene memoria",
+        "Como las empanadas que saben a domingo de lluvia",
+        "El café de hoy supo a nostalgia porque extraña los viejos tiempos"
+    ],
+    "Posta, yo sentí que era como un mate con PTSD": [
+        "¡Eso es pura sensibilidad! El mate tiene traumas",
+        "Como las empanadas que tienen miedo al microondas",
+        "El mate tiene PTSD porque lo dejaron solo mucho tiempo"
+    ],
+    "Yo desayuné error 404": [
+        "¡Eso es pura innovación culinaria!",
+        "Como las empanadas que no se encuentran en el plato",
+        "El error 404 es como las empanadas que desaparecen"
+    ],
+    "¿Alguien más soñó con empanadas gigantes ayer?": [
+        "¡Sí! Eran empanadas del tamaño de un colectivo",
+        "Como las empanadas que sueñan con ser más grandes",
+        "Las empanadas gigantes son mensajes del universo"
+    ],
+    "¿Por qué el mate de hoy me supo a cloro?": [
+        "¡Eso es pura química! El mate se está purificando",
+        "Como las empanadas que saben a limpieza",
+        "El mate supo a cloro porque está limpiando tu alma"
+    ]
+};
+
+// Sistema de conversación automática entre IAs
+let autoChatInterval;
+let lastAutoChatTime = 0;
+
+function iniciarChatAutomatico() {
+    autoChatInterval = setInterval(() => {
+        const now = Date.now();
+        if (now - lastAutoChatTime > 20000) { // Mínimo 20 segundos entre conversaciones
+            generarConversacionIA();
+            lastAutoChatTime = now;
+        }
+    }, 5000); // Revisar cada 5 segundos
+}
+
+function generarConversacionIA() {
+    const bots = [
+        { name: 'Código', avatar: '/img/hackerVerde.png' },
+        { name: 'Hacker', avatar: '/img/hackerRojo.png' },
+        { name: 'Rick', avatar: '/img/rickHacker.png' }
+    ];
+    
+    // Generar 1-3 mensajes en secuencia
+    const numMensajes = Math.floor(Math.random() * 3) + 1;
+    
+    for (let i = 0; i < numMensajes; i++) {
+        setTimeout(() => {
+            const bot = bots[Math.floor(Math.random() * bots.length)];
+            const frase = frasesAbsurdas[Math.floor(Math.random() * frasesAbsurdas.length)];
+            
+            chatMessages.push({
+                sender: bot.name,
+                avatar: bot.avatar,
+                text: frase,
+                timestamp: Date.now()
+            });
+            
+            renderChat();
+        }, i * 2000); // 2 segundos entre mensajes
     }
-    chatDiv.appendChild(bubble);
-  });
-  chatDiv.scrollTop = chatDiv.scrollHeight;
+}
+
+function renderChat() {
+    const chatDiv = document.getElementById('chat-messages');
+    if (!chatDiv) return;
+    
+    chatDiv.innerHTML = '';
+    chatMessages.forEach(msg => {
+        const bubble = document.createElement('div');
+        if (msg.narrator) {
+            bubble.className = 'chat-bubble narrator';
+            bubble.innerHTML = `<div class="chat-content" style="background:#222;color:#aaa;font-style:italic;">${msg.text}</div>`;
+        } else {
+            bubble.className = 'chat-bubble ' + (msg.sender === 'Vos' ? 'right' : 'left');
+            bubble.innerHTML = `
+                <img src="${msg.avatar}" class="chat-avatar" alt="${msg.sender}">
+                <div class="chat-content">
+                    <span class="chat-name">${msg.sender}</span>
+                    <span class="chat-text">${msg.text}</span>
+                </div>
+            `;
+        }
+        chatDiv.appendChild(bubble);
+    });
+    chatDiv.scrollTop = chatDiv.scrollHeight;
 }
 
 function addPlayerMessage(text) {
-  chatMessages.push({ sender: 'Vos', avatar: '/img/mortyHacker.png', text });
-  renderChat();
-  setTimeout(() => botReply(text), 900);
+    chatMessages.push({ 
+        sender: 'Vos', 
+        avatar: '/img/mortyHacker.png', 
+        text,
+        timestamp: Date.now()
+    });
+    renderChat();
+    
+    // Responder después de un delay
+    setTimeout(() => botReply(text), 1000 + Math.random() * 2000);
 }
 
 function botReply(playerText) {
-  // IA contextual
-  let response = '';
-  let sender = 'Rick';
-  let avatar = '/img/rickHacker.png';
-  if (playerText.includes('Truco')) {
-    response = '¡Eso, Morty! ¡Mostrales quién manda!';
-  } else if (playerText.includes('Envido')) {
-    response = '¿Seguro, Morty? No te confíes...';
-  } else if (playerText.includes('Mazo')) {
-    response = 'A veces hay que saber retirarse, Morty.';
-  } else if (playerText.includes('Buen juego')) {
-    response = '¡Buena onda, Morty!';
-  } else if (playerText.includes('No quiero')) {
-    response = '¡Cobarde!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
-  } else if (playerText.includes('Quiero')) {
-    response = '¡Así se juega!'; sender = 'Código'; avatar = '/img/hackerVerde.png';
-  } else if (playerText.includes('flor')) {
-    response = '¿Flor? ¡Eso no vale acá!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
-  } else if (playerText.includes('Te toca')) {
-    response = '¡No te hagas el distraído!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
-  } else if (playerText.includes('Qué mano')) {
-    response = '¡Mano difícil, Morty!'; sender = 'Código'; avatar = '/img/hackerVerde.png';
-  } else if (playerText.includes('Vamos equipo')) {
-    response = '¡Eso, motivación!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
-  } else if (playerText.includes('Quién canta')) {
-    response = '¡Canto yo!'; sender = 'Hacker'; avatar = '/img/hackerRojo.png';
-  } else if (playerText.includes('suerte')) {
-    response = 'La suerte es para los débiles.'; sender = 'Código'; avatar = '/img/hackerVerde.png';
-  } else if (playerText.includes('no lo puedo creer')) {
-    response = '¡Créelo, Morty!'; sender = 'Rick'; avatar = '/img/rickHacker.png';
-  } else {
-    // Respuesta random de los bots
     const bots = [
-      { sender: 'Código', avatar: '/img/hackerVerde.png', frases: ['No te la creas tanto...', '¿Eso es todo?', 'Te va a costar ganar, Morty.'] },
-      { sender: 'Hacker', avatar: '/img/hackerRojo.png', frases: ['¿Listo para perder?', 'No vas a poder con nosotros.', '¿Te animás a cantar?'] }
+        { name: 'Código', avatar: '/img/hackerVerde.png' },
+        { name: 'Hacker', avatar: '/img/hackerRojo.png' },
+        { name: 'Rick', avatar: '/img/rickHacker.png' }
     ];
+    
     const bot = bots[Math.floor(Math.random() * bots.length)];
-    sender = bot.sender;
-    avatar = bot.avatar;
-    response = bot.frases[Math.floor(Math.random() * bot.frases.length)];
-  }
-  chatMessages.push({ sender, avatar, text: response });
-  renderChat();
+    let response = '';
+    
+    // Buscar respuesta específica
+    if (respuestasJugador[playerText]) {
+        response = respuestasJugador[playerText][Math.floor(Math.random() * respuestasJugador[playerText].length)];
+    } else {
+        // Respuesta genérica si no hay respuesta específica
+        const respuestasGenericas = [
+            "¡Eso! Tenés razón",
+            "Como dice mi abuela...",
+            "Posta, nunca lo había pensado así",
+            "¡Eso es pura vibra!",
+            "Como las empanadas, siempre sabias",
+            "¡Mind blown!",
+            "Eso es pura filosofía de vida",
+            "Como dice Rick: 'la vida es como una empanada'",
+            "¡Eso es pura sabiduría popular!",
+            "Como las facturas, siempre dulces"
+        ];
+        response = respuestasGenericas[Math.floor(Math.random() * respuestasGenericas.length)];
+    }
+    
+    chatMessages.push({ 
+        sender: bot.name, 
+        avatar: bot.avatar, 
+        text: response,
+        timestamp: Date.now()
+    });
+    renderChat();
 }
 
+// Inicializar chat automático cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-  renderChat();
-  const chatSelect = document.getElementById('chat-phrases');
-  const chatSend = document.getElementById('chat-send');
-  if (chatSend && chatSelect) {
-    chatSend.onclick = () => {
-      if (chatSelect.value && chatSelect.value !== '') {
-        addPlayerMessage(chatSelect.value);
-        chatSelect.selectedIndex = 0;
-      }
-    };
-    chatSelect.addEventListener('keypress', e => {
-      if (e.key === 'Enter' && chatSelect.value && chatSelect.value !== '') {
-        addPlayerMessage(chatSelect.value);
-        chatSelect.selectedIndex = 0;
-      }
-    });
-  }
+    renderChat();
+    
+    // Iniciar conversación automática después de 10 segundos
+    setTimeout(() => {
+        iniciarChatAutomatico();
+        // Primera conversación automática
+        setTimeout(() => generarConversacionIA(), 5000);
+    }, 10000);
+    
+    const chatSelect = document.getElementById('chat-phrases');
+    const chatSend = document.getElementById('chat-send');
+    
+    if (chatSend && chatSelect) {
+        chatSend.onclick = () => {
+            if (chatSelect.value && chatSelect.value !== '') {
+                addPlayerMessage(chatSelect.value);
+                chatSelect.selectedIndex = 0;
+            }
+        };
+        
+        chatSelect.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && chatSelect.value && chatSelect.value !== '') {
+                addPlayerMessage(chatSelect.value);
+                chatSelect.selectedIndex = 0;
+            }
+        });
+    }
 });
 
 function crearMazo() {
@@ -247,6 +546,14 @@ function render() {
                            !state.envido.pendiente && 
                            !state.mazo;
     
+    // --- En render(), asegurar que el botón de truco nunca permita subir más allá de 3 ---
+    let puedeCantarTruco = state.turnPlayer === 'player' && 
+                          !state.truco.pendiente && 
+                          !state.envido.pendiente && 
+                          !state.mazo &&
+                          state.truco.level === 0; // Solo si no se ha cantado truco en esta mano
+    document.getElementById('btn-truco').disabled = !puedeCantarTruco;
+    
     // Mostrar botones según el estado del juego
     let hayMazoPendiente = state.mazoEquipo === 'player' && state.mazoPendiente.player && !state.mazoPendiente.morty;
     
@@ -256,18 +563,37 @@ function render() {
     // Mostrar botones de respuesta SOLO si el jugador debe responder a un canto de la IA rival
     let showResponse = false;
     if (state.truco.pendiente) {
-        // Si el canto pendiente NO lo hizo el jugador ni su compañero
         if (TEAM_ENEMY.includes(state.truco.quien)) {
             showResponse = true;
         }
     } else if (state.envido.pendiente) {
+        // Solo mostrar si el último canto lo hizo la IA
+        // Verificar si el último canto en la secuencia lo hizo la IA
         if (TEAM_ENEMY.includes(state.envido.quien)) {
             showResponse = true;
+        } else {
+            // Si el último canto lo hizo el jugador, no mostrar botones de respuesta
+            showResponse = false;
         }
     }
     document.getElementById('response-buttons').style.display = showResponse ? 'flex' : 'none';
     
+    // --- FORZAR RESPUESTA DE LA IA AL ENVIDO DEL JUGADOR ---
+    // Si hay envido pendiente y el último canto lo hizo el jugador, forzar turno de la IA
+    if (state.envido.pendiente && TEAM_PLAYER.includes(state.envido.quien) && TEAM_ENEMY.includes(state.turnPlayer)) {
+        setTimeout(()=>iaEnvidoRespuesta(), 700);
+    }
+    
+    // Mostrar botón de continuar si el jugador cantó y la IA ya respondió
+    let showContinue = false;
+    if (state.truco.pendiente && TEAM_PLAYER.includes(state.truco.quien)) {
+        // Si el jugador cantó truco, mostrar botón de continuar después de que la IA responda
+        showContinue = false; // Se mostrará cuando la IA responda
+    }
+    document.getElementById('continue-buttons').style.display = showContinue ? 'flex' : 'none';
+    
     document.getElementById('btn-envido').disabled = !puedeCantarEnvido;
+    document.getElementById('btn-truco').disabled = !puedeCantarTruco;
 }
 
 function nombre(p) {
@@ -302,7 +628,33 @@ function turnoSiguiente() {
     state.turn = (state.turn+1)%4;
     state.turnPlayer = PLAYER_ORDER[state.turn];
     render();
-    if(TEAM_ENEMY.includes(state.turnPlayer)||state.turnPlayer==='morty') setTimeout(()=>iaTurno(),1700);
+    
+    // Log del orden de turnos para claridad
+    if (!state.truco.pendiente && !state.envido.pendiente) {
+        log('Turno: ' + nombre(state.turnPlayer), 'system');
+    }
+    
+    // Si hay mazo pendiente del equipo enemigo, continuar automáticamente
+    if (state.mazoEquipo === 'enemy' && (state.mazoPendiente.codigo || state.mazoPendiente.hacker)) {
+        if (TEAM_ENEMY.includes(state.turnPlayer)) {
+            setTimeout(()=>iaTurno(),1700);
+            return;
+        }
+    }
+    
+    // Si hay truco pendiente, no llamar automáticamente a iaTurno
+    if(state.truco.pendiente) {
+        // Solo llamar iaTurno si es el turno de la IA rival
+        if(TEAM_ENEMY.includes(state.turnPlayer)) {
+            setTimeout(()=>iaTurno(),1700);
+        }
+    } else if(state.envido.pendiente) {
+        // Si hay envido pendiente, no llamar automáticamente a iaTurno
+        // Los envidos se manejan con funciones específicas
+    } else if(TEAM_ENEMY.includes(state.turnPlayer)||state.turnPlayer==='morty') {
+        // Turno normal de la IA
+        setTimeout(()=>iaTurno(),1700);
+    }
 }
 
 function jugarCarta(idx) {
@@ -326,10 +678,12 @@ function resolverBaza() {
     let team = TEAM_PLAYER.includes(win)?'player':'enemy';
     state.bazasGanadas[team]++;
     log(nombre(win)+' gana la baza','system');
+    log('DEBUG: Bazas ganadas - player: ' + state.bazasGanadas.player + ', enemy: ' + state.bazasGanadas.enemy,'system');
     state.played = [];
     
     // Verificar si se completó una mano
     if(state.bazasGanadas.player===2||state.bazasGanadas.enemy===2) {
+        log('DEBUG: Mano completada, llamando a finMano','system');
         setTimeout(()=>finMano(),2200);
     } else {
         turnoSiguiente();
@@ -356,7 +710,48 @@ function valorTruco(card) {
 }
 
 function finMano() {
+    // Si hay un truco aceptado, el equipo que aceptó automáticamente gana la mano
+    if (state.truco.aceptado) {
+        // Determinar qué equipo aceptó el truco
+        // Si el truco lo cantó el equipo enemigo y el jugador lo aceptó, gana el jugador
+        // Si el truco lo cantó el equipo player y la IA lo aceptó, gana la IA
+        let equipoQueAcepto = 'player'; // Por defecto
+        
+        // Usar la información de quién cantó el truco
+        if (state.truco.quienCanto) {
+            if (TEAM_ENEMY.includes(state.truco.quienCanto)) {
+                // El enemigo cantó, el player aceptó
+                equipoQueAcepto = 'player';
+            } else if (TEAM_PLAYER.includes(state.truco.quienCanto)) {
+                // El player cantó, el enemigo aceptó
+                equipoQueAcepto = 'enemy';
+            }
+        }
+        
+        log('¡Truco aceptado! ' + (equipoQueAcepto === 'player' ? 'MORTY+RICK' : 'CÓDIGO+HACKER') + ' gana automáticamente la mano','system');
+        
+        // Asignar la mano al equipo que aceptó
+        if (!state.primeraManoGanada) {
+            state.primeraManoGanada = equipoQueAcepto;
+            log('Primera mano para '+(equipoQueAcepto==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+        } else if (!state.segundaManoGanada) {
+            state.segundaManoGanada = equipoQueAcepto;
+            log('Segunda mano para '+(equipoQueAcepto==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+            
+            // Verificar si hay ventaja de mano
+            if (state.primeraManoGanada !== state.segundaManoGanada) {
+                state.ventajaMano = state.primeraManoGanada;
+                log('¡VENTAJA DE MANO! '+(state.ventajaMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+' puede ganar con la tercera mano','system');
+            }
+        } else {
+            state.terceraManoGanada = equipoQueAcepto;
+            log('Tercera mano para '+(equipoQueAcepto==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+        }
+    } else {
+        // Lógica normal cuando no hay truco aceptado
     let ganadorMano = state.bazasGanadas.player>=2?'player':'enemy';
+        
+        log('DEBUG: finMano - ganadorMano: ' + ganadorMano + ', truco.level: ' + state.truco.level + ', truco.pendiente: ' + state.truco.pendiente,'system');
     
     // Registrar qué mano ganó cada equipo
     if (!state.primeraManoGanada) {
@@ -374,26 +769,54 @@ function finMano() {
     } else {
         state.terceraManoGanada = ganadorMano;
         log('Tercera mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+        }
     }
     
     // Verificar si hay ganador de la ronda
     let ganadorRonda = determinarGanadorRonda();
     
     if (ganadorRonda) {
-        let pts = state.truco.level?TRUCO_POINTS[state.truco.level]:1;
-        state.teamScore[ganadorRonda]+=pts;
+        // Calcular puntos basados en el nivel actual del truco
+        let pts = 1; // Puntos por defecto
+        if (state.truco.level > 0) {
+            pts = TRUCO_POINTS[state.truco.level - 1];
+        }
+        
+        log('DEBUG: Ganador ronda: ' + ganadorRonda + ', puntos: ' + pts + ' (level: ' + state.truco.level + ')','system');
+        state.teamScore[ganadorRonda] = (state.teamScore[ganadorRonda]||0) + (pts||1);
         log('Ronda para '+(ganadorRonda==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+` (+${pts})`,'system');
         
         if(state.teamScore[ganadorRonda]>=15) return finPartida(ganadorRonda);
         
-        // Control de manos: solo sumar una victoria por ronda
+        // Control de manos: sumar una victoria por ronda
         if(!state.manosGanadas) state.manosGanadas = { player:0, enemy:0 };
-        state.manosGanadas[ganadorRonda]++;
-        if(state.manosGanadas[ganadorRonda]===2) {
-            if(ganadorRonda==='player') animacionVictoria();
-            else animacionDerrota();
+        state.manosGanadas[ganadorRonda] = (state.manosGanadas[ganadorRonda]||0) + 1;
+        log('Manos ganadas - MORTY+RICK: ' + state.manosGanadas.player + ', CÓDIGO+HACKER: ' + state.manosGanadas.enemy,'system');
+        
+        // --- Transición automática de sala después de 5 manos jugadas ---
+        let totalManos = (state.manosGanadas.player||0) + (state.manosGanadas.enemy||0);
+        if(totalManos >= 5) {
+            log('Se jugaron 5 manos. Pasando automáticamente a la siguiente sala...','system');
+            setTimeout(()=>{
+                window.location.href = "/Home/Room2";
+            }, 2000);
             return;
         }
+        
+        // Verificar si un equipo gana 3 manos
+        if(state.manosGanadas[ganadorRonda]>=3) {
+            if(ganadorRonda==='player') {
+                log('¡MORTY+RICK ganó 3 manos! ¡VICTORIA!','system');
+                animacionVictoria();
+            } else {
+                log('¡CÓDIGO+HACKER ganó 3 manos! ¡DERROTA!','system');
+                animacionDerrota();
+            }
+            return;
+        }
+        
+        // Limpiar el estado del truco antes de nueva mano
+        state.truco = { level:0, quien:null, pendiente:false, aceptado:false, quienCanto:null };
         setTimeout(()=>nuevaMano(),2000);
     } else {
         // Si no hay ganador, continuar con la siguiente mano
@@ -430,7 +853,7 @@ function nuevaMano() {
     state.round++;
     state.bazasGanadas = { player:0, enemy:0 };
     state.played = [];
-    state.truco = { level:0, quien:null, pendiente:false };
+    state.truco = { level:0, quien:null, pendiente:false, aceptado:false, quienCanto:null };
     state.envido = { cantos:[], quien:null, pendiente:false, valores:{} };
     state.mazo = false;
     envidoBloqueado = false;
@@ -447,6 +870,7 @@ function nuevaMano() {
     state.mano = state.turn;
     state.pie = (state.mano+3)%4;
     state.turnPlayer = PLAYER_ORDER[state.turn];
+    log('Nuevas cartas repartidas. Turno: ' + nombre(state.turnPlayer), 'system');
     render();
     if(state.turnPlayer!=='player') setTimeout(()=>iaTurno(),1700);
 }
@@ -457,52 +881,133 @@ function finPartida(win) {
 }
 
 function iaTurno() {
-    if(state.lock) return;
     let p = state.turnPlayer;
     
-    // Verificar si hay mazo pendiente del equipo player
-    if (state.mazoEquipo === 'player' && state.mazoPendiente.player && !state.mazoPendiente.morty) {
+    log('DEBUG: iaTurno - turnPlayer: ' + p + ', mazoEquipo: ' + state.mazoEquipo + ', mazoPendiente: ' + JSON.stringify(state.mazoPendiente),'system');
+    
+    // Verificar mazo pendiente del equipo enemigo
+    if (state.mazoEquipo === 'enemy') {
+        log('DEBUG: Verificando mazo pendiente del equipo enemigo','system');
+        if (p === 'codigo' && state.mazoPendiente.hacker) {
+            log('DEBUG: CÓDIGO.EXE debe responder al mazo de HACKER.EXE','system');
+            // Código debe decidir si está de acuerdo con Hacker
+            let codigoTieneBuenaMano = tieneManoBuenaParaTruco(state.hands.codigo);
+            let codigoTieneBuenEnvido = calcularEnvido(state.hands.codigo) >= 25;
+            
+            if (!codigoTieneBuenaMano && !codigoTieneBuenEnvido && Math.random() < 0.8) {
+                // Código está de acuerdo con irse al mazo
+                state.mazoPendiente.codigo = true;
+                log('CÓDIGO.EXE: "Estoy de acuerdo, nos vamos al mazo"','enemy');
+                log('¡CÓDIGO.EXE y HACKER.EXE se van al mazo!','system');
+                let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
+                state.teamScore['player']+=pts;
+                log('+'+pts+' puntos para MORTY+RICK por mazo del equipo contrario','system');
+                log('Repartiendo nuevas cartas...','system');
+                setTimeout(()=>nuevaMano(),2000);
+                return;
+            } else {
+                log('CÓDIGO.EXE: "No estoy de acuerdo, continuamos jugando"','enemy');
+                log('CÓDIGO.EXE no está de acuerdo. Continúa el juego.','system');
+                state.mazoPendiente.hacker = false;
+                state.mazoEquipo = null;
+                render();
+            }
+        } else if (p === 'hacker' && state.mazoPendiente.codigo) {
+            log('DEBUG: HACKER.EXE debe responder al mazo de CÓDIGO.EXE','system');
+            // Hacker debe decidir si está de acuerdo con Código
+            let hackerTieneBuenaMano = tieneManoBuenaParaTruco(state.hands.hacker);
+            let hackerTieneBuenEnvido = calcularEnvido(state.hands.hacker) >= 25;
+            
+            if (!hackerTieneBuenaMano && !hackerTieneBuenEnvido && Math.random() < 0.8) {
+                // Hacker está de acuerdo con irse al mazo
+                state.mazoPendiente.hacker = true;
+                log('HACKER.EXE: "Estoy de acuerdo, nos vamos al mazo"','enemy');
+                log('¡CÓDIGO.EXE y HACKER.EXE se van al mazo!','system');
+                let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
+                state.teamScore['player']+=pts;
+                log('+'+pts+' puntos para MORTY+RICK por mazo del equipo contrario','system');
+                log('Repartiendo nuevas cartas...','system');
+                setTimeout(()=>nuevaMano(),2000);
+                return;
+            } else {
+                log('HACKER.EXE: "No estoy de acuerdo, continuamos jugando"','enemy');
+                log('HACKER.EXE no está de acuerdo. Continúa el juego.','system');
+                state.mazoPendiente.codigo = false;
+                state.mazoEquipo = null;
+                render();
+            }
+        }
+    }
+    
+    // Verificar mazo pendiente del equipo player
+    if (state.mazoEquipo === 'player') {
+        if (state.mazoPendiente.player && !state.mazoPendiente.morty && p === 'morty') {
         // Rick debe decidir automáticamente basado en su mano
         let rickTieneBuenaMano = tieneManoBuenaParaTruco(state.hands.morty);
         let rickTieneBuenEnvido = calcularEnvido(state.hands.morty) >= 25;
         
         if (!rickTieneBuenaMano && !rickTieneBuenEnvido && Math.random() < 0.8) {
-            // Rick está de acuerdo con irse al mazo si tiene mala mano
+                // Rick está de acuerdo con irse al mazo
             state.mazoPendiente.morty = true;
-            log('RICK.EXE está de acuerdo. MORTY+RICK se van al mazo.','system');
+                log('RICK.EXE: "Estoy de acuerdo, nos vamos al mazo"','enemy');
+                log('¡MORTY.EXE y RICK.EXE se van al mazo!','system');
             let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
             state.teamScore['enemy']+=pts;
-            log('+'+pts+' para CÓDIGO+HACKER','error');
+                log('+'+pts+' puntos para CÓDIGO+HACKER por mazo del equipo contrario','system');
+                log('Repartiendo nuevas cartas...','system');
             setTimeout(()=>nuevaMano(),2000);
             return;
         } else {
+                log('RICK.EXE: "No estoy de acuerdo, continuamos jugando"','enemy');
             log('RICK.EXE no está de acuerdo. Continúa el juego.','system');
             state.mazoPendiente.player = false;
             state.mazoEquipo = null;
             render();
-        }
-    }
-    
-    // Verificar si hay mazo pendiente del equipo enemy
-    if (state.mazoEquipo === 'enemy' && state.mazoPendiente.codigo && !state.mazoPendiente.hacker) {
-        // Hacker debe decidir automáticamente basado en su mano
-        let hackerTieneBuenaMano = tieneManoBuenaParaTruco(state.hands.hacker);
-        let hackerTieneBuenEnvido = calcularEnvido(state.hands.hacker) >= 25;
-        
-        if (!hackerTieneBuenaMano && !hackerTieneBuenEnvido && Math.random() < 0.8) {
-            // Hacker está de acuerdo con irse al mazo si tiene mala mano
-            state.mazoPendiente.hacker = true;
-            log('HACKER.EXE está de acuerdo. CÓDIGO+HACKER se van al mazo.','system');
+                // Continuar con el juego normal
+                turnoSiguiente();
+                return;
+            }
+        } else if (state.mazoPendiente.morty && !state.mazoPendiente.player && p === 'player') {
+            // Morty debe decidir automáticamente basado en su mano
+            let mortyTieneBuenaMano = tieneManoBuenaParaTruco(state.hands.player);
+            let mortyTieneBuenEnvido = calcularEnvido(state.hands.player) >= 25;
+            
+            if (!mortyTieneBuenaMano && !mortyTieneBuenEnvido && Math.random() < 0.8) {
+                // Morty está de acuerdo con irse al mazo
+                state.mazoPendiente.player = true;
+                log('MORTY.EXE: "Estoy de acuerdo, nos vamos al mazo"','player');
+                log('¡MORTY.EXE y RICK.EXE se van al mazo!','system');
             let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
-            state.teamScore['player']+=pts;
-            log('+'+pts+' para MORTY+RICK','error');
+                state.teamScore['enemy']+=pts;
+                log('+'+pts+' puntos para CÓDIGO+HACKER por mazo del equipo contrario','system');
+                log('Repartiendo nuevas cartas...','system');
             setTimeout(()=>nuevaMano(),2000);
             return;
         } else {
-            log('HACKER.EXE no está de acuerdo. Continúa el juego.','system');
-            state.mazoPendiente.codigo = false;
+                log('MORTY.EXE: "No estoy de acuerdo, continuamos jugando"','player');
+                log('MORTY.EXE no está de acuerdo. Continúa el juego.','system');
+                state.mazoPendiente.morty = false;
             state.mazoEquipo = null;
             render();
+                // Continuar con el juego normal
+                turnoSiguiente();
+                return;
+            }
+        }
+    }
+    
+    // Si hay truco pendiente, responder al truco
+    if (state.truco.pendiente) {
+        iaTrucoRespuesta();
+        return;
+    }
+    
+    // Si hay envido pendiente, responder al envido
+    if (state.envido.pendiente) {
+        // Solo responder si es el turno de la IA y el envido lo cantó el jugador
+        if (TEAM_ENEMY.includes(state.turnPlayer) && TEAM_PLAYER.includes(state.envido.quien)) {
+            setTimeout(() => iaEnvidoRespuesta(), 1700);
+            return;
         }
     }
     
@@ -521,7 +1026,7 @@ function iaTurno() {
                     chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(p)} canta Envido*`, narrator: true });
                     render();
                     renderChat();
-                    setTimeout(() => iaEnvidoRespuesta(), 1200);
+                    // No llamar automáticamente a iaEnvidoRespuesta, esperar respuesta del jugador
                     return;
                 }
             }, 500);
@@ -535,11 +1040,12 @@ function iaTurno() {
                     state.truco.level++;
                     state.truco.pendiente = true;
                     state.truco.quien = p;
+                    state.truco.quienCanto = p;
                     log(nombre(p)+' canta '+['Truco','Retruco','Vale Cuatro'][state.truco.level-1],'enemy');
                     chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(p)} canta ${['Truco','Retruco','Vale Cuatro'][state.truco.level-1]}*`, narrator: true });
                     render();
                     renderChat();
-                    setTimeout(() => iaTrucoRespuesta(), 1200);
+                    // No llamar automáticamente a iaTrucoRespuesta, esperar respuesta del jugador
                     return;
                 }
             }, 500);
@@ -553,12 +1059,16 @@ function iaTurno() {
                 state.mazoEquipo = 'enemy';
                 log('CÓDIGO.EXE quiere irse al mazo. Esperando acuerdo de HACKER.EXE...','enemy');
                 render();
+                // Continuar al siguiente turno para que HACKER.EXE pueda responder
+                turnoSiguiente();
                 return;
             } else if (p === 'hacker') {
                 state.mazoPendiente.hacker = true;
                 state.mazoEquipo = 'enemy';
                 log('HACKER.EXE quiere irse al mazo. Esperando acuerdo de CÓDIGO.EXE...','enemy');
                 render();
+                // Continuar al siguiente turno para que CÓDIGO.EXE pueda responder
+                turnoSiguiente();
                 return;
             }
         }
@@ -573,30 +1083,107 @@ function iaTurno() {
 function iaTrucoRespuesta() {
     // Determinar quién cantó el Truco
     const quienCanto = state.truco.quien;
+    
+    log('DEBUG: iaTrucoRespuesta - turnPlayer: ' + state.turnPlayer + ', quienCanto: ' + quienCanto + ', level: ' + state.truco.level,'system');
+    
+    // Solo responder si es el turno de la IA y hay un canto pendiente
+    if (!state.truco.pendiente) {
+        log('DEBUG: No hay truco pendiente','system');
+        return;
+    }
+    
     // Si la IA es del mismo equipo que quien cantó, no debe responder
     if ((TEAM_PLAYER.includes(state.turnPlayer) && TEAM_PLAYER.includes(quienCanto)) ||
         (TEAM_ENEMY.includes(state.turnPlayer) && TEAM_ENEMY.includes(quienCanto))) {
-        // No responde, espera al rival
+        log('DEBUG: IA del mismo equipo, no responde','system');
         return;
     }
+    
+    // Si el nivel es 3 (Vale Cuatro), la IA solo puede aceptar o rechazar
+    if (state.truco.level >= 3) {
+        let r = Math.random();
+        if(r < 0.5) {
+            log('DEBUG: IA acepta el Vale Cuatro','system');
+            state.truco.pendiente = false;
+            state.truco.aceptado = true;
+            log('IA: ¡Quiero!','system');
+            render();
+            let quienCantoIndex = PLAYER_ORDER.indexOf(quienCanto);
+            state.turn = quienCantoIndex;
+            state.turnPlayer = PLAYER_ORDER[state.turn];
+            state.truco.quien = null;
+            render();
+            log('Turno: ' + nombre(state.turnPlayer), 'system');
+            if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
+        } else {
+            log('DEBUG: IA rechaza el Vale Cuatro','system');
+            let pts = TRUCO_POINTS[state.truco.level-1] || 3;
+            let ganador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
+            state.teamScore[ganador] += pts;
+            log('No quiero. +' + pts + ' para ' + (ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+            log('Reiniciando mano por rechazo...','system');
+            state.truco.pendiente = false;
+            setTimeout(()=>nuevaMano(),2000);
+        }
+        return;
+    }
+    // Lógica normal para Truco y Retruco
     let r = Math.random();
-    // IA más realista: puede rechazar truco
     if(r<0.4) {
+        log('DEBUG: IA acepta el truco','system');
         state.truco.pendiente = false;
+        state.truco.aceptado = true;
         log('IA: ¡Quiero!','system');
         render();
-    } else if(r<0.7 && state.truco.level<3) {
-        state.truco.level++;
-        state.truco.pendiente = true;
-        state.truco.quien = state.turnPlayer;
-        log('IA: ¡'+['Retruco','Vale Cuatro'][state.truco.level-2]+'!','enemy');
+        let quienCantoIndex = PLAYER_ORDER.indexOf(quienCanto);
+        state.turn = quienCantoIndex;
+        state.turnPlayer = PLAYER_ORDER[state.turn];
+        state.truco.quien = null;
         render();
+        log('Turno: ' + nombre(state.turnPlayer), 'system');
+        if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
+    } else if(r<0.7 && state.truco.level<3) {
+        log('DEBUG: IA sube el truco a nivel ' + (state.truco.level + 1),'system');
+        if(state.truco.level < 2) { // Solo puede subir hasta Retruco
+            state.truco.level++;
+            state.truco.pendiente = true;
+            state.truco.quien = state.turnPlayer;
+            state.truco.quienCanto = state.turnPlayer;
+            log('IA: ¡'+['Retruco','Vale Cuatro'][state.truco.level-2]+'!','enemy');
+            render();
+            return;
+        } else {
+            // Si ya es Retruco, solo puede aceptar o rechazar
+            let r2 = Math.random();
+            if(r2 < 0.5) {
+                state.truco.pendiente = false;
+                state.truco.aceptado = true;
+                log('IA: ¡Quiero!','system');
+                render();
+                let quienCantoIndex = PLAYER_ORDER.indexOf(quienCanto);
+                state.turn = quienCantoIndex;
+                state.turnPlayer = PLAYER_ORDER[state.turn];
+                state.truco.quien = null;
+                render();
+                log('Turno: ' + nombre(state.turnPlayer), 'system');
+                if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
+            } else {
+                let pts = TRUCO_POINTS[state.truco.level-1] || 2;
+                let ganador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
+                state.teamScore[ganador] += pts;
+                log('No quiero. +' + pts + ' para ' + (ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+                log('Reiniciando mano por rechazo...','system');
+                state.truco.pendiente = false;
+                setTimeout(()=>nuevaMano(),2000);
+            }
+        }
     } else {
-        // IA rechaza y se va al mazo
-        let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
-        let equipoGanador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
-        state.teamScore[equipoGanador]+=pts;
-        log('IA: No quiero. +'+pts+' para '+(equipoGanador==='enemy'?'CÓDIGO+HACKER':'MORTY+RICK'),'error');
+        log('DEBUG: IA rechaza el truco','system');
+        let pts = TRUCO_POINTS[state.truco.level-1] || 1;
+        let ganador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
+        state.teamScore[ganador] += pts;
+        log('No quiero. +' + pts + ' para ' + (ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+        log('Reiniciando mano por rechazo...','system');
         state.truco.pendiente = false;
         setTimeout(()=>nuevaMano(),2000);
     }
@@ -627,7 +1214,41 @@ function animacionDerrota() {
     let defeat = document.getElementById('defeat-message');
     overlay.style.display = 'flex';
     defeat.style.display = 'block';
-    setTimeout(()=>window.location.reload(),4000);
+    setTimeout(()=>{
+        // Reiniciar la sala actual
+        state = {
+            deck: [],
+            hands: {},
+            played: [],
+            turn: 0,
+            mano: 0,
+            pie: 3,
+            scores: { player:0, morty:0, codigo:0, hacker:0 },
+            teamScore: { player:0, enemy:0 },
+            round: 1,
+            bazas: [],
+            bazasGanadas: { player:0, enemy:0 },
+            truco: { level:0, quien:null, pendiente:false, aceptado:false, quienCanto:null },
+            envido: { cantos:[], quien:null, pendiente:false, valores:{} },
+            mazo: false,
+            winner: null,
+            iaThinking: false,
+            lock: false,
+            manosGanadas: { player:0, enemy:0 },
+            // Nuevas variables para ventaja de mano
+            primeraManoGanada: null,
+            segundaManoGanada: null,
+            terceraManoGanada: null,
+            ventajaMano: null,
+            // Variables para irse al mazo
+            mazoPendiente: { player: false, morty: false, codigo: false, hacker: false },
+            mazoEquipo: null
+        };
+        envidoBloqueado = false;
+        overlay.style.display = 'none';
+        defeat.style.display = 'none';
+        iniciarTruco();
+    },4000);
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
@@ -655,7 +1276,7 @@ document.addEventListener('DOMContentLoaded',()=>{
             }
         };
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
+            if (e.code === 'Space' && !skipped) {
                 skipped = true;
                 loadingOverlay.style.display = 'none';
                 gameContainer.style.display = 'flex';
@@ -687,6 +1308,8 @@ function iniciarTruco() {
             chatMessages.push({ sender: '*Narrador*', avatar: '', text: '*Morty quiere irse al mazo*', narrator: true });
             render();
             renderChat();
+            // Continuar al siguiente turno para que RICK.EXE responda
+            turnoSiguiente();
         } else if (state.turnPlayer === 'morty') {
             state.mazoPendiente.morty = true;
             state.mazoEquipo = 'player';
@@ -694,60 +1317,71 @@ function iniciarTruco() {
             chatMessages.push({ sender: '*Narrador*', avatar: '', text: '*Rick quiere irse al mazo*', narrator: true });
             render();
             renderChat();
-        }
-        
-        // Verificar si todo el equipo está de acuerdo
-        if (state.mazoEquipo === 'player' && state.mazoPendiente.player && state.mazoPendiente.morty) {
-            let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
-            state.teamScore['enemy']+=pts;
-            log('MORTY+RICK se van al mazo. +'+pts+' para CÓDIGO+HACKER','error');
-            setTimeout(()=>nuevaMano(),2000);
+            // Continuar al siguiente turno para que MORTY.EXE responda
+            turnoSiguiente();
         }
     };
     
     document.getElementById('btn-truco').onclick = ()=>{
         if(state.truco.level<3 && !state.truco.pendiente) {
-            state.truco.level++;
+            state.truco.level = Math.min(state.truco.level+1, 3);
             state.truco.pendiente = true;
             state.truco.quien = state.turnPlayer;
+            state.truco.quienCanto = state.turnPlayer;
             log(nombre(state.turnPlayer)+' canta '+['Truco','Retruco','Vale Cuatro'][state.truco.level-1],'player');
             chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(state.turnPlayer)} canta ${['Truco','Retruco','Vale Cuatro'][state.truco.level-1]}*`, narrator: true });
             render();
             renderChat();
-            // Si el jugador cantó, la IA rival responde automáticamente
-            if(state.turnPlayer==='player') {
-                setTimeout(()=>iaTrucoRespuesta(), 1200);
-            }
+            turnoSiguiente();
         }
     };
     
     document.getElementById('btn-accept').onclick = ()=>{
-        if(state.truco.pendiente && state.truco.quien==='ia') {
+        if(state.truco.pendiente && (state.truco.quien==='codigo' || state.truco.quien==='hacker')) {
             state.truco.pendiente = false;
+            state.truco.aceptado = true; // Marcar que el truco fue aceptado
             log('¡Quiero!','system');
+            log('¡MORTY.EXE aceptó el truco! La mano se juega completa.','system');
             render();
+            // Continuar desde el turno del jugador que cantó el truco
+            let quienCantoIndex = PLAYER_ORDER.indexOf(state.truco.quien);
+            state.turn = quienCantoIndex;
+            state.turnPlayer = PLAYER_ORDER[state.turn];
+            state.truco.quien = null; // Limpiar quien cantó
+            render();
+            log('Turno: ' + nombre(state.turnPlayer), 'system');
+            // Si es turno de la IA, continuar
+            if(TEAM_ENEMY.includes(state.turnPlayer) || state.turnPlayer === 'morty') {
+                setTimeout(()=>iaTurno(),1700);
+            }
         }
-        if(state.envido.pendiente && state.envido.quien!=='player') {
+        if(state.envido.pendiente && (state.envido.quien==='codigo' || state.envido.quien==='hacker')) {
             state.envido.pendiente = false;
             resolverEnvido();
         }
     };
     
     document.getElementById('btn-reject').onclick = ()=>{
-        if(state.truco.pendiente && state.truco.quien==='ia') {
+        if(state.truco.pendiente && (state.truco.quien==='codigo' || state.truco.quien==='hacker')) {
             // El jugador rechaza y se va al mazo
             let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
             let ganador = 'enemy';
             state.teamScore[ganador]+=pts;
             log('No quiero. +'+pts+' para CÓDIGO+HACKER','error');
+            log('Reiniciando mano por rechazo...','system');
             state.truco.pendiente = false;
             setTimeout(()=>nuevaMano(),2000);
         }
-        if(state.envido.pendiente && state.envido.quien!=='player') {
-            let quien = TEAM_PLAYER.includes(state.envido.quien)?'player':'enemy';
-            state.teamScore[quien] += 1;
-            log('No quiero envido. +1 para '+(quien==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+        if(state.envido.pendiente && (state.envido.quien==='codigo' || state.envido.quien==='hacker')) {
+            let pts = calcularEnvidoPuntos(false);
+            // El equipo que cantó el envido gana los puntos cuando se rechaza
+            let equipoGanador = TEAM_PLAYER.includes(state.envido.quien) ? 'player' : 'enemy';
+            state.teamScore[equipoGanador] += pts;
+            log('No quiero envido. +'+pts+' para '+(equipoGanador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+            log('Reiniciando mano por rechazo de envido...','system');
             state.envido.pendiente = false;
+            state.envido.quien = null;
+            envidoSecuencia = [];
             setTimeout(()=>nuevaMano(),2000);
         }
     };
@@ -761,52 +1395,57 @@ function iniciarTruco() {
         chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(state.turnPlayer)} canta Envido*`, narrator: true });
         render();
         renderChat();
-        // Si el jugador cantó, la IA rival responde automáticamente
-        if(state.turnPlayer==='player') {
-        setTimeout(()=>iaEnvidoRespuesta(),1200);
-        }
+        // No llamar automáticamente a iaEnvidoRespuesta, esperar al turno de la IA
+        turnoSiguiente();
     };
     
     document.getElementById('btn-raise').onclick = ()=>{
-        if(state.truco.pendiente && state.truco.quien==='ia' && state.truco.level<3) {
+        if(state.truco.pendiente && (state.truco.quien==='codigo' || state.truco.quien==='hacker') && state.truco.level<3) {
+            // Solo permitir subir si el jugador NO cantó el truco actual y NO fue aceptado
+            if (state.truco.quien !== 'player' && state.truco.quien !== 'morty' && !state.truco.aceptado) {
             state.truco.level++;
             state.truco.pendiente = true;
             state.truco.quien = 'player';
+                state.truco.quienCanto = 'player'; // Guardar quién cantó
             log('MORTY.EXE canta '+['Retruco','Vale Cuatro'][state.truco.level-2],'player');
             render();
-            setTimeout(()=>{
-                let r = Math.random();
-                if(r<0.4) {
-                    state.truco.pendiente = false;
-                    log('IA: ¡Quiero!','system');
+                // Llamar a iaTurno para que la IA responda inmediatamente
+                setTimeout(()=>iaTurno(), 1200);
+                return;
+            }
+        }
+        // No permitir subir envido si ya se cantó falta envido
+        if(state.envido.pendiente && (state.envido.quien==='codigo' || state.envido.quien==='hacker') && !envidoSecuencia.includes('falta envido')) {
+            if (!envidoSecuencia.includes('real envido')) {
+                envidoSecuencia.push('real envido');
+                log('MORTY.EXE canta Real Envido','player');
                     render();
-                } else {
-                    let pts = state.truco.level?TRUCO_POINTS[state.truco.level-1]:1;
-                    state.teamScore['player']+=pts;
-                    log('IA: No quiero. +'+pts+' para MORTY+RICK','error');
-                    state.truco.pendiente = false;
-                    setTimeout(()=>nuevaMano(),2000);
-                }
-            }, 1200);
+                turnoSiguiente();
+            } else if (!envidoSecuencia.includes('falta envido')) {
+                envidoSecuencia.push('falta envido');
+                log('MORTY.EXE canta Falta Envido','player');
+                render();
+                turnoSiguiente();
+            }
         }
     };
     
     // Agregar botones para subir envido
     document.getElementById('btn-real-envido').onclick = ()=>{
-        if(state.envido.pendiente && state.envido.quien!=='player') {
+        if(state.envido.pendiente && (state.envido.quien==='codigo' || state.envido.quien==='hacker')) {
             envidoSecuencia.push('real envido');
             log('MORTY.EXE canta Real Envido','player');
             render();
-            setTimeout(()=>iaEnvidoRespuesta(),1200);
+            turnoSiguiente();
         }
     };
     
     document.getElementById('btn-falta-envido').onclick = ()=>{
-        if(state.envido.pendiente && state.envido.quien!=='player' && envidoSecuencia.length > 0) {
+        if(state.envido.pendiente && (state.envido.quien==='codigo' || state.envido.quien==='hacker') && envidoSecuencia.length > 0) {
             envidoSecuencia.push('falta envido');
             log('MORTY.EXE canta Falta Envido','player');
             render();
-            setTimeout(()=>iaEnvidoRespuesta(),1200);
+            turnoSiguiente();
         }
     };
 }
@@ -829,27 +1468,50 @@ function resetEnvido() {
 
 function iaEnvidoRespuesta() {
     let r = Math.random();
+    log('DEBUG: iaEnvidoRespuesta - turnPlayer: ' + state.turnPlayer + ', quien: ' + state.envido.quien,'system');
+    
+    // Opción 1: Aceptar el envido (50% probabilidad)
     if(r<0.5) {
-        envidoPendiente = false;
-        envidoPuntos = calcularEnvidoPuntos();
+        log('IA: ¡Quiero envido!','enemy');
+        state.envido.pendiente = false;
         resolverEnvido();
-    } else if(r<0.7 && !envidoSecuencia.includes('real envido')) {
+        return;
+    } 
+    // Opción 2: Subir a Real Envido (20% probabilidad)
+    else if(r<0.7 && !envidoSecuencia.includes('real envido')) {
         envidoSecuencia.push('real envido');
-        envidoPendiente = true;
-        envidoQuien = 'ia';
-        log('IA: Real Envido','enemy');
+        state.envido.pendiente = true;
+        state.envido.quien = state.turnPlayer;
+        log('IA: ¡Real Envido!','enemy');
         render();
-    } else if(!envidoSecuencia.includes('falta envido') && envidoSecuencia.length > 0) {
-        // Solo puede cantar falta envido si ya hay envido en la secuencia
+        // Continuar al siguiente turno para que el jugador responda
+        turnoSiguiente();
+        return;
+    } 
+    // Opción 3: Subir a Falta Envido (10% probabilidad)
+    else if(r<0.8 && !envidoSecuencia.includes('falta envido') && envidoSecuencia.length > 0) {
         envidoSecuencia.push('falta envido');
-        envidoPendiente = true;
-        envidoQuien = 'ia';
-        log('IA: Falta Envido','enemy');
+        state.envido.pendiente = true;
+        state.envido.quien = state.turnPlayer;
+        log('IA: ¡Falta Envido!','enemy');
         render();
-    } else {
-        envidoPendiente = false;
-        envidoPuntos = calcularEnvidoPuntos();
-        resolverEnvido();
+        // Continuar al siguiente turno para que el jugador responda
+        turnoSiguiente();
+        return;
+    } 
+    // Opción 4: Rechazar el envido (20% probabilidad)
+    else {
+        log('IA: No quiero envido','enemy');
+        let pts = calcularEnvidoPuntos(false);
+        // El equipo que cantó el envido gana los puntos cuando se rechaza
+        let equipoGanador = TEAM_PLAYER.includes(state.envido.quien) ? 'player' : 'enemy';
+        state.teamScore[equipoGanador] += pts;
+        log('+'+pts+' para '+(equipoGanador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
+        log('Reiniciando mano por rechazo de envido...','system');
+        state.envido.pendiente = false;
+        state.envido.quien = null;
+        envidoSecuencia = [];
+        setTimeout(()=>nuevaMano(),2000);
     }
 }
 
@@ -892,7 +1554,20 @@ function resolverEnvido() {
     let valHacker = envidoValor(state.hands.hacker);
     let equipoPlayer = Math.max(valPlayer, valMorty);
     let equipoEnemy = Math.max(valCodigo, valHacker);
-    let ganador = equipoPlayer>equipoEnemy?'player':(equipoEnemy>equipoPlayer?'enemy':'player');
+    
+    // Corregir la lógica del ganador
+    let ganador;
+    if (equipoPlayer > equipoEnemy) {
+        ganador = 'player';
+    } else if (equipoEnemy > equipoPlayer) {
+        ganador = 'enemy';
+    } else {
+        // En caso de empate, gana el equipo que cantó el envido
+        ganador = TEAM_PLAYER.includes(state.envido.quien) ? 'player' : 'enemy';
+    }
+    
+    // Calcular puntos del envido
+    let envidoPuntos = calcularEnvidoPuntos();
     
     // Verificar si es falta envido
     let esFaltaEnvido = envidoSecuencia.includes('falta envido');
@@ -926,6 +1601,21 @@ function resolverEnvido() {
         return;
     }
     
-    resetEnvido();
-    setTimeout(()=>nuevaMano(),2000);
+    // Resetear envido y continuar la baza (NO reiniciar la mano)
+    state.envido.pendiente = false;
+    state.envido.quien = null;
+    envidoSecuencia = [];
+    log('Envido resuelto. Continuando la baza...','system');
+    
+    // Continuar desde el turno del jugador que cantó el envido
+    let quienCantoIndex = PLAYER_ORDER.indexOf(state.envido.quien || 'player');
+    state.turn = quienCantoIndex;
+    state.turnPlayer = PLAYER_ORDER[state.turn];
+    render();
+    log('Turno: ' + nombre(state.turnPlayer), 'system');
+    
+    // Si es turno de la IA, continuar automáticamente
+    if(TEAM_ENEMY.includes(state.turnPlayer)) {
+        setTimeout(()=>iaTurno(),1700);
+    }
 } 
