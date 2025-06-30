@@ -38,19 +38,28 @@
       z-index: 1;
     }
 
+    #intro-primeriza {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 1;
+    }
+
     #overlay {
       position: absolute;
       top: 0; left: 0;
       width: 100vw;
       height: 100vh;
       z-index: 2;
-      background: rgba(0,0,0,0.9);
+      /* background: rgba(0,0,0,0.9); */
+      background: transparent;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      opacity: 0;
-      animation: fadeIn 4s 4s forwards;
+      opacity: 1;
     }
 
     .console-text {
@@ -86,10 +95,6 @@
     .ascii-button:hover {
       border-color: var(--glitch1);
       color: var(--glitch1);
-    }
-
-    @@keyframes fadeIn {
-      to { opacity: 1; }
     }
 
     @@keyframes glitch {
@@ -221,18 +226,33 @@
   </style>
 </head>
 <body>
-  <video id="intro-video" autoplay muted playsinline>
+  <!-- Video de introducción principal -->
+  <video id="intro-primeriza" autoplay muted playsinline>
+    <source src="/img/introprimeriza.mp4" type="video/mp4">
+  </video>
+  
+  <!-- Audio del video de introducción -->
+  <audio id="intro-primeriza-audio">
+    <source src="/img/introprimeriza.mp4" type="audio/mp4">
+  </audio>
+  
+  <!-- Video de Adult Swim (inicialmente oculto) -->
+  <video id="intro-video" autoplay muted playsinline style="display: none;">
     <source src="/img/adultswimintro.mp4" type="video/mp4">
   </video>
+  
+  <!-- Audio del video de Adult Swim -->
   <audio id="intro-audio">
     <source src="/img/adultswimintro.mp3" type="audio/mp3">
   </audio>
-<audio id="typewriter-audio">
-  <source src="/img/sfxtype.mp3" type="audio/mp3">
-</audio>
-<audio id="bg-fightclub" loop>
-  <source src="/img/fightclub.mp3" type="audio/mp3">
-</audio>
+  
+  <!-- Otros audios -->
+  <audio id="typewriter-audio">
+    <source src="/img/sfxtype.mp3" type="audio/mp3">
+  </audio>
+  <audio id="bg-fightclub" loop>
+    <source src="/img/fightclub.mp3" type="audio/mp3">
+  </audio>
   <div id="overlay">
     <div class="console-text" id="typewriter"></div>
     <button class="ascii-button" id="btn-juego" onclick="entrarJuego()">> ACCEDER AL CÓDIGO FUENTE <</button>
@@ -243,175 +263,194 @@
 
   <script src="/js/endings.js"></script>
   <script>
+  // Variables para manejar la secuencia de videos
+  let introPrimerizaVideo = document.getElementById("intro-primeriza");
+  let introPrimerizaAudio = document.getElementById("intro-primeriza-audio");
+  let introVideo = document.getElementById("intro-video");
+  let introAudio = document.getElementById("intro-audio");
+  
   // Justo antes de arrancar la intro:
-if (localStorage.getItem('skipIntro') === '1') {
-  localStorage.removeItem('skipIntro'); // así no se repite nunca
-  // Mostramos el final/post-intro y los botones directamente:
-  document.getElementById("intro-video").style.display = "none";
-  document.getElementById("overlay").style.opacity = "1";
-  document.getElementById("overlay").style.animation = "none";
-  document.getElementById("typewriter").style.display = "none";
-  // Mostrá los botones y quitá el efecto explosivo
-  ["btn-juego", "btn-tuto", "btn-logros", "btn-equipo"].forEach(id => {
-    const btn = document.getElementById(id);
-    btn.classList.add("show");
-    btn.classList.remove("explosive");
+  if (localStorage.getItem('skipIntro') === '1') {
+    localStorage.removeItem('skipIntro'); // así no se repite nunca
+    // Mostramos el final/post-intro y los botones directamente:
+    introPrimerizaVideo.style.display = "none";
+    introVideo.style.display = "none";
+    document.getElementById("overlay").style.opacity = "1";
+    document.getElementById("overlay").style.animation = "none";
+    document.getElementById("typewriter").style.display = "none";
+    // Mostrá los botones y quitá el efecto explosivo
+    ["btn-juego", "btn-tuto", "btn-logros", "btn-equipo"].forEach(id => {
+      const btn = document.getElementById(id);
+      btn.classList.add("show");
+      btn.classList.remove("explosive");
+    });
+    // Si usás audio, podés frenarlo o poner uno especial
+  } else {
+    // Secuencia normal de videos
+    startVideoSequence();
+  }
+
+  function startVideoSequence() {
+    // Reproducir el primer video con sonido
+    introPrimerizaAudio.volume = 1;
+    introPrimerizaAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
+    
+    // Esperar a que termine el primer video antes de cambiar al segundo
+    introPrimerizaVideo.addEventListener('ended', function() {
+      introPrimerizaVideo.style.display = "none";
+      introPrimerizaAudio.pause();
+      introVideo.style.display = "block";
+      
+      // Reproducir el audio del video de Adult Swim
+      introAudio.volume = 1;
+      introAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
+      
+      // Después de 6 segundos, pausar y mostrar el overlay
+      setTimeout(() => {
+        introVideo.pause();
+        typeLine();
+      }, 6000);
+    });
+  }
+
+  const audio = document.getElementById("intro-audio");
+  window.addEventListener('load', () => {
+    // El audio se maneja en startVideoSequence()
   });
-  // Si usás audio, podés frenarlo o poner uno especial
-} else {
-  // ...arranca el typeLine/intro normalmente...
-  setTimeout(() => {
-    document.getElementById("intro-video").pause();
-    typeLine();
-  }, 6000);
-}
 
-const audio = document.getElementById("intro-audio");
-window.addEventListener('load', () => {
-  audio.volume = 1;
-  audio.play().catch(e => console.warn("Reproducción bloqueada por el navegador", e));
-});
+  const lines = [
+  ""
+  ];
 
-const lines = [
-""
-];
+  let currentLine = 0;
+  const typewriter = document.getElementById("typewriter");
+  const body = document.body;
 
-let currentLine = 0;
-const typewriter = document.getElementById("typewriter");
-const body = document.body;
+  function flashBackground() {
+    body.style.background = 'white';
+    setTimeout(() => { body.style.background = 'black'; }, 150);
+  }
 
-function flashBackground() {
-  body.style.background = 'white';
-  setTimeout(() => { body.style.background = 'black'; }, 150);
-}
-
-function scrambleWrite(text, color, onDone, glitch = false) {
-  let revealed = '';
-  let i = 0;
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%^&*()_+-=[]{};:\'",.<>?/\\|'.split('');
-  function scrambleStep() {
-    if (i <= text.length) {
-      // Armá el texto: lo ya revelado + el resto scrambleado
-      let visible = text.slice(0, i);
-      let scrambled = '';
-      for (let j = i; j < text.length; j++) {
-        if (text[j] === ' ' || text[j] === '>' || text[j] === ':') {
-          scrambled += text[j]; // que los espacios y símbolos queden fijos para que no sea ilegible
+  function scrambleWrite(text, color, onDone, glitch = false) {
+    let revealed = '';
+    let i = 0;
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#$%^&*()_+-=[]{};:\'",.<>?/\\|'.split('');
+    function scrambleStep() {
+      if (i <= text.length) {
+        // Armá el texto: lo ya revelado + el resto scrambleado
+        let visible = text.slice(0, i);
+        let scrambled = '';
+        for (let j = i; j < text.length; j++) {
+          if (text[j] === ' ' || text[j] === '>' || text[j] === ':') {
+            scrambled += text[j]; // que los espacios y símbolos queden fijos para que no sea ilegible
+          } else {
+            scrambled += chars[Math.floor(Math.random() * chars.length)];
+          }
+        }
+        let span = `<span${color ? ` style='color:${color}'` : ''}${glitch ? " class='glitch'" : ""}>${visible}${scrambled}</span><br>`;
+        // Escribí la línea (eliminando la versión previa, para que no se acumule)
+        typewriter.innerHTML = typewriter.innerHTML.replace(/(<span.*?>.*?<\/span><br>)*$/, '') + span;
+        if (i === text.length) {
+          if (onDone) onDone();
         } else {
-          scrambled += chars[Math.floor(Math.random() * chars.length)];
+          i++;
+          setTimeout(scrambleStep, 90 + Math.random() * 90);
         }
       }
-      let span = `<span${color ? ` style='color:${color}'` : ''}${glitch ? " class='glitch'" : ""}>${visible}${scrambled}</span><br>`;
-      // Escribí la línea (eliminando la versión previa, para que no se acumule)
-      typewriter.innerHTML = typewriter.innerHTML.replace(/(<span.*?>.*?<\/span><br>)*$/, '') + span;
-      if (i === text.length) {
-        if (onDone) onDone();
-      } else {
-        i++;
-        setTimeout(scrambleStep, 90 + Math.random() * 90);
+    }
+    scrambleStep();
+  }
+
+  let typeAudio = document.getElementById("typewriter-audio");
+  let typeAudioPlaying = false;
+
+  function startTypeAudio() {
+    if (!typeAudio) return;
+    typeAudio.loop = true;
+    typeAudio.currentTime = 0;
+    typeAudio.volume = 0.7;
+    // Si ya está sonando, no la dupliques
+    if (!typeAudioPlaying) {
+      typeAudio.play().catch(() => {});
+      typeAudioPlaying = true;
+    }
+  }
+  function stopTypeAudio() {
+    if (!typeAudio) return;
+    typeAudio.pause();
+    typeAudio.currentTime = 0;
+    typeAudioPlaying = false;
+  }
+  const bgAudio = document.getElementById('bg-fightclub');
+  bgAudio.volume = 0.70; // O el volumen que prefieras
+  let bgAudioStarted = false; // Para asegurarse que solo arranca una vez
+
+  function typeLine() {
+    // Arranca el audio de tipeo y el de fondo solo la primera vez
+    if (currentLine === 0) {
+      startTypeAudio();
+      if (!bgAudioStarted) {
+        bgAudio.currentTime = 0;
+        bgAudio.play().catch(()=>{});
+        bgAudioStarted = true;
       }
     }
-  }
-  scrambleStep();
-}
 
-let typeAudio = document.getElementById("typewriter-audio");
-let typeAudioPlaying = false;
-
-function startTypeAudio() {
-  if (!typeAudio) return;
-  typeAudio.loop = true;
-  typeAudio.currentTime = 0;
-  typeAudio.volume = 0.7;
-  // Si ya está sonando, no la dupliques
-  if (!typeAudioPlaying) {
-    typeAudio.play().catch(() => {});
-    typeAudioPlaying = true;
-  }
-}
-function stopTypeAudio() {
-  if (!typeAudio) return;
-  typeAudio.pause();
-  typeAudio.currentTime = 0;
-  typeAudioPlaying = false;
-}
-const bgAudio = document.getElementById('bg-fightclub');
-bgAudio.volume = 0.70; // O el volumen que prefieras
-let bgAudioStarted = false; // Para asegurarse que solo arranca una vez
-
-function typeLine() {
-  // Arranca el audio de tipeo y el de fondo solo la primera vez
-  if (currentLine === 0) {
-    startTypeAudio();
-    if (!bgAudioStarted) {
-      bgAudio.currentTime = 0;
-      bgAudio.play().catch(()=>{});
-      bgAudioStarted = true;
-    }
-  }
-
-  if (currentLine < lines.length) {
-    let line = lines[currentLine];
-    if (line.includes("ERROR FATAL")) {
-      scrambleWrite(line, 'var(--err)', () => {
-        flashBackground();
-        currentLine++;
-        setTimeout(typeLine, 900);
-      }, true);
-    } else if (line.includes("ACCESO PARCIAL")) {
-      scrambleWrite(line, 'var(--fg)', () => {
-        currentLine++;
-        setTimeout(typeLine, 900);
-      }, true);
+    if (currentLine < lines.length) {
+      let line = lines[currentLine];
+      if (line.includes("ERROR FATAL")) {
+        scrambleWrite(line, 'var(--err)', () => {
+          flashBackground();
+          currentLine++;
+          setTimeout(typeLine, 900);
+        }, true);
+      } else if (line.includes("ACCESO PARCIAL")) {
+        scrambleWrite(line, 'var(--fg)', () => {
+          currentLine++;
+          setTimeout(typeLine, 900);
+        }, true);
+      } else {
+        scrambleWrite(line, 'var(--fg)', () => {
+          currentLine++;
+          setTimeout(typeLine, 250);
+        });
+      }
     } else {
-      scrambleWrite(line, 'var(--fg)', () => {
-        currentLine++;
-        setTimeout(typeLine, 250);
-      });
+      stopTypeAudio();
+      triggerEpicReveal();
     }
-  } else {
-    stopTypeAudio();
-    triggerEpicReveal();
   }
-}
 
+  function triggerEpicReveal() {
+    const btn1 = document.getElementById("btn-juego");
+    const btn2 = document.getElementById("btn-tuto");
+    const btn3 = document.getElementById("btn-logros");
+    const btn4 = document.getElementById("btn-equipo");
+    btn1.classList.add("show", "explosive");
+    btn2.classList.add("show", "explosive");
+    btn3.classList.add("show", "explosive");
+    btn4.classList.add("show", "explosive");
+    setTimeout(() => {
+      btn1.classList.remove("explosive");
+      btn2.classList.remove("explosive");
+      btn3.classList.remove("explosive");
+      btn4.classList.remove("explosive");
+    }, 700);
+  }
 
-
-function triggerEpicReveal() {
-  const btn1 = document.getElementById("btn-juego");
-  const btn2 = document.getElementById("btn-tuto");
-  const btn3 = document.getElementById("btn-logros");
-  const btn4 = document.getElementById("btn-equipo");
-  btn1.classList.add("show", "explosive");
-  btn2.classList.add("show", "explosive");
-  btn3.classList.add("show", "explosive");
-  btn4.classList.add("show", "explosive");
-  setTimeout(() => {
-    btn1.classList.remove("explosive");
-    btn2.classList.remove("explosive");
-    btn3.classList.remove("explosive");
-    btn4.classList.remove("explosive");
-  }, 700);
-}
-
-setTimeout(() => {
-  document.getElementById("intro-video").pause();
-  typeLine();
-}, 6000);
-
-function entrarJuego() {
-  window.location.href = "/Home/Room1";
-}
-function verTutorial() {
-  window.location.href = "/Home/Tutorial";
-}
-function verLogros() {
-  window.location.href = '/Home/Logros';
-}
-function verEquipo() {
-  window.location.href = '/Home/Equipo';
-}
-</script>
+  function entrarJuego() {
+    window.location.href = "/Home/Room1";
+  }
+  function verTutorial() {
+    window.location.href = "/Home/Tutorial";
+  }
+  function verLogros() {
+    window.location.href = '/Home/Logros';
+  }
+  function verEquipo() {
+    window.location.href = '/Home/Equipo';
+  }
+  </script>
 
 </body>
 </html>
