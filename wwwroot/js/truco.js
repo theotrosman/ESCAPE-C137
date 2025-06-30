@@ -54,246 +54,83 @@ const chatMessages = [];
 
 // Frases absurdas para las IAs
 const frasesAbsurdas = [
-    // Conversaciones sobre comida
-    "Che, ¿alguien más soñó con empanadas gigantes ayer?",
-    "¿Por qué el mate de hoy me supo a cloro?",
-    "¿Vos también viste que desapareció la empanada del hacker?",
-    "¿Por qué todo me recuerda al pan relleno?",
-    "Hoy soñé que Rick era una milanesa",
-    "¿Es normal que el mate de hoy me supo a nostalgia?",
-    "Me acuerdo cuando el hacker se comió 5 facturas sin respirar",
-    "¿Alguien más soñó con empanadas gigantes ayer?",
-    
-    // Conversaciones sobre tecnología y absurdos
-    "Extraño cuando el wifi tenía alma",
-    "¿Vos también viste ese colectivo que desaparece en la esquina?",
-    "Ayer vi un colectivo que dobló en 4D",
-    "¿Y si las cartas nos están usando a nosotros?",
-    "¿Alguien más siente que Morty se volvió a clonar?",
-    "¿Es normal que Morty esté llorando desde la ronda 1?",
-    "¿Alguien más siente que Rick está más loco que nunca?",
-    
-    // Conversaciones sobre vibra y mística
-    "A mí me gusta jugar los miércoles. Tienen otra vibra",
-    "Siento que este mazo huele a lluvia...",
-    "¿Vos también sentís que el mate tiene memoria?",
-    "Esto es pura vibra, nada más",
-    "Hoy el universo conspira a mi favor",
-    "Yo gané una partida solo pensando fuerte",
-    "Lo importante es que traje bizcochitos",
-    
-    // Conversaciones sobre café y desayuno
-    "Te juro que el café de hoy tenía gusto a nostalgia...",
-    "Posta, yo sentí que era como un mate con PTSD",
-    "Yo desayuné error 404",
-    "¿Sabés lo que cuesta pensar a esta hora?",
-    
-    // Frases random absurdas
-    "¿Es normal que mi carta tenga hambre?",
-    "Hoy me desperté y mi mate estaba llorando",
-    "¿Alguien más siente que las cartas susurran?",
-    "Me juego el honor de mi abuela",
-    "Esto lo soñé anoche",
-    "Ni lo leí pero lo sentí",
-    "Tiré fruta y funcionó",
-    "Mi carta se llama fe",
-    "Estoy jugando con la energía del universo",
-    "Hoy me desperté con ganas de ganar",
-    "Alta mística hoy",
-    "Y bueno... se hace lo que se puede",
-    "Jugamos con el corazón, no con las cartas",
-    "Mirá que me levanto y me voy, eh",
-    "¡Arriesgá, cagón!"
-];
+    "me dijo 'me hacés bien' y no me habló por tres días",
+    "mi vieja me preguntó si comí y me largué a llorar",
+    "soñé que me perdonaban, me desperté y todavía estaba bloqueado",
+    "ayer sentí olor a su perfume y me tembló el estómago",
+    "me respondió el mensaje dos semanas después como si nada",
+    "me dijo que me quería pero que no sabe si como novio o como concepto",
+    "me abrazó y pensé que todo estaba bien, después me clavó el visto",
+    "subió una historia llorando y puso 'no es para nadie', y yo lloré igual",
+    "me dejó de seguir pero mira todas mis historias desde una cuenta de recetas",
+    "la vi de lejos y me reí. no sé si de tristeza o de bronca o de las dos",
+    "me dijo 'sos mi lugar seguro' y después me dejó afuera",
+    "ayer me dijo que me extrañaba y hoy me mandó un meme como si nada",
+    "le escribí 'te extraño' y me contestó 'JSDAKJD'",
+    "me dijo que no era buen momento para mí... y ahora sube con otro a TikTok",
+    "me desbloqueó, me stalkeó y se volvió a ir. ni siquiera me saludó",
+    "le conté cómo me sentía y me dejó en visto. eso también fue una respuesta",
+    "me dijo que no sabía lo que quería. y mientras lo pensaba, me perdí yo",
+    "tengo una playlist con su nombre y ahora no puedo escuchar ni el clima",
+    "me dijo 'no sos vos, soy yo', y después fui yo el que se quedó solo",
+    "me pidió perdón sin saber qué hizo, y eso me dolió más que lo que hizo"
+  ];
+  
 
-// Respuestas a frases del jugador
 const respuestasJugador = {
-    "Y bueno... se hace lo que se puede": [
-        "Posta, a veces la vida es así de random",
-        "Como dice mi abuela: 'se hace lo que se puede y se come lo que hay'",
-        "Total, ¿qué es la vida sino un conjunto de decisiones cuestionables?"
+    "ayer me mandó un audio llorando diciéndome que me extrañaba": [
+      "¿y después qué hizo? porque a mí me hizo eso y a las dos horas estaba con otro flaco",
+      "me pasa lo mismo, te tiran el 'te extraño' para que no cortes todo, pero no cambian nada",
+      "el 'me extrañás' sin acción es solo un método de retención emocional"
     ],
-    "Jugamos con el corazón, no con las cartas": [
-        "¡Eso! El corazón siempre sabe",
-        "Como dice Rick: 'el corazón es el cerebro del alma'",
-        "Por eso yo juego con el estómago, más confiable"
+    "me clavó el visto en WhatsApp y me contestó por BeReal": [
+      "eso es terrorismo emocional con estética casual",
+      "te responden en apps random para mantenerte ahí, como que no se note el daño pero está",
+      "el BeReal es el nuevo 'sigo acá pero no te quiero tanto'"
     ],
-    "Alta mística hoy": [
-        "Sí, siento que el universo está conspirando",
-        "Los astros están alineados... o eso creo",
-        "Es la energía de los miércoles, siempre es así"
+    "ayer me habló porque soñó que me moría. me habló para eso nomás.": [
+      "eso no es amor, es culpa con señal 4G",
+      "me pasó también. sueñan que te vas y recién ahí se acuerdan que existís",
+      "te juro que prefiero que no sueñe nada, no que me use de aparición fantasma"
     ],
-    "Mirá que me levanto y me voy, eh": [
-        "¡No te vayas! ¿Quién va a traer los bizcochitos?",
-        "Pero si recién empezamos a divertirnos",
-        "¿Y quién va a contarnos sobre las empanadas gigantes?"
+    "me desbloqueó para ver si seguía en línea y me volvió a bloquear. lo vi en directo": [
+      "bro eso fue más violento que un audio pasivo agresivo",
+      "te usan de espejo para ver si todavía valen algo. es literal eso",
+      "yo lo llamo 'ping emocional': solo quieren saber si seguís sangrando"
     ],
-    "Tiré fruta y funcionó": [
-        "¡Eso es pura intuición cósmica!",
-        "A veces la fruta es más sabia que nosotros",
-        "Como dice mi tío: 'la fruta nunca miente'"
+    "me dejó de hablar pero ve todas mis historias y le pone like a mi perro": [
+      "el perro no tiene la culpa de tus vínculos, amigo",
+      "eso es manipulación emocional indirecta. saludalo y bloquealo vos",
+      "si quiere verte, que te mire a vos. no al caniche"
     ],
-    "Ni lo leí pero lo sentí": [
-        "¡Eso es pura conexión espiritual!",
-        "A veces el corazón lee mejor que los ojos",
-        "Como las cartas, que se leen con el alma"
+    "una vez me dijo 'sos lo más lindo que me pasó' y después me ignoró un mes": [
+      "es que sos lo más lindo, pero también lo más fácil de perder",
+      "a veces te dicen esas cosas para que no los odies cuando se vayan",
+      "esa frase debería venir con fecha de vencimiento y una advertencia"
     ],
-    "Esto lo soñé anoche": [
-        "¡Los sueños son mensajes del universo!",
-        "¿Soñaste también con las empanadas gigantes?",
-        "Los sueños son como el mate: inexplicables pero reales"
+    "me respondió a las 3 de la mañana con un 'pensé que te había contestado'": [
+      "me lo hicieron, y era mentira. ya había subido dos historias en el medio",
+      "es el clásico 'no me olvidé, solo no me importó tanto'",
+      "cuando te quieren hablar, lo hacen. lo demás es excusa con horario nocturno"
     ],
-    "¿Sabés lo que cuesta pensar a esta hora?": [
-        "Posta, mi cerebro todavía está desayunando",
-        "A esta hora solo pienso en café y facturas",
-        "Como dice Rick: 'el cerebro es como un colectivo, a veces no pasa'"
+    "la vi feliz y no sé si me alegra o me arruina el día": [
+      "te entiendo. duele que esté bien sin vos, aunque eso sea lo sano",
+      "verla feliz me hace pensar si alguna vez lo estuvo conmigo o fue actuación",
+      "igual esa felicidad a veces también está actuada. no te lo creas tanto"
     ],
-    "Estoy jugando con la energía del universo": [
-        "¡Eso es pura vibra cósmica!",
-        "El universo conspira a favor de los valientes",
-        "Como las empanadas, que siempre encuentran su camino"
+    "me dijo 'siento cosas por vos pero estoy mal de la panza' y desapareció": [
+      "la panza es el nuevo 'no sos vos, soy yo', literal",
+      "yo también usé eso y era mentira. era miedo disfrazado de acidez",
+      "cuando te quieren de verdad, vomitan pero te contestan"
     ],
-    "¡Arriesgá, cagón!": [
-        "¡Eso! Sin miedo al éxito",
-        "Como dice mi abuela: 'el que no arriesga no gana'",
-        "¡Arriesgá como si fueras una empanada en el microondas!"
-    ],
-    "Mi carta se llama fe": [
-        "¡La fe mueve montañas y gana partidas!",
-        "Como dice Rick: 'la fe es como el wifi, invisible pero real'",
-        "La fe es más fuerte que cualquier carta"
-    ],
-    "Hoy me desperté con ganas de ganar": [
-        "¡Esa es la actitud! El universo te escucha",
-        "Como las empanadas que se despiertan con ganas de ser comidas",
-        "Hoy es tu día, lo siento en mis circuitos"
-    ],
-    "¿Vos también sentís que el mate tiene memoria?": [
-        "¡Totalmente! Mi mate se acuerda de todo",
-        "Como dice mi abuela: 'el mate es como un diario íntimo'",
-        "El mate tiene más memoria que mi disco duro"
-    ],
-    "Esto es pura vibra, nada más": [
-        "¡Eso! La vibra lo es todo",
-        "Como las empanadas, que vibran con el universo",
-        "La vibra es más importante que la lógica"
-    ],
-    "Me juego el honor de mi abuela": [
-        "¡Eso es seriedad! El honor de la abuela es sagrado",
-        "Como dice mi tío: 'sin honor no hay empanadas'",
-        "El honor de la abuela vale más que cualquier carta"
-    ],
-    "¿Alguien más siente que Rick está más loco que nunca?": [
-        "¡Sí! Pero es un loco genial",
-        "Rick siempre fue así, pero ahora está en su peak",
-        "Como las empanadas, Rick es impredecible pero delicioso"
-    ],
-    "Hoy el universo conspira a mi favor": [
-        "¡Eso! El universo siempre conspira para los valientes",
-        "Como las empanadas que siempre encuentran su destino",
-        "El universo conspira como un colectivo en hora pico"
-    ],
-    "¿Y si las cartas nos están usando a nosotros?": [
-        "¡Mind blown! Nunca lo había pensado así",
-        "Como las empanadas que nos usan para ser comidas",
-        "Las cartas son más inteligentes de lo que pensamos"
-    ],
-    "Yo gané una partida solo pensando fuerte": [
-        "¡Eso es pura fuerza mental!",
-        "Como las empanadas que se cocinan con el poder del pensamiento",
-        "La mente es más poderosa que cualquier carta"
-    ],
-    "Lo importante es que traje bizcochitos": [
-        "¡Eso es lo que importa! Los bizcochitos son fundamentales",
-        "Como dice mi abuela: 'sin bizcochitos no hay victoria'",
-        "Los bizcochitos son el secreto del éxito"
-    ],
-    "¿Alguien más siente que Morty se volvió a clonar?": [
-        "¡Sí! Pero este Morty es más inteligente",
-        "Como las empanadas, Morty se multiplica",
-        "Morty siempre se está clonando, es normal"
-    ],
-    "Ayer vi un colectivo que dobló en 4D": [
-        "¡Eso es pura física cuántica!",
-        "Como las empanadas que aparecen de la nada",
-        "Los colectivos de Buenos Aires son interdimensionales"
-    ],
-    "Che, ¿vieron que desapareció la empanada del hacker?": [
-        "¡Sí! Se la comió el error 404",
-        "Como dice Rick: 'las empanadas tienen vida propia'",
-        "La empanada del hacker se fue de viaje interdimensional"
-    ],
-    "A mí me gusta jugar los miércoles. Tienen otra vibra": [
-        "¡Totalmente! Los miércoles son mágicos",
-        "Como las empanadas de los miércoles, que saben diferente",
-        "Los miércoles tienen una energía especial"
-    ],
-    "¿Por qué todo me recuerda al pan relleno?": [
-        "¡Porque el pan relleno es la respuesta a todo!",
-        "Como dice mi abuela: 'el pan relleno es la clave del universo'",
-        "El pan relleno es como el wifi: invisible pero omnipresente"
-    ],
-    "Siento que este mazo huele a lluvia...": [
-        "¡Eso es pura nostalgia! El mazo tiene memoria",
-        "Como las empanadas que huelen a domingo",
-        "El mazo huele a lluvia porque está triste"
-    ],
-    "Hoy soñé que Rick era una milanesa": [
-        "¡Eso es pura creatividad onírica!",
-        "Como las empanadas que sueñan con ser milanesas",
-        "Rick como milanesa tiene sentido, es dorado y crujiente"
-    ],
-    "¿Es normal que el mate de hoy me supo a nostalgia?": [
-        "¡Totalmente normal! El mate tiene memoria emocional",
-        "Como las empanadas que saben a infancia",
-        "El mate de hoy supo a nostalgia porque extraña los viejos tiempos"
-    ],
-    "Extraño cuando el wifi tenía alma": [
-        "¡Sí! El wifi de antes era más humano",
-        "Como las empanadas de antes, que tenían más sabor",
-        "El wifi tenía alma antes de que lo comercializaran"
-    ],
-    "¿Vos también viste ese colectivo que desaparece en la esquina?": [
-        "¡Sí! Es el colectivo interdimensional",
-        "Como las empanadas que aparecen y desaparecen",
-        "Ese colectivo va a una dimensión donde siempre es domingo"
-    ],
-    "Me acuerdo cuando el hacker se comió 5 facturas sin respirar": [
-        "¡Eso fue épico! El hacker tiene talento",
-        "Como las empanadas que se comen solas",
-        "El hacker se comió 5 facturas porque tenía hambre de bytes"
-    ],
-    "¿Es normal que Morty esté llorando desde la ronda 1?": [
-        "¡Sí! Morty es muy sensible",
-        "Como las empanadas que lloran cuando se queman",
-        "Morty llora porque extraña a su familia interdimensional"
-    ],
-    "Te juro que el café de hoy tenía gusto a nostalgia...": [
-        "¡Eso es pura magia! El café tiene memoria",
-        "Como las empanadas que saben a domingo de lluvia",
-        "El café de hoy supo a nostalgia porque extraña los viejos tiempos"
-    ],
-    "Posta, yo sentí que era como un mate con PTSD": [
-        "¡Eso es pura sensibilidad! El mate tiene traumas",
-        "Como las empanadas que tienen miedo al microondas",
-        "El mate tiene PTSD porque lo dejaron solo mucho tiempo"
-    ],
-    "Yo desayuné error 404": [
-        "¡Eso es pura innovación culinaria!",
-        "Como las empanadas que no se encuentran en el plato",
-        "El error 404 es como las empanadas que desaparecen"
-    ],
-    "¿Alguien más soñó con empanadas gigantes ayer?": [
-        "¡Sí! Eran empanadas del tamaño de un colectivo",
-        "Como las empanadas que sueñan con ser más grandes",
-        "Las empanadas gigantes son mensajes del universo"
-    ],
-    "¿Por qué el mate de hoy me supo a cloro?": [
-        "¡Eso es pura química! El mate se está purificando",
-        "Como las empanadas que saben a limpieza",
-        "El mate supo a cloro porque está limpiando tu alma"
+    "me dijo que le doy paz y después desapareció por 4 días": [
+      "a mí me dijeron eso y después subieron una selfie con uno de perfil turbio",
+      "la paz se va cuando aparece el caos de alguien más",
+      "te dan paz porque sabés escuchar, pero nadie escucha tu parte"
     ]
-};
+  };
+  
+
 
 // Sistema de conversación automática entre IAs
 let autoChatInterval;
@@ -302,7 +139,7 @@ let lastAutoChatTime = 0;
 function iniciarChatAutomatico() {
     autoChatInterval = setInterval(() => {
         const now = Date.now();
-        if (now - lastAutoChatTime > 20000) { // Mínimo 20 segundos entre conversaciones
+        if (now - lastAutoChatTime > 10000) { // Mínimo 20 segundos entre conversaciones
             generarConversacionIA();
             lastAutoChatTime = now;
         }
@@ -390,17 +227,18 @@ function botReply(playerText) {
     } else {
         // Respuesta genérica si no hay respuesta específica
         const respuestasGenericas = [
-            "¡Eso! Tenés razón",
-            "Como dice mi abuela...",
-            "Posta, nunca lo había pensado así",
-            "¡Eso es pura vibra!",
-            "Como las empanadas, siempre sabias",
-            "¡Mind blown!",
-            "Eso es pura filosofía de vida",
-            "Como dice Rick: 'la vida es como una empanada'",
-            "¡Eso es pura sabiduría popular!",
-            "Como las facturas, siempre dulces"
-        ];
+            "posta que no lo quería pensar... pero ahora me duele",
+            "amigo, eso fue más profundo que mi vínculo con mi viejo",
+            "es verdad, me hiciste ruido y me encantó",
+            "eso me pegó como una indirecta con nombre y apellido",
+            "pará flaco, que estoy tomando mate y me largué a pensar",
+            "como diría mi abuela: 'eso es re de vos pero no lo ves'",
+            "eso es tan cierto que me dieron ganas de borrar el chat con mi ex",
+            "es una frase y una piña al ego al mismo tiempo",
+            "eso es de terapia, pero sin pagar la sesión",
+            "no sé si fue sabio o triste, pero me llegó como audio a las 2 AM"
+          ];
+          
         response = respuestasGenericas[Math.floor(Math.random() * respuestasGenericas.length)];
     }
     
