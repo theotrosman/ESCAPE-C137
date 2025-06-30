@@ -143,7 +143,7 @@
                 <!-- El chat inicia vacío, sin mensajes de ejemplo -->
             </div>
             <div id="chat-input-area" style="padding: 12px; border-top: 1px solid #444; display: flex; gap: 8px; align-items: center; background: #181818;">
-                <select id="chat-phrases" style="flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #333; background: #222; color: #eee; outline: none;">
+                <select id="chat-phrases" style="flex: 1; padding: 8px 12px; border-radius: 20px; border: 1px solid #333; background: #222; color: #eee; outline: none; max-width: 70%; min-width: 120px;">
                     <option value="">Selecciona una frase...</option>
                     <option>Y bueno... se hace lo que se puede</option>
                     <option>Jugamos con el corazón, no con las cartas</option>
@@ -218,7 +218,8 @@
 </html>
 
 <style>
-#chat-container { font-family: 'Segoe UI', Arial, sans-serif; }
+/* --- CHAT --- */
+#chat-container { font-family: 'Segoe UI', Arial, sans-serif; min-width: 240px; max-width: 100vw; width: 100%; box-sizing: border-box; }
 .chat-bubble { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
 .chat-bubble.left { flex-direction: row; }
 .chat-bubble.right { flex-direction: row-reverse; }
@@ -228,12 +229,127 @@
 .chat-name { font-size: 0.95em; font-weight: bold; display: block; margin-bottom: 2px; }
 .chat-text { font-size: 1em; display: block; }
 #mesa-truco { background: url('/img/aula-ort-vacia.jpg') center/cover; }
-.profile-mesa { width: 64px; height: 64px; border-radius: 50%; border: 2.5px solid #fff; box-shadow: 0 2px 8px #0008; margin-bottom: 6px; }
+.profile-mesa {
+    width: 7vw;
+    height: 7vw;
+    min-width: 40px;
+    min-height: 40px;
+    max-width: 64px;
+    max-height: 64px;
+    border-radius: 50%;
+    border: 2.5px solid #fff;
+    box-shadow: 0 2px 8px #0008;
+    margin-bottom: 6px;
+}
 .player-nombre { color: #fff; font-weight: bold; text-shadow: 0 1px 4px #000; margin-bottom: 4px; }
-.cartas-mesa { display: flex; gap: 8px; margin-top: 4px; }
-.cartas-frente .carta { width: 110px; height: 160px; }
-.cartas-dorso .carta { width: 75px; height: 110px; filter: brightness(0.7); }
-#mazo-mesa { width: 75px; height: 110px; background: url('/img/dorsocard.jfif') center/cover; border-radius: 8px; box-shadow: 0 2px 8px #0008; }
+.cartas-mesa { display: flex; gap: 1vw; margin-top: 4px; }
+.cartas-frente .carta {
+    width: 10vw;
+    height: 15vw;
+    min-width: 60px;
+    min-height: 90px;
+    max-width: 110px;
+    max-height: 160px;
+}
+.cartas-dorso .carta {
+    width: 7vw;
+    height: 10vw;
+    min-width: 40px;
+    min-height: 60px;
+    max-width: 75px;
+    max-height: 110px;
+    filter: brightness(0.7);
+}
+#mazo-mesa {
+    width: 7vw;
+    height: 10vw;
+    min-width: 40px;
+    min-height: 60px;
+    max-width: 75px;
+    max-height: 110px;
+    background: url('/img/dorsocard.jfif') center/cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px #0008;
+}
+
+/* --- HUD Y PADDINGS --- */
+#game-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vw 2vw;
+    background: rgba(0,0,0,0.7);
+    color: #0f0;
+    font-size: 1.1vw;
+    min-height: 48px;
+    box-sizing: border-box;
+}
+.team-score { min-width: 0; }
+.team-label, .team-name, .score { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* --- JUGADORES ARRIBA Y ABAJO --- */
+#mesa-truco > div:first-child, #mesa-truco > div:last-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2vw 4vw 0 4vw;
+    min-width: 0;
+}
+#mesa-truco > div:last-child {
+    align-items: flex-end;
+    padding: 0 8vw 2vw 8vw;
+}
+
+/* --- CARTAS JUGADAS --- */
+#played-cards {
+    display: flex;
+    gap: 2vw;
+    margin-bottom: 1vw;
+    justify-content: center;
+}
+.played-card-slot {
+    width: 8vw;
+    height: 12vw;
+    min-width: 50px;
+    min-height: 75px;
+    max-width: 90px;
+    max-height: 135px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- CHAT RESPONSIVE --- */
+#chat-header img { width: 6vw; height: 6vw; min-width: 32px; min-height: 32px; max-width: 48px; max-height: 48px; }
+#chat-messages { font-size: 1.1em; }
+
+/* --- MEDIA QUERIES --- */
+@@media (max-width: 900px) {
+    #truco-main-layout { flex-direction: column; }
+    #game-container, #chat-container { width: 100vw !important; max-width: 100vw !important; min-width: 0; }
+    #chat-container { min-width: 0; max-width: 100vw; }
+    #mesa-truco > div:first-child, #mesa-truco > div:last-child { padding: 2vw 2vw 0 2vw; }
+    #mesa-truco > div:last-child { padding: 0 2vw 2vw 2vw; }
+}
+@@media (max-width: 600px) {
+    #truco-main-layout { flex-direction: column; }
+    #game-hud { font-size: 3vw; padding: 2vw 2vw; }
+    .profile-mesa { width: 12vw; height: 12vw; min-width: 32px; min-height: 32px; }
+    .cartas-frente .carta, .cartas-dorso .carta, #mazo-mesa, .played-card-slot {
+        width: 18vw !important;
+        height: 27vw !important;
+        min-width: 32px;
+        min-height: 48px;
+        max-width: 80px;
+        max-height: 120px;
+    }
+    #chat-header img { width: 10vw; height: 10vw; min-width: 28px; min-height: 28px; }
+}
+
+/* --- SCROLL SI ES NECESARIO --- */
+html, body { width: 100vw; height: 100vh; min-width: 0; min-height: 0; overflow: auto; }
 
 /* Estilos para el botón de revelar carta del compañero */
 .reveal-btn {

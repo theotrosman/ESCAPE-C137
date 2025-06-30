@@ -919,7 +919,7 @@
             console.log('Input:', input, 'Expected:', valorDecimal, 'Type:', typeof input, typeof valorDecimal);
 
             if (input === valorDecimal.toString()) {
-    fetch('/Home/CompleteRoom/2', {
+    fetch('/Home/CompleteRoom/7', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -931,12 +931,12 @@
     })
     .then(() => {
         setTimeout(() => {
-            window.location.href = "/Home/Room3";
+            window.location.href = "/Home/Room8";
         }, 3000);
     })
     .catch(() => {
         setTimeout(() => {
-            window.location.href = "/Home/Room3";
+            window.location.href = "/Home/Room8";
         }, 3000);
     });
 }

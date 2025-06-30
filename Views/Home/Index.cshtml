@@ -97,6 +97,46 @@
       color: var(--glitch1);
     }
 
+    /* --- BOTÓN DE PLAY INICIO --- */
+    #play-intro-btn {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s;
+    }
+    #play-intro-btn .play-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.12);
+      border: 4px solid white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 32px 0 #fff8;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    #play-intro-btn .play-circle:hover {
+      background: rgba(255,255,255,0.25);
+      box-shadow: 0 0 48px 0 #fff;
+    }
+    #play-intro-btn .play-triangle {
+      width: 0;
+      height: 0;
+      border-left: 48px solid white;
+      border-top: 32px solid transparent;
+      border-bottom: 32px solid transparent;
+      margin-left: 10px;
+    }
+    /* --- FIN BOTÓN DE PLAY --- */
+
     @@keyframes glitch {
       0% { text-shadow: 2px 0 var(--glitch1), -2px 0 var(--glitch2); }
       50% { text-shadow: -2px 0 var(--glitch2), 2px 0 var(--glitch1); }
@@ -226,8 +266,15 @@
   </style>
 </head>
 <body>
+  <!-- Botón de play para iniciar la intro -->
+  <div id="play-intro-btn">
+    <div class="play-circle" onclick="startIntro()">
+      <div class="play-triangle"></div>
+    </div>
+  </div>
+
   <!-- Video de introducción principal -->
-  <video id="intro-primeriza" autoplay muted playsinline>
+  <video id="intro-primeriza" autoplay muted playsinline style="display:none;">
     <source src="/img/introprimeriza.mp4" type="video/mp4">
   </video>
   
@@ -269,6 +316,16 @@
   let introVideo = document.getElementById("intro-video");
   let introAudio = document.getElementById("intro-audio");
   
+  // Botón de play para iniciar la intro
+  function startIntro() {
+    document.getElementById('play-intro-btn').style.opacity = 0;
+    setTimeout(()=>{
+      document.getElementById('play-intro-btn').style.display = 'none';
+      introPrimerizaVideo.style.display = "block";
+      startVideoSequence();
+    }, 400);
+  }
+
   // Justo antes de arrancar la intro:
   if (localStorage.getItem('skipIntro') === '1') {
     localStorage.removeItem('skipIntro'); // así no se repite nunca
@@ -285,9 +342,13 @@
       btn.classList.remove("explosive");
     });
     // Si usás audio, podés frenarlo o poner uno especial
+    document.getElementById('play-intro-btn').style.display = 'none';
   } else {
-    // Secuencia normal de videos
-    startVideoSequence();
+    // Mostrar el botón de play y esperar a que el usuario lo toque
+    introPrimerizaVideo.style.display = "none";
+    document.getElementById('play-intro-btn').style.display = 'flex';
+    document.getElementById('play-intro-btn').style.opacity = 1;
+    // El video y la secuencia arrancan solo cuando se toca el botón
   }
 
   function startVideoSequence() {
@@ -349,7 +410,7 @@
         }
         let span = `<span${color ? ` style='color:${color}'` : ''}${glitch ? " class='glitch'" : ""}>${visible}${scrambled}</span><br>`;
         // Escribí la línea (eliminando la versión previa, para que no se acumule)
-        typewriter.innerHTML = typewriter.innerHTML.replace(/(<span.*?>.*?<\/span><br>)*$/, '') + span;
+        typewriter.innerHTML = typewriter.innerHTML.replace(/(<span.*?>.*?<\/span><br>)*/, '') + span;
         if (i === text.length) {
           if (onDone) onDone();
         } else {

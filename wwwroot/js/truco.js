@@ -45,6 +45,9 @@ let state = {
     cartaRevelada: { morty: null, player: null },
     puedeRevelar: true,
     envidoResuelto: false,
+    // Variables para el timer de 3 minutos
+    gameStartTime: null,
+    rickTimerTriggered: false,
 };
 
 let envidoBloqueado = false;
@@ -427,11 +430,11 @@ function render() {
     // Mostrar botones de respuesta SOLO si el jugador debe responder a un canto de la IA rival
     let showResponse = false;
     if (state.truco.pendiente) {
-        if (TEAM_ENEMY.includes(state.truco.quien) && state.turnPlayer === 'player') {
+        if (TEAM_ENEMY.includes(state.truco.quien)) {
             showResponse = true;
         }
     } else if (state.envido.pendiente) {
-        if (TEAM_ENEMY.includes(state.envido.quien) && state.turnPlayer === 'player') {
+        if (TEAM_ENEMY.includes(state.envido.quien)) {
             showResponse = true;
         } else {
             showResponse = false;
@@ -508,17 +511,30 @@ function turnoSiguiente() {
         }
     }
     
-    // Si hay truco pendiente, no llamar automáticamente a iaTurno
+    // Si hay mazo pendiente del equipo player, continuar automáticamente
+    if (state.mazoEquipo === 'player' && (state.mazoPendiente.player || state.mazoPendiente.morty)) {
+        if (TEAM_PLAYER.includes(state.turnPlayer)) {
+            setTimeout(()=>iaTurno(),1700);
+            return;
+        }
+    }
+    
+    // Si hay truco pendiente, solo llamar iaTurno si es el turno de la IA rival
     if(state.truco.pendiente) {
-        // Solo llamar iaTurno si es el turno de la IA rival
-        if(TEAM_ENEMY.includes(state.turnPlayer)) {
+        // Verificar que sea el turno de la IA y que NO sea del mismo equipo que cantó el truco
+        if(TEAM_ENEMY.includes(state.turnPlayer) && TEAM_PLAYER.includes(state.truco.quien)) {
+            // Es turno de la IA enemiga y el truco lo cantó el equipo player
+            setTimeout(()=>iaTurno(),1700);
+        } else if(TEAM_PLAYER.includes(state.turnPlayer) && TEAM_ENEMY.includes(state.truco.quien)) {
+            // Es turno de la IA player (morty) y el truco lo cantó el equipo enemigo
             setTimeout(()=>iaTurno(),1700);
         }
+        // Si es del mismo equipo, no hacer nada y esperar
     } else if(state.envido.pendiente) {
         // Si hay envido pendiente, no llamar automáticamente a iaTurno
         // Los envidos se manejan con funciones específicas
     } else if(TEAM_ENEMY.includes(state.turnPlayer)||state.turnPlayer==='morty') {
-        // Turno normal de la IA
+        // Turno normal de la IA - incluyendo cuando hay un truco aceptado
         setTimeout(()=>iaTurno(),1700);
     }
 }
@@ -526,20 +542,42 @@ function turnoSiguiente() {
 function jugarCarta(idx) {
     if(state.lock) return;
     let p = state.turnPlayer;
+    
+    // Verificar que el jugador tenga cartas
+    if (!state.hands[p] || state.hands[p].length === 0) {
+        log('ERROR: ' + nombre(p) + ' no tiene cartas para jugar','system');
+        return;
+    }
+    
+    // Verificar que el índice sea válido
+    if (idx < 0 || idx >= state.hands[p].length) {
+        log('ERROR: Índice de carta inválido para ' + nombre(p),'system');
+        return;
+    }
+    
     let carta = state.hands[p][idx];
     state.hands[p].splice(idx,1);
     state.played.push({player:p,card:carta});
+    
     if(p==='player') envidoBloqueado = true;
+    
+    log(nombre(p) + ' juega ' + carta.value + ' de ' + carta.suit,'system');
     render();
-    // Si algún jugador se queda sin cartas, finalizar la mano automáticamente
-    let alguienSinCartas = PLAYER_ORDER.some(j => state.hands[j].length === 0);
-    if(alguienSinCartas) {
-        log('Al menos un jugador se quedó sin cartas. Mano finalizada automáticamente.','system');
-        setTimeout(()=>finMano(), 800);
-        return;
+    
+    // Quitar el reinicio automático de la mano cuando alguien se queda sin cartas
+    // let alguienSinCartas = PLAYER_ORDER.some(j => state.hands[j].length === 0);
+    // if(alguienSinCartas) {
+    //     log('Al menos un jugador se quedó sin cartas. Mano finalizada automáticamente.','system');
+    //     setTimeout(()=>finMano(), 800);
+    //     return;
+    // }
+    
+    if(state.played.length===4) {
+        setTimeout(()=>resolverBaza(),2000);
+    } else {
+        turnoSiguiente();
+        // NO llamar automáticamente a iaTurno aquí, dejar que turnoSiguiente maneje el flujo
     }
-    if(state.played.length===4) setTimeout(()=>resolverBaza(),2000);
-    else turnoSiguiente();
 }
 
 function resolverBaza() {
@@ -563,8 +601,9 @@ function resolverBaza() {
     }
 }
 
+// Valores reales de Truco Argentino
+// 1 espada > 1 basto > 7 espada > 7 oro > 3 > 2 > 1 (copa/oro) > 12 > 11 > 10 > 7 (copa/basto) > 6 > 5 > 4
 function valorTruco(card) {
-    // 1 espada > 1 basto > 7 espada > 7 oro > 3 > 2 > 1 copa/oro > 12 > 11 > 10 > 7 copa/basto > 6 > 5 > 4
     if(card.suit==='espada'&&card.value===1) return 14;
     if(card.suit==='basto'&&card.value===1) return 13;
     if(card.suit==='espada'&&card.value===7) return 12;
@@ -622,26 +661,26 @@ function finMano() {
         }
     } else {
         // Lógica normal cuando no hay truco aceptado
-    let ganadorMano = state.bazasGanadas.player>=2?'player':'enemy';
+        let ganadorMano = state.bazasGanadas.player>=2?'player':'enemy';
         
         log('DEBUG: finMano - ganadorMano: ' + ganadorMano + ', truco.level: ' + state.truco.level + ', truco.pendiente: ' + state.truco.pendiente,'system');
     
-    // Registrar qué mano ganó cada equipo
-    if (!state.primeraManoGanada) {
-        state.primeraManoGanada = ganadorMano;
-        log('Primera mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
-    } else if (!state.segundaManoGanada) {
-        state.segundaManoGanada = ganadorMano;
-        log('Segunda mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
-        
-        // Verificar si hay ventaja de mano
-        if (state.primeraManoGanada !== state.segundaManoGanada) {
-            state.ventajaMano = state.primeraManoGanada;
-            log('¡VENTAJA DE MANO! '+(state.ventajaMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+' puede ganar con la tercera mano','system');
-        }
-    } else {
-        state.terceraManoGanada = ganadorMano;
-        log('Tercera mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+        // Registrar qué mano ganó cada equipo
+        if (!state.primeraManoGanada) {
+            state.primeraManoGanada = ganadorMano;
+            log('Primera mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+        } else if (!state.segundaManoGanada) {
+            state.segundaManoGanada = ganadorMano;
+            log('Segunda mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
+            
+            // Verificar si hay ventaja de mano
+            if (state.primeraManoGanada !== state.segundaManoGanada) {
+                state.ventajaMano = state.primeraManoGanada;
+                log('¡VENTAJA DE MANO! '+(state.ventajaMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+' puede ganar con la tercera mano','system');
+            }
+        } else {
+            state.terceraManoGanada = ganadorMano;
+            log('Tercera mano para '+(ganadorMano==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'system');
         }
     }
     
@@ -781,6 +820,15 @@ function iaTurno() {
     
     log('DEBUG: iaTurno - turnPlayer: ' + p + ', mazoEquipo: ' + state.mazoEquipo + ', mazoPendiente: ' + JSON.stringify(state.mazoPendiente),'system');
     
+    // Si hay un truco aceptado, solo jugar carta automáticamente
+    if (state.truco.aceptado) {
+        log('DEBUG: Truco aceptado, IA juega carta automáticamente','system');
+        let idx = 0;
+        if(state.hands[p].length>1) idx = Math.floor(Math.random()*state.hands[p].length);
+        jugarCarta(idx);
+        return;
+    }
+    
     // Verificar mazo pendiente del equipo enemigo
     if (state.mazoEquipo === 'enemy') {
         log('DEBUG: Verificando mazo pendiente del equipo enemigo','system');
@@ -808,6 +856,9 @@ function iaTurno() {
                 state.mazoPendiente.hacker = false;
                 state.mazoEquipo = null;
                 render();
+                // Continuar con el juego normal
+                turnoSiguiente();
+                return;
             }
         } else if (p === 'hacker' && state.mazoPendiente.codigo) {
             log('DEBUG: HACKER.EXE debe responder al mazo de CÓDIGO.EXE','system');
@@ -833,6 +884,9 @@ function iaTurno() {
                 state.mazoPendiente.codigo = false;
                 state.mazoEquipo = null;
                 render();
+                // Continuar con el juego normal
+                turnoSiguiente();
+                return;
             }
         }
     }
@@ -1014,7 +1068,8 @@ function iaTrucoRespuesta() {
             state.truco.quien = null;
             render();
             log('Turno: ' + nombre(state.turnPlayer), 'system');
-            if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
+            // NO llamar automáticamente a iaTurno aquí, esperar que el jugador juegue su carta
+            return;
         } else {
             log('DEBUG: IA rechaza el Vale Cuatro','system');
             let pts = TRUCO_POINTS[state.truco.level-1] || 3;
@@ -1041,7 +1096,7 @@ function iaTrucoRespuesta() {
         state.truco.quien = null;
         render();
         log('Turno: ' + nombre(state.turnPlayer), 'system');
-        if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
+        // NO llamar automáticamente a iaTurno aquí, esperar que el jugador juegue su carta
     } else if(r<0.7 && state.truco.level<3) {
         log('DEBUG: IA sube el truco a nivel ' + (state.truco.level + 1),'system');
         if(state.truco.level < 2) { // Solo puede subir hasta Retruco
@@ -1199,6 +1254,9 @@ function iniciarTruco() {
     render();
     log('¡Truco 2v2 listo!','system');
     if(state.turnPlayer!=='player') setTimeout(()=>iaTurno(),1700);
+    
+    // Iniciar el timer de Rick de 3 minutos
+    iniciarTimerRick();
     
     document.getElementById('btn-mazo').onclick = ()=>{
         // Sistema de irse al mazo que requiere acuerdo del equipo
@@ -1489,7 +1547,30 @@ function resolverEnvido() {
         log('¡VICTORIA AUTOMÁTICA! '+(ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+' gana la partida','system');
         
         if (ganador === 'player') {
-            setTimeout(() => animacionVictoria(), 2000);
+            // Desbloquear Room2 y pasar automáticamente
+            fetch('/Home/CompleteGameStart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                    log('¡FALTA ENVIDO GANADO! Desbloqueando Room2...','system');
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room2";
+                    }, 3000);
+                } else {
+                    log('Error en la transición de sala. Redirigiendo de todas formas...','system');
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room2";
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                log('Error de red en la transición. Redirigiendo de todas formas...','system');
+                setTimeout(() => {
+                    window.location.href = "/Home/Room2";
+                }, 3000);
+            });
         } else {
             setTimeout(() => animacionDerrota(), 2000);
         }
@@ -1574,4 +1655,87 @@ function resetearRevelacionCarta() {
     state.puedeRevelar = true;
     document.getElementById('btn-reveal-companion').disabled = false;
     document.getElementById('btn-reveal-companion').textContent = 'REVELAR CARTA DE RICK';
+}
+
+// Función para el timer de 3 minutos con animación de Rick
+function iniciarTimerRick() {
+    state.gameStartTime = Date.now();
+    
+    // Verificar cada segundo si han pasado 3 minutos
+    const timerInterval = setInterval(() => {
+        if (state.rickTimerTriggered) {
+            clearInterval(timerInterval);
+            return;
+        }
+        
+        const tiempoTranscurrido = Date.now() - state.gameStartTime;
+        const tresMinutos = 3 * 60 * 1000; // 3 minutos en milisegundos
+        
+        if (tiempoTranscurrido >= tresMinutos) {
+            state.rickTimerTriggered = true;
+            clearInterval(timerInterval);
+            mostrarAnimacionRick();
+        }
+    }, 1000);
+}
+
+function mostrarAnimacionRick() {
+    log('', 'system'); // Línea en blanco
+    log('', 'system'); // Línea en blanco
+    
+    const mensajesRick = [
+        '[DECRYPTED_EFFECT] Rick.exe iniciando comunicación...',
+        '[RICK] Morty... Morty, ¿me escuchás?',
+        '[MORTY] ¿Rick? ¿Dónde estás?',
+        '[RICK] Estoy en el código, Morty. Los hackers están usando un algoritmo de Truco para...',
+        '[RICK] ...corromper el multiverso, pero hay algo más importante.',
+        '[MORTY] ¿Qué cosa, Rick?',
+        '[RICK] El tiempo, Morty. El tiempo se está agotando.',
+        '[RICK] Si no ganás en los próximos 2 minutos, la simulación se reiniciará.',
+        '[MORTY] ¿Qué? ¿Por qué no me dijiste antes?',
+        '[RICK] Porque sos un idiota, Morty. Pero ahora lo sabés.',
+        '[RICK] Concentrate en ganar. No te dejes distraer por los bugs.',
+        '[MORTY] ¡Rick! ¡Rick!',
+        '[RICK] *static* ... Morty... Room2... *static* ...',
+        '[SISTEMA] Comunicación interrumpida. Continuando juego...'
+    ];
+    
+    let mensajeIndex = 0;
+    
+    function mostrarSiguienteMensaje() {
+        if (mensajeIndex < mensajesRick.length) {
+            log(mensajesRick[mensajeIndex], 'system');
+            mensajeIndex++;
+            setTimeout(mostrarSiguienteMensaje, 1500);
+        } else {
+            // Después de mostrar todos los mensajes, pasar a Room2
+            setTimeout(() => {
+                log('Redirigiendo a Room2...', 'system');
+                fetch('/Home/CompleteGameStart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                }).then(response => response.json())
+                  .then(data => {
+                    if (data.success) {
+                        setTimeout(() => {
+                            window.location.href = "/Home/Room2";
+                        }, 2000);
+                    } else {
+                        log('Error en la transición de sala. Redirigiendo de todas formas...','system');
+                        setTimeout(() => {
+                            window.location.href = "/Home/Room2";
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    log('Error de red en la transición. Redirigiendo de todas formas...','system');
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room2";
+                    }, 2000);
+                });
+            }, 3000);
+        }
+    }
+    
+    mostrarSiguienteMensaje();
 }

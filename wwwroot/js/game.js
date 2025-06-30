@@ -25,7 +25,7 @@ let speedInterval = null;
 // Configuración del juego
 const GRAVITY = 0.5;
 const LIFT_FORCE = -20;
-const PIPE_SPAWN_INTERVAL = 1600;
+const PIPE_SPAWN_INTERVAL = 2400;
 const MAX_VELOCITY = 6;
 
 // Ajustar tamaño del canvas
@@ -108,10 +108,10 @@ class Pipe {
         const minGap = PIPE_GAP * 0.7;
         const gapY = Math.random() * (canvas.height - minGap * 1.5) + minGap * 0.75;
         const gapHeight = minGap + Math.random() * (PIPE_GAP * 0.5);
-        // Generar RAMs arriba del hueco (la mitad de densidad)
+        // Generar RAMs arriba del hueco (la mitad de densidad y más separados)
         let y = 0;
         while (y < gapY - 10) {
-            if (Math.random() < 0.5) { // Solo la mitad de las filas tendrán RAM
+            if (Math.random() < 0.25) { // Antes 0.5, ahora 0.25 para la mitad de rams
                 const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
                 this.rams.push({
                     x: this.x,
@@ -120,12 +120,12 @@ class Pipe {
                     height: ramHeight
                 });
             }
-            y += (PIPE_WIDTH * 0.7 + Math.random() * PIPE_WIDTH * 1.2) + Math.random() * 20;
+            y += (PIPE_WIDTH * 1.2 + Math.random() * PIPE_WIDTH * 1.2) + 20; // Más separación vertical
         }
-        // Generar RAMs debajo del hueco (la mitad de densidad)
+        // Generar RAMs debajo del hueco (la mitad de densidad y más separados)
         y = gapY + gapHeight;
         while (y < canvas.height - 10) {
-            if (Math.random() < 0.5) {
+            if (Math.random() < 0.25) {
                 const ramHeight = Math.max(PIPE_WIDTH * 0.7, Math.random() * PIPE_WIDTH * 1.2);
                 this.rams.push({
                     x: this.x,
@@ -134,7 +134,7 @@ class Pipe {
                     height: ramHeight
                 });
             }
-            y += (PIPE_WIDTH * 0.7 + Math.random() * PIPE_WIDTH * 1.2) + Math.random() * 20;
+            y += (PIPE_WIDTH * 1.2 + Math.random() * PIPE_WIDTH * 1.2) + 20;
         }
         this.passed = false;
         this.scored = false;
