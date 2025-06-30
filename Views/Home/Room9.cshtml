@@ -1280,17 +1280,17 @@
   <img src="/img/video-file.png" alt="Video File">
   <div>ledigohola.mp4</div>
 </div>
-<div class="desktop-icon" style="top:300px; left:900px;" onclick="openAppWindow('camara')">
-  <img src="/img/camaraLogo.png" alt="Cámara">
-  <div>Cámara</div>
+<div class="desktop-icon" style="top:20px; left:920px;" onclick="openAppWindow('campus')">
+  <img src="/img/isologoCampusLogin.png" alt="Campus ORT">
+  <div>Campus ORT</div>
 </div>
 
 <div class="desktop-icon" style="top:660px; left:920px;" onclick="openAppWindow('calculadora')">
-  <img src="/img/calculadoraLogo.png" alt="Calculadora">
+  <img src="/img/google-icon.png" alt="Google">
   <div>Calculadora</div>
 </div>
 <div class="desktop-icon" style="top:740px; left:920px;" onclick="openAppWindow('word')">
-  <img src="/img/word-logo.png" alt="Word">
+  <img src="/img/google-icon.png" alt="Google">
   <div>Word</div>
 </div>
       <!-- Hidden Files -->
@@ -1377,8 +1377,8 @@
         <img src="/img/morty-icon.png" alt="Morty">
         <span>Morty.exe</span>
       </div>
-      <div class="icon" style="top: 20%; left: 40%; cursor:pointer;" onclick="openAppWindow('campus')">
-        <img src="/img/google-icon.png" alt="Campus">
+      <div class="icon" style="top: 20%; left: 40%;">
+        <img src="/img/campus-icon.png" alt="Campus">
         <span>Campus ORT</span>
       </div>
       <div class="icon" style="top: 40%; left: 20%;">
@@ -1475,30 +1475,6 @@
     </div>
   </div>
 
-  <!-- App de Cámara -->
-  <div id="cameraApp" class="app-window" style="display: none; width: 600px; height: 500px;">
-    <div class="app-header">
-      <span>Cámara</span>
-      <button onclick="closeWindow('cameraApp')">×</button>
-    </div>
-    <div class="app-content">
-      <div id="camera-view" style="text-align:center;">
-        <video id="camera-video" autoplay playsinline style="width:90%;max-width:500px;border-radius:8px;background:#000;"></video>
-        <div style="margin:10px 0;">
-          <button id="take-photo-btn" style="margin:5px;padding:8px 15px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">📸 Foto</button>
-          <button id="start-record-btn" style="margin:5px;padding:8px 15px;background:#f44336;color:white;border:none;border-radius:4px;cursor:pointer;">🔴 Grabar</button>
-          <button id="stop-record-btn" style="display:none;margin:5px;padding:8px 15px;background:#ff9800;color:white;border:none;border-radius:4px;cursor:pointer;">⏹️ Detener</button>
-        </div>
-        <canvas id="photo-canvas" style="display:none;"></canvas>
-      </div>
-      <hr>
-      <div>
-        <h4>Galería</h4>
-        <div id="gallery" style="display:flex;flex-wrap:wrap;gap:10px;max-height:200px;overflow-y:auto;"></div>
-      </div>
-    </div>
-  </div>
-
   <script src="~/js/site.js"></script>
   <script>
     const nave = document.getElementById('nave');
@@ -1563,27 +1539,23 @@
       setTimeout(() => flash.remove(), 500);
     }
 
-    let mouseDown = false;
-    document.addEventListener('mousedown', () => { mouseDown = true; });
-    document.addEventListener('mouseup', () => { mouseDown = false; });
-
     async function typeText(element, text, type = "normal") {
       const finalText = text;
       element.classList.add('console-line');
-      let scrambleSpeed = () => mouseDown ? 10 : 50;
-      let typeSpeed = () => mouseDown ? 5 : 30;
-
+      
       if (type === "error" || type === "alert" || type === "morty") {
         // First show scrambled text
         for (let i = 0; i < 20; i++) {
           element.textContent = scrambleText(finalText);
-          await new Promise(resolve => setTimeout(resolve, scrambleSpeed()));
+          await new Promise(resolve => setTimeout(resolve, window.fastTyping ? 1 : 50));
         }
+        
         // Then decrypt it
         for (let i = 0; i <= finalText.length; i++) {
           element.textContent = decryptText(finalText, i);
-          await new Promise(resolve => setTimeout(resolve, scrambleSpeed()));
+          await new Promise(resolve => setTimeout(resolve, window.fastTyping ? 1 : 50));
         }
+
         if (type === "error") {
           element.classList.add('error');
           const flash = document.createElement('div');
@@ -1601,7 +1573,7 @@
         // Regular typing effect
         for (let i = 0; i <= finalText.length; i++) {
           element.textContent = finalText.substring(0, i);
-          await new Promise(resolve => setTimeout(resolve, typeSpeed()));
+          await new Promise(resolve => setTimeout(resolve, window.fastTyping ? 1 : 30));
         }
       }
     }
@@ -3199,14 +3171,11 @@ function closeVideoWindow() {
       filter = 'invert(0.9) hue-rotate(160deg) saturate(2)';
       break;
     case 'calculadora':
-      openGoogleStyleCalculator();
-      return;
+      fake = true;
+      break;
     case 'word':
       fake = true;
       break;
-    case 'camara':
-      openCameraApp();
-      return;
     default:
       url = 'https://www.google.com/';
       filter = '';
@@ -3244,7 +3213,6 @@ function closeVideoWindow() {
   makeWindowDraggable(win);
   setupWindowControls(win);
 }
-
 // Fake Calculadora y Word
 function getFakeAppHTML(app) {
   if(app === 'calculadora') {
@@ -3258,176 +3226,7 @@ function getFakeAppHTML(app) {
   }
   return '<div>App fake</div>';
 }
-window.openGoogleStyleCalculator = function() {
-  let existing = document.getElementById('google-calc-app');
-  if(existing) { existing.style.display = 'block'; return; }
-  let win = document.createElement('div');
-  win.className = 'window';
-  win.id = 'google-calc-app';
-  win.style.width = '600px';
-  win.style.height = '440px';
-  win.style.position = 'fixed';
-  win.style.top = '15%';
-  win.style.left = '30%';
-  win.style.zIndex = 3000;
-  win.innerHTML = `
-    <div class="window-header" style="background:#23252b;color:#fff;">
-      <span style="display:flex;align-items:center;">
-        <img src="/img/calculadoraLogo.png" style="width:20px;margin-right:8px;"> Calculadora
-      </span>
-      <div class="window-controls">
-        <div class="window-control window-close" onclick="this.closest('.window').style.display='none'"></div>
-      </div>
-    </div>
-    <div class="window-content" style="background:#181a20;padding:0;height:calc(100% - 36px);">
-      <div id="calc-google-display" style="background:#23252b;color:#fff;font-size:2.2em;padding:18px 24px 0 24px;border-radius:0 0 0 0;text-align:right;letter-spacing:2px;min-height:48px;user-select:all;">0</div>
-      <div id="calc-google-buttons" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:18px;">
-        <button class="calc-g-btn" data-action="rad">Rad</button>
-        <button class="calc-g-btn" data-action="deg">Deg</button>
-        <button class="calc-g-btn" data-action="xl">xl</button>
-        <button class="calc-g-btn" data-action="(">(</button>
-        <button class="calc-g-btn" data-action=")">)</button>
-        <button class="calc-g-btn" data-action="%">%</button>
-        <button class="calc-g-btn" data-action="inv">Inv</button>
-        <button class="calc-g-btn" data-action="sin">sin</button>
-        <button class="calc-g-btn" data-action="ln">ln</button>
-        <button class="calc-g-btn" data-action="7">7</button>
-        <button class="calc-g-btn" data-action="8">8</button>
-        <button class="calc-g-btn" data-action="9">9</button>
-        <button class="calc-g-btn" data-action="π">π</button>
-        <button class="calc-g-btn" data-action="cos">cos</button>
-        <button class="calc-g-btn" data-action="log">log</button>
-        <button class="calc-g-btn" data-action="4">4</button>
-        <button class="calc-g-btn" data-action="5">5</button>
-        <button class="calc-g-btn" data-action="6">6</button>
-        <button class="calc-g-btn" data-action="e">e</button>
-        <button class="calc-g-btn" data-action="tan">tan</button>
-        <button class="calc-g-btn" data-action="√">√</button>
-        <button class="calc-g-btn" data-action="1">1</button>
-        <button class="calc-g-btn" data-action="2">2</button>
-        <button class="calc-g-btn" data-action="3">3</button>
-        <button class="calc-g-btn" data-action="ans">Ans</button>
-        <button class="calc-g-btn" data-action="EXP">EXP</button>
-        <button class="calc-g-btn" data-action="x^">x^</button>
-        <button class="calc-g-btn" data-action="0">0</button>
-        <button class="calc-g-btn" data-action=".">.</button>
-        <button class="calc-g-btn calc-g-eq" data-action="=">=</button>
-        <button class="calc-g-btn" data-action="ac" style="background:#23252b;color:#f55;">AC</button>
-        <button class="calc-g-btn" data-action="/">÷</button>
-        <button class="calc-g-btn" data-action="*">×</button>
-        <button class="calc-g-btn" data-action="-">−</button>
-        <button class="calc-g-btn" data-action="+">+</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(win);
-  // Estilos para los botones
-  const style = document.createElement('style');
-  style.innerHTML = `
-    .calc-g-btn {
-      background:#23252b;border:none;color:#fff;font-size:1.1em;padding:13px 0;border-radius:2em;transition:.2s;box-shadow:none;outline:none;cursor:pointer;}
-    .calc-g-btn:hover {background:#31333a;}
-    .calc-g-eq {background:#3a4a6b;color:#fff;}
-    .calc-g-eq:hover {background:#4a5a8b;}
-  `;
-  document.head.appendChild(style);
-  // Lógica funcional
-  let display = '';
-  let lastAns = 0;
-  let radMode = true;
-  function updateDisplay(val) {
-    document.getElementById('calc-google-display').textContent = val;
-  }
-  function safeEval(expr) {
-    try {
-      expr = expr.replace(/÷/g, '/').replace(/×/g, '*').replace(/−/g, '-').replace(/π/g, Math.PI).replace(/e/g, Math.E).replace(/√/g, 'Math.sqrt').replace(/ln/g, 'Math.log').replace(/log/g, 'Math.log10').replace(/sin/g, radMode ? 'Math.sin' : 'degSin').replace(/cos/g, radMode ? 'Math.cos' : 'degCos').replace(/tan/g, radMode ? 'Math.tan' : 'degTan').replace(/EXP/g, 'e');
-      window.degSin = x => Math.sin(x * Math.PI / 180);
-      window.degCos = x => Math.cos(x * Math.PI / 180);
-      window.degTan = x => Math.tan(x * Math.PI / 180);
-      let result = Function('return ' + expr)();
-      if (typeof result === 'number' && !isNaN(result)) {
-        lastAns = result;
-        return result;
-      }
-      return 'Error';
-    } catch { return 'Error'; }
-  }
-  win.querySelectorAll('.calc-g-btn').forEach(btn => {
-    btn.onclick = function() {
-      const act = btn.dataset.action;
-      if (act === 'ac') {
-        display = '';
-        updateDisplay('0');
-      } else if (act === '=') {
-        const res = safeEval(display.replace(/ans/gi, lastAns));
-        updateDisplay(res);
-        display = '' + res;
-      } else if (act === 'rad') {
-        radMode = true;
-        win.querySelectorAll('.calc-g-btn[data-action=\"rad\"]').forEach(b=>b.style.background='#31333a');
-        win.querySelectorAll('.calc-g-btn[data-action=\"deg\"]').forEach(b=>b.style.background='');
-      } else if (act === 'deg') {
-        radMode = false;
-        win.querySelectorAll('.calc-g-btn[data-action=\"deg\"]').forEach(b=>b.style.background='#31333a');
-        win.querySelectorAll('.calc-g-btn[data-action=\"rad\"]').forEach(b=>b.style.background='');
-      } else if (act === 'inv') {
-        // Not implemented
-      } else if (act === 'x^') {
-        display += '**';
-        updateDisplay(display);
-      } else if (act === '√') {
-        display += '√(';
-        updateDisplay(display);
-      } else if (act === 'π' || act === 'e') {
-        display += act;
-        updateDisplay(display);
-      } else {
-        display += act;
-        updateDisplay(display);
-      }
-    };
-  });
-};
-window.openCameraApp = function() {
-  let existing = document.getElementById('cameraApp');
-  if(existing) { existing.style.display = 'block'; return; }
-  let win = document.createElement('div');
-  win.className = 'window';
-  win.id = 'cameraApp';
-  win.style.width = '480px';
-  win.style.height = '380px';
-  win.style.position = 'fixed';
-  win.style.top = '20%';
-  win.style.left = '35%';
-  win.style.zIndex = 3000;
-  win.innerHTML = `
-    <div class="window-header" style="background:#23252b;color:#fff;">
-      <span style="display:flex;align-items:center;">
-        <img src="/img/camaraLogo.png" style="width:20px;margin-right:8px;"> Cámara
-      </span>
-      <div class="window-controls">
-        <div class="window-control window-close" onclick="this.closest('.window').style.display='none'"></div>
-      </div>
-    </div>
-    <div class="window-content" style="background:#181a20;height:calc(100% - 36px);display:flex;align-items:center;justify-content:center;">
-      <video id="camera-video" autoplay playsinline style="width:90%;height:90%;background:#222;border-radius:1em;"></video>
-    </div>
-  `;
-  document.body.appendChild(win);
 
-  const video = win.querySelector('#camera-video');
-  if (video && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-        video.play();
-      })
-      .catch(err => {
-        video.poster = '';
-        video.style.background = '#222';
-      });
-  }
-};
   </script>
   <!-- ...otros elementos o ventanas... -->
 
@@ -3450,21 +3249,27 @@ window.openCameraApp = function() {
         return texto.replace(/Morty/g, window.nombreJugador || 'Morty');
     }
     window.nombreJugador = 'Morty';
-    // window.obtenerNombreJugador(function(nombre) {
-    //     window.nombreJugador = nombre;
-    //     // Reemplazar en los logs
-    //     if (window.logs) {
-    //         window.logs = window.logs.map(function(log) {
-    //             if (log.text) log.text = reemplazarNombre(log.text);
-    //             return log;
-    //         });
-    //     }
-    //     // Reemplazar en la consola
-    //     var consoleDiv = document.getElementById('console');
-    //     if (consoleDiv) consoleDiv.innerHTML = reemplazarNombre(consoleDiv.innerHTML);
-    // });
+    window.obtenerNombreJugador(function(nombre) {
+        window.nombreJugador = nombre;
+        // Reemplazar en los logs
+        if (window.logs) {
+            window.logs = window.logs.map(function(log) {
+                if (log.text) log.text = reemplazarNombre(log.text);
+                return log;
+            });
+        }
+        // Reemplazar en la consola
+        var consoleDiv = document.getElementById('console');
+        if (consoleDiv) consoleDiv.innerHTML = reemplazarNombre(consoleDiv.innerHTML);
+    });
     // ... existing code ...
     </script>
- 
+
+    <script>
+      window.fastTyping = false;
+      document.addEventListener('mousedown', () => window.fastTyping = true);
+      document.addEventListener('mouseup', () => window.fastTyping = false);
+    </script>
+
 </body>
 </html>
