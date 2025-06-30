@@ -57,23 +57,29 @@ const frasesAbsurdas = [
     "me dijo 'me hacés bien' y no me habló por tres días",
     "mi vieja me preguntó si comí y me largué a llorar",
     "soñé que me perdonaban, me desperté y todavía estaba bloqueado",
-    "ayer sentí olor a su perfume y me tembló el estómago",
+    "ayer sentí el olor de su perfume y me puse a llorar, MARTINA VOLVE",
     "me respondió el mensaje dos semanas después como si nada",
-    "me dijo que me quería pero que no sabe si como novio o como concepto",
-    "me abrazó y pensé que todo estaba bien, después me clavó el visto",
-    "subió una historia llorando y puso 'no es para nadie', y yo lloré igual",
+    "me dijo que me quería, pero como amigo",
     "me dejó de seguir pero mira todas mis historias desde una cuenta de recetas",
-    "la vi de lejos y me reí. no sé si de tristeza o de bronca o de las dos",
-    "me dijo 'sos mi lugar seguro' y después me dejó afuera",
     "ayer me dijo que me extrañaba y hoy me mandó un meme como si nada",
-    "le escribí 'te extraño' y me contestó 'JSDAKJD'",
+    "le escribí 'te extraño' y me hizo un edit de 'missy, missy, do you really miss me?'",
     "me dijo que no era buen momento para mí... y ahora sube con otro a TikTok",
+    "Extraño a mi ex...",
+    "A veces las personas mas calladas son las que menos hablan...",
+    "-1000 de aura",
+    "Laura",
+    "No servis para este juego hermano",
+    "Callate la boca papa frita ",
     "me desbloqueó, me stalkeó y se volvió a ir. ni siquiera me saludó",
     "le conté cómo me sentía y me dejó en visto. eso también fue una respuesta",
     "me dijo que no sabía lo que quería. y mientras lo pensaba, me perdí yo",
     "tengo una playlist con su nombre y ahora no puedo escuchar ni el clima",
     "me dijo 'no sos vos, soy yo', y después fui yo el que se quedó solo",
-    "me pidió perdón sin saber qué hizo, y eso me dolió más que lo que hizo"
+    "me pidió perdón sin saber qué hizo, y eso me dolió más que lo que hizo",
+    "Estaba cagando y me levante para aplaudirte",
+    "¿Vieron a la hermana de Ajami?",
+    "NO TE OLVIDES DE PONER EL WHERE",
+    "El dotnet watch run no anda, ahora es dotnet run --project PrimerProyecto.csproj😢"
   ];
   
 
@@ -83,17 +89,17 @@ const respuestasJugador = {
       "me pasa lo mismo, te tiran el 'te extraño' para que no cortes todo, pero no cambian nada",
       "el 'me extrañás' sin acción es solo un método de retención emocional"
     ],
-    "me clavó el visto en WhatsApp y me contestó por BeReal": [
-      "eso es terrorismo emocional con estética casual",
+    "bruh": [
+      "no servis para este juego muerto",
       "te responden en apps random para mantenerte ahí, como que no se note el daño pero está",
       "el BeReal es el nuevo 'sigo acá pero no te quiero tanto'"
     ],
     "ayer me habló porque soñó que me moría. me habló para eso nomás.": [
-      "eso no es amor, es culpa con señal 4G",
+      "erorr 404",
       "me pasó también. sueñan que te vas y recién ahí se acuerdan que existís",
       "te juro que prefiero que no sueñe nada, no que me use de aparición fantasma"
     ],
-    "me desbloqueó para ver si seguía en línea y me volvió a bloquear. lo vi en directo": [
+    "ABRUH": [
       "bro eso fue más violento que un audio pasivo agresivo",
       "te usan de espejo para ver si todavía valen algo. es literal eso",
       "yo lo llamo 'ping emocional': solo quieren saber si seguís sangrando"
@@ -103,7 +109,7 @@ const respuestasJugador = {
       "eso es manipulación emocional indirecta. saludalo y bloquealo vos",
       "si quiere verte, que te mire a vos. no al caniche"
     ],
-    "una vez me dijo 'sos lo más lindo que me pasó' y después me ignoró un mes": [
+    "no te olvides de poner el where": [
       "es que sos lo más lindo, pero también lo más fácil de perder",
       "a veces te dicen esas cosas para que no los odies cuando se vayan",
       "esa frase debería venir con fecha de vencimiento y una advertencia"
