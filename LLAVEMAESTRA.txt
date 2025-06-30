@@ -1,5 +1,12 @@
 🚪🗝️ LLAVE MAESTRA - ESCAPE ROOM RICK & MORTY (ADMIN)
 
+Recomendaciones: 
+-> En algunas rooms vas a tener que hacer o deshacer zoom para poder ver todos los elementos en pantalla 
+- (Por ejemplo en la room4 a la hora de enviar los comandos vas a tener que hacer tab seguramente para poder ver el boton de enviado)
+-> Mantener el click en las intros hace que estas vayan mas rápido
+-> La tecla ESC abre un menu de opciones 
+🔑 ¡Listo! Escape garantizado si seguís esta guía. Cualquier duda, consultá al Consejo de Ricks.
+
 --- ACCESO DIRECTO A CUALQUIER ROOM ---
 URL: /Home/Room[NUMERO]          Ej: /Home/Room3
 CLAVE: adminmvc
@@ -50,7 +57,3 @@ http://localhost:5088/home/finalreiniciar
 http://localhost:5088/home/finalunirse
 http://localhost:5088/home/finaleliminar
 ---
-Recomendaciones: 
--> En algunas rooms vas a tener que hacer o deshacer zoom para poder ver todos los elementos en pantalla 
-- (Por ejemplo en la room3 a la hora de enviar los comandos vas a tener que hacer tab seguramente para poder ver el boton de enviado)
-🔑 ¡Listo! Escape garantizado si seguís esta guía. Cualquier duda, consultá al Consejo de Ricks.
