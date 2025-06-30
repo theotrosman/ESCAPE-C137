@@ -7,7 +7,7 @@ const SUIT_EMOJI = {
   basto: '<img src="/img/bastoPalo.png" style="width:38px;height:38px;">',
   oro: '<img src="/img/paloOro.png" style="width:38px;height:38px;">',
   copa: '<img src="/img/copaPalo.png" style="width:38px;height:38px;">'
-};
+}; 
 const PLAYER_ORDER = ['player', 'codigo', 'morty', 'hacker'];
 const TEAM_PLAYER = ['player', 'morty'];
 const TEAM_ENEMY = ['codigo', 'hacker'];
