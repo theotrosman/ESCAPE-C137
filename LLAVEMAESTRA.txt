@@ -7,12 +7,11 @@ CLAVE: adminmvc
 --- SOLUCIONES Y TIPS DE TODAS LAS ROOMS ---
 
 🌀 GameStart / Room1:
-  - Solución: usar el comando "execute PORTAL32" en la consola
+  Hay que jugar 5 manos de truco
 
 💾 Room2:
-  - Clave: 479
-  - Se consigue abriendo el F12 y resolviendo esto:
-  [ENIGMA] x = a³ - b³, con a=7 y b=4. ¿Qué número te da si sumás 200 a ese resultado? Ese número es la clave...
+  Clave: 11111
+  Se consigue sacando la ultima letra de los clips de cada canal en orden y viendo si son de la primera mitad del abecedario (0) o de la segunda (1)
 
 🧬 Room3:
   - Secuencia genética correcta: **ATGCGTACGC**
@@ -32,7 +31,7 @@ CLAVE: adminmvc
   - (Esta es la clave correcta.)
 
 🧪 Room6:
-  - No hay truco: llegá a 15 clickeando.
+  - No hay truco: llegá a 5 clickeando.
 
 🃏 Room7:
   - No hay truco: llegá a $3100 jugando al juego de cartas.

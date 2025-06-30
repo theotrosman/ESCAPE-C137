@@ -32,7 +32,7 @@ let state = {
     winner: null,
     iaThinking: false,
     lock: false,
-    manosGanadas: null,
+    manosGanadas: { player:0, enemy:0 },
     // Nuevas variables para ventaja de mano
     primeraManoGanada: null,
     segundaManoGanada: null,
@@ -40,7 +40,11 @@ let state = {
     ventajaMano: null,
     // Variables para irse al mazo
     mazoPendiente: { player: false, morty: false, codigo: false, hacker: false },
-    mazoEquipo: null
+    mazoEquipo: null,
+    // Variables para revelar carta del compañero
+    cartaRevelada: { morty: null, player: null },
+    puedeRevelar: true,
+    envidoResuelto: false,
 };
 
 let envidoBloqueado = false;
@@ -516,7 +520,12 @@ function render() {
         state.hands[p].forEach((c,i)=>{
             let d = document.createElement('div');
             d.className = 'card'+((p==='player')?'':' hidden');
-            if(p==='player') {
+            
+            // Si es una carta de Rick (morty) y está revelada, mostrarla
+            if(p==='morty' && state.cartaRevelada.morty === i) {
+                d.className = 'card revealed';
+                d.innerHTML = `<div class='card-number'>${c.value}</div><div class='card-suit'>${SUIT_EMOJI[c.suit]}</div>`;
+            } else if(p==='player') {
                 d.innerHTML = `<div class='card-number'>${c.value}</div><div class='card-suit'>${SUIT_EMOJI[c.suit]}</div>`;
                 d.onclick = ()=>{ if(state.turnPlayer==='player'&&!state.lock) jugarCarta(i); };
             }
@@ -544,7 +553,8 @@ function render() {
                            !state.played.some(p => p.player === 'player') &&
                            !state.truco.pendiente && 
                            !state.envido.pendiente && 
-                           !state.mazo;
+                           !state.mazo &&
+                           !state.envidoResuelto;
     
     // --- En render(), asegurar que el botón de truco nunca permita subir más allá de 3 ---
     let puedeCantarTruco = state.turnPlayer === 'player' && 
@@ -560,19 +570,26 @@ function render() {
     document.getElementById('canto-buttons').style.display = (state.turnPlayer==='player'&&!state.truco.pendiente&&!state.envido.pendiente&&!state.mazo&&!hayMazoPendiente)?'flex':'none';
     document.getElementById('mazo-buttons').style.display = (state.turnPlayer==='player'&&!state.mazo&&!hayMazoPendiente)?'flex':'none';
     
+    // Mostrar botón de revelar carta del compañero
+    let puedeRevelar = state.turnPlayer === 'player' && 
+                      state.puedeRevelar && 
+                      state.cartaRevelada.morty === null &&
+                      !state.truco.pendiente && 
+                      !state.envido.pendiente && 
+                      !state.mazo;
+    document.getElementById('reveal-buttons').style.display = puedeRevelar ? 'flex' : 'none';
+    document.getElementById('btn-reveal-companion').disabled = !puedeRevelar;
+    
     // Mostrar botones de respuesta SOLO si el jugador debe responder a un canto de la IA rival
     let showResponse = false;
     if (state.truco.pendiente) {
-        if (TEAM_ENEMY.includes(state.truco.quien)) {
+        if (TEAM_ENEMY.includes(state.truco.quien) && state.turnPlayer === 'player') {
             showResponse = true;
         }
     } else if (state.envido.pendiente) {
-        // Solo mostrar si el último canto lo hizo la IA
-        // Verificar si el último canto en la secuencia lo hizo la IA
-        if (TEAM_ENEMY.includes(state.envido.quien)) {
+        if (TEAM_ENEMY.includes(state.envido.quien) && state.turnPlayer === 'player') {
             showResponse = true;
         } else {
-            // Si el último canto lo hizo el jugador, no mostrar botones de respuesta
             showResponse = false;
         }
     }
@@ -594,6 +611,11 @@ function render() {
     
     document.getElementById('btn-envido').disabled = !puedeCantarEnvido;
     document.getElementById('btn-truco').disabled = !puedeCantarTruco;
+    
+    // Asegurar que el botón de envido esté deshabilitado si ya se resolvió el envido
+    if (state.envidoResuelto) {
+        document.getElementById('btn-envido').disabled = true;
+    }
 }
 
 function nombre(p) {
@@ -665,6 +687,13 @@ function jugarCarta(idx) {
     state.played.push({player:p,card:carta});
     if(p==='player') envidoBloqueado = true;
     render();
+    // Si algún jugador se queda sin cartas, finalizar la mano automáticamente
+    let alguienSinCartas = PLAYER_ORDER.some(j => state.hands[j].length === 0);
+    if(alguienSinCartas) {
+        log('Al menos un jugador se quedó sin cartas. Mano finalizada automáticamente.','system');
+        setTimeout(()=>finMano(), 800);
+        return;
+    }
     if(state.played.length===4) setTimeout(()=>resolverBaza(),2000);
     else turnoSiguiente();
 }
@@ -797,9 +826,28 @@ function finMano() {
         let totalManos = (state.manosGanadas.player||0) + (state.manosGanadas.enemy||0);
         if(totalManos >= 5) {
             log('Se jugaron 5 manos. Pasando automáticamente a la siguiente sala...','system');
-            setTimeout(()=>{
-                window.location.href = "/Home/Room2";
-            }, 2000);
+            fetch('/Home/CompleteGameStart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room2";
+                    }, 2000);
+                } else {
+                    log('Error en la transición de sala. Redirigiendo de todas formas...','system');
+                    setTimeout(() => {
+                        window.location.href = "/Home/Room2";
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                log('Error de red en la transición. Redirigiendo de todas formas...','system');
+                setTimeout(() => {
+                    window.location.href = "/Home/Room2";
+                }, 2000);
+            });
             return;
         }
         
@@ -865,6 +913,10 @@ function nuevaMano() {
     // Resetear variables de mazo
     state.mazoPendiente = { player: false, morty: false, codigo: false, hacker: false };
     state.mazoEquipo = null;
+    // Resetear revelación de cartas
+    resetearRevelacionCarta();
+    // Resetear envido resuelto
+    state.envidoResuelto = false;
     repartir();
     state.turn = (state.mano+1)%4;
     state.mano = state.turn;
@@ -908,6 +960,7 @@ function iaTurno() {
             } else {
                 log('CÓDIGO.EXE: "No estoy de acuerdo, continuamos jugando"','enemy');
                 log('CÓDIGO.EXE no está de acuerdo. Continúa el juego.','system');
+                log('NO SE FUERON AL MAZO PORQUE CÓDIGO.EXE NO ESTUVO DE ACUERDO.','system');
                 state.mazoPendiente.hacker = false;
                 state.mazoEquipo = null;
                 render();
@@ -932,6 +985,7 @@ function iaTurno() {
             } else {
                 log('HACKER.EXE: "No estoy de acuerdo, continuamos jugando"','enemy');
                 log('HACKER.EXE no está de acuerdo. Continúa el juego.','system');
+                log('NO SE FUERON AL MAZO PORQUE HACKER.EXE NO ESTUVO DE ACUERDO.','system');
                 state.mazoPendiente.codigo = false;
                 state.mazoEquipo = null;
                 render();
@@ -1024,9 +1078,11 @@ function iaTurno() {
                     state.envido.quien = p;
                     log(nombre(p)+' canta Envido','enemy');
                     chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(p)} canta Envido*`, narrator: true });
+                    // PASAR TURNO AL PLAYER
+                    state.turn = PLAYER_ORDER.indexOf('player');
+                    state.turnPlayer = 'player';
                     render();
                     renderChat();
-                    // No llamar automáticamente a iaEnvidoRespuesta, esperar respuesta del jugador
                     return;
                 }
             }, 500);
@@ -1150,32 +1206,22 @@ function iaTrucoRespuesta() {
             state.truco.quien = state.turnPlayer;
             state.truco.quienCanto = state.turnPlayer;
             log('IA: ¡'+['Retruco','Vale Cuatro'][state.truco.level-2]+'!','enemy');
+            // Paso el turno al jugador para que pueda responder
+            state.turn = PLAYER_ORDER.indexOf('player');
+            state.turnPlayer = 'player';
             render();
             return;
-        } else {
-            // Si ya es Retruco, solo puede aceptar o rechazar
-            let r2 = Math.random();
-            if(r2 < 0.5) {
-                state.truco.pendiente = false;
-                state.truco.aceptado = true;
-                log('IA: ¡Quiero!','system');
-                render();
-                let quienCantoIndex = PLAYER_ORDER.indexOf(quienCanto);
-                state.turn = quienCantoIndex;
-                state.turnPlayer = PLAYER_ORDER[state.turn];
-                state.truco.quien = null;
-                render();
-                log('Turno: ' + nombre(state.turnPlayer), 'system');
-                if(TEAM_PLAYER.includes(state.turnPlayer)) setTimeout(()=>iaTurno(),1700);
-            } else {
-                let pts = TRUCO_POINTS[state.truco.level-1] || 2;
-                let ganador = TEAM_PLAYER.includes(state.turnPlayer) ? 'enemy' : 'player';
-                state.teamScore[ganador] += pts;
-                log('No quiero. +' + pts + ' para ' + (ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER'),'error');
-                log('Reiniciando mano por rechazo...','system');
-                state.truco.pendiente = false;
-                setTimeout(()=>nuevaMano(),2000);
-            }
+        } else if(state.truco.level === 2) { // Si sube a Vale Cuatro
+            state.truco.level++;
+            state.truco.pendiente = true;
+            state.truco.quien = state.turnPlayer;
+            state.truco.quienCanto = state.turnPlayer;
+            log('IA: ¡Vale Cuatro!','enemy');
+            // Paso el turno al jugador para que pueda responder
+            state.turn = PLAYER_ORDER.indexOf('player');
+            state.turnPlayer = 'player';
+            render();
+            return;
         }
     } else {
         log('DEBUG: IA rechaza el truco','system');
@@ -1204,7 +1250,18 @@ function animacionVictoria() {
             setTimeout(() => {
                 window.location.href = "/Home/Room2";
             }, 2000);
+        } else {
+            log('Error en la transición de sala. Redirigiendo de todas formas...','system');
+            setTimeout(() => {
+                window.location.href = "/Home/Room2";
+            }, 2000);
         }
+    })
+    .catch(error => {
+        log('Error de red en la transición. Redirigiendo de todas formas...','system');
+        setTimeout(() => {
+            window.location.href = "/Home/Room2";
+        }, 2000);
     });
 }
 
@@ -1387,7 +1444,7 @@ function iniciarTruco() {
     };
     
     document.getElementById('btn-envido').onclick = ()=>{
-        if(state.envido.pendiente) return;
+        if(state.envido.pendiente || state.envidoResuelto) return;
         envidoSecuencia = ['envido'];
         state.envido.pendiente = true;
         state.envido.quien = state.turnPlayer;
@@ -1395,7 +1452,6 @@ function iniciarTruco() {
         chatMessages.push({ sender: '*Narrador*', avatar: '', text: `*${nombre(state.turnPlayer)} canta Envido*`, narrator: true });
         render();
         renderChat();
-        // No llamar automáticamente a iaEnvidoRespuesta, esperar al turno de la IA
         turnoSiguiente();
     };
     
@@ -1436,7 +1492,10 @@ function iniciarTruco() {
             envidoSecuencia.push('real envido');
             log('MORTY.EXE canta Real Envido','player');
             render();
-            turnoSiguiente();
+            // PASAR TURNO A LA IA Y RESPONDER
+            state.turn = PLAYER_ORDER.indexOf('codigo');
+            state.turnPlayer = 'codigo';
+            setTimeout(()=>iaEnvidoRespuesta(), 700);
         }
     };
     
@@ -1445,8 +1504,16 @@ function iniciarTruco() {
             envidoSecuencia.push('falta envido');
             log('MORTY.EXE canta Falta Envido','player');
             render();
-            turnoSiguiente();
+            // PASAR TURNO A LA IA Y RESPONDER
+            state.turn = PLAYER_ORDER.indexOf('codigo');
+            state.turnPlayer = 'codigo';
+            setTimeout(()=>iaEnvidoRespuesta(), 700);
         }
+    };
+    
+    // Event listener para el botón de revelar carta del compañero
+    document.getElementById('btn-reveal-companion').onclick = ()=>{
+        revelarCartaCompanion();
     };
 }
 
@@ -1469,7 +1536,6 @@ function resetEnvido() {
 function iaEnvidoRespuesta() {
     let r = Math.random();
     log('DEBUG: iaEnvidoRespuesta - turnPlayer: ' + state.turnPlayer + ', quien: ' + state.envido.quien,'system');
-    
     // Opción 1: Aceptar el envido (50% probabilidad)
     if(r<0.5) {
         log('IA: ¡Quiero envido!','enemy');
@@ -1483,9 +1549,9 @@ function iaEnvidoRespuesta() {
         state.envido.pendiente = true;
         state.envido.quien = state.turnPlayer;
         log('IA: ¡Real Envido!','enemy');
+        state.turn = PLAYER_ORDER.indexOf('player');
+        state.turnPlayer = 'player';
         render();
-        // Continuar al siguiente turno para que el jugador responda
-        turnoSiguiente();
         return;
     } 
     // Opción 3: Subir a Falta Envido (10% probabilidad)
@@ -1494,9 +1560,9 @@ function iaEnvidoRespuesta() {
         state.envido.pendiente = true;
         state.envido.quien = state.turnPlayer;
         log('IA: ¡Falta Envido!','enemy');
+        state.turn = PLAYER_ORDER.indexOf('player');
+        state.turnPlayer = 'player';
         render();
-        // Continuar al siguiente turno para que el jugador responda
-        turnoSiguiente();
         return;
     } 
     // Opción 4: Rechazar el envido (20% probabilidad)
@@ -1618,4 +1684,50 @@ function resolverEnvido() {
     if(TEAM_ENEMY.includes(state.turnPlayer)) {
         setTimeout(()=>iaTurno(),1700);
     }
+    state.envidoResuelto = true;
 } 
+
+// FUNCIONES PARA REVELAR CARTA DEL COMPAÑERO
+function revelarCartaCompanion() {
+    if (!state.puedeRevelar || state.cartaRevelada.morty !== null) {
+        return;
+    }
+    
+    // Seleccionar una carta aleatoria de Rick (morty)
+    let cartasRick = state.hands.morty;
+    if (cartasRick.length === 0) {
+        log('RICK.EXE no tiene cartas para revelar', 'system');
+        return;
+    }
+    
+    let cartaIndex = Math.floor(Math.random() * cartasRick.length);
+    let carta = cartasRick[cartaIndex];
+    
+    // Marcar la carta como revelada
+    state.cartaRevelada.morty = cartaIndex;
+    state.puedeRevelar = false;
+    
+    // Mostrar la carta revelada
+    log('MORTY.EXE revela una carta de RICK.EXE: ' + carta.value + ' de ' + carta.suit, 'player');
+    
+    // Agregar mensaje al chat
+    chatMessages.push({ 
+        sender: 'MORTY.EXE', 
+        avatar: '/img/mortyHacker.png', 
+        text: '¡Revelé una carta de Rick! Es el ' + carta.value + ' de ' + carta.suit 
+    });
+    renderChat();
+    
+    // Deshabilitar el botón
+    document.getElementById('btn-reveal-companion').disabled = true;
+    document.getElementById('btn-reveal-companion').textContent = 'CARTA YA REVELADA';
+    
+    render();
+}
+
+function resetearRevelacionCarta() {
+    state.cartaRevelada = { morty: null, player: null };
+    state.puedeRevelar = true;
+    document.getElementById('btn-reveal-companion').disabled = false;
+    document.getElementById('btn-reveal-companion').textContent = 'REVELAR CARTA DE RICK';
+}
