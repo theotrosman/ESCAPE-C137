@@ -58,12 +58,12 @@ const chatMessages = [];
 // Frases absurdas para las IAs
 const frasesAbsurdas = [
     "me dijo 'me hacés bien' y no me habló por tres días",
-    "mi vieja me preguntó si comí y me largué a llorar",
-    "soñé que me perdonaban, me desperté y todavía estaba bloqueado",
+    "si puede ser",
+    "se desvirtuó el chat",
     "ayer sentí el olor de su perfume y me puse a llorar, MARTINA VOLVE",
-    "me respondió el mensaje dos semanas después como si nada",
+    "¿se acuerdan de la luna acosadora? 🌚",
     "me dijo que me quería, pero como amigo",
-    "me dejó de seguir pero mira todas mis historias desde una cuenta de recetas",
+    "Definitivamente, esto es un easter egg",
     "ayer me dijo que me extrañaba y hoy me mandó un meme como si nada",
     "le escribí 'te extraño' y me hizo un edit de 'missy, missy, do you really miss me?'",
     "me dijo que no era buen momento para mí... y ahora sube con otro a TikTok",
@@ -73,17 +73,17 @@ const frasesAbsurdas = [
     "Laura",
     "No servis para este juego hermano",
     "Callate la boca papa frita ",
-    "me desbloqueó, me stalkeó y se volvió a ir. ni siquiera me saludó",
     "le conté cómo me sentía y me dejó en visto. eso también fue una respuesta",
     "me dijo que no sabía lo que quería. y mientras lo pensaba, me perdí yo",
     "tengo una playlist con su nombre y ahora no puedo escuchar ni el clima",
-    "me dijo 'no sos vos, soy yo', y después fui yo el que se quedó solo",
-    "me pidió perdón sin saber qué hizo, y eso me dolió más que lo que hizo",
+    "Amigo , no tenes aura",
+    "tenés razón",
     "Estaba cagando y me levante para aplaudirte",
     "¿Vieron a la hermana de Ajami?",
     "NO TE OLVIDES DE PONER EL WHERE",
-    "El dotnet watch run no anda, ahora es dotnet run --project PrimerProyecto.csproj😢"
-  ];
+    "El dotnet watch run no anda, ahora es dotnet run --project PrimerProyecto.csproj😢",
+    `Definitivamente, esto es un easter egg⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣼⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣧⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣧⣀⣾⣿⣿⣿⣿⣿⣿⣿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⢹⣿⣶⣦⣤⣀⡀⠀⠀⠀⠀⠀⣼⣿⣿⣿⡿⠿⠟⠛⠛⠿⠿⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⢿⣿⣿⣿⣿⣿⣿⣶⣶⣤⣤⡿⠟⠉⢴⣶⣿⣿⣿⣿⣿⣷⣦⣍⠻⣿⣿⣿⡇⠀⠀⠀⠀⠀⣀⣀⣠⣤⣶⡶\n⠀⠀⠀⠀⠀⠈⣿⣿⣿⣿⣿⣿⣿⡿⠟⣋⣀⣙⡻⢶⣝⢿⣿⣿⣿⣿⣿⣿⣿⣿⣌⠻⣿⣷⣶⣶⣿⣿⣿⣿⣿⣿⣿⠏⠀\n⠀⠀⠀⠀⠀⠀⠘⣿⣿⣿⣿⣿⠏⣴⣿⡿⠿⢿⣿⣦⡙⢦⣽⣿⣿⣿⣿⣿⣿⣿⣿⡧⠹⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⢹⣿⣿⣿⣿⡆⢉⣥⣶⣾⣶⣌⠻⣿⣎⠻⣿⣿⣿⡿⠟⣋⣭⣴⣶⡄⢹⣿⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⣿⣿⢃⣿⣿⡿⠿⠿⠿⣧⡙⢿⣷⣶⣶⣶⣶⣿⠿⠟⠋⣩⣴⡌⣿⣿⣿⣿⣿⡟⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⢀⣸⣿⣿⡟⢸⠟⣡⣶⣾⣿⣿⣶⣌⠲⣬⣉⠉⣉⣥⣴⣾⣿⣷⣦⡙⣧⢹⣿⣿⣿⠟⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⢀⣠⣴⣾⣿⣿⣿⣿⡇⡎⣼⣿⣿⣿⣿⣿⣿⠉⢢⢹⡿⢰⣿⣿⣿⣿⣿⣿⠉⣳⠈⢸⣿⣿⡋⠀⠀⠀⠀⠀⠀⠀\n⠠⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⢁⡇⣿⣿⣿⣿⣿⣿⣿⣿⣿⢸⡇⣾⣿⣿⣿⣿⣿⣿⣿⣿⠀⢸⣿⣿⣿⣷⣶⣤⣄⣀⣀⠀\n⠀⠀⠉⠻⢿⣿⣿⣿⣿⣿⣿⢸⡇⢿⣿⣿⣿⣿⣿⣿⣿⠇⣼⣧⠸⣿⣿⣿⣿⣿⣿⣿⡿⢠⢸⣿⣿⣿⣿⣿⣿⣿⣿⠟⠁\n⠀⠀⠀⠀⠀⠈⠛⢿⣿⣿⣿⢸⣿⣌⠻⢿⣿⣿⣿⡿⢋⣼⣿⣿⣧⡙⠿⣿⣿⣿⡿⠟⣡⣿⢸⣿⣿⣿⣿⣿⡿⠋⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣾⣿⣿⣿⣶⣤⣤⣤⣶⣿⠋⣿⣿⢻⣿⣷⣶⣤⣴⣶⣿⣿⣿⢸⣿⣿⣿⡿⠋⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⢹⣿⣷⣬⣛⣛⠛⣛⣩⣽⠀⣿⣿⢀⣷⣬⣙⡛⠛⣛⣫⣴⣿⢸⣿⣿⡟⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠠⣾⣿⣿⣿⣿⣿⣿⠟⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⣿⣿⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⠘⢿⣿⣷⡀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠈⠙⠻⢿⣿⣿⢃⣾⠘⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣌⣡⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⣦⡙⣿⣿⣷⣤⣀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠈⣿⢸⣿⡇⣿⣿⣿⣿⡿⢿⣿⡿⢻⣟⢹⡟⢻⣟⠻⣿⣿⣿⣿⣿⣿⣿⢸⣿⡇⣿⣿⣿⠿⠟⠁⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⢰⣿⣦⡙⠇⢸⣿⣿⡟⡰⠁⠈⠁⠀⠁⠀⠀⠀⠁⠀⠉⠀⠙⣌⢻⣿⣿⠘⣋⣴⠉⠁⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⢀⣿⣿⣿⣿⣷⡌⣿⣿⢰⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⡌⣿⡇⣼⣿⣿⡆⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠘⠛⠛⠛⠛⠻⣷⠹⣿⠸⣧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡇⣿⢡⣿⣿⣿⣷⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣿⣇⢻⣧⡙⠿⠶⠴⢦⡀⠶⣶⣶⡶⠆⢠⣤⠴⢏⣴⢃⡎⠀⠈⠉⠉⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠟⠛⠀⠻⣿⣷⣶⣾⣿⣿⡇⢹⠏⣴⣶⣶⣶⣶⡿⠃⠚⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣿⣿⣿⣿⣿⣤⣾⣿⣿⣿⣿⠟⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀`,
+];
   
 
 const respuestasJugador = {
@@ -100,42 +100,43 @@ const respuestasJugador = {
     "ayer me habló porque soñó que me moría. me habló para eso nomás.": [
       "erorr 404",
       "me pasó también. sueñan que te vas y recién ahí se acuerdan que existís",
-      "te juro que prefiero que no sueñe nada, no que me use de aparición fantasma"
+      "tonto"
     ],
     "ABRUH": [
       "bro eso fue más violento que un audio pasivo agresivo",
-      "te usan de espejo para ver si todavía valen algo. es literal eso",
+      "este chat se nos esta yendo de las manos...",
       "yo lo llamo 'ping emocional': solo quieren saber si seguís sangrando"
     ],
     "me dejó de hablar pero ve todas mis historias y le pone like a mi perro": [
       "el perro no tiene la culpa de tus vínculos, amigo",
-      "eso es manipulación emocional indirecta. saludalo y bloquealo vos",
-      "si quiere verte, que te mire a vos. no al caniche"
+      "xd",
+      "si quiere verte, que te mire a vos. no al caniche", 
+      "dale"
     ],
     "no te olvides de poner el where": [
-      "es que sos lo más lindo, pero también lo más fácil de perder",
-      "a veces te dicen esas cosas para que no los odies cuando se vayan",
+      "no lo entenderias ",
+      "es probable",
       "esa frase debería venir con fecha de vencimiento y una advertencia"
     ],
     "me respondió a las 3 de la mañana con un 'pensé que te había contestado'": [
-      "me lo hicieron, y era mentira. ya había subido dos historias en el medio",
+      "lol",
       "es el clásico 'no me olvidé, solo no me importó tanto'",
-      "cuando te quieren hablar, lo hacen. lo demás es excusa con horario nocturno"
+      "total"
     ],
-    "la vi feliz y no sé si me alegra o me arruina el día": [
-      "te entiendo. duele que esté bien sin vos, aunque eso sea lo sano",
-      "verla feliz me hace pensar si alguna vez lo estuvo conmigo o fue actuación",
-      "igual esa felicidad a veces también está actuada. no te lo creas tanto"
+    "♫ En tu boca mordí la manzana carmín del deseo y la tentación... ♫": [
+      "Tirame una star en el repo de github: https://github.com/theotrosman/ESCAPE-C137",
+      "¿podés tirar una carta hermano?",
+      "¿Vieron el pelotudo que dice el tiempo todo lo da y todo lo quita?"
     ],
     "me dijo 'siento cosas por vos pero estoy mal de la panza' y desapareció": [
-      "la panza es el nuevo 'no sos vos, soy yo', literal",
-      "yo también usé eso y era mentira. era miedo disfrazado de acidez",
+      "fa... ¿cuantó vas a estar para tirar una carta?",
+      "¿pueden hacer un botón para mutear el chat? ",
       "cuando te quieren de verdad, vomitan pero te contestan"
     ],
     "me dijo que le doy paz y después desapareció por 4 días": [
       "a mí me dijeron eso y después subieron una selfie con uno de perfil turbio",
-      "la paz se va cuando aparece el caos de alguien más",
-      "te dan paz porque sabés escuchar, pero nadie escucha tu parte"
+      "Que temón",
+      "muteen el chat"
     ]
   };
   
@@ -812,7 +813,11 @@ function nuevaMano() {
 
 function finPartida(win) {
     log(win==='player'?'¡GANASTE!':'Perdiste...','system');
-    setTimeout(()=>window.location.reload(),4000);
+    if(win==='player' && typeof epicTransitionToRoom2 === 'function') {
+        setTimeout(()=>epicTransitionToRoom2(), 1200);
+    } else {
+        setTimeout(()=>window.location.reload(),4000);
+    }
 }
 
 function iaTurno() {

@@ -13,7 +13,7 @@
         :root {
             --bg: #000810;
             --fg: #0f0;
-            --cyan: #00ffff;
+            --cyan: #00ff00;
             --magenta: #ff00ff;
             --yellow: #ffff00;
         }
@@ -258,6 +258,27 @@
                 ) scale(0);
             }
         }
+
+        /* Cambia todos los elementos cyan a verde */
+        .equipo-card {
+            border: 2px solid #00ff00 !important;
+        }
+        /* Título principal */
+        .equipo-title {
+            color: #00ff00 !important;
+            text-shadow: 0 0 8px #00ff00 !important;
+        }
+        /* Botón 'Ver video secreto' y 'Volver al inicio' */
+        .equipo-btn, .volver-btn {
+            border-color: #00ff00 !important;
+            color: #00ff00 !important;
+            background: black !important;
+            text-shadow: 0 0 5px #00ff00 !important;
+        }
+        .equipo-btn:hover, .volver-btn:hover {
+            border-color: #fff !important;
+            color: #fff !important;
+        }
     </style>
 </head>
 <body>
@@ -302,10 +323,10 @@ function volverSinIntro(e) {
         </div>
     </div>
     <div style="width:100%;display:flex;justify-content:center;margin:60px 0 40px 0;">
-        <button id="show-flappy" style="background: #000; color: #00ffff; border: 2px solid #00ffff; font-family: 'VT323', monospace; font-size: 2rem; padding: 18px 38px; border-radius: 12px; box-shadow: 0 0 18px #00ffff88; cursor: pointer; transition: all 0.2s;">Ver video secreto</button>
+        <button id="show-flappy" style="background: #000; color: #00ff00; border: 2px solid #00ff00; font-family: 'VT323', monospace; font-size: 2rem; padding: 18px 38px; border-radius: 12px; box-shadow: 0 0 18px #00ff0088; cursor: pointer; transition: all 0.2s;">Ver video secreto</button>
     </div>
     <div id="flappy-container" style="display:none; width:100%; text-align:center; margin-bottom:60px;">
-        <video id="flappy-video" src="/img/flappybird1.mp4" controls style="max-width:900px;width:90vw; margin:0 auto; border:3px solid #00ffff; border-radius:16px; box-shadow:0 0 24px #00ffff88;"></video>
+        <video id="flappy-video" src="/img/flappybird1.mp4" controls style="max-width:900px;width:90vw; margin:0 auto; border:3px solid #00ff00; border-radius:16px; box-shadow:0 0 24px #00ff0088;"></video>
         <br>
         <button id="close-flappy" style="margin-top:18px; background:#000; color:#ff00ff; border:2px solid #ff00ff; font-family:'VT323', monospace; font-size:1.3rem; padding:8px 24px; border-radius:8px; cursor:pointer;">Cerrar video</button>
     </div>

@@ -375,6 +375,32 @@
             white-space: pre;
             user-select: none;
         }
+
+        body.rm-chaos-cursor {
+            cursor: none !important;
+        }
+        #chaos-cursor {
+            position: fixed;
+            left: 0; top: 0;
+            width: 64px; height: 64px;
+            pointer-events: none;
+            z-index: 99999;
+            mix-blend-mode: lighten;
+            filter: drop-shadow(0 0 12px #0f0) drop-shadow(0 0 24px #0ff);
+            transition: filter 0.1s;
+        }
+        #chaos-cursor svg {
+            width: 100%; height: 100%;
+            display: block;
+        }
+        #chaos-cursor-canvas {
+            position: fixed;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 99998;
+            mix-blend-mode: lighten;
+        }
     </style>
 </head>
 <body>
@@ -450,6 +476,20 @@
 
     <!-- Fondo animado tipo terminal/cmd -->
     <div class="cmd-bg"><div class="cmd-bg-inner" id="cmdBg"></div></div>
+
+    <!-- CURSOR CAÓTICO SCI-FI RICK&MORTY -->
+    <div id="chaos-cursor">
+        <svg viewBox="0 0 64 64">
+            <g id="caret-group">
+                <polyline id="caret" points="16,56 32,8 48,56" stroke="#00ff00" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <polyline id="spike1" points="32,8 24,28" stroke="#0ff" stroke-width="3" fill="none"/>
+                <polyline id="spike2" points="32,8 40,28" stroke="#fff" stroke-width="2" fill="none"/>
+                <circle id="core" cx="32" cy="16" r="5" fill="#00ffcc" fill-opacity="0.7"/>
+            </g>
+            <g id="glitch-shapes"></g>
+        </svg>
+    </div>
+    <canvas id="chaos-cursor-canvas" width="1920" height="1080"></canvas>
 
     <script>
         // Variables del juego
@@ -735,6 +775,141 @@
             cmdBg.textContent = cmdBuffer.join('\n');
         }
         setInterval(addCmdLine, 90);
+
+        // --- Cursor SVG follow ---
+        document.body.classList.add('rm-chaos-cursor');
+        const cursor = document.getElementById('chaos-cursor');
+        const canvas = document.getElementById('chaos-cursor-canvas');
+        const ctx = canvas.getContext('2d');
+        let mouse = {x: window.innerWidth/2, y: window.innerHeight/2};
+        let cursorPos = {x: mouse.x, y: mouse.y};
+        let t = 0;
+        // Resize canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+        // Mouse move
+        document.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+        // Cursor follow
+        function lerp(a,b,s){return a+(b-a)*s;}
+        // --- Glitchy cursor animation ---
+        function animateCursor() {
+            t += 0.08;
+            cursorPos.x = lerp(cursorPos.x, mouse.x, 0.35);
+            cursorPos.y = lerp(cursorPos.y, mouse.y, 0.35);
+            cursor.style.transform = `translate(${cursorPos.x-32}px,${cursorPos.y-32}px) scale(${1+Math.sin(t*2)*0.08}) rotate(${Math.sin(t*1.2)*7}deg)`;
+            // SVG color/shape chaos
+            const caret = document.getElementById('caret');
+            const spike1 = document.getElementById('spike1');
+            const spike2 = document.getElementById('spike2');
+            const core = document.getElementById('core');
+            caret.setAttribute('stroke',`hsl(${120+Math.sin(t*2)*80},100%,${60+Math.sin(t*3)*20}%)`);
+            spike1.setAttribute('stroke',`hsl(${180+Math.cos(t*2.5)*120},100%,70%)`);
+            spike2.setAttribute('stroke',`hsl(${320+Math.sin(t*4)*80},100%,90%)`);
+            core.setAttribute('fill',`hsl(${120+Math.sin(t*5)*120},100%,70%)`);
+            core.setAttribute('r',5+Math.abs(Math.sin(t*3))*3);
+            // Glitch shapes
+            const glitchShapes = document.getElementById('glitch-shapes');
+            glitchShapes.innerHTML = '';
+            for(let i=0;i<3+Math.floor(Math.random()*3);i++){
+                let ang = Math.random()*2*Math.PI;
+                let r = 18+Math.random()*22;
+                let x = 32+Math.cos(ang)*r;
+                let y = 32+Math.sin(ang)*r;
+                let c = `hsl(${Math.random()*360},100%,60%)`;
+                let s = 2+Math.random()*6;
+                glitchShapes.innerHTML += `<rect x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" fill="${c}" fill-opacity="${0.5+Math.random()*0.5}"/>`;
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+        // --- Canvas chaos: particles, flashes, cosmic ---
+        const quotes = [
+            '¿Somos parte del código o del error?',
+            '¿Y si el sistema somos nosotros?',
+            '¿Qué versión de vos vive en este bucle?',
+            '¿Quién está mirando desde el otro lado?',
+            '¿El bug es el mensaje?'
+        ];
+        let particles = [];
+        function spawnParticle(x,y) {
+            let angle = Math.random()*2*Math.PI;
+            let speed = 2+Math.random()*3;
+            let color = `hsl(${Math.random()*360},100%,60%)`;
+            let life = 18+Math.random()*18;
+            let size = 2+Math.random()*6;
+            particles.push({x,y,dx:Math.cos(angle)*speed,dy:Math.sin(angle)*speed,color,life,size});
+        }
+        // Flash effect
+        let flash = 0;
+        function triggerFlash() { flash = 1.2; }
+        // On click, cosmic explosion
+        document.addEventListener('mousedown', e => {
+            for(let i=0;i<32;i++) spawnParticle(mouse.x,mouse.y);
+            triggerFlash();
+        });
+        // Main render loop
+        function renderChaos() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            // Fullscreen flash
+            if(flash>0.01) {
+                ctx.save();
+                ctx.globalAlpha = Math.min(flash,1)*0.33;
+                ctx.fillStyle = `hsl(${120+Math.sin(t*8)*120},100%,90%)`;
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.restore();
+                flash *= 0.88;
+            }
+            // Particles
+            for(let i=particles.length-1;i>=0;i--){
+                let p=particles[i];
+                ctx.save();
+                ctx.globalAlpha = Math.max(0,p.life/36)*0.7;
+                ctx.beginPath();
+                ctx.arc(p.x,p.y,p.size,0,2*Math.PI);
+                ctx.fillStyle = p.color;
+                ctx.shadowColor = p.color;
+                ctx.shadowBlur = 16;
+                ctx.fill();
+                ctx.restore();
+                p.x+=p.dx; p.y+=p.dy; p.life--;
+                p.dx*=0.97; p.dy*=0.97;
+                if(p.life<0) particles.splice(i,1);
+            }
+            // Matrix overlay
+            if(Math.random()<0.18) {
+                ctx.save();
+                ctx.globalAlpha = 0.13+Math.random()*0.09;
+                ctx.font = `${18+Math.random()*18}px monospace`;
+                ctx.fillStyle = '#0f0';
+                for(let i=0;i<16;i++){
+                    let x = Math.random()*canvas.width;
+                    let y = Math.random()*canvas.height;
+                    ctx.fillText('█▓▒░',x,y);
+                }
+                ctx.restore();
+            }
+            // Flicker philosophical quote (imperceptible)
+            if(Math.random()<0.04) {
+                ctx.save();
+                ctx.globalAlpha = 0.08+Math.random()*0.07;
+                ctx.font = `${16+Math.random()*16}px monospace`;
+                ctx.fillStyle = '#fff';
+                let q = quotes[Math.floor(Math.random()*quotes.length)];
+                let x = Math.random()*canvas.width;
+                let y = Math.random()*canvas.height;
+                ctx.fillText(q,x,y);
+                ctx.restore();
+            }
+            requestAnimationFrame(renderChaos);
+        }
+        renderChaos();
     </script>
         @Html.Partial("_NavMenu")
 </body>

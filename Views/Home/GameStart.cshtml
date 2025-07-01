@@ -128,6 +128,10 @@
                 <button id="btn-continue" class="continue-btn">CONTINUAR</button>
             </div>
         </div>
+        <!-- BOTÓN FINALIZAR -->
+        <div style="width:100%; display:flex; justify-content:center; margin: 24px 0;">
+            <button id="btn-finalizar" style="padding: 18px 48px; font-size: 2rem; font-family: 'VT323', monospace; background: #0f0; color: #111; border: 4px solid #0f0; border-radius: 18px; box-shadow: 0 0 16px #0f0, 0 0 32px #0f08; cursor: pointer; transition: background 0.2s, color 0.2s; text-shadow: 0 0 8px #fff, 0 0 2px #0f0; letter-spacing: 2px;">FINALIZAR</button>
+        </div>
         <div id="console">
             <div id="console-output"></div>
             <div id="console-highlight"></div>
@@ -211,8 +215,162 @@
         </div>
     </div>
 
+    <!-- Overlay de transición épica -->
+    <div id="epic-transition" style="display:none; position:fixed; inset:0; background:black; z-index:99999; align-items:center; justify-content:center; flex-direction:column;">
+      <video id="glitch-video" src="/img/glitchsora1.mp4" style="display:none; width:100vw; height:100vh; object-fit:cover;" preload="auto"></video>
+      <div id="room2-welcome" style="display:none; color:#00ff00; font-family:'VT323',monospace; font-size:2.5rem; text-align:center; text-shadow:0 0 12px #00ff00; letter-spacing:2px; position:relative; min-height: 30vh;">
+        <span id="glitch-question" class="glitchy" data-text=""></span>
+        <!-- Glitch decorativos solo visuales, sin texto -->
+        <div id="glitch-deco-1" style="position:absolute; left:5vw; top:10vh; width:80px; height:18px; opacity:0.18; pointer-events:none; filter: blur(1px); background: repeating-linear-gradient(90deg,#0ff 0 8px,transparent 8px 16px); mix-blend-mode: lighten;"></div>
+        <div id="glitch-deco-2" style="position:absolute; right:7vw; bottom:12vh; width:120px; height:16px; opacity:0.13; pointer-events:none; filter: blur(2px); background: repeating-linear-gradient(90deg,#f0f 0 6px,transparent 6px 12px); mix-blend-mode: lighten;"></div>
+        <div id="glitch-deco-3" style="position:absolute; left:50vw; top:3vh; width:60px; height:12px; opacity:0.09; pointer-events:none; filter: blur(1.5px); background: repeating-linear-gradient(90deg,#fff 0 4px,transparent 4px 8px); mix-blend-mode: lighten;"></div>
+      </div>
+      <!-- Overlay de flash blanco para transición final -->
+      <div id="final-flash" style="display:none; position:fixed; inset:0; background:white; z-index:100000; opacity:0;"></div>
+    </div>
+
     <!-- Scripts -->
     <script src="~/js/truco.js"></script>
+    <script>
+    // --- TRANSICIÓN ÉPICA A ROOM2 ---
+    function epicTransitionToRoom2() {
+      const overlay = document.getElementById('epic-transition');
+      const glitchVideo = document.getElementById('glitch-video');
+      const welcome = document.getElementById('room2-welcome');
+      overlay.style.display = 'flex';
+      overlay.style.opacity = 0;
+      overlay.style.transition = 'opacity 1.2s';
+      setTimeout(() => {
+        overlay.style.opacity = 1;
+        setTimeout(() => {
+          glitchVideo.style.display = 'block';
+          glitchVideo.currentTime = 0;
+          glitchVideo.play();
+          glitchVideo.onended = () => {
+            glitchVideo.style.display = 'none';
+            welcome.style.display = 'block';
+            startGlitchQuestionSequence();
+          };
+        }, 1200);
+      }, 100);
+    }
+
+    // Preguntas cortas, sin rebote, solo glitch visual
+    const glitchQuestions = [
+      '¿Eco o error?',
+      '¿Quién observa?',
+      'Despierta.'
+    ];
+
+    function startGlitchQuestionSequence() {
+      const el = document.getElementById('glitch-question');
+      let idx = 0;
+      function showNext() {
+        if(idx >= glitchQuestions.length) {
+          setTimeout(() => {
+            document.getElementById('room2-welcome').style.display = 'none';
+            finalFlashTransition();
+          }, 900);
+          return;
+        }
+        el.setAttribute('data-text', glitchQuestions[idx]);
+        el.textContent = glitchQuestions[idx];
+        startCleanGlitchAnimation(el, 2200 + idx*500);
+        setTimeout(() => {
+          el.textContent = '';
+          setTimeout(() => {
+            idx++;
+            showNext();
+          }, 350);
+        }, 2200 + idx*500);
+      }
+      showNext();
+      animateGlitchDecos();
+    }
+
+    // Animación glitch solo visual: distorsión, color, sin rebote ni tamaño
+    function startCleanGlitchAnimation(el, duration) {
+      let base = el.getAttribute('data-text');
+      let t = 0;
+      let colors = ['#00ff00','#0ff','#fff','#f0f','#ff0','#0f0','#0ff','#fff'];
+      let interval = setInterval(() => {
+        t += 0.09;
+        // Glitch letras (solo algunos frames)
+        if(Math.random()<0.18) {
+          el.textContent = base.split('').map(c => Math.random() < 0.18 ? String.fromCharCode(33 + Math.floor(Math.random()*94)) : c).join('');
+        } else {
+          el.textContent = base;
+        }
+        // Color glitch
+        el.style.color = colors[Math.floor(Math.random()*colors.length)];
+        el.style.textShadow = `0 0 16px ${el.style.color}, 0 0 32px #fff8`;
+        el.style.filter = `blur(${Math.abs(Math.sin(t*3))*1.2}px)`;
+        el.style.letterSpacing = '2px';
+        el.style.fontSize = '2.5rem';
+        el.style.transform = '';
+      }, 40);
+      setTimeout(() => {
+        clearInterval(interval);
+        el.textContent = base;
+        el.style.color = '#00ff00';
+        el.style.fontSize = '2.5rem';
+        el.style.letterSpacing = '2px';
+        el.style.filter = '';
+        el.style.transform = '';
+        el.style.textShadow = '0 0 12px #00ff00';
+      }, duration-300);
+    }
+
+    // Animación de glitches decorativos
+    function animateGlitchDecos() {
+      const deco1 = document.getElementById('glitch-deco-1');
+      const deco2 = document.getElementById('glitch-deco-2');
+      const deco3 = document.getElementById('glitch-deco-3');
+      let t = 0;
+      function loop() {
+        t += 0.07;
+        deco1.style.transform = `translateY(${Math.sin(t)*8}px) skewX(${Math.sin(t*1.7)*3}deg)`;
+        deco2.style.transform = `translateX(${Math.cos(t*1.2)*10}px) skewY(${Math.cos(t*2.1)*2}deg)`;
+        deco3.style.transform = `translateY(${Math.sin(t*0.7)*6}px) scaleX(${1+Math.sin(t*2)*0.04})`;
+        deco1.style.opacity = 0.13 + 0.07*Math.abs(Math.sin(t*1.3));
+        deco2.style.opacity = 0.09 + 0.09*Math.abs(Math.cos(t*1.1));
+        deco3.style.opacity = 0.07 + 0.07*Math.abs(Math.sin(t*1.9));
+        if(document.getElementById('room2-welcome').style.display === 'block') {
+          requestAnimationFrame(loop);
+        }
+      }
+      loop();
+    }
+
+    // Flash blanco y glitch final antes de Room2
+    function finalFlashTransition() {
+      const flash = document.getElementById('final-flash');
+      flash.style.display = 'block';
+      flash.style.opacity = 0;
+      flash.style.transition = 'opacity 0.18s';
+      setTimeout(() => {
+        flash.style.opacity = 1;
+        setTimeout(() => {
+          flash.style.transition = 'opacity 0.5s';
+          flash.style.opacity = 0;
+          setTimeout(() => {
+            flash.style.display = 'none';
+            window.location.href = '/Home/Room2';
+          }, 400);
+        }, 220);
+      }, 40);
+    }
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var btnFin = document.getElementById('btn-finalizar');
+        if(btnFin) {
+            btnFin.onclick = function() {
+                epicTransitionToRoom2();
+            };
+        }
+    });
+    </script>
      @Html.Partial("_NavMenu")
 </body>
 </html>
