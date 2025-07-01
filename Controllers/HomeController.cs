@@ -207,6 +207,7 @@ namespace PrimerProyecto.Controllers
         public IActionResult GameStart()
         {
             MarkRoomAsCompleted(2); // Marca Room2 como pasada al iniciar el juego
+            MarkGameStartAsCompleted(); // Asegura que GameStart figure como completado
             return View();
         }
 
