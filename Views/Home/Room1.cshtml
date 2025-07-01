@@ -95,6 +95,17 @@
     </style>
 </head>
 <body>
+    <!-- Pantalla negra de transición -->
+    <div id="black-transition" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:black;opacity:1;transition:opacity 2s;"></div>
+    <!-- Video de introducción -->
+    <video id="intro-video" src="/img/rickSora1.mp4" style="display:none;position:fixed;z-index:9998;top:0;left:0;width:100vw;height:100vh;object-fit:cover;background:black;" preload="auto"></video>
+    <!-- Pantalla blanca de alerta y animación -->
+    <div id="white-flash" style="display:none;position:fixed;z-index:10000;top:0;left:0;width:100vw;height:100vh;background:white;opacity:1;transition:opacity 1s;"></div>
+    <div id="matrix-break" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;pointer-events:none;justify-content:center;align-items:center;text-align:center;font-size:3vw;font-family:monospace;font-weight:bold;color:#111;text-shadow:0 0 30px #fff,0 0 80px #0ff,0 0 120px #f0f;animation:glitchFlash 0.2s infinite alternate;">
+        <span id="matrix-message">¡Accediendo al núcleo de la realidad digital!</span>
+    </div>
+    <audio id="epic-alert" src="/img/epic_alert.mp3" preload="auto"></audio>
+    <audio id="epic-glitch" src="/img/epic_glitch.mp3" preload="auto"></audio>
     <audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
     <audio id="audio1" src="/audio/audio1.mp3" loop></audio>
     <audio id="audio2" src="/audio/audio2.mp3" loop></audio>
@@ -285,6 +296,100 @@ function escribirLinea() {
             audio.volume = Math.random() * 0.3;
             audio.play();
         });
+
+        // --- EFECTOS DE TRANSICIÓN Y ANIMACIÓN INICIAL ---
+        window.addEventListener('DOMContentLoaded', function() {
+            const black = document.getElementById('black-transition');
+            const intro = document.getElementById('intro-video');
+            const white = document.getElementById('white-flash');
+            const matrix = document.getElementById('matrix-break');
+            const matrixMsg = document.getElementById('matrix-message');
+            const epicAlert = document.getElementById('epic-alert');
+            const epicGlitch = document.getElementById('epic-glitch');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('terminal').style.display = 'none';
+            document.getElementById('input-line').style.display = 'none';
+            setTimeout(() => {
+                black.style.opacity = 0;
+                setTimeout(() => {
+                    black.style.display = 'none';
+                    intro.style.display = 'block';
+                    intro.play();
+                }, 2000);
+            }, 3000);
+            // --- NUEVA ANIMACIÓN POST-VIDEO ---
+            intro.addEventListener('ended', function() {
+                intro.style.display = 'none';
+                white.style.display = 'block';
+                white.style.opacity = 1;
+                matrix.style.display = 'flex';
+                let errorPhrases = [
+                    '¡¡¡ERROR FATAL EN EL NÚCLEO MVC!!!',
+                    '!!! REALIDAD CORRUPTA: 0xDEADCODE !!!',
+                    '!!! STACK OVERFLOW EN LA MATRIZ !!!',
+                    '!!! DESBORDAMIENTO DE REALIDAD !!!',
+                    '!!! ERROR: CONTROLADOR AUTÓNOMO DETECTADO !!!',
+                    '!!! GLITCH EN EL SISTEMA: REALIDAD INESTABLE !!!',
+                    '!!! ALERTA: EL CÓDIGO TE ESTÁ ABSORBIENDO !!!',
+                    '!!! ERROR 404: LÓGICA NO ENCONTRADA !!!',
+                    '!!! ¡¡INYECCIÓN DE BUGS MASIVA!! !!!',
+                    '!!! ¡¡LA MATRIX SE ESTÁ ROMPIENDO!! !!!',
+                    '!!! ¡¡NO PUEDES ESCAPAR!! !!!',
+                ];
+                let flashes = 0;
+                epicAlert.currentTime = 0; epicAlert.play();
+                let phraseIndex = 0;
+                let flashInterval = setInterval(() => {
+                    white.style.opacity = (flashes % 2 === 0) ? 1 : 0.5 + Math.random()*0.5;
+                    matrix.style.color = flashes % 2 === 0 ? '#f00' : '#0ff';
+                    matrix.style.textShadow = flashes % 2 === 0 ? '0 0 60px #fff,0 0 120px #f00,0 0 200px #0ff' : '0 0 80px #0ff,0 0 160px #fff,0 0 240px #f0f';
+                    matrixMsg.innerText = errorPhrases[phraseIndex % errorPhrases.length];
+                    matrixMsg.style.letterSpacing = (Math.random() * 10) + 'px';
+                    matrixMsg.style.transform = `skew(${Math.random()*40-20}deg,${Math.random()*40-20}deg)`;
+                    if (flashes % 2 === 0) epicGlitch.currentTime = 0, epicGlitch.play();
+                    flashes++;
+                    phraseIndex++;
+                    if (flashes > 22) {
+                        clearInterval(flashInterval);
+                        // Animación de absorción y bug visual
+                        matrixMsg.innerText = '¡¡¡EL CÓDIGO TE ABSORBE!!!';
+                        matrixMsg.style.letterSpacing = '20px';
+                        matrixMsg.style.transform = 'scale(1.5) rotate(-10deg)';
+                        matrix.style.animation = 'matrixSuckEpic 2s forwards';
+                        setTimeout(() => {
+                            white.style.opacity = 0;
+                            matrix.style.opacity = 0;
+                            setTimeout(() => {
+                                white.style.display = 'none';
+                                matrix.style.display = 'none';
+                                document.body.style.overflow = '';
+                                document.getElementById('terminal').style.display = '';
+                                document.getElementById('input-line').style.display = '';
+                            }, 1000);
+                        }, 2000);
+                    }
+                }, 90);
+            });
+        });
+        // --- ANIMACIONES CSS ---
+        const style = document.createElement('style');
+        style.innerHTML = `
+        @@keyframes glitchFlash {
+            0% { filter: blur(0px) brightness(1); }
+            20% { filter: blur(4px) brightness(2.5) hue-rotate(90deg); }
+            40% { filter: blur(2px) brightness(2) hue-rotate(180deg); }
+            60% { filter: blur(6px) brightness(3) hue-rotate(270deg); }
+            80% { filter: blur(0px) brightness(1.2) hue-rotate(0deg); }
+            100% { filter: blur(4px) brightness(2.5) hue-rotate(360deg); }
+        }
+        @@keyframes matrixSuckEpic {
+            0% { transform: scale(1) rotate(0deg); opacity:1; filter: none; }
+            30% { transform: scale(1.3) rotate(20deg); opacity:0.8; filter: contrast(2) brightness(2) blur(2px); }
+            60% { transform: scale(2) rotate(-20deg); opacity:0.5; filter: contrast(4) brightness(3) blur(6px); }
+            100% { transform: scale(0.1) rotate(1080deg); opacity:0; filter: blur(20px) brightness(10); }
+        }
+        `;
+        document.head.appendChild(style);
     </script>
     
     @Html.Partial("_NavMenu")
