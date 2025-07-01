@@ -7,7 +7,7 @@
 
 ---
 
-```txt
+```txt 
 [RICK CONNECTING...]
 ...Morty... ¿me recibís?...
 No tengo acceso al controlador. 
