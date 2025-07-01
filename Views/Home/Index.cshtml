@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -72,11 +72,11 @@
 
     .ascii-button {
       background: black;
-      border: 2px solid var(--fg);
-      color: var(--fg);
+      border: 2px solid #00ff00;
+      color: #00ff00;
       padding: 12px 24px;
       font-size: 20px;
-      margin-top: 20px;
+      margin: 12px 0;
       cursor: pointer;
       font-family: 'VT323', monospace;
       text-transform: uppercase;
@@ -84,6 +84,12 @@
       transform: scale(0.8);
       animation: none;
       transition: all 0.5s ease;
+      width: 340px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
     }
 
     .ascii-button.show {
@@ -93,8 +99,8 @@
     }
 
     .ascii-button:hover {
-      border-color: var(--glitch1);
-      color: var(--glitch1);
+      border-color: #fff;
+      color: #fff;
     }
 
     /* --- BOTÓN DE PLAY INICIO --- */
@@ -163,41 +169,28 @@
       animation: explosion 0.7s ease;
     }
 
-    /* Estilos para el botón de logros */
+    /* Unifica el estilo de todos los botones, elimina color dorado y celeste */
+    #btn-logros, #btn-equipo {
+      border-color: #00ff00;
+      color: #00ff00;
+      text-shadow: 0 0 5px #00ff00;
+      box-shadow: none;
+    }
+    #btn-logros::before, #btn-equipo::before {
+      display: none;
+    }
+    #btn-logros:hover, #btn-equipo:hover {
+      border-color: #fff;
+      color: #fff;
+      box-shadow: none;
+    }
     #btn-logros {
-      border-color: #ffd700;
-      color: #ffd700;
-      text-shadow: 0 0 5px #ffd700;
       position: relative;
       overflow: hidden;
     }
-
-    #btn-logros::before {
-      content: '';
-      position: absolute;
-      top: -100%;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        transparent,
-        rgba(255, 215, 0, 0.2),
-        transparent
-      );
-      animation: trophyGlow 2s infinite;
-    }
-
-    #btn-logros:hover {
-      border-color: #fff;
-      color: #fff;
-      box-shadow: 
-        0 0 20px rgba(255, 215, 0, 0.4),
-        inset 0 0 10px rgba(255, 215, 0, 0.3);
-    }
-
-    @@keyframes trophyGlow {
-      0% { transform: translateY(-100%) rotate(45deg); }
-      100% { transform: translateY(200%) rotate(45deg); }
+    #btn-equipo {
+      position: relative;
+      overflow: hidden;
     }
 
     .ascii-button {
@@ -226,46 +219,14 @@
     .ascii-button:hover::after {
       opacity: 1;
     }
-
-    /* Estilos para el botón de equipo */
-    #btn-equipo {
-      border-color: #00ffff;
-      color: #00ffff;
-      text-shadow: 0 0 5px #00ffff;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #btn-equipo::before {
-      content: '';
-      position: absolute;
-      top: -100%;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(
-        transparent,
-        rgba(0, 255, 255, 0.2),
-        transparent
-      );
-      animation: teamGlow 2s infinite;
-    }
-
-    #btn-equipo:hover {
-      border-color: #fff;
-      color: #fff;
-      box-shadow: 
-        0 0 20px rgba(0, 255, 255, 0.4),
-        inset 0 0 10px rgba(0, 255, 255, 0.3);
-    }
-
-    @@keyframes teamGlow {
-      0% { transform: translateY(-100%) rotate(45deg); }
-      100% { transform: translateY(200%) rotate(45deg); }
-    }
   </style>
 </head>
 <body>
+  <!-- Video de fondo permanente (solo visible cuando overlay está activo) -->
+  <video id="background-rick" autoplay loop muted playsinline style="opacity:0; visibility:hidden; transition:opacity 1.5s; position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:0; pointer-events:none;">
+    <source src="/img/rick-1.mp4" type="video/mp4">
+  </video>
+
   <!-- Botón de play para iniciar la intro -->
   <div id="play-intro-btn">
     <div class="play-circle" onclick="startIntro()">
@@ -322,6 +283,10 @@
     setTimeout(()=>{
       document.getElementById('play-intro-btn').style.display = 'none';
       introPrimerizaVideo.style.display = "block";
+      // Ocultar el video de fondo por si quedó visible
+      const bgRick = document.getElementById('background-rick');
+      bgRick.style.opacity = 0;
+      bgRick.style.visibility = 'hidden';
       startVideoSequence();
     }, 400);
   }
@@ -343,40 +308,72 @@
     });
     // Si usás audio, podés frenarlo o poner uno especial
     document.getElementById('play-intro-btn').style.display = 'none';
-  } else {
+    // Mostrar el video de fondo
+    const bgRick = document.getElementById('background-rick');
+    bgRick.style.visibility = 'visible';
+    bgRick.style.opacity = 1;
+    try { bgRick.currentTime = 0; bgRick.play(); } catch(e){}
+  } else if (!window._skipIntroProcessed) {
     // Mostrar el botón de play y esperar a que el usuario lo toque
     introPrimerizaVideo.style.display = "none";
     document.getElementById('play-intro-btn').style.display = 'flex';
     document.getElementById('play-intro-btn').style.opacity = 1;
     // El video y la secuencia arrancan solo cuando se toca el botón
+    // Ocultar el video de fondo
+    const bgRick = document.getElementById('background-rick');
+    bgRick.style.opacity = 0;
+    bgRick.style.visibility = 'hidden';
   }
+  window._skipIntroProcessed = true;
 
   function startVideoSequence() {
     // Reproducir el primer video con sonido
     introPrimerizaAudio.volume = 1;
     introPrimerizaAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
-    
     // Esperar a que termine el primer video antes de cambiar al segundo
     introPrimerizaVideo.addEventListener('ended', function() {
       introPrimerizaVideo.style.display = "none";
       introPrimerizaAudio.pause();
       introVideo.style.display = "block";
-      
       // Reproducir el audio del video de Adult Swim
       introAudio.volume = 1;
       introAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
-      
-      // Después de 6 segundos, pausar y mostrar el overlay
-      setTimeout(() => {
+      // Cuando termina el video de Adult Swim, mostrar overlay y fondo
+      introVideo.onended = function() {
         introVideo.pause();
+        introVideo.style.display = 'none';
         typeLine();
+        // Fade-in del video de fondo solo después de ambos videos
+        const bgRick = document.getElementById('background-rick');
+        setTimeout(() => {
+          bgRick.style.visibility = 'visible';
+          bgRick.style.opacity = 1;
+        }, 200);
+      };
+      // Si el video de Adult Swim no tiene evento ended, fallback a los 6 segundos
+      setTimeout(() => {
+        if (!introVideo.ended) {
+          introVideo.pause();
+          introVideo.style.display = 'none';
+          typeLine();
+          const bgRick = document.getElementById('background-rick');
+          setTimeout(() => {
+            bgRick.style.visibility = 'visible';
+            bgRick.style.opacity = 1;
+          }, 200);
+        }
       }, 6000);
-    });
+    }, { once: true });
   }
 
   const audio = document.getElementById("intro-audio");
   window.addEventListener('load', () => {
-    // El audio se maneja en startVideoSequence()
+    // Solo oculta el fondo si NO venís de skipIntro
+    if (!window._skipIntroProcessed) {
+      const bgRick = document.getElementById('background-rick');
+      bgRick.style.opacity = 0;
+      bgRick.style.visibility = 'hidden';
+    }
   });
 
   const lines = [
@@ -497,6 +494,7 @@
       btn3.classList.remove("explosive");
       btn4.classList.remove("explosive");
     }, 700);
+    // El fade-in del fondo ahora solo ocurre después de los videos en startVideoSequence
   }
 
   function entrarJuego() {
@@ -531,22 +529,4 @@
 |            ,'.'...____'::-'  \     `'        |
 |           / |   /         .---.              |
 |     .-.  '  '  / ,---.   (     )             |
-|    / /       ,' (     )---`-`-`-.._          |
-|   : '       /  '-`-`-`..........--'\         |
-|   ' :      /  /                     '.       |
-|   :  \    |  .'         o             \      |
-|    \  '  .' /          o       .       '     |
-|     \  `.|  :      ,    : _o--'.\      |     |
-|      `. /  '       ))    (   )  \>     |     |
-|        ;   |      ((      \ /    \___  |     |
-|        ;   |      _))      `'.-'. ,-'` '     |
-|        |    `.   ((`            |/    /      |
-|        \     ).  .))            '    .       |
-|     ----`-'-'  `''.::.________:::TT'' ---    |
-|                                              |
-|                                              |
-|==============================================|
-|                  THEO TROSMAN                |
-|         https://github.com/theotrosman       |
-'=============================================='
--->
+|    / /       ,' (     )---`-`-`
