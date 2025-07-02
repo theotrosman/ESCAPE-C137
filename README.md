@@ -19,7 +19,7 @@ En esta dimensión el backend está bloqueado.
 
 [INTENTO DE ACCESO A MVC]
 ERROR 403 — RickLockedException("readmeOnly = true")
-
+ 
 Morty, este archivo es una llave.
 Buscá el patrón. Desbloqueá el código.
 Y por favor... no confíes en las variables globales.
