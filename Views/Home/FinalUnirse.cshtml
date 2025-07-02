@@ -106,6 +106,8 @@
         En efecto, es cine.
         <div id="cine-creditos">By Joaco Stock, Sebastian Calviño & Theo Trosman</div>
     </div>
+    <div id="blackout" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:10;opacity:0;transition:opacity 3s;"></div>
+    <video id="c137-video" src="/img/C-137.MP4" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;object-fit:cover;z-index:11;background:#000;"></video>
     <script>
         const intro = document.getElementById('intro');
         const introText = document.getElementById('intro-text');
@@ -171,6 +173,26 @@
             }, 200);
         }
 
+        function mostrarC137() {
+            const blackout = document.getElementById('blackout');
+            const c137 = document.getElementById('c137-video');
+            blackout.style.display = 'block';
+            blackout.style.opacity = 0;
+            setTimeout(() => {
+                blackout.style.opacity = 1;
+                setTimeout(() => {
+                    c137.style.display = 'block';
+                    blackout.style.opacity = 0;
+                    c137.play();
+                    setTimeout(()=>{blackout.style.display='none';}, 1000);
+                }, 3000);
+            }, 10);
+            c137.onended = function() {
+                blackout.style.display = 'block';
+                blackout.style.opacity = 1;
+            };
+        }
+
         // Secuencia: intro tipeada -> video 14-85 -> texto final
         function startSequence() {
             if (audio) {
@@ -188,6 +210,9 @@
                                 audio.currentTime = 15;
                                 audio.play();
                             }
+                            setTimeout(() => {
+                                fadeOut(cine, mostrarC137);
+                            }, 2500);
                         });
                     });
                 }, 1200);
