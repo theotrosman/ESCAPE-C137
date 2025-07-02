@@ -586,7 +586,7 @@ setInterval(() => {
                 dumpEl.appendChild(c);
             });
         }
-        order.forEach(() => {
+        order.forEach((_, i) => {
             const slot = document.createElement('div');
             slot.className = 'slot';
             slot.ondragover = e => { e.preventDefault(); slot.classList.add('over'); };
@@ -595,7 +595,48 @@ setInterval(() => {
                 e.preventDefault(); slot.classList.remove('over');
                 if (!slot.textContent) {
                     slot.textContent = dragged.textContent;
-                    dragged.remove(); checkOrder();
+                    dragged.remove();
+                    // Verificación inmediata
+                    const cur = [...document.querySelectorAll('.slot')].map(s => s.textContent);
+                    for (let j = 0; j <= i; j++) {
+                        if (cur[j] && cur[j] !== order[j]) {
+                            // Bloquear interacción
+                            document.querySelectorAll('.cell, .slot').forEach(el => {
+                                el.style.pointerEvents = 'none';
+                            });
+                            cons.textContent = '[SYSTEM] CORRUPCIÓN CRÍTICA';
+                            const errorOverlay = document.createElement('div');
+                            errorOverlay.style.position = 'fixed';
+                            errorOverlay.style.inset = '0';
+                            errorOverlay.style.zIndex = '9999';
+                            errorOverlay.style.background = 'rgba(255,0,0,0.95)';
+                            errorOverlay.style.display = 'flex';
+                            errorOverlay.style.alignItems = 'center';
+                            errorOverlay.style.justifyContent = 'center';
+                            errorOverlay.style.fontFamily = 'monospace';
+                            errorOverlay.style.fontSize = '3vw';
+                            errorOverlay.style.fontWeight = 'bold';
+                            errorOverlay.style.color = '#fff';
+                            errorOverlay.style.textShadow = '0 0 20px #000, 0 0 10px #fff';
+                            errorOverlay.style.animation = 'shakeFinal 0.15s infinite alternate, invertFlash 0.3s infinite';
+                            errorOverlay.innerHTML = `
+                              <div>[COLAPSO DEL SISTEMA]</div>
+                              <div style=\"margin-top:2vh;font-size:2vw; animation: glitchHeavy 0.4s infinite alternate;\">Realidad corrompida. Multiverso inestable.</div>
+                              <div style=\"margin-top:1vh; font-size:1.2vw; animation: flicker 1s infinite alternate; opacity: 0.6;\">[Morty]: Rick... ¿por qué se pone todo rojo?</div>
+                            `;
+                            document.body.appendChild(errorOverlay);
+                            document.body.classList.add('defeat-flash');
+                            document.body.style.animation = 'shakeFinal 0.15s infinite alternate';
+                            setTimeout(() => {
+                                errorOverlay.remove();
+                                document.body.classList.remove('defeat-flash');
+                                document.body.style.animation = '';
+                                location.reload();
+                            }, 2500);
+                            return;
+                        }
+                    }
+                    checkOrder();
                 } else glitch.play();
             };
             seqEl.appendChild(slot);
@@ -607,9 +648,40 @@ setInterval(() => {
                 cons.textContent += '\n[Rick]: Bien Morty... Git time.';
                 document.getElementById('gitSection').style.display = 'block';
             } else {
+                // Bloquear interacción
+                document.querySelectorAll('.cell, .slot').forEach(el => {
+                    el.style.pointerEvents = 'none';
+                });
+                // Animación de error: pantalla roja y temblor
                 cons.textContent = '[SYSTEM] CORRUPCIÓN CRÍTICA';
+                const errorOverlay = document.createElement('div');
+                errorOverlay.style.position = 'fixed';
+                errorOverlay.style.inset = '0';
+                errorOverlay.style.zIndex = '9999';
+                errorOverlay.style.background = 'rgba(255,0,0,0.95)';
+                errorOverlay.style.display = 'flex';
+                errorOverlay.style.alignItems = 'center';
+                errorOverlay.style.justifyContent = 'center';
+                errorOverlay.style.fontFamily = 'monospace';
+                errorOverlay.style.fontSize = '3vw';
+                errorOverlay.style.fontWeight = 'bold';
+                errorOverlay.style.color = '#fff';
+                errorOverlay.style.textShadow = '0 0 20px #000, 0 0 10px #fff';
+                errorOverlay.style.animation = 'shakeFinal 0.15s infinite alternate, invertFlash 0.3s infinite';
+                errorOverlay.innerHTML = `
+                  <div>[COLAPSO DEL SISTEMA]</div>
+                  <div style="margin-top:2vh;font-size:2vw; animation: glitchHeavy 0.4s infinite alternate;">Realidad corrompida. Multiverso inestable.</div>
+                  <div style="margin-top:1vh; font-size:1.2vw; animation: flicker 1s infinite alternate; opacity: 0.6;">[Morty]: Rick... ¿por qué se pone todo rojo?</div>
+                `;
+                document.body.appendChild(errorOverlay);
                 document.body.classList.add('defeat-flash');
-                setTimeout(() => location.reload(), 3000);
+                document.body.style.animation = 'shakeFinal 0.15s infinite alternate';
+                setTimeout(() => {
+                    errorOverlay.remove();
+                    document.body.classList.remove('defeat-flash');
+                    document.body.style.animation = '';
+                    location.reload();
+                }, 2500);
             }
         }
         function checkGit() {

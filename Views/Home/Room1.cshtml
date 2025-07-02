@@ -404,31 +404,62 @@
         function responder(rta) {
             if (rta === 'y') {
                 consola.innerHTML += "<br><span class='glitch'>[HACKING] Entrando a GameStart...</span><br>";
-                // Overlay de video de transición
-                const videoOverlay = document.createElement('div');
-                videoOverlay.id = 'video-transition-overlay';
-                const vid = document.createElement('video');
-                vid.src = '/img/ricksora1.mp4';
-                vid.autoplay = true;
-                vid.muted = false;
-                vid.controls = false;
-                vid.style.width = '100vw';
-                vid.style.height = '100vh';
-                vid.style.objectFit = 'cover';
-                videoOverlay.appendChild(vid);
-                document.body.appendChild(videoOverlay);
-                // Al terminar el video o tras 8s, pasar de room
-                let passed = false;
-                function goNext() {
-                    if (passed) return;
-                    passed = true;
-                    videoOverlay.remove();
-                    fetch("/Home/GameStart").then(() => {
-                        window.location.href = "/Home/GameStart";
-                    });
-                }
-                vid.onended = goNext;
-                setTimeout(goNext, 8000);
+                // Fadeout negro antes del video
+                const fadeout1 = document.createElement('div');
+                fadeout1.style.position = 'fixed';
+                fadeout1.style.top = 0;
+                fadeout1.style.left = 0;
+                fadeout1.style.width = '100vw';
+                fadeout1.style.height = '100vh';
+                fadeout1.style.background = '#000';
+                fadeout1.style.opacity = 0;
+                fadeout1.style.transition = 'opacity 3s';
+                fadeout1.style.zIndex = 3000;
+                document.body.appendChild(fadeout1);
+                setTimeout(() => { fadeout1.style.opacity = 1; }, 10);
+                setTimeout(() => {
+                    // Overlay de video de transición
+                    const videoOverlay = document.createElement('div');
+                    videoOverlay.id = 'video-transition-overlay';
+                    const vid = document.createElement('video');
+                    vid.src = '/img/ricksora1.mp4';
+                    vid.autoplay = true;
+                    vid.muted = false;
+                    vid.controls = false;
+                    vid.style.width = '100vw';
+                    vid.style.height = '100vh';
+                    vid.style.objectFit = 'cover';
+                    videoOverlay.appendChild(vid);
+                    document.body.appendChild(videoOverlay);
+                    fadeout1.remove();
+                    // Al terminar el video o tras 8s, pasar de room con fadeout
+                    let passed = false;
+                    function goNext() {
+                        if (passed) return;
+                        passed = true;
+                        // Fadeout negro después del video
+                        const fadeout2 = document.createElement('div');
+                        fadeout2.style.position = 'fixed';
+                        fadeout2.style.top = 0;
+                        fadeout2.style.left = 0;
+                        fadeout2.style.width = '100vw';
+                        fadeout2.style.height = '100vh';
+                        fadeout2.style.background = '#000';
+                        fadeout2.style.opacity = 0;
+                        fadeout2.style.transition = 'opacity 3s';
+                        fadeout2.style.zIndex = 3000;
+                        document.body.appendChild(fadeout2);
+                        setTimeout(() => { fadeout2.style.opacity = 1; }, 10);
+                        setTimeout(() => {
+                            videoOverlay.remove();
+                            fetch("/Home/GameStart").then(() => {
+                                window.location.href = "/Home/GameStart";
+                            });
+                        }, 3000);
+                    }
+                    vid.onended = goNext;
+                    setTimeout(goNext, 8000);
+                }, 3000);
             } else {
                 consola.innerHTML += "<br><span class='glitch'>[RICK] ¡Morty no tenemos tiempo!</span><br>";
                 consola.classList.add('shake');

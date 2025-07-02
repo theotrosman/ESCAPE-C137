@@ -271,6 +271,12 @@ namespace PrimerProyecto.Controllers
 
             MarkRoomAsCompleted(roomNumber);
 
+            // Si se completa la Room3, poner flag especial para Room4
+            if (roomNumber == 3)
+            {
+                HttpContext.Session.SetString("FromRoom3", "true");
+            }
+
             // Si se completa la Room8, desbloquea Room9 inmediatamente
             if (roomNumber == 8)
             {
