@@ -1,0 +1,772 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificado de Realidad Superada - Rick & Morty</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .matrix-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .scanlines {
+            pointer-events: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px, transparent 2px,
+                rgba(0,255,0,0.08) 2px, rgba(0,255,0,0.08) 4px
+            );
+            mix-blend-mode: lighten;
+            opacity: 0.18;
+            animation: scanmove 2.5s linear infinite;
+        }
+        @@keyframes scanmove {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 40px; }
+        }
+        #overlayIntro {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            color: #00ff00;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            font-family: 'Orbitron', monospace;
+            text-align: center;
+            animation: introAnim 2s ease-in-out;
+            border: 3px solid #00ff00;
+            box-shadow: 0 0 40px #00ff00cc;
+        }
+        @@keyframes introAnim {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #certificado {
+            width: 1100px;
+            min-height: 700px;
+            background: rgba(0,0,0,0.92);
+            border-radius: 18px;
+            margin: 3rem auto 2rem auto;
+            box-shadow: 0 0 60px #00ff0033, 0 0 120px #0ff2;
+            border: 2.5px solid #00ff00;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+            padding: 2.5rem 3.5rem 2rem 3.5rem;
+            animation: printAnim 1.2s steps(40, end);
+        }
+        @@keyframes printAnim {
+            0% { filter: blur(8px) brightness(0.5); opacity: 0; }
+            100% { filter: blur(0) brightness(1); opacity: 1; }
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.7rem;
+            color: #00ff00;
+            margin: 0;
+            letter-spacing: 2px;
+            text-shadow: 0 0 18px #00ff00, 0 0 32px #0ff;
+        }
+        .header .subtitulo {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            color: #0ff;
+            margin: 0.7rem 0 0.2rem 0;
+            font-style: italic;
+            text-shadow: 0 0 8px #0ff;
+        }
+        .header .date-field {
+            color: #fff;
+            font-size: 1rem;
+            margin-top: 0.2rem;
+            opacity: 0.7;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: row;
+            gap: 2.5rem;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        .avatar-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 180px;
+            max-width: 220px;
+            margin-top: 0.5rem;
+        }
+        #fotoPreview {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid #00ff00;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #00ff00, 0 0 40px #0ff;
+            margin-bottom: 1rem;
+            background: #111;
+            transition: box-shadow 0.3s;
+        }
+        #fotoPreview:hover {
+            box-shadow: 0 0 40px #f0f, 0 0 80px #0ff;
+        }
+        .photo-btn {
+            background: linear-gradient(90deg, #00ff00 0%, #0ff 100%);
+            color: #000;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 18px #00ff00;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+        .photo-btn:hover {
+            background: linear-gradient(90deg, #0ff 0%, #00ff00 100%);
+            color: #fff;
+            box-shadow: 0 0 40px #0ff, 0 0 80px #f0f;
+        }
+        .avatar-tooltip {
+            font-size: 0.95rem;
+            color: #fff;
+            background: #222d;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin-top: 0.2rem;
+            box-shadow: 0 0 8px #0ff;
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+        }
+        .avatar-block:hover .avatar-tooltip {
+            display: block;
+        }
+        .qr-block {
+            margin-top: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #qr-canvas {
+            margin-top: 0.2rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #0ff;
+        }
+        .data-block {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+        .data-row {
+            display: flex;
+            gap: 1.2rem;
+        }
+        .info-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .info-group label {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px #0ff;
+        }
+        .info-group input, .info-group select, .info-group textarea {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #00ff00;
+            color: #fff;
+            padding: 0.7rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px #00ff00cc;
+        }
+        .info-group input:focus, .info-group select:focus, .info-group textarea:focus {
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 0 0 20px #0ff;
+            background: rgba(0,0,0,0.9);
+        }
+        .info-group textarea {
+            resize: none;
+            height: 60px;
+        }
+        .calificacion-block {
+            margin: 2.2rem 0 1.2rem 0;
+            text-align: center;
+        }
+        .calificacion-label {
+            color: #0ff;
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+            font-family: 'Orbitron', monospace;
+        }
+        .grade-display {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.7rem;
+            color: #00ff00;
+            font-weight: 700;
+            text-shadow: 0 0 20px #00ff00, 0 0 40px #0ff;
+            animation: gradeGlow 1s infinite alternate;
+            display: inline-block;
+            position: relative;
+        }
+        @@keyframes gradeGlow {
+            0% { text-shadow: 0 0 20px #00ff00, 0 0 40px #0ff; }
+            100% { text-shadow: 0 0 30px #00ff00, 0 0 50px #0ff, 0 0 70px #f0f; }
+        }
+        .rick-approved {
+            display: none;
+            position: absolute;
+            top: -30px;
+            right: -70px;
+            width: 90px;
+            height: 90px;
+            background: url('/img/rick-approved.png') no-repeat center center/contain;
+            z-index: 5;
+            animation: approvedPop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+        @@keyframes approvedPop {
+            0% { transform: scale(0.2) rotate(-30deg); opacity: 0; }
+            80% { transform: scale(1.1) rotate(10deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 2.5rem;
+            gap: 2rem;
+        }
+        .signature-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        .signature-area p {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: #0ff;
+            margin: 0;
+            text-shadow: 0 0 8px #0ff;
+        }
+        #firmaCanvas {
+            border: 2px dashed #00ff00;
+            background: #111;
+            border-radius: 8px;
+            cursor: crosshair;
+            box-shadow: 0 0 15px #00ff00cc;
+            width: 320px;
+            height: 100px;
+        }
+        .instructor-sign {
+            width: 320px;
+            height: 100px;
+            border: 2px dashed #00ff00;
+            border-radius: 8px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0ff;
+            font-style: italic;
+            box-shadow: 0 0 15px #00ff00cc;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.1rem;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+        .controls button {
+            font-family: 'Orbitron', monospace;
+            padding: 0.8rem 1.7rem;
+            font-size: 1.1rem;
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 0 15px #00ff00cc;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .controls button:hover {
+            background: #00ff00;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px #00ff00, 0 0 40px #0ff;
+        }
+        .controls button:active {
+            transform: translateY(0);
+        }
+        @@media (max-width: 1200px) {
+            #certificado { width: 98vw; padding: 1rem; }
+            .main-content { flex-direction: column; gap: 1.2rem; }
+            .avatar-block { flex-direction: row; justify-content: flex-start; }
+            .qr-block { margin-top: 0.5rem; }
+            .signature-section { flex-direction: column; gap: 1.2rem; }
+        }
+        @@media print {
+            body { background: white; }
+            #overlayIntro, .controls, #camaraPreview { display: none !important; }
+            #certificado { 
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<canvas class="matrix-bg"></canvas>
+<div class="scanlines"></div>
+<div id="overlayIntro">
+    <div style="font-size: 2rem; margin-bottom: 1rem; text-shadow: 0 0 20px #00ff00;">🎓 CERTIFICADO DE REALIDAD SUPERADA 🎓</div>
+    <div style="font-size: 1.2rem; margin-bottom: 2rem; color: #0ff;">Has hackeado exitosamente el sistema MVC-137</div>
+    <div style="font-size: 1rem; margin-bottom: 2rem; color: #ccc;">Completa tu información y crea tu certificado hacker</div>
+    <button onclick="iniciarCertificado()" style="font-size: 1.3rem; background: #00ff00; color: #000; padding: 1rem 2rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #00ff00;">🎖️ CREAR MI CERTIFICADO</button>
+</div>
+<video id="camaraPreview" autoplay style="display:none;"></video>
+<div id="certificado" style="display: none;">
+    <div class="header">
+        <h1>CERTIFICADO DE REALIDAD SUPERADA</h1>
+        <div class="subtitulo">Este documento certifica oficialmente que has hackeado exitosamente el sistema MVC-137</div>
+        <div class="date-field">Emitido el: <span id="fechaEmision"></span></div>
+    </div>
+    <div class="main-content">
+        <div class="avatar-block" style="position:relative;">
+            <img id="fotoPreview" src="/img/morty-icon.png" alt="Foto del jugador" title="¡Haz click en Tomar Foto!" style="width: 190px; height: 190px;" />
+            <button class="photo-btn" onclick="sacarFoto()">📸 ¡TOMAR FOTO!</button>
+            <label class="photo-btn" style="margin-top:0.5rem;cursor:pointer;">
+                📂 SUBIR FOTO
+                <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="subirFoto(event)" />
+            </label>
+            <div class="avatar-tooltip">¡Morty nunca estuvo tan orgulloso!</div>
+            <div class="qr-block">
+                <canvas id="qr-canvas" width="140" height="140"></canvas>
+                <div style="font-size:0.8rem;color:#0ff;opacity:0.7;">Verifica tu certificado</div>
+            </div>
+        </div>
+        <div class="data-block">
+            <div class="data-row">
+                <div class="info-group">
+                    <label>NOMBRE COMPLETO</label>
+                    <input type="text" id="nombreJugador" placeholder="Ej: Rick Sánchez " oninput="actualizarNombre();updateQR();" />
+                </div>
+                <div class="info-group">
+                    <label>CURSO/ESPECIALIDAD</label>
+                    <input type="text" id="cursoJugador" placeholder="Ej: 3ID" oninput="updateQR();" />
+                </div>
+            </div>
+            <div class="data-row">
+                <div class="info-group">
+                    <label>UNIVERSIDAD/INSTITUCIÓN</label>
+                    <input type="text" id="institucionJugador" placeholder="Ej: ORT Yatay" oninput="updateQR();" />
+                </div>
+                <div class="info-group">
+                    <label>CALIFICACIÓN</label>
+                    <select id="calificacionJugador" onchange="actualizarCalificacion();updateQR();">
+                        <option value="A+">A+ (Excelente)</option>
+                        <option value="A">A (Muy Bueno)</option>
+                        <option value="B+">B+ (Bueno)</option>
+                        <option value="B">B (Satisfactorio)</option>
+                        <option value="C">C (Aprobado)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="data-row">
+                <div class="info-group" style="flex:2;">
+                    <label>COMENTARIOS DEL INSTRUCTOR</label>
+                    <textarea id="comentariosJugador" placeholder="Comentarios sobre el desempeño..." oninput="updateQR();"></textarea>
+                </div>
+                <div class="info-group">
+                    <label>FECHA DE COMPLETADO</label>
+                    <input type="date" id="fechaCompletado" oninput="updateQR();" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="calificacion-block">
+        <div class="calificacion-label">Calificación Final:</div>
+        <span class="grade-display" id="gradeDisplay">A+<span class="rick-approved" id="rickApproved"></span></span>
+    </div>
+    <div class="signature-section">
+        <div class="signature-area">
+            <p>Firma del Estudiante</p>
+            <canvas id="firmaCanvas" width="320" height="100"></canvas>
+            <button onclick="borrarFirma()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Borrar Firma</button>
+        </div>
+        <div class="signature-area">
+            <p>Firma del Instructor</p>
+            <div class="instructor-sign">
+                Rick Sánchez, PhD
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button onclick="descargarCertificado()">💾 Descargar PNG</button>
+        <button onclick="descargarPDF()">📄 Descargar PDF</button>
+        <button onclick="imprimirCertificado()">🖨️ Imprimir</button>
+    </div>
+</div>
+<script>
+// Matrix background effect
+const canvas = document.querySelector('.matrix-bg');
+const ctx = canvas.getContext('2d');
+let w = window.innerWidth, h = window.innerHeight;
+canvas.width = w; canvas.height = h;
+let cols = Math.floor(w / 18);
+let ypos = Array(cols).fill(0);
+function matrix() {
+    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.font = '18px Fira Code, monospace';
+    ctx.fillStyle = '#00ff00';
+    for (let i = 0; i < cols; i++) {
+        let text = String.fromCharCode(0x30A0 + Math.random() * 96);
+        ctx.fillText(text, i * 18, ypos[i] * 18);
+        if (Math.random() > 0.975) ypos[i] = 0;
+        else ypos[i]++;
+    }
+    requestAnimationFrame(matrix);
+}
+matrix();
+window.addEventListener('resize', () => {
+    w = window.innerWidth; h = window.innerHeight;
+    canvas.width = w; canvas.height = h;
+    cols = Math.floor(w / 18);
+    ypos = Array(cols).fill(0);
+});
+// Fecha actual
+const fecha = new Date();
+document.getElementById('fechaEmision').textContent = fecha.toLocaleDateString('es-ES', {
+    year: 'numeric', month: 'long', day: 'numeric'
+});
+document.getElementById('fechaCompletado').value = fecha.toISOString().split('T')[0];
+// Firma
+const firmaCanvas = document.getElementById("firmaCanvas");
+const firmaCtx = firmaCanvas.getContext("2d");
+let dibujando = false, lastX, lastY;
+firmaCanvas.addEventListener("mousedown", (e) => {
+    dibujando = true;
+    const rect = firmaCanvas.getBoundingClientRect();
+    lastX = e.clientX - rect.left;
+    lastY = e.clientY - rect.top;
+});
+firmaCanvas.addEventListener("mouseup", () => dibujando = false);
+firmaCanvas.addEventListener("mouseout", () => dibujando = false);
+firmaCanvas.addEventListener("mousemove", (e) => {
+        if (!dibujando) return;
+    const rect = firmaCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    firmaCtx.lineWidth = 3;
+    firmaCtx.lineCap = "round";
+    firmaCtx.strokeStyle = "#00ff00";
+    firmaCtx.shadowColor = "#00ff00";
+    firmaCtx.shadowBlur = 10;
+    firmaCtx.beginPath();
+    firmaCtx.moveTo(lastX, lastY);
+    firmaCtx.lineTo(x, y);
+    firmaCtx.stroke();
+    lastX = x; lastY = y;
+});
+    function borrarFirma() {
+    firmaCtx.clearRect(0, 0, firmaCanvas.width, firmaCanvas.height);
+    }
+// Nombre y calificación
+function actualizarNombre() {
+    const nombre = document.getElementById('nombreJugador').value || '[Tu Nombre]';
+    document.getElementById('nombreDisplay').textContent = nombre;
+}
+function actualizarCalificacion() {
+    const calificacion = document.getElementById('calificacionJugador').value;
+    document.getElementById('gradeDisplay').textContent = calificacion;
+    // Rick Approved sticker
+    const sticker = document.getElementById('rickApproved');
+    if (calificacion === 'A+' || calificacion === 'A') {
+        sticker.style.display = 'block';
+    } else {
+        sticker.style.display = 'none';
+    }
+}
+// QR code
+function updateQR() {
+        const nombre = document.getElementById('nombreJugador').value;
+    const curso = document.getElementById('cursoJugador').value;
+    const inst = document.getElementById('institucionJugador').value;
+    const calif = document.getElementById('calificacionJugador').value;
+    const fecha = document.getElementById('fechaCompletado').value;
+    const qr = new QRious({
+        element: document.getElementById('qr-canvas'),
+        value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        size: 140,
+        background: '#fff',
+        foreground: '#000',
+        level: 'H'
+    });
+    }
+setTimeout(updateQR, 500);
+    // Cámara
+    const cam = document.getElementById("camaraPreview");
+    const preview = document.getElementById("fotoPreview");
+    if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 }, height: { ideal: 720 } } })
+        .then(stream => { cam.srcObject = stream; })
+        .catch(err => { console.log('Cámara no disponible:', err); });
+}
+function sacarFoto() {
+            cam.style.display = 'block';
+    setTimeout(() => {
+        if (cam.videoWidth === 0) {
+            alert('La cámara no está lista. Espera un momento y vuelve a intentar.');
+            cam.style.display = 'none';
+            return;
+        }
+        // Efecto flash
+        const flash = document.createElement('div');
+        flash.style.cssText = `position: fixed;top:0;left:0;width:100vw;height:100vh;background:white;opacity:0;z-index:10000;animation:flashAnim 0.3s ease-in-out;`;
+        document.body.appendChild(flash);
+        setTimeout(() => {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = cam.videoWidth;
+            tempCanvas.height = cam.videoHeight;
+            const ctx = tempCanvas.getContext('2d');
+            ctx.drawImage(cam, 0, 0);
+            // Circular
+            const circularCanvas = document.createElement('canvas');
+            circularCanvas.width = 120;
+            circularCanvas.height = 120;
+            const circularCtx = circularCanvas.getContext('2d');
+            circularCtx.beginPath();
+            circularCtx.arc(60, 60, 58, 0, 2 * Math.PI);
+            circularCtx.clip();
+            circularCtx.drawImage(tempCanvas, 0, 0, 120, 120);
+            preview.src = circularCanvas.toDataURL('image/png');
+            flash.remove();
+            cam.style.display = 'none';
+        }, 150);
+    }, 200);
+}
+function subirFoto(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        const img = new window.Image();
+        img.onload = function() {
+            // Recorte circular y resize
+            const circularCanvas = document.createElement('canvas');
+            circularCanvas.width = 190;
+            circularCanvas.height = 190;
+            const ctx = circularCanvas.getContext('2d');
+            ctx.beginPath();
+            ctx.arc(95, 95, 93, 0, 2 * Math.PI);
+            ctx.clip();
+            // Ajustar para que la imagen llene el círculo
+            let sx = 0, sy = 0, sw = img.width, sh = img.height;
+            if (img.width > img.height) {
+                sx = (img.width - img.height) / 2;
+                sw = sh = img.height;
+            } else if (img.height > img.width) {
+                sy = (img.height - img.width) / 2;
+                sw = sh = img.width;
+            }
+            ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 190, 190);
+            document.getElementById('fotoPreview').src = circularCanvas.toDataURL('image/png');
+        };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+function setDownloadMode(enable) {
+    const cert = document.getElementById('certificado');
+    const foto = document.getElementById('fotoPreview');
+    const qr = document.getElementById('qr-canvas');
+    const header = cert.querySelector('.header h1');
+    const subtitle = cert.querySelector('.header .subtitulo');
+    if (enable) {
+        cert.style.background = '#fff';
+        cert.style.border = '6px solid #d4af37';
+        cert.style.boxShadow = '0 0 40px #d4af37, 0 0 60px #fff inset';
+        cert.style.color = '#222';
+        header.style.color = '#d4af37';
+        header.style.textShadow = '0 0 8px #d4af37, 0 0 12px #fff';
+        subtitle.style.color = '#555';
+        foto.style.boxShadow = '0 0 24px #d4af37, 0 0 40px #fff';
+        qr.style.background = '#fff';
+        qr.style.boxShadow = '0 0 12px #d4af37';
+        // Cambiar textos a negro
+        cert.querySelectorAll('input, textarea, select, .grade-display, .instructor-sign, .signature-area p, .calificacion-label').forEach(el => {
+            el.style.color = '#222';
+            el.style.borderColor = '#d4af37';
+            el.style.background = '#fff';
+            el.style.boxShadow = '0 0 8px #d4af37';
+        });
+        cert.querySelectorAll('label').forEach(el => { el.style.color = '#d4af37'; });
+        // QR dorado
+        new QRious({
+            element: qr,
+            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            size: 140,
+            background: '#fff',
+            foreground: '#d4af37',
+            level: 'H'
+        });
+    } else {
+        cert.style.background = '';
+        cert.style.border = '';
+        cert.style.boxShadow = '';
+        cert.style.color = '';
+        header.style.color = '';
+        header.style.textShadow = '';
+        subtitle.style.color = '';
+        foto.style.boxShadow = '';
+        qr.style.background = '';
+        qr.style.boxShadow = '';
+        cert.querySelectorAll('input, textarea, select, .grade-display, .instructor-sign, .signature-area p, .calificacion-label').forEach(el => {
+            el.style.color = '';
+            el.style.borderColor = '';
+            el.style.background = '';
+            el.style.boxShadow = '';
+        });
+        cert.querySelectorAll('label').forEach(el => { el.style.color = ''; });
+        // QR negro
+        new QRious({
+            element: qr,
+            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            size: 140,
+            background: '#fff',
+            foreground: '#000',
+            level: 'H'
+        });
+    }
+}
+function descargarCertificado() {
+    const nombre = document.getElementById('nombreJugador').value;
+    if (!nombre) return alert('Completa tu nombre antes de descargar.');
+    const certificado = document.getElementById('certificado');
+    const controls = document.querySelector('.controls');
+    controls.style.display = 'none';
+    setDownloadMode(true);
+    html2canvas(certificado, {
+        useCORS: true,
+        scale: 4,
+        backgroundColor: '#fff',
+        width: certificado.offsetWidth,
+        height: certificado.offsetHeight,
+        logging: false
+    }).then(canvas => {
+        setDownloadMode(false);
+        const link = document.createElement('a');
+        link.download = `Certificado_${nombre.replaceAll(' ', '_')}_${new Date().toISOString().split('T')[0]}.png`;
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+        controls.style.display = 'flex';
+    });
+}
+function descargarPDF() {
+    const nombre = document.getElementById('nombreJugador').value;
+    if (!nombre) return alert('Completa tu nombre antes de descargar.');
+    const certificado = document.getElementById('certificado');
+    const controls = document.querySelector('.controls');
+    controls.style.display = 'none';
+    setDownloadMode(true);
+    html2canvas(certificado, {
+        useCORS: true,
+        scale: 2,
+        backgroundColor: '#fff',
+        width: certificado.offsetWidth,
+        height: certificado.offsetHeight
+    }).then(canvas => {
+        setDownloadMode(false);
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('landscape', 'mm', 'a4');
+        const imgWidth = 297;
+        const pageHeight = 210;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+        pdf.save(`Certificado_${nombre.replaceAll(' ', '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+        controls.style.display = 'flex';
+    });
+}
+function imprimirCertificado() {
+    window.print();
+}
+function iniciarCertificado() {
+    document.getElementById('overlayIntro').style.display = 'none';
+    document.getElementById('certificado').style.display = 'block';
+    setTimeout(() => {
+        document.getElementById('certificado').style.animation = 'none';
+    }, 1500);
+}
+// Animación flash
+const style = document.createElement('style');
+style.textContent = `@@keyframes flashAnim {0%{opacity:0;}50%{opacity:0.8;}100%{opacity:0;}}`;
+document.head.appendChild(style);
+</script>
+    @Html.Partial("_NavMenu")
+</body>
+</html>

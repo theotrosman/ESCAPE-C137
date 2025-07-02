@@ -477,6 +477,19 @@ function log(msg, tipo='system') {
     let d = document.createElement('div');
     d.className = 'console-message '+tipo;
     d.textContent = '';
+    // --- NUEVO: Colores diferenciados ---
+    if (tipo === 'error') {
+        d.style.color = '#ff4444'; // rojo para errores
+        d.style.textShadow = '0 0 8px #ff4444, 0 0 2px #fff';
+        d.style.fontWeight = 'bold';
+    } else if (tipo === 'debug' || (typeof msg === 'string' && msg.startsWith('DEBUG:'))) {
+        d.style.color = '#888'; // gris para debug
+        d.style.fontStyle = 'italic';
+    } else {
+        d.style.color = '#00ff66'; // verde neón para el jugador
+        d.style.textShadow = '0 0 8px #00ff66, 0 0 2px #fff';
+        d.style.fontWeight = 'bold';
+    }
     c.appendChild(d);
     
     // Efecto de escritura decrypted
@@ -565,13 +578,15 @@ function jugarCarta(idx) {
     log(nombre(p) + ' juega ' + carta.value + ' de ' + carta.suit,'system');
     render();
     
-    // Quitar el reinicio automático de la mano cuando alguien se queda sin cartas
-    // let alguienSinCartas = PLAYER_ORDER.some(j => state.hands[j].length === 0);
-    // if(alguienSinCartas) {
-    //     log('Al menos un jugador se quedó sin cartas. Mano finalizada automáticamente.','system');
-    //     setTimeout(()=>finMano(), 800);
-    //     return;
-    // }
+    // --- NUEVO: Si algún jugador tiene 2 cartas menos que otro, reiniciar la mano ---
+    let counts = PLAYER_ORDER.map(j => state.hands[j].length);
+    let min = Math.min(...counts);
+    let max = Math.max(...counts);
+    if (max - min >= 2) {
+        log('Un jugador tiene 2 cartas más que otro. Reiniciando la mano automáticamente.','system');
+        setTimeout(()=>finMano(), 800);
+        return;
+    }
     
     if(state.played.length===4) {
         setTimeout(()=>resolverBaza(),2000);
@@ -712,24 +727,36 @@ function finMano() {
             log('Se jugaron 5 manos. Pasando automáticamente a la siguiente sala...','system');
             fetch('/Home/CompleteGameStart', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room2";
-                    }, 2000);
-                } else {
-                    log('Error en la transición de sala. Redirigiendo de todas formas...','system');
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room2";
-                    }, 2000);
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
                 }
+                return response.json();
+            })
+            .then(data => {
+                console.log('GameStart completado exitosamente (5 manos):', data);
+                setTimeout(() => {
+                    if (typeof epicTransitionToRoom2 === 'function') {
+                        epicTransitionToRoom2();
+                    } else {
+                        window.location.href = "/Home/Room2";
+                    }
+                }, 2000);
             })
             .catch(error => {
-                log('Error de red en la transición. Redirigiendo de todas formas...','system');
+                console.error('Error al completar GameStart (5 manos):', error);
+                log('Error en la transición de sala. Redirigiendo de todas formas...','system');
                 setTimeout(() => {
-                    window.location.href = "/Home/Room2";
+                    if (typeof epicTransitionToRoom2 === 'function') {
+                        epicTransitionToRoom2();
+                    } else {
+                        window.location.href = "/Home/Room2";
+                    }
                 }, 2000);
             });
             return;
@@ -813,8 +840,14 @@ function nuevaMano() {
 
 function finPartida(win) {
     log(win==='player'?'¡GANASTE!':'Perdiste...','system');
-    if(win==='player' && typeof epicTransitionToRoom2 === 'function') {
-        setTimeout(()=>epicTransitionToRoom2(), 1200);
+    if(win==='player') {
+        // Usar la transición épica si está disponible
+        if (typeof epicTransitionToRoom2 === 'function') {
+            setTimeout(()=>epicTransitionToRoom2(), 1200);
+        } else {
+            // Fallback: redirigir directamente
+            setTimeout(()=>window.location.href = "/Home/Room2", 3000);
+        }
     } else {
         setTimeout(()=>window.location.reload(),4000);
     }
@@ -1147,22 +1180,26 @@ function animacionVictoria() {
     // Desbloquear Room2
     fetch('/Home/CompleteGameStart', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    }).then(response => response.json())
-      .then(data => {
-        if (data.success) {
-            setTimeout(() => {
-                window.location.href = "/Home/Room2";
-            }, 2000);
-        } else {
-            log('Error en la transición de sala. Redirigiendo de todas formas...','system');
-            setTimeout(() => {
-                window.location.href = "/Home/Room2";
-            }, 2000);
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
         }
+        return response.json();
+    })
+    .then(data => {
+        console.log('GameStart completado exitosamente (Victoria):', data);
+        setTimeout(() => {
+            window.location.href = "/Home/Room2";
+        }, 2000);
     })
     .catch(error => {
-        log('Error de red en la transición. Redirigiendo de todas formas...','system');
+        console.error('Error al completar GameStart (Victoria):', error);
+        log('Error en la transición de sala. Redirigiendo de todas formas...','system');
         setTimeout(() => {
             window.location.href = "/Home/Room2";
         }, 2000);
@@ -1555,25 +1592,38 @@ function resolverEnvido() {
             // Desbloquear Room2 y pasar automáticamente
             fetch('/Home/CompleteGameStart', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            }).then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                    log('¡FALTA ENVIDO GANADO! Desbloqueando Room2...','system');
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room2";
-                    }, 3000);
-                } else {
-                    log('Error en la transición de sala. Redirigiendo de todas formas...','system');
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room2";
-                    }, 3000);
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
                 }
+                return response.json();
+            })
+            .then(data => {
+                console.log('GameStart completado exitosamente (Falta Envido):', data);
+                log('¡FALTA ENVIDO GANADO! Desbloqueando Room2...','system');
+                setTimeout(() => {
+                    // Usar la transición épica si está disponible
+                    if (typeof epicTransitionToRoom2 === 'function') {
+                        epicTransitionToRoom2();
+                    } else {
+                        window.location.href = "/Home/Room2";
+                    }
+                }, 3000);
             })
             .catch(error => {
-                log('Error de red en la transición. Redirigiendo de todas formas...','system');
+                console.error('Error al completar GameStart (Falta Envido):', error);
+                log('Error en la transición de sala. Redirigiendo de todas formas...','system');
                 setTimeout(() => {
-                    window.location.href = "/Home/Room2";
+                    if (typeof epicTransitionToRoom2 === 'function') {
+                        epicTransitionToRoom2();
+                    } else {
+                        window.location.href = "/Home/Room2";
+                    }
                 }, 3000);
             });
         } else {
@@ -1585,12 +1635,17 @@ function resolverEnvido() {
     // Envido normal
     state.teamScore[ganador] += envidoPuntos;
     log('Envido: '+equipoPlayer+' (MORTY+RICK) vs '+equipoEnemy+' (CÓDIGO+HACKER)','system');
-    log('Gana el envido: '+(ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+` (+${envidoPuntos})`,'system');
+    log('Gana el envido: '+(ganador==='player'?'MORTY+RICK':'CÓDIGO+HACKER')+` (+${envidoPuntos}) [MORTY+RICK: ${equipoPlayer}, CÓDIGO+HACKER: ${equipoEnemy}]`,'system');
     
     // Verificar si alguien ganó con el envido
     if (state.teamScore[ganador] >= 15) {
         if (ganador === 'player') {
-            setTimeout(() => animacionVictoria(), 2000);
+            // Usar la transición épica si está disponible
+            if (typeof epicTransitionToRoom2 === 'function') {
+                setTimeout(() => epicTransitionToRoom2(), 2000);
+            } else {
+                setTimeout(() => animacionVictoria(), 2000);
+            }
         } else {
             setTimeout(() => animacionDerrota(), 2000);
         }
@@ -1665,18 +1720,15 @@ function resetearRevelacionCarta() {
 // Función para el timer de 3 minutos con animación de Rick
 function iniciarTimerRick() {
     state.gameStartTime = Date.now();
-    
-    // Verificar cada segundo si han pasado 3 minutos
+    // Verificar cada segundo si han pasado 2 minutos
     const timerInterval = setInterval(() => {
         if (state.rickTimerTriggered) {
             clearInterval(timerInterval);
             return;
         }
-        
         const tiempoTranscurrido = Date.now() - state.gameStartTime;
-        const tresMinutos = 3 * 60 * 1000; // 3 minutos en milisegundos
-        
-        if (tiempoTranscurrido >= tresMinutos) {
+        const dosMinutos = 2 * 60 * 1000; // 2 minutos en milisegundos
+        if (tiempoTranscurrido >= dosMinutos) {
             state.rickTimerTriggered = true;
             clearInterval(timerInterval);
             mostrarAnimacionRick();
@@ -1687,7 +1739,6 @@ function iniciarTimerRick() {
 function mostrarAnimacionRick() {
     log('', 'system'); // Línea en blanco
     log('', 'system'); // Línea en blanco
-    
     const mensajesRick = [
         '[DECRYPTED_EFFECT] Rick.exe iniciando comunicación...',
         '[RICK] Morty... Morty, ¿me escuchás?',
@@ -1695,8 +1746,8 @@ function mostrarAnimacionRick() {
         '[RICK] Estoy en el código, Morty. Los hackers están usando un algoritmo de Truco para...',
         '[RICK] ...corromper el multiverso, pero hay algo más importante.',
         '[MORTY] ¿Qué cosa, Rick?',
-        '[RICK] El tiempo, Morty. El tiempo se está agotando.',
-        '[RICK] Si no ganás en los próximos 2 minutos, la simulación se reiniciará.',
+        '[RICK] El Controlador va a reiniciar la simulación en cualquier momento.',
+        '[RICK] Si no ganás en los próximos segundos, la simulación se reiniciará.',
         '[MORTY] ¿Qué? ¿Por qué no me dijiste antes?',
         '[RICK] Porque sos un idiota, Morty. Pero ahora lo sabés.',
         '[RICK] Concentrate en ganar. No te dejes distraer por los bugs.',
@@ -1704,43 +1755,77 @@ function mostrarAnimacionRick() {
         '[RICK] *static* ... Morty... Room2... *static* ...',
         '[SISTEMA] Comunicación interrumpida. Continuando juego...'
     ];
-    
     let mensajeIndex = 0;
-    
     function mostrarSiguienteMensaje() {
         if (mensajeIndex < mensajesRick.length) {
             log(mensajesRick[mensajeIndex], 'system');
             mensajeIndex++;
             setTimeout(mostrarSiguienteMensaje, 1500);
         } else {
-            // Después de mostrar todos los mensajes, pasar a Room2
+            // Después de mostrar todos los mensajes, hacer fetch y transición con video
             setTimeout(() => {
                 log('Redirigiendo a Room2...', 'system');
                 fetch('/Home/CompleteGameStart', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                }).then(response => response.json())
-                  .then(data => {
-                    if (data.success) {
-                        setTimeout(() => {
-                            window.location.href = "/Home/Room2";
-                        }, 2000);
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Error en la respuesta del servidor');
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('GameStart completado exitosamente (Timer Rick):', data);
+                    // Mostrar video de transición si existe la función
+                    if (typeof epicTransitionToRoom2 === 'function') {
+                        epicTransitionToRoom2();
+                        // Redirigir después del video (8s aprox)
+                        setTimeout(() => { window.location.href = "/Home/Room2"; }, 8000);
                     } else {
-                        log('Error en la transición de sala. Redirigiendo de todas formas...','system');
-                        setTimeout(() => {
-                            window.location.href = "/Home/Room2";
-                        }, 2000);
+                        window.location.href = "/Home/Room2";
                     }
                 })
                 .catch(error => {
-                    log('Error de red en la transición. Redirigiendo de todas formas...','system');
-                    setTimeout(() => {
-                        window.location.href = "/Home/Room2";
-                    }, 2000);
+                    console.error('Error al completar GameStart (Timer Rick):', error);
+                    setTimeout(() => { window.location.href = "/Home/Room2"; }, 2000);
                 });
             }, 3000);
         }
     }
-    
     mostrarSiguienteMensaje();
 }
+
+// --- Atajo para pasar de room con la tecla 7 en GameStart ---
+document.addEventListener('keydown', function(e) {
+    // No disparar si hay un input enfocado
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) return;
+    // Chequeo robusto de path
+    if (window.location.pathname.toLowerCase().includes('gamestart') && (e.key === '7' || e.keyCode === 55)) {
+        console.log('Atajo 7 detectado');
+        // Evitar múltiples triggers
+        if (window._room7Triggered) return;
+        window._room7Triggered = true;
+        log('Atajo secreto: pasando de room...', 'system');
+        fetch('/Home/CompleteGameStart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            return response.json();
+        })
+        .then(data => {
+            if (typeof epicTransitionToRoom2 === 'function') {
+                epicTransitionToRoom2();
+                setTimeout(() => { window.location.href = "/Home/Room2"; }, 8000);
+            } else {
+                window.location.href = "/Home/Room2";
+            }
+        })
+        .catch(error => {
+            console.error('Error al completar GameStart (tecla 7):', error);
+            setTimeout(() => { window.location.href = "/Home/Room2"; }, 2000);
+        });
+    }
+});

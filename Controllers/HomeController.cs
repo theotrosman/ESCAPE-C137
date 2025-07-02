@@ -397,6 +397,10 @@ namespace PrimerProyecto.Controllers
             MarkRoomAsCompleted(3); // Marcar Room3 como completada
             return Ok();
         }
+        public IActionResult Certificado()
+{
+    return View();
+}
     }
 }
 

@@ -36,6 +36,8 @@
       height: 100vh;
       object-fit: cover;
       z-index: 1;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
     }
 
     #intro-primeriza {
@@ -45,6 +47,8 @@
       height: 100vh;
       object-fit: cover;
       z-index: 1;
+      opacity: 1;
+      transition: opacity 0.8s ease-in-out;
     }
 
     #overlay {
@@ -120,26 +124,55 @@
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: 4px solid white;
+      background: rgba(0,255,0,0.10);
+      border: 4px solid #00ff00;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 0 32px 0 #fff8;
-      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 32px 0 #00ff0088, 0 0 12px 2px #0f0 inset;
+      transition: background 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+      animation: play-glow 2s infinite alternate;
     }
     #play-intro-btn .play-circle:hover {
-      background: rgba(255,255,255,0.25);
-      box-shadow: 0 0 48px 0 #fff;
+      background: rgba(0,255,0,0.22);
+      box-shadow: 0 0 48px 0 #00ff00, 0 0 24px 4px #0f0 inset;
+      border-color: #fff;
+      filter: brightness(1.2) drop-shadow(0 0 8px #0f0);
     }
     #play-intro-btn .play-triangle {
       width: 0;
       height: 0;
-      border-left: 48px solid white;
+      border-left: 54px solid #00ff00;
       border-top: 32px solid transparent;
       border-bottom: 32px solid transparent;
       margin-left: 10px;
+      filter: drop-shadow(0 0 8px #00ff00) drop-shadow(0 0 2px #fff);
+      transition: border-left-color 0.2s;
+    }
+    #play-intro-btn .play-circle:hover .play-triangle {
+      border-left-color: #fff;
+      filter: drop-shadow(0 0 16px #fff) drop-shadow(0 0 8px #0f0);
+    }
+    @@keyframes play-glow {
+      0% { box-shadow: 0 0 32px 0 #00ff0088, 0 0 12px 2px #0f0 inset; }
+      100% { box-shadow: 0 0 64px 8px #00ff00cc, 0 0 24px 8px #0f0 inset; }
+    }
+    #play-intro-btn .play-label {
+      position: absolute;
+      bottom: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #00ff00;
+      font-family: 'VT323', monospace;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #00ff00, 0 0 2px #fff;
+      pointer-events: none;
+      user-select: none;
+      opacity: 0.92;
+      text-align: center;
     }
     /* --- FIN BOTÓN DE PLAY --- */
 
@@ -330,18 +363,99 @@
     // Reproducir el primer video con sonido
     introPrimerizaAudio.volume = 1;
     introPrimerizaAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
-    // Esperar a que termine el primer video antes de cambiar al segundo
+    
+    // Obtener la duración del video y terminar 0.5 segundos antes
+    introPrimerizaVideo.addEventListener('loadedmetadata', function() {
+      const videoDuration = introPrimerizaVideo.duration;
+      const earlyEndTime = videoDuration - 0.5; // Terminar 0.5 segundos antes
+      
+      // Configurar un timeout para terminar el video antes
+      setTimeout(() => {
+        if (!introPrimerizaVideo.ended) {
+          // Iniciar transición suave
+          introVideo.style.display = "block";
+          introVideo.style.opacity = "0";
+          
+          // Reproducir el audio del video de Adult Swim
+          introAudio.volume = 1;
+          introAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
+          
+          // Cross-fade suave entre videos
+          setTimeout(() => {
+            introVideo.style.opacity = "1";
+            introPrimerizaVideo.style.opacity = "0";
+            
+            // Pausar el primer video después del fade
+            setTimeout(() => {
+              introPrimerizaVideo.pause();
+              introPrimerizaAudio.pause();
+            }, 400);
+          }, 50);
+          
+          // Cuando termina el video de Adult Swim, mostrar overlay y fondo
+          introVideo.onended = function() {
+            introVideo.pause();
+            introVideo.style.opacity = "0";
+            setTimeout(() => {
+              introVideo.style.display = 'none';
+            }, 800);
+            typeLine();
+            // Fade-in del video de fondo solo después de ambos videos
+            const bgRick = document.getElementById('background-rick');
+            setTimeout(() => {
+              bgRick.style.visibility = 'visible';
+              bgRick.style.opacity = 1;
+            }, 200);
+          };
+          // Si el video de Adult Swim no tiene evento ended, fallback a los 6 segundos
+          setTimeout(() => {
+            if (!introVideo.ended) {
+              introVideo.pause();
+              introVideo.style.opacity = "0";
+              setTimeout(() => {
+                introVideo.style.display = 'none';
+              }, 800);
+              typeLine();
+              const bgRick = document.getElementById('background-rick');
+              setTimeout(() => {
+                bgRick.style.visibility = 'visible';
+                bgRick.style.opacity = 1;
+              }, 200);
+            }
+          }, 6000);
+        }
+      }, earlyEndTime * 1000);
+    });
+    
+    // Mantener el evento ended como fallback por si el timeout no funciona
     introPrimerizaVideo.addEventListener('ended', function() {
-      introPrimerizaVideo.style.display = "none";
-      introPrimerizaAudio.pause();
+      // Iniciar transición suave
       introVideo.style.display = "block";
+      introVideo.style.opacity = "0";
+      
       // Reproducir el audio del video de Adult Swim
       introAudio.volume = 1;
       introAudio.play().catch(e => console.warn("Audio bloqueado por el navegador", e));
+      
+      // Cross-fade suave entre videos
+      setTimeout(() => {
+        introVideo.style.opacity = "1";
+        introPrimerizaVideo.style.opacity = "0";
+        
+        // Pausar el primer video después del fade
+        setTimeout(() => {
+          introPrimerizaVideo.pause();
+          introPrimerizaAudio.pause();
+        }, 400);
+      }, 50);
+      
       // Cuando termina el video de Adult Swim, mostrar overlay y fondo
       introVideo.onended = function() {
         introVideo.pause();
-        introVideo.style.display = 'none';
+        introVideo.style.opacity = "0";
+        setTimeout(() => {
+          introVideo.style.display = 'none';
+        }, 800);
         typeLine();
         // Fade-in del video de fondo solo después de ambos videos
         const bgRick = document.getElementById('background-rick');
@@ -354,7 +468,10 @@
       setTimeout(() => {
         if (!introVideo.ended) {
           introVideo.pause();
-          introVideo.style.display = 'none';
+          introVideo.style.opacity = "0";
+          setTimeout(() => {
+            introVideo.style.display = 'none';
+          }, 800);
           typeLine();
           const bgRick = document.getElementById('background-rick');
           setTimeout(() => {
@@ -509,24 +626,41 @@
   function verEquipo() {
     window.location.href = '/Home/Equipo';
   }
+
+  // --- EFECTO SCRAMBLE EN BOTONES PRINCIPALES ---
+  function scrambleText(element, finalText) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%^&*()';
+    let iterations = 0;
+    const maxIterations = 20;
+    let alreadyScrambling = element.classList.contains('scrambling');
+    if (alreadyScrambling) return;
+    element.classList.add('scrambling');
+    const interval = setInterval(() => {
+      element.textContent = finalText.split('').map((char, index) => {
+        if (index < iterations) {
+          return finalText[index];
+        }
+        return chars[Math.floor(Math.random() * chars.length)];
+      }).join('');
+      iterations++;
+      if (iterations >= maxIterations) {
+        clearInterval(interval);
+        element.textContent = finalText;
+        element.classList.remove('scrambling');
+        element.classList.add('decrypting');
+        setTimeout(() => {
+          element.classList.remove('decrypting');
+        }, 1000);
+      }
+    }, 50);
+  }
+  // Aplica el efecto a todos los botones principales
+  document.querySelectorAll('.ascii-button').forEach(btn => {
+    const originalText = btn.textContent;
+    btn.addEventListener('mouseenter', () => scrambleText(btn, originalText));
+  });
   </script>
+    @Html.Partial("_NavMenu")
 
 </body>
 </html>
-<!-- 
-.==============================================.
-|                                              |
-|                           .'\                |
-|                          //  ;               |
-|                         /'   |               |
-|        .----..._    _../ |   \               |
-|         \'---._ `.-'      `  .'              |
-|          `.    '              `.             |
-|            :            _,.    '.            |
-|            |     ,_    (() '    |            |
-|            ;   .'(().  '      _/__..-        |
-|            \ _ '       __  _.-'--._          |
-|            ,'.'...____'::-'  \     `'        |
-|           / |   /         .---.              |
-|     .-.  '  '  / ,---.   (     )             |
-|    / /       ,' (     )---`-`-`e

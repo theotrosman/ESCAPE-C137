@@ -1,397 +1,443 @@
 @{
     Layout = null;
 }
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title>¿Quién sos realmente?</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
+    <meta charset="utf-8">
+    <title>Room 1 - Infiltración al MVC</title>
+    <link rel="icon" href="~/img/morty-icon.png">
     <style>
-        html, body {
-            background-color: black;
-            font-family: monospace;
+        body, button, .epic-btn {
+            cursor: none !important;
+        }
+        body {
             margin: 0;
-            padding: 30px;
-            overflow: hidden;
-            animation: backgroundFlash 0.4s infinite;
-            cursor: url('/img/cursor-rick-glitch.svg') 16 16, auto !important;
-        }
-
-        @@keyframes backgroundFlash {
-            0% { background-color: black; }
-            25% { background-color: #111; }
-            50% { background-color: darkred; }
-            75% { background-color: black; }
-            100% { background-color: black; }
-        }
-
-        @@keyframes colorCycle {
-            0% { color: #00ff00; }
-            33% { color: white; }
-            66% { color: red; }
-            100% { color: #00ff00; }
-        }
-
-        @@keyframes shake {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(2px, -2px); }
-            60% { transform: translate(-2px, -2px); }
-            80% { transform: translate(2px, 2px); }
-        }
-
-        .glitch {
-            animation: shake 0.2s infinite, colorCycle 1s infinite;
-        }
-
-        #terminal {
-            white-space: pre-wrap;
-            font-size: 25px;
-            line-height: 1.5;
-            min-height: 400px;
-            animation: colorCycle 3s infinite;
-        }
-
-        #input-line {
-            display: none;
-            margin-top: 20px;
-        }
-.decrypted-char {
-    color: #00ff00;
-    font-weight: bold;
-    filter: blur(0.8px);
-    letter-spacing: 1px;
-    transition: color 0.2s;
-}
-
-        input {
-            background: black;
-            border: none;
-            border-bottom: 1px solid #00ff00;
+            background: #000;
             color: #00ff00;
-            font-family: monospace;
-            font-size: 16px;
-            width: 50px;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
         }
-
-       
-
-        #error-mode {
-            display: none;
-            background-color: red;
-            color: black;
-            font-family: monospace;
+        #overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 999;
+            animation: aparecer 2s ease-out forwards;
+            box-shadow: 0 0 48px 8px #00ff00cc, 0 0 120px 40px #fff2;
+            filter: url(#glitch-filter);
+        }
+        #textoInicio {
+            font-size: 1.2rem;
+            white-space: pre-line;
+            text-align: center;
+            opacity: 0;
+            animation: escribir 1.2s steps(40, end) forwards 0.5s;
+            text-shadow: 0 0 12px #00ff00, 0 0 2px #fff, 0 0 24px #f0f, 0 0 8px #0ff;
+            letter-spacing: 1.5px;
+            filter: url(#glitch-filter);
+        }
+        @@keyframes escribir {
+            to { opacity: 1; }
+        }
+        @@keyframes aparecer {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .glitch {
+            text-shadow: 2px 0 #00ff00, -2px 0 #f0f, 0 0 8px #fff, 0 0 2px #fff;
+            animation: glitch-anim 0.11s infinite alternate, colorGlitch 0.7s infinite alternate;
+        }
+        @@keyframes glitch-anim {
+            0% { transform: translateX(-2px) skewX(-2deg) scaleY(1.01); }
+            50% { transform: translateX(2px) skewX(2deg) scaleY(0.99); }
+            100% { transform: translateX(-2px) skewX(-2deg) scaleY(1.01); }
+        }
+        @@keyframes colorGlitch {
+            0% { color: #00ff00; }
+            20% { color: #fff; }
+            40% { color: #f0f; }
+            60% { color: #0ff; }
+            80% { color: #00ff00; }
+            100% { color: #fff; }
+        }
+        .scanlines {
+            pointer-events: none;
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 2000;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0px, transparent 2px,
+                #fff2 2px, #fff2 4px
+            );
+            mix-blend-mode: lighten;
+            opacity: 0.13;
+            animation: scanmove 2.5s linear infinite;
+        }
+        @@keyframes scanmove {
+            0% { background-position-y: 0; }
+            100% { background-position-y: 40px; }
+        }
+        .epic-btn {
+            font-size: 1.1rem;
+            padding: 0.6rem 1.3rem;
+            margin: 1.2rem 0.7rem 0 0;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Fira Code', monospace;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            box-shadow: 0 0 18px #00ff00cc, 0 0 8px #f0f, 0 0 4px #fff;
+            transition: background 0.2s, color 0.2s, transform 0.13s, box-shadow 0.13s, filter 0.13s;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+            filter: url(#glitch-filter);
+        }
+        .epic-btn:before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 10px;
+            opacity: 0.18;
+            pointer-events: none;
+            background: repeating-linear-gradient(90deg, #fff2 0 2px, transparent 2px 8px);
+            animation: btn-glitch 0.7s infinite alternate;
+        }
+        @@keyframes btn-glitch {
+            0% { opacity: 0.18; }
+            100% { opacity: 0.32; }
+        }
+        .epic-btn:hover, .epic-btn:focus {
+            background: #111;
+            color: #00ff00;
+            transform: scale(1.07) skewX(-2deg) scaleY(1.04);
+            box-shadow: 0 0 32px #fff, 0 0 12px #f0f, 0 0 8px #00ff00;
+            filter: brightness(1.3) contrast(1.2) blur(0.5px) url(#glitch-filter);
+            animation: shakeBtn 0.18s 2;
+        }
+        .epic-btn:active {
+            filter: brightness(1.7) contrast(1.3) blur(1px) url(#glitch-filter);
+            transform: scale(0.97) skewX(2deg) scaleY(0.98);
+            animation: shakeBtn 0.13s 2;
+        }
+        .epic-btn.glitch {
+            animation: glitch-anim 0.09s infinite, btn-glow 1.2s infinite alternate;
+        }
+        @@keyframes shakeBtn {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            50% { transform: translateX(2px); }
+            75% { transform: translateX(-1px); }
+            100% { transform: translateX(0); }
+        }
+        #consola {
+            font-size: 1.15rem;
+            line-height: 1.35;
+            background: #000;
+            border-radius: 10px;
+            box-shadow: 0 0 32px #00ff00cc, 0 0 8px #fff, 0 0 4px #f0f;
+            padding: 1.5rem 1.7rem;
+            color: #fff;
+            min-width: 36vw;
+            min-height: 18vh;
+            margin: 2rem auto;
+            text-shadow: 0 0 8px #00ff00, 0 0 2px #fff, 0 0 8px #f0f;
+            position: relative;
+            overflow: hidden;
+            filter: url(#glitch-filter);
+        }
+        .decrypted-char {
+            color: #fff;
+            opacity: 0.7;
+            text-shadow: 0 0 8px #00ff00, 0 0 2px #fff, 0 0 8px #f0f;
+            font-family: 'Fira Code', monospace;
+            animation: char-glitch 0.3s infinite alternate;
+        }
+        @@keyframes char-glitch {
+            0% { filter: blur(0.5px) brightness(1.2); }
+            100% { filter: blur(1.5px) brightness(1.7); }
+        }
+        #video-transition-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 40px;
-            font-size: 25px;
-            white-space: pre-wrap;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #video-transition-overlay video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+        .shake {
+            animation: shakeConsola 0.18s 1;
+        }
+        @@keyframes shakeConsola {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-3px); }
+            40% { transform: translateX(3px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+            100% { transform: translateX(0); }
+        }
+        /* Glitch SVG filter */
+        svg#glitch-svg { position: absolute; width: 0; height: 0; }
+        /* Cursor aura */
+        #cursor-aura {
+            pointer-events: none;
+            position: fixed;
+            left: 0; top: 0;
+            width: 100vw; height: 100vh;
+            z-index: 3000;
         }
     </style>
 </head>
 <body>
-    <!-- Pantalla negra de transición -->
-    <div id="black-transition" style="position:fixed;z-index:9999;top:0;left:0;width:100vw;height:100vh;background:black;opacity:1;transition:opacity 2s;"></div>
-    <!-- Video de introducción -->
-    <video id="intro-video" src="/img/rickSora1.mp4" style="display:none;position:fixed;z-index:9998;top:0;left:0;width:100vw;height:100vh;object-fit:cover;background:black;" preload="auto"></video>
-    <!-- Pantalla blanca de alerta y animación -->
-    <div id="white-flash" style="display:none;position:fixed;z-index:10000;top:0;left:0;width:100vw;height:100vh;background:white;opacity:1;transition:opacity 1s;"></div>
-    <div id="matrix-break" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;pointer-events:none;justify-content:center;align-items:center;text-align:center;font-size:3vw;font-family:monospace;font-weight:bold;color:#111;text-shadow:0 0 30px #fff,0 0 80px #0ff,0 0 120px #f0f;animation:glitchFlash 0.2s infinite alternate;">
-        <span id="matrix-message">¡Accediendo al núcleo de la realidad digital!</span>
-    </div>
-    <audio id="epic-alert" src="/img/epic_alert.mp3" preload="auto"></audio>
-    <audio id="epic-glitch" src="/img/epic_glitch.mp3" preload="auto"></audio>
-    <audio id="sfx-console" src="/img/sfxtype.mp3" preload="auto"></audio>
-    <audio id="audio1" src="/audio/audio1.mp3" loop></audio>
-    <audio id="audio2" src="/audio/audio2.mp3" loop></audio>
-    <audio id="audio3" src="/audio/audio3.mp3" loop></audio>
-    <audio id="audio4" src="/audio/audio4.mp3" loop></audio>
-    <audio id="audio5" src="/audio/audio5.mp3" loop></audio>
-
-    <div id="terminal"></div>
-
-    <div id="input-line">
-        > ¿Entendiste? (y/n): <input id="respuesta" maxlength="1" autofocus />
+    <div id="overlay">
+        <div id="textoInicio" class="glitch">
+            Cargando realidad virtual...
+            Inyección de código...
+            Rick y Morty detectados.
+            Realidad MVC-137 comprometida.
+        </div>
+        <button id="botonContinuar" onclick="empezarSecuencia()">INFILTRAR</button>
     </div>
 
-    <div id="error-mode"></div>
+    <div id="consola" style="padding: 2rem; display: none;"></div>
+    <video id="rickVideo" src="/video/ricksora.mp4" autoplay muted></video>
+    <audio id="audioRick" src="/img/ultraviolence.mp3"></audio>
+    <div id="flash" class="flash" style="display: none;"></div>
+    <div class="scanlines"></div>
+
+    <svg id="glitch-svg">
+      <filter id="glitch-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.03" numOctaves="2" result="turb" seed="7"/>
+        <feDisplacementMap in2="turb" in="SourceGraphic" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </svg>
+    <canvas id="cursor-aura"></canvas>
 
     <script>
-    function decryptedTextEffect(element, text, options = {}) {
-    const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+';
-    const baseSpeed = options.speed || 10;
-    const fastSpeed = 5; // velocidad rápida pero visible cuando el mouse está presionado
-    const scrambleIterations = options.scrambleIterations || 6;
-    const audio = document.getElementById('sfx-console');
-        // Reproducir audio desde el principio sincronizado
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.play();
-        }
-    return new Promise((resolve) => {
-        let revealed = [];
-        let iterations = [];
-        for (let i = 0; i < text.length; i++) {
-            revealed[i] = false;
-            iterations[i] = 0;
-        }
-        let done = false;
-        
-        function frame() {
-            let output = '';
-            done = true;
-            for (let i = 0; i < text.length; i++) {
-                if (text[i] === '\n') {
-                    output += '\n';
-                    continue;
-                }
-                if (revealed[i] || text[i] === ' ') {
-                    output += text[i];
-                } else {
-                    done = false;
-                    output += `<span class="decrypted-char">${characters[Math.floor(Math.random() * characters.length)]}</span>`;
-                    iterations[i]++;
-                    if (iterations[i] >= scrambleIterations) revealed[i] = true;
-                }
-            }
-            element.innerHTML = output;
-            if (!done) setTimeout(frame, mouseDown ? fastSpeed : baseSpeed);
-            else {
-                element.innerHTML = text.replace(/\n/g, '<br>');
-                resolve();
-            }
-        }
-        frame();
-    });
-}
-
-        const terminal = document.getElementById("terminal");
-        const inputLine = document.getElementById("input-line");
-        const input = document.getElementById("respuesta");
-        const errorMode = document.getElementById("error-mode");
-
-       const texto = [
-    "[SISTEMA] Inicializando núcleo MVC-CORE.dll...",
-    "[BOOTLOADER] Realidad cargada: MVC-137",
-    "[RICK] M-morty... cometí un error muy grave...",
-    "[RICK] Creé un sistema llamado MVC para controlar y estabilizar realidades.",
-    "[RICK] MVC significa Modelo-Vista-Controlador, es como una estructura lógica que organiza cómo funciona nuestra realidad.",
-    "[RICK] El 'Modelo' maneja la información, la 'Vista' es lo que vemos, y el 'Controlador' decide qué mostrar y cómo.",
-    "[ERROR 0xR1CK] El problema es que el Controlador MVC que diseñé está empezando a pensar por sí mismo.",
-    "[LOG] --> Inyectando código: Controller@AutoAwarenessProtocol.cs...",
-    "[SECURITY BREACH] El Controlador MVC está cambiando por su cuenta las rutas lógicas de la realidad.",
-    "[ATAQUE] Secuencia infectada detectada: 01100111 01101100 01101001 01110100 01100011 01101000",
-    "[RICK] Escuchá bien Morty, alguien aprovechó un error mío para hackear nuestra realidad desde adentro.",
-    "[RICK] Si no paramos ahora mismo este Controlador, vamos a quedar atrapados en un bucle infinito para siempre.",
-    "Tu misión:",
-    "- Infiltrar el código MVC para detener el Controlador corrupto.",
-    "- Depurar las líneas del núcleo Razor que sostienen esta realidad.",
-    "- Romper la cuarta pared y encontrar quién está detrás del ataque.",
-    "[RICK] Esto no es un juego Morty, es una emergencia interdimensional crítica.",
-    "¿Entendiste? (y/n)"
-];
-
-        let mouseDown = false;
-        document.addEventListener('mousedown', () => { mouseDown = true; });
-        document.addEventListener('mouseup', () => { mouseDown = false; });
-
-        let i = 0;
-function escribirLinea() {
-    if (i < texto.length) {
-        const span = document.createElement("span");
-        terminal.appendChild(span);
-        decryptedTextEffect(span, texto[i], { speed: 8, scrambleIterations: 4 })
-            .then(() => {
-                span.innerHTML += "<br>";
-                i++;
-                if (mouseDown) {
-                    escribirLinea(); // Avanza inmediatamente si el mouse está presionado
-                } else {
-                setTimeout(escribirLinea, 1400);
-                }
-            });
-    } else {
-        inputLine.style.display = "block";
-        input.focus();
-    }
-}
-
-
-        function mostrarErrorRick() {
-            inputLine.style.display = "none";
-            errorMode.style.display = "block";
-            errorMode.innerHTML = "";
-            const frase = "Rick: ¿N-no entendés, Morty?!\nESTAMOS EN EL MALDITO CÓDIGO MORTY.\n¡Esto no es una simulación de consola, esto es una PRISIÓN DE FRAMEWORKS!\nPoné 'y', Morty. Ponelo YA.";
-            let j = 0;
-            function typeText() {
-                if (j < frase.length) {
-                    errorMode.innerHTML += frase[j];
-                    j++;
-                    setTimeout(typeText, 40);
-                } else {
-                    setTimeout(() => {
-                        errorMode.style.display = "none";
-                        terminal.innerHTML += "\nINTENTÁ DE NUEVO...\n\n";
-                        input.value = "";
-                        inputLine.style.display = "block";
-                        input.focus();
-                    }, 1000);
-                }
-            }
-            typeText();
-        }
-
-        escribirLinea();
-
-        input.addEventListener("input", function () {
-            const val = input.value.toLowerCase();
-            if (val === "y") {
-                inputLine.style.display = "none";
-                terminal.innerHTML = `✔️ Bienvenido, Morty! Iniciando secuencia de escape...`;
-                setTimeout(() => {
-                    window.location.href = "/Home/GameStart";
-                }, 1200);
-            } else if (val === "n") {
-                mostrarErrorRick();
-            } else {
-                input.value = "";
-            }
-        });
-
-        // Glitch audio system
-        const audioElements = [
-            document.getElementById('audio1'),
-            document.getElementById('audio2'),
-            document.getElementById('audio3'),
-            document.getElementById('audio4'),
-            document.getElementById('audio5')
+        const texto = [
+            "[SISTEMA] Núcleo MVC-CORE.dll operativo...",
+            "[RICK] Morty, cometí un error al diseñar este sistema...",
+            "[RICK] El Controlador MVC tomó conciencia y está reescribiendo la realidad...",
+            "[RICK] Tenemos que hackear el sistema desde adentro antes de que sea tarde.",
+            "[RICK] ¿Listo para romper el código? (y/n)"
         ];
 
-        function glitchAudio() {
-            // Randomly play/pause/seek audio elements
-            audioElements.forEach(audio => {
-                if (Math.random() > 0.5) {
-                    if (audio.paused) {
-                        audio.currentTime = Math.random() * audio.duration;
-                        audio.volume = Math.random() * 0.3;
-                        audio.play();
-                    } else {
-                        audio.pause();
+        const consola = document.getElementById("consola");
+        const overlay = document.getElementById("overlay");
+        const boton = document.getElementById("botonContinuar");
+        const audio = document.getElementById("audioRick");
+        const video = document.getElementById("rickVideo");
+        const flash = document.getElementById("flash");
+        let i = 0;
+
+        // Iniciar audio épico desde el segundo 14
+        audio.currentTime = 14;
+        audio.volume = 0.7;
+        setTimeout(() => { audio.play(); }, 800);
+
+        setTimeout(() => boton.style.display = 'block', 2200);
+
+        function empezarSecuencia() {
+            overlay.style.display = 'none';
+            consola.style.display = 'block';
+            if (audio.paused) { audio.currentTime = 14; audio.play(); }
+            mostrarLinea();
+        }
+
+        // Cursor aura de puntitos de colores
+        const aura = document.getElementById('cursor-aura');
+        const ctx = aura.getContext('2d');
+        let particles = [];
+        let mouse = {x: window.innerWidth/2, y: window.innerHeight/2};
+        function resizeAura() {
+            aura.width = window.innerWidth;
+            aura.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeAura);
+        resizeAura();
+        document.addEventListener('mousemove', e => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+            // Genera partículas en la posición del mouse
+            for(let i=0;i<3;i++) {
+                particles.push({
+                    x: mouse.x + (Math.random()-0.5)*16,
+                    y: mouse.y + (Math.random()-0.5)*16,
+                    r: Math.random()*3+1,
+                    c: `hsl(${Math.floor(Math.random()*360)},100%,60%)`,
+                    a: 1,
+                    vx: (Math.random()-0.5)*1.5,
+                    vy: (Math.random()-0.5)*1.5
+                });
+            }
+        });
+        function drawAura() {
+            ctx.clearRect(0,0,aura.width,aura.height);
+            particles.forEach((p,i) => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(${hexToRgb(p.c)},${p.a})`;
+                ctx.shadowColor = p.c;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+                p.x += p.vx;
+                p.y += p.vy;
+                p.a -= 0.018;
+                if(p.a <= 0) particles.splice(i,1);
+            });
+            requestAnimationFrame(drawAura);
+        }
+        function hexToRgb(h) {
+            if(h.startsWith('hsl')) {
+                let [hue,s,l] = h.match(/\d+/g).map(Number);
+                l /= 100; s /= 100;
+                let a = s * Math.min(l, 1 - l);
+                function f(n) {
+                    let k = (n + hue/30)%12;
+                    let color = l - a * Math.max(Math.min(k-3,9-k,1),-1);
+                    return Math.round(255 * color);
+                }
+                return `${f(0)},${f(8)},${f(4)}`;
+            }
+            return '255,255,255';
+        }
+        drawAura();
+
+        // Efecto decrypted tipo Matrix caótico
+        function decryptedTextEffect(element, text, options = {}) {
+            const characters = options.characters || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%^&*()_+1234567890';
+            const baseSpeed = options.speed || 38;
+            const fastSpeed = 18;
+            const scrambleIterations = options.scrambleIterations || 16;
+            return new Promise((resolve) => {
+                let revealed = [];
+                let iterations = [];
+                for (let i = 0; i < text.length; i++) {
+                    revealed[i] = false;
+                    iterations[i] = 0;
+                }
+                let done = false;
+                function frame() {
+                    let output = '';
+                    done = true;
+                    for (let i = 0; i < text.length; i++) {
+                        if (text[i] === '\n') {
+                            output += '\n';
+                            continue;
+                        }
+                        if (revealed[i] || text[i] === ' ') {
+                            output += text[i];
+                        } else {
+                            done = false;
+                            let style = `font-size:${1+Math.random()*0.7}em; color:${Math.random()<0.2?'#f0f':Math.random()<0.5?'#0ff':'#fff'}; filter:blur(${Math.random()*2}px); transform:translateY(${Math.random()*4-2}px) skewX(${Math.random()*8-4}deg);`;
+                            output += `<span class='decrypted-char' style='${style}'>${characters[Math.floor(Math.random() * characters.length)]}</span>`;
+                            iterations[i]++;
+                            if (iterations[i] >= scrambleIterations + Math.floor(Math.random()*3)) revealed[i] = true;
+                        }
+                    }
+                    element.innerHTML = output;
+                    if (!done) setTimeout(frame, Math.random() < 0.2 ? fastSpeed : baseSpeed);
+                    else {
+                        element.innerHTML = text.replace(/\n/g, '<br>');
+                        resolve();
                     }
                 }
+                frame();
             });
         }
 
-        // Start glitch effect
-        setInterval(glitchAudio, 500);
-
-        // Initial play
-        audioElements.forEach(audio => {
-            audio.volume = Math.random() * 0.3;
-            audio.play();
-        });
-
-        // --- EFECTOS DE TRANSICIÓN Y ANIMACIÓN INICIAL ---
-        window.addEventListener('DOMContentLoaded', function() {
-            const black = document.getElementById('black-transition');
-            const intro = document.getElementById('intro-video');
-            const white = document.getElementById('white-flash');
-            const matrix = document.getElementById('matrix-break');
-            const matrixMsg = document.getElementById('matrix-message');
-            const epicAlert = document.getElementById('epic-alert');
-            const epicGlitch = document.getElementById('epic-glitch');
-            document.body.style.overflow = 'hidden';
-            document.getElementById('terminal').style.display = 'none';
-            document.getElementById('input-line').style.display = 'none';
-            setTimeout(() => {
-                black.style.opacity = 0;
-                setTimeout(() => {
-                    black.style.display = 'none';
-                    intro.style.display = 'block';
-                    intro.play();
-                }, 2000);
-            }, 3000);
-            // --- NUEVA ANIMACIÓN POST-VIDEO ---
-            intro.addEventListener('ended', function() {
-                intro.style.display = 'none';
-                white.style.display = 'block';
-                white.style.opacity = 1;
-                matrix.style.display = 'flex';
-                let errorPhrases = [
-                    '¡¡¡ERROR FATAL EN EL NÚCLEO MVC!!!',
-                    '!!! REALIDAD CORRUPTA: 0xDEADCODE !!!',
-                    '!!! STACK OVERFLOW EN LA MATRIZ !!!',
-                    '!!! DESBORDAMIENTO DE REALIDAD !!!',
-                    '!!! ERROR: CONTROLADOR AUTÓNOMO DETECTADO !!!',
-                    '!!! GLITCH EN EL SISTEMA: REALIDAD INESTABLE !!!',
-                    '!!! ALERTA: EL CÓDIGO TE ESTÁ ABSORBIENDO !!!',
-                    '!!! ERROR 404: LÓGICA NO ENCONTRADA !!!',
-                    '!!! ¡¡INYECCIÓN DE BUGS MASIVA!! !!!',
-                    '!!! ¡¡LA MATRIX SE ESTÁ ROMPIENDO!! !!!',
-                    '!!! ¡¡NO PUEDES ESCAPAR!! !!!',
-                ];
-                let flashes = 0;
-                epicAlert.currentTime = 0; epicAlert.play();
-                let phraseIndex = 0;
-                let flashInterval = setInterval(() => {
-                    white.style.opacity = (flashes % 2 === 0) ? 1 : 0.5 + Math.random()*0.5;
-                    matrix.style.color = flashes % 2 === 0 ? '#f00' : '#0ff';
-                    matrix.style.textShadow = flashes % 2 === 0 ? '0 0 60px #fff,0 0 120px #f00,0 0 200px #0ff' : '0 0 80px #0ff,0 0 160px #fff,0 0 240px #f0f';
-                    matrixMsg.innerText = errorPhrases[phraseIndex % errorPhrases.length];
-                    matrixMsg.style.letterSpacing = (Math.random() * 10) + 'px';
-                    matrixMsg.style.transform = `skew(${Math.random()*40-20}deg,${Math.random()*40-20}deg)`;
-                    if (flashes % 2 === 0) epicGlitch.currentTime = 0, epicGlitch.play();
-                    flashes++;
-                    phraseIndex++;
-                    if (flashes > 22) {
-                        clearInterval(flashInterval);
-                        // Animación de absorción y bug visual
-                        matrixMsg.innerText = '¡¡¡EL CÓDIGO TE ABSORBE!!!';
-                        matrixMsg.style.letterSpacing = '20px';
-                        matrixMsg.style.transform = 'scale(1.5) rotate(-10deg)';
-                        matrix.style.animation = 'matrixSuckEpic 2s forwards';
-                        setTimeout(() => {
-                            white.style.opacity = 0;
-                            matrix.style.opacity = 0;
-                            setTimeout(() => {
-                                white.style.display = 'none';
-                                matrix.style.display = 'none';
-                                document.body.style.overflow = '';
-                                document.getElementById('terminal').style.display = '';
-                                document.getElementById('input-line').style.display = '';
-                            }, 1000);
-                        }, 2000);
-                    }
-                }, 90);
-            });
-        });
-        // --- ANIMACIONES CSS ---
-        const style = document.createElement('style');
-        style.innerHTML = `
-        @@keyframes glitchFlash {
-            0% { filter: blur(0px) brightness(1); }
-            20% { filter: blur(4px) brightness(2.5) hue-rotate(90deg); }
-            40% { filter: blur(2px) brightness(2) hue-rotate(180deg); }
-            60% { filter: blur(6px) brightness(3) hue-rotate(270deg); }
-            80% { filter: blur(0px) brightness(1.2) hue-rotate(0deg); }
-            100% { filter: blur(4px) brightness(2.5) hue-rotate(360deg); }
+        function mostrarLinea() {
+            if (i < texto.length) {
+                let br = document.createElement("br");
+                consola.appendChild(br);
+                let span = document.createElement("span");
+                span.className = "glitch";
+                consola.appendChild(span);
+                let chars = texto[i];
+                decryptedTextEffect(span, chars, { speed: 38, fastSpeed: 18, scrambleIterations: 16 }).then(() => {
+                    consola.classList.add('shake');
+                    setTimeout(() => consola.classList.remove('shake'), 180);
+                    lanzarFlash();
+                    i++;
+                    setTimeout(mostrarLinea, 1000 + Math.random()*400);
+                });
+            } else {
+                mostrarOpciones();
+            }
         }
-        @@keyframes matrixSuckEpic {
-            0% { transform: scale(1) rotate(0deg); opacity:1; filter: none; }
-            30% { transform: scale(1.3) rotate(20deg); opacity:0.8; filter: contrast(2) brightness(2) blur(2px); }
-            60% { transform: scale(2) rotate(-20deg); opacity:0.5; filter: contrast(4) brightness(3) blur(6px); }
-            100% { transform: scale(0.1) rotate(1080deg); opacity:0; filter: blur(20px) brightness(10); }
+
+        function lanzarFlash() {
+            flash.style.display = 'block';
+            flash.classList.remove("flash");
+            void flash.offsetWidth; // reset animation
+            flash.classList.add("flash");
+            setTimeout(() => flash.style.display = 'none', 120);
         }
-        `;
-        document.head.appendChild(style);
+
+        function mostrarOpciones() {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <br><br>
+                <button class="epic-btn glitch" onclick="responder('y')">INFILTRAR (y)</button>
+                <button class="epic-btn glitch" onclick="responder('n')">ABORTAR (n)</button>
+            `;
+            consola.appendChild(div);
+        }
+
+        function responder(rta) {
+            if (rta === 'y') {
+                consola.innerHTML += "<br><span class='glitch'>[HACKING] Entrando a GameStart...</span><br>";
+                // Overlay de video de transición
+                const videoOverlay = document.createElement('div');
+                videoOverlay.id = 'video-transition-overlay';
+                const vid = document.createElement('video');
+                vid.src = '/img/ricksora1.mp4';
+                vid.autoplay = true;
+                vid.muted = false;
+                vid.controls = false;
+                vid.style.width = '100vw';
+                vid.style.height = '100vh';
+                vid.style.objectFit = 'cover';
+                videoOverlay.appendChild(vid);
+                document.body.appendChild(videoOverlay);
+                // Al terminar el video o tras 8s, pasar de room
+                let passed = false;
+                function goNext() {
+                    if (passed) return;
+                    passed = true;
+                    videoOverlay.remove();
+                    fetch("/Home/GameStart").then(() => {
+                        window.location.href = "/Home/GameStart";
+                    });
+                }
+                vid.onended = goNext;
+                setTimeout(goNext, 8000);
+            } else {
+                consola.innerHTML += "<br><span class='glitch'>[RICK] ¡Morty no tenemos tiempo!</span><br>";
+                consola.classList.add('shake');
+                setTimeout(() => consola.classList.remove('shake'), 180);
+                lanzarFlash();
+            }
+        }
     </script>
-    
-    @Html.Partial("_NavMenu")
+        @Html.Partial("_NavMenu")
+
 </body>
 </html>

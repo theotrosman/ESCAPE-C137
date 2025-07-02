@@ -927,53 +927,166 @@
                 consola.appendChild(entidad);
             }, 4000);
 
-            fetch('/Home/CompleteRoom/3', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Error al completar la sala');
-                return response.json();
-            })
-            .then(() => {
+            // Crear y mostrar el video de transición
+            setTimeout(() => {
+                // Ocultar la consola
+                consola.style.display = 'none';
+                
+                // Crear pantalla negra de transición
+                const blackScreen = document.createElement('div');
+                blackScreen.id = 'black-transition-screen';
+                blackScreen.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background: black;
+                    z-index: 9998;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.5s ease-in-out;
+                `;
+                
+                // Texto en la pantalla negra
+                const transitionText = document.createElement('div');
+                transitionText.style.cssText = `
+                    color: #00ff00;
+                    font-family: monospace;
+                    font-size: 24px;
+                    text-align: center;
+                    text-shadow: 0 0 10px #00ff00;
+                `;
+                transitionText.textContent = 'TRANSICIÓN A ROOM 4...';
+                blackScreen.appendChild(transitionText);
+                document.body.appendChild(blackScreen);
+                
+                // Mostrar pantalla negra
                 setTimeout(() => {
-                    window.location.href = '/Home/Room4';
-                }, 7000);
-            })
-            .catch(() => {
-                // Reintentar hasta 3 veces antes de redirigir
-                let intentos = 1;
-                function reintentarFetch() {
-                    fetch('/Home/CompleteRoom/3', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Error al completar la sala');
-                        return response.json();
-                    })
-                    .then(() => {
+                    blackScreen.style.opacity = '1';
+                    
+                    // Después de 3 segundos, mostrar el video
+                    setTimeout(() => {
+                        blackScreen.style.opacity = '0';
                         setTimeout(() => {
-                            window.location.href = '/Home/Room4';
-                        }, 7000);
-                    })
-                    .catch(() => {
-                        intentos++;
-                        if (intentos < 4) {
-                            setTimeout(reintentarFetch, 1000);
-                        } else {
+                            blackScreen.remove();
+                            
+                            // Crear overlay para el video
+                            const videoOverlay = document.createElement('div');
+                            videoOverlay.id = 'video-transition-overlay';
+                            videoOverlay.style.cssText = `
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                width: 100vw;
+                                height: 100vh;
+                                background: black;
+                                z-index: 9999;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            `;
+                            
+                            // Crear el video
+                            const video = document.createElement('video');
+                            video.src = '/img/escapematrix.mp4';
+                            video.style.cssText = `
+                                width: 100vw;
+                                height: 100vh;
+                                object-fit: cover;
+                            `;
+                            video.muted = false;
+                            video.controls = false;
+                            video.autoplay = true;
+                            
+                            // Agregar el video al overlay
+                            videoOverlay.appendChild(video);
+                            document.body.appendChild(videoOverlay);
+                            
+                            // Manejar el fin del video
+                            video.addEventListener('ended', () => {
+                                // Remover el overlay y continuar con la transición
+                                videoOverlay.remove();
+                                continuarTransicion();
+                            });
+                            
+                            // Fallback por si el video no se reproduce
+                            setTimeout(() => {
+                                if (videoOverlay.parentNode) {
+                                    videoOverlay.remove();
+                                    continuarTransicion();
+                                }
+                            }, 10000); // 10 segundos de fallback
+                            
+                        }, 500);
+                    }, 3000); // 3 segundos de pantalla negra
+                }, 100);
+                
+            }, 6000); // Mostrar pantalla negra después de 6 segundos
+
+            function continuarTransicion() {
+                // Hacer el fetch para completar la sala
+                fetch('/Home/CompleteRoom/3', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Sala completada exitosamente:', data);
+                    setTimeout(() => {
+                        window.location.href = '/Home/Room4';
+                    }, 1000);
+                })
+                .catch(error => {
+                    console.error('Error al completar la sala:', error);
+                    // Reintentar hasta 3 veces antes de redirigir
+                    let intentos = 1;
+                    function reintentarFetch() {
+                        fetch('/Home/CompleteRoom/3', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Error en la respuesta del servidor');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Sala completada exitosamente en reintento:', data);
                             setTimeout(() => {
                                 window.location.href = '/Home/Room4';
-                            }, 7000);
-                        }
-                    });
-                }
-                reintentarFetch();
-            });
+                            }, 1000);
+                        })
+                        .catch(error => {
+                            console.error('Error en reintento ' + intentos + ':', error);
+                            intentos++;
+                            if (intentos < 4) {
+                                setTimeout(reintentarFetch, 1000);
+                            } else {
+                                console.log('Redirigiendo a Room4 después de fallos...');
+                                setTimeout(() => {
+                                    window.location.href = '/Home/Room4';
+                                }, 1000);
+                            }
+                        });
+                    }
+                    reintentarFetch();
+                });
+            }
         }
 
         function lanzarPopUp() {
