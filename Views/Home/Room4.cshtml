@@ -466,6 +466,7 @@
     <div id="matrixOverlay"></div>
 
     <div id="introContainer">
+        <div id="introFx"></div>
         <div id="introText"></div>
     </div>
 
@@ -518,34 +519,42 @@
         }
 
         const introLines = [
-  '[C137_CONSOLE] :: ROOM 4: MEMORIA COLAPSADA INICIADA',
-  '[SISTEMA] Fragmentos de memoria detectados: estado inestable.',
-  '[Rick]: Morty... abrimos un portal demasiado profundo esta vez.',
-  '[Rick]: Esto no es solo RAM corrupta. Es nuestra historia… desencriptada mal.',
-  '[Rick]: Cada bloque está fuera de orden. Como si el tiempo hubiera olvidado cómo seguir.',
-  '[Morty]: ¿Rick, y si me equivoco armando esto?',
-  '[Rick]: Entonces desaparecemos. Como un `console.log()` sin consola.',
-  '[Rick]: Vos, yo, esta línea de código rota... todo se convierte en eco sin runtime.',
-  '[C137_CONSOLE] :: INSTRUCCIÓN: Restaurá la memoria. O colapsá con ella.',
+  '<span style="color:#ff0055;filter:blur(1.5px);font-weight:bold;">[C137_CONSOLE] :: ROOM 4: MEMO</span><span style="color:#39ff14;">R1A C0L4PS4DA</span>',
+  '<span style="color:#fffb00;">[SISTEMA] ERR0R... ERR0R... ERR0R...</span>',
+  '<span style="color:#00fff7;">[Rick]: Morty, ¿ves esto? No... no debería...</span>',
+  '<span style="color:#ff0055;">[BUG] <span style="text-decoration:line-through;">MEMORY LEAK</span> <span style="color:#fff;">GLITCH DETECTADO</span></span>',
+  '<span style="color:#fffb00;">[Morty]: Rick, el código se está... <span style="filter:blur(2px);">deshaciendo</span></span>',
+  '<span style="color:#ff0055;">[SISTEMA] <span style="animation: glitchHeavy 0.2s infinite alternate;">#@@!$%&*()</span></span>',
+  '<span style="color:#00fff7;">[Rick]: <span style="animation: flicker 0.2s infinite alternate;">Morty, rápido, antes de que todo colapse...</span></span>',
+  '<span style="color:#fffb00;">[SISTEMA] <span style="animation: invertFlash 0.3s infinite alternate;">INSTRUCCIÓN: REPARA LA MEMORIA</span></span>',
 ];
         let idx = 0;
         const introDiv = document.getElementById('introText');
+        const introFx = document.getElementById('introFx');
         function showLine() {
             if (idx < introLines.length) {
                 const d = document.createElement('div');
                 d.className = 'typewriter-line';
-                d.textContent = introLines[idx++];
+                d.innerHTML = introLines[idx++];
                 introDiv.appendChild(d);
-                setTimeout(showLine, 2000);
+                // Glitch FX: flashes, distorsión, bugs visuales
+                introFx.innerHTML = '';
+                if (Math.random() > 0.5) {
+                    introFx.innerHTML = '<div style="position:fixed;inset:0;z-index:1;pointer-events:none;animation:glitchHeavy 0.2s infinite alternate;"></div>';
+                }
+                if (Math.random() > 0.7) {
+                    introFx.innerHTML += '<div style="position:fixed;inset:0;z-index:2;pointer-events:none;background:rgba(255,0,0,0.07);mix-blend-mode:screen;animation:invertFlash 0.3s infinite alternate;"></div>';
+                }
+                setTimeout(showLine, 700 + Math.random()*400);
             } else {
-                setTimeout(endIntro, 1000);
+                setTimeout(endIntro, 800);
             }
         }
         function endIntro() {
             document.getElementById('introContainer').style.display = 'none';
             document.getElementById('gameContainer').style.display = 'flex';
             document.body.classList.add('victory-flash');
-            setTimeout(() => document.body.classList.remove('victory-flash'), 1000);
+            setTimeout(() => document.body.classList.remove('victory-flash'), 700);
             startGame();
         }
         window.onload = () => { matrixRain(); showLine(); };
@@ -569,9 +578,58 @@ setInterval(() => {
     tiempo--;
     countdownEl.textContent = tiempo;
   } else {
+    // Animación de alerta y matrix rota
     document.body.classList.add('defeat-flash');
     document.getElementById('console').textContent = "[SYSTEM]: TIMEOUT — El proceso se quedó sin RAM.";
-    setTimeout(() => location.reload(), 4000);
+    const alertOverlay = document.createElement('div');
+    alertOverlay.style.position = 'fixed';
+    alertOverlay.style.inset = '0';
+    alertOverlay.style.zIndex = '99999';
+    alertOverlay.style.background = 'rgba(0,0,0,0.97)';
+    alertOverlay.style.display = 'flex';
+    alertOverlay.style.flexDirection = 'column';
+    alertOverlay.style.alignItems = 'center';
+    alertOverlay.style.justifyContent = 'center';
+    alertOverlay.style.fontFamily = 'monospace';
+    alertOverlay.style.fontSize = '3vw';
+    alertOverlay.style.fontWeight = 'bold';
+    alertOverlay.style.color = '#fffb00';
+    alertOverlay.style.textShadow = '0 0 20px #00ffea, 0 0 10px #fff';
+    alertOverlay.style.animation = 'shakeFinal 0.12s infinite alternate, invertFlash 0.25s infinite, glitchHeavy 0.18s infinite alternate';
+    alertOverlay.innerHTML = `
+      <div style="font-size:4vw;color:#ff0055;animation:alertFlash 0.2s infinite alternate;">REINICIANDO SISTEMA...</div>
+      <div style="margin-top:2vh;font-size:2vw;animation:glitchHeavy 0.2s infinite alternate;color:#39ff14;">[MATRIX ROTA]</div>
+      <div style="margin-top:1vh;font-size:1.2vw;animation:flicker 0.7s infinite alternate;opacity:0.7;color:#fff;">[Morty]: Rick, ¿por qué todo se buguea?</div>
+      <div style="margin-top:3vh;font-size:1vw;animation:invertFlash 0.3s infinite alternate;opacity:0.5;color:#fffb00;">0x0000FF: <span style='animation:glitch 0.1s infinite alternate;'>01101100 01101111 01101100</span></div>
+    `;
+    document.body.appendChild(alertOverlay);
+    // Efecto matrix rota: lluvia de caracteres
+    const matrixFx = document.createElement('div');
+    matrixFx.style.position = 'fixed';
+    matrixFx.style.inset = '0';
+    matrixFx.style.pointerEvents = 'none';
+    matrixFx.style.zIndex = '100000';
+    matrixFx.style.fontFamily = 'monospace';
+    matrixFx.style.fontSize = '2vw';
+    matrixFx.style.color = '#39ff14';
+    document.body.appendChild(matrixFx);
+    let matrixInterval = setInterval(() => {
+      let s = '';
+      for (let y = 0; y < 20; y++) {
+        for (let x = 0; x < 60; x++) {
+          s += Math.random() > 0.97 ? String.fromCharCode(0x30A0 + Math.random() * 96) : ' ';
+        }
+        s += '\n';
+      }
+      matrixFx.textContent = s;
+    }, 40);
+    setTimeout(() => {
+      clearInterval(matrixInterval);
+      alertOverlay.remove();
+      matrixFx.remove();
+      document.body.classList.remove('defeat-flash');
+      location.reload();
+    }, 4000);
   }
 }, 1000);
 

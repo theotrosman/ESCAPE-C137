@@ -448,15 +448,12 @@
         isMenuOpen = true;
         document.body.classList.add('menu-open');
         navContainer.classList.add('active');
-        
-        // Scramble effect for menu items
+        // Quitar animaciones de scramble/decrypt
         const menuItems = document.querySelectorAll('.hacker-nav-link');
-        menuItems.forEach((item, index) => {
-            const originalText = item.textContent;
-            setTimeout(() => {
-                scrambleText(item, originalText);
-            }, index * 200);
+        menuItems.forEach((item) => {
+            item.classList.remove('scrambling', 'decrypting');
         });
+        // NO llamar scrambleText
     }
     
     function closeMenu() {
@@ -519,6 +516,16 @@
             const action = event.target.getAttribute('data-action');
             console.log('Menu action:', action);
             handleMenuAction(action);
+        }
+    });
+    
+    // --- 2. Click fuera del panel cierra el menú ---
+    document.addEventListener('mousedown', function(event) {
+        if (isMenuOpen) {
+            const panel = document.querySelector('.hacker-nav-panel');
+            if (panel && !panel.contains(event.target)) {
+                closeMenu();
+            }
         }
     });
     

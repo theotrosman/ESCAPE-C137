@@ -765,6 +765,12 @@
         <source src="~/img/yuugensong.mp3" type="audio/mp3">
     </audio>
 
+    <!-- EPIC INTRO TRANSITION OVERLAY -->
+    <div id="epicIntroOverlay" style="position:fixed;inset:0;z-index:10000;background:black;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="epicIntroFx" style="position:absolute;inset:0;z-index:1;pointer-events:none;"></div>
+        <div id="epicIntroText" style="z-index:2;text-align:center;color:#00ff00;font-family:'VT323',monospace;font-size:3vw;text-shadow:0 0 20px #00ff00,0 0 40px #00ff00;"></div>
+    </div>
+
     <script>
         // Matrix Rain Effect
         const canvas = document.querySelector('.binary-rain');
@@ -1217,6 +1223,85 @@
         window.addEventListener('load', () => {
             createBinaryRain();
             setInterval(createBinaryRain, 2000);
+        });
+
+        // EPIC INTRO TRANSITION LOGIC
+        function startEpicIntro() {
+            const overlay = document.getElementById('epicIntroOverlay');
+            const textDiv = document.getElementById('epicIntroText');
+            const fxDiv = document.getElementById('epicIntroFx');
+            // Glitchy animated text lines
+            const lines = [
+                '[C137_FRAMEWORK] :: ROOM 7: PARADOJA BINARIA',
+                'ANOMALÍA TEMPORAL DETECTADA',
+                'DECODIFICÁ EL BINARIO O EL MULTIVERSO COLAPSARÁ',
+            ];
+            let idx = 0;
+            function showLine() {
+                if (idx < lines.length) {
+                    typeGlitchLine(lines[idx++], textDiv, showLine);
+                } else {
+                    // After all lines, start fade out after a short pause
+                    setTimeout(() => {
+                        overlay.style.transition = 'opacity 3s';
+                        overlay.style.opacity = '0';
+                        setTimeout(() => overlay.style.display = 'none', 3000);
+                    }, 1200);
+                }
+            }
+            // Glitch/scanline/flicker FX
+            function animateFx() {
+                fxDiv.innerHTML = '';
+                for (let i = 0; i < 12; i++) {
+                    const bar = document.createElement('div');
+                    bar.style.position = 'absolute';
+                    bar.style.left = '0';
+                    bar.style.width = '100%';
+                    bar.style.height = Math.random()*3+2+'px';
+                    bar.style.top = Math.random()*100+'%';
+                    bar.style.background = 'rgba(0,255,0,'+(Math.random()*0.12+0.08)+')';
+                    bar.style.filter = 'blur(1.5px)';
+                    bar.style.opacity = Math.random()*0.7+0.2;
+                    bar.style.pointerEvents = 'none';
+                    fxDiv.appendChild(bar);
+                }
+                // Flicker
+                overlay.style.boxShadow = Math.random()>0.7 ? '0 0 80px #00ff00' : '';
+                setTimeout(animateFx, 80+Math.random()*60);
+            }
+            animateFx();
+            showLine();
+        }
+        function typeGlitchLine(line, target, cb) {
+            target.innerHTML = '';
+            let i = 0;
+            function type() {
+                if (i <= line.length) {
+                    let glitch = '';
+                    if (i < line.length && Math.random() > 0.7) {
+                        glitch = '<span style="color:#ff00ff;filter:blur(1px);">'+String.fromCharCode(33+Math.random()*94)+'</span>';
+                    }
+                    target.innerHTML = line.slice(0,i) + glitch + '<span style="border-right:2px solid #00ff00"></span>';
+                    i++;
+                    setTimeout(type, 30+Math.random()*40);
+                } else {
+                    target.innerHTML = line;
+                    setTimeout(cb, 700);
+                }
+            }
+            type();
+        }
+        // On load, show epic intro and block rest until finished
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('epicIntroOverlay');
+            if (overlay) {
+                document.body.style.overflow = 'hidden';
+                startEpicIntro();
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 5200); // 3s fade + 2.2s text
+            }
         });
     </script>
 

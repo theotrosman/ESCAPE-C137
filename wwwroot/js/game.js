@@ -21,11 +21,16 @@ let bird = null;
 let pipes = [];
 let PIPE_SPEED = 4;
 let speedInterval = null;
+let isVictoryAnimation = false;
+let gameStarted = false;
+let waitingForHandOpen = true;
+let handWasOpen = false;
+let introSetupDone = false;
 
 // Configuración del juego
 const GRAVITY = 0.5;
 const LIFT_FORCE = -20;
-const PIPE_SPAWN_INTERVAL = 2400;
+const PIPE_SPAWN_INTERVAL = 1700;
 const MAX_VELOCITY = 6;
 
 // Ajustar tamaño del canvas
@@ -46,13 +51,18 @@ const PIPE_GAP = Math.min(canvas.width, canvas.height) * 0.3;
 const birdImg = new Image();
 birdImg.src = '/img/rickNave.png';
 
-const pipeImg = new Image();
-pipeImg.src = '/img/ramfoto.png';
+const PIPE_IMG = new Image();
+PIPE_IMG.src = '/img/PortalRojo.png';
+
+// Cambiar fondo del juego a fondofloppybird.png
+const gameBgImg = new Image();
+gameBgImg.src = '/img/fondofloppybird.png';
+let alwaysShowGameBg = true;
 
 // Clase Bird
 class Bird {
     constructor() {
-        this.x = canvas.width * 0.18;
+        this.x = 220;
         this.y = canvas.height / 2;
         this.velocity = 0;
         this.rotation = 0;
@@ -146,11 +156,14 @@ class Pipe {
     }
 
     draw() {
-        this.rams.forEach(ram => {
-            ctx.save();
-            ctx.drawImage(pipeImg, ram.x, ram.y, ram.width, ram.height);
-            ctx.restore();
-        });
+        const scale = 1.15;
+        const drawWidth = PIPE_WIDTH * scale;
+        const drawHeightTop = this.rams[0].height * scale;
+        const drawHeightBottom = this.rams[this.rams.length - 1].height * scale;
+        const offsetX = (drawWidth - PIPE_WIDTH) / 2;
+        // Dibuja el obstáculo usando la nueva imagen, centrado
+        ctx.drawImage(PIPE_IMG, this.x - offsetX, this.rams[0].y - (drawHeightTop - this.rams[0].height), drawWidth, drawHeightTop);
+        ctx.drawImage(PIPE_IMG, this.x - offsetX, this.rams[this.rams.length - 1].y, drawWidth, drawHeightBottom);
     }
 
     checkCollision(bird) {
@@ -169,78 +182,147 @@ class Pipe {
 // Funciones del juego
 function startGame() {
     if (isGameRunning) {
-        console.log('El juego ya está corriendo');
         return;
     }
-    console.log('Iniciando juego...');
+    if (gameStarted) {
+        setupGameVisuals(); // Solo en reinicio, no en el primer inicio
+    }
     isGameRunning = true;
     score = 0;
-    console.log('Score reiniciado a 0');
     scoreSpan.textContent = '0';
     lastPipeSpawn = 0;
     bird = new Bird();
     pipes = [];
     gameTitle.classList.remove('visible');
     startMessage.classList.remove('visible');
-    console.log('Comenzando game loop...');
-    PIPE_SPEED = 4; // Reinicia la velocidad al valor base
+    PIPE_SPEED = 4;
     startSpeedIncreaseTimer();
+    gameStarted = true;
+    waitingForHandOpen = false;
     requestAnimationFrame(gameLoop);
 }
 
-function gameLoop(timestamp) {
-    if (!isGameRunning) {
-        console.log('Game loop terminado - juego no está corriendo');
-        return;
+// --- UI RELOCATION ---
+// Move score to top center and make it larger
+const scoreContainer = document.querySelector('.score-container');
+scoreContainer.style.left = '50%';
+scoreContainer.style.right = '';
+scoreContainer.style.top = '24px';
+scoreContainer.style.transform = 'translateX(-50%)';
+scoreContainer.style.fontSize = '1.7vw';
+scoreContainer.style.textAlign = 'center';
+scoreContainer.style.zIndex = '2000';
+scoreContainer.style.padding = '8px 32px';
+scoreContainer.style.background = 'rgba(0,32,0,0.85)';
+scoreContainer.style.border = '2px solid #00ff00';
+scoreContainer.style.borderRadius = '12px';
+scoreContainer.style.boxShadow = '0 0 12px #00ff00, 0 0 2px #000';
+scoreContainer.style.color = '#39ff14';
+scoreContainer.style.fontWeight = 'bold';
+scoreContainer.style.minWidth = '120px';
+
+// Move status further below camera
+const moveStatusBelowCamera = () => {
+    const camera = document.getElementById('cameraContainer');
+    if (camera) {
+        statusDiv.style.position = 'fixed';
+        statusDiv.style.left = camera.offsetLeft + 'px';
+        statusDiv.style.top = (camera.offsetTop + camera.offsetHeight + 40) + 'px';
+        statusDiv.style.zIndex = '1001';
+        statusDiv.style.width = camera.offsetWidth + 'px';
+        statusDiv.style.textAlign = 'center';
     }
-    
-    try {
-        // Limpiar canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Fondo negro
+};
+window.addEventListener('resize', moveStatusBelowCamera);
+
+// --- +1 ANIMATION ---
+// Create the +1 animation element
+let plusOneDiv = document.createElement('div');
+plusOneDiv.id = 'plusOneAnim';
+plusOneDiv.style.position = 'fixed';
+plusOneDiv.style.top = '70px';
+plusOneDiv.style.left = '50%';
+plusOneDiv.style.transform = 'translateX(-50%)';
+plusOneDiv.style.fontSize = '3vw';
+plusOneDiv.style.fontFamily = 'monospace';
+plusOneDiv.style.color = '#00ff00';
+plusOneDiv.style.textShadow = '0 0 10px #00ff00, 0 0 20px #000';
+plusOneDiv.style.opacity = '0';
+plusOneDiv.style.pointerEvents = 'none';
+plusOneDiv.style.transition = 'opacity 0.7s, top 0.7s';
+document.body.appendChild(plusOneDiv);
+function showPlusOne() {
+    plusOneDiv.textContent = '+1';
+    plusOneDiv.style.opacity = '1';
+    plusOneDiv.style.top = '70px';
+    setTimeout(() => {
+        plusOneDiv.style.opacity = '0';
+        plusOneDiv.style.top = '30px';
+    }, 50);
+}
+
+function drawGameBg() {
+    if (gameBgImg.complete) {
+        ctx.drawImage(gameBgImg, 0, 0, canvas.width, canvas.height);
+    } else {
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // Actualizar y dibujar pájaro
-        if (bird) {
-            bird.move();
-            bird.draw();
-        }
-        
-        // Actualizar y dibujar tubos
+    }
+}
+
+function setupGameVisuals() {
+    // Inicializa bird y pipes para que siempre estén en pantalla
+    bird = new Bird();
+    pipes = [];
+    score = 0;
+    scoreSpan.textContent = '0';
+    lastPipeSpawn = 0;
+    drawGameBg();
+    if (bird) bird.draw();
+    pipes.forEach(pipe => pipe.draw());
+}
+
+function gameLoop(timestamp) {
+    if (!isGameRunning || isVictoryAnimation) {
+        return;
+    }
+    drawGameBg();
+    if (bird) bird.draw();
+    pipes.forEach(pipe => pipe.draw());
+    if (!lastHandOpen) {
+        if (typeof showHandStartOverlay === 'function') showHandStartOverlay(true);
+        requestAnimationFrame(gameLoop); // Sigue dibujando la nave
+        return;
+    } else {
+        if (typeof showHandStartOverlay === 'function') showHandStartOverlay(false);
+    }
+    // Avanza el juego normalmente solo si la mano está abierta
+    try {
+        if (bird) bird.move();
         if (timestamp - lastPipeSpawn > PIPE_SPAWN_INTERVAL) {
             pipes.push(new Pipe());
             lastPipeSpawn = timestamp;
         }
-        
-        // Actualizar y dibujar todos los tubos existentes
         pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > 0);
         pipes.forEach(pipe => {
             pipe.update();
-            pipe.draw();
-            
-            // Actualizar puntuación
             if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x) {
                 pipe.scored = true;
                 score++;
                 scoreSpan.textContent = score;
-                console.log('Score incrementado:', score);
-                if (score >= 10) {
-                    console.log('Score llegó a 10, llamando a gameWon');
-                    gameWon();
+                scoreContainer.classList.add('score-flash');
+                setTimeout(()=>scoreContainer.classList.remove('score-flash'), 200);
+                showPlusOne();
+                if (score >= 15 && !isVictoryAnimation) {
+                    epicVictoryAnimation();
                     return;
                 }
             }
         });
-        
-        // Comprobar colisiones
         if (checkCollisions()) {
             gameOver();
             return;
         }
-        
-        // Continuar el loop
         requestAnimationFrame(gameLoop);
     } catch (error) {
         console.error('Error en gameLoop:', error);
@@ -259,14 +341,43 @@ function checkCollisions() {
 }
 
 function gameOver() {
+    if (isVictoryAnimation || waitingForHandOpen || !gameStarted) return;
     console.log('Juego terminado');
     isGameRunning = false;
-    gameTitle.classList.add('visible');
-    startMessage.classList.add('visible');
+    // --- DERROTA ANIMATION ---
+    let defeatOverlay = document.createElement('div');
+    defeatOverlay.id = 'defeatOverlay';
+    defeatOverlay.style.position = 'fixed';
+    defeatOverlay.style.inset = '0';
+    defeatOverlay.style.background = 'rgba(0,0,0,0.85)';
+    defeatOverlay.style.zIndex = '9999';
+    defeatOverlay.style.display = 'flex';
+    defeatOverlay.style.flexDirection = 'column';
+    defeatOverlay.style.alignItems = 'center';
+    defeatOverlay.style.justifyContent = 'center';
+    defeatOverlay.style.fontSize = '3vw';
+    defeatOverlay.style.fontFamily = 'monospace';
+    defeatOverlay.style.color = '#fff';
+    defeatOverlay.style.textShadow = '0 0 30px #000, 0 0 10px #fff';
+    defeatOverlay.innerHTML = '<div id="defeatMsg" style="padding:1vw 2vw; border-radius:18px; font-size:2.5vw; font-weight:bold;">¡El multiverso se fragmentó!</div>' +
+        '<div id="restartMsg" style="margin-top:2vw; font-size:1.2vw; opacity:0.8;">Reiniciando viaje por el código...</div>';
+    document.body.appendChild(defeatOverlay);
+    // Color cycle + pulse animation
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes defeatPulse {0%{color:#ff0055; background: rgba(0,0,0,0.85); transform: scale(1);}20%{color:#fffb00; background: rgba(0,32,0,0.92); transform: scale(1.08);}40%{color:#00fff7; background: rgba(0,0,32,0.92); transform: scale(1.12);}60%{color:#39ff14; background: rgba(32,0,0,0.92); transform: scale(1.08);}80%{color:#ff00ff; background: rgba(0,0,0,0.85); transform: scale(1.04);}100%{color:#ff0055; background: rgba(0,0,0,0.85); transform: scale(1);}}`;
+    document.head.appendChild(style);
+    const defeatMsg = defeatOverlay.querySelector('#defeatMsg');
+    defeatMsg.style.animation = 'defeatPulse 1.2s infinite cubic-bezier(.4,2,.6,.8)';
+    setTimeout(()=>{
+        defeatOverlay.querySelector('#restartMsg').style.opacity = '1';
+    }, 1200);
     if (speedInterval) clearInterval(speedInterval);
     setTimeout(() => {
-        window.location.reload();
-    }, 1000);
+        // Eliminar overlay de derrota
+        if (defeatOverlay && defeatOverlay.parentNode) defeatOverlay.parentNode.removeChild(defeatOverlay);
+        // Reiniciar solo el juego, no la sala
+        startGame();
+    }, 2000);
 }
 
 function gameWon() {
@@ -348,14 +459,17 @@ async function initializeHandDetection() {
         handpose.on('predict', predictions => {
             const now = Date.now();
             if (now - lastPredictionTime > 50) { // 50ms debounce
+                let isOpen = false;
                 if (predictions && predictions.length > 0) {
-                    const isOpen = checkHandOpen(predictions[0]);
+                    isOpen = checkHandOpen(predictions[0]);
                     updateGameState(isOpen);
                     drawHand(predictions[0]);
-                    lastPredictionTime = now;
                 } else {
                     statusDiv.textContent = "Estado: Muestra tu mano";
+                    // Si no se detecta mano, se considera cerrada
+                    updateGameState(false);
                 }
+                lastPredictionTime = now;
             }
         });
 
@@ -364,6 +478,7 @@ async function initializeHandDetection() {
         statusDiv.textContent = "Estado: Error al iniciar la cámara";
         statusDiv.style.color = "#ff0000";
     }
+    setTimeout(moveStatusBelowCamera, 300);
 }
 
 function modelReady() {
@@ -412,8 +527,7 @@ function updateGameState(isHandOpen) {
     lastHandOpen = isHandOpen;
     statusDiv.textContent = `Estado: Mano ${isHandOpen ? 'Abierta' : 'Cerrada'}`;
     statusDiv.style.color = isHandOpen ? "#00ff00" : "#ff0000";
-    // Iniciar juego cuando se detecta la mano abierta
-    if (!isGameRunning && isHandOpen) {
+    if (!gameStarted && introFinished) {
         startGame();
     }
     // Si la mano está abierta, salta cada frame
@@ -423,6 +537,9 @@ function updateGameState(isHandOpen) {
         }
     }
     lastHandOpenForJump = isHandOpen;
+    if (typeof window.tryStartGameOnHandOpen === 'function') {
+        window.tryStartGameOnHandOpen(isHandOpen);
+    }
 }
 
 function drawHand(hand) {
@@ -468,4 +585,82 @@ function startSpeedIncreaseTimer() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Iniciando aplicación...");
     initializeHandDetection();
-}); 
+    function drawBgLoop() {
+        if (alwaysShowGameBg && canvas && ctx) {
+            drawGameBg();
+        }
+        requestAnimationFrame(drawBgLoop);
+    }
+    drawBgLoop();
+    let gameStarted = false;
+    function tryStartGameOnHandOpen(isHandOpen) {
+        if (!introSetupDone && introFinished) {
+            setupGameVisuals();
+            introSetupDone = true;
+        }
+        if (!gameStarted && introFinished) {
+            showHandStartOverlay(!isHandOpen);
+            if (isHandOpen) {
+                gameStarted = true;
+                showHandStartOverlay(false);
+                setTimeout(()=>startGame(), 50);
+            }
+        }
+    }
+    window.tryStartGameOnHandOpen = tryStartGameOnHandOpen;
+});
+
+function epicVictoryAnimation() {
+    isVictoryAnimation = true;
+    isGameRunning = false;
+    // Overlay negro (fade in 5s)
+    let victoryOverlay = document.createElement('div');
+    victoryOverlay.id = 'victoryOverlay';
+    victoryOverlay.style.position = 'fixed';
+    victoryOverlay.style.inset = '0';
+    victoryOverlay.style.background = 'black';
+    victoryOverlay.style.zIndex = '99999';
+    victoryOverlay.style.opacity = '0';
+    victoryOverlay.style.transition = 'opacity 5s';
+    document.body.appendChild(victoryOverlay);
+    setTimeout(()=>{ victoryOverlay.style.opacity = '1'; }, 10);
+    // Después de 5s, mostrar video
+    setTimeout(()=>{
+        // Video a pantalla completa
+        let vid = document.createElement('video');
+        vid.src = '/img/videoricknave2.mp4';
+        vid.style.position = 'fixed';
+        vid.style.inset = '0';
+        vid.style.width = '100vw';
+        vid.style.height = '100vh';
+        vid.style.objectFit = 'cover';
+        vid.style.zIndex = '100000';
+        vid.autoplay = true;
+        vid.controls = false;
+        vid.onended = showFinalFade;
+        document.body.appendChild(vid);
+        vid.play().catch(()=>{});
+        // Si el video dura más de 15s, forzar fade
+        setTimeout(showFinalFade, 15000);
+        function showFinalFade() {
+            vid.onended = null;
+            vid.pause();
+            if (vid.parentNode) vid.parentNode.removeChild(vid);
+            // Fade out negro 5s
+            victoryOverlay.style.transition = 'opacity 5s';
+            victoryOverlay.style.opacity = '1';
+            setTimeout(()=>{
+                victoryOverlay.style.opacity = '0';
+                setTimeout(()=>{
+                    // Limpiar overlays/canvas residuales
+                    if (victoryOverlay.parentNode) victoryOverlay.parentNode.removeChild(victoryOverlay);
+                    let matrixRain = document.getElementById('matrixRain');
+                    if (matrixRain && matrixRain.parentNode) matrixRain.parentNode.removeChild(matrixRain);
+                    let overlays = document.querySelectorAll('#epicIntroOverlay, #epicIntroVideo, #epicIntroFx');
+                    overlays.forEach(o=>{if(o && o.parentNode) o.parentNode.removeChild(o);});
+                    window.location.href = '/Home/Room9';
+                }, 5000);
+            }, 100);
+        }
+    }, 5000);
+} 

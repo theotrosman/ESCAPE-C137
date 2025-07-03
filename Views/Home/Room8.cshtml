@@ -100,6 +100,16 @@
     </style>
 </head>
 <body>
+    <!-- INTRO SEQUENCE OVERLAY -->
+    <div id="epicIntroOverlay" style="position:fixed;inset:0;z-index:10000;background:black;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div id="epicIntroFx" style="position:absolute;inset:0;z-index:1;pointer-events:none;"></div>
+        <div id="epicIntroText" style="z-index:2;text-align:center;color:#00ff00;font-family:'VT323',monospace;font-size:2.7vw;text-shadow:0 0 20px #00ff00,0 0 40px #00ff00;"></div>
+        <video id="epicIntroVideo" style="display:none;position:absolute;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:3;background:black;" src="/img/videoNaverick.mp4"></video>
+    </div>
+    <div id="handStartOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;background:none;align-items:center;justify-content:center;pointer-events:auto;">
+        <div style="color:#fff;font-size:1.1vw;font-family:'VT323',monospace;text-align:center;text-shadow:0 0 8px #000,0 0 2px #fff;background:rgba(0,0,0,0.5);padding:10px 24px;border-radius:12px;max-width:350px;z-index:2;">Abre tu mano para comenzar</div>
+        <div id="blurBg" style="position:fixed;inset:0;z-index:1;backdrop-filter:blur(8px);background:rgba(0,0,0,0.15);"></div>
+    </div>
     <canvas id="gameCanvas"></canvas>
     <div id="status">Estado: Esperando...</div>
     <div class="score-container">Score: <span id="score">0</span></div>
@@ -110,3 +120,302 @@
     @Html.Partial("_NavMenu")
 </body>
 </html>
+
+<script>
+// EPIC INTRO SEQUENCE
+let introHasRun = false;
+let introFinished = false;
+function startEpicIntro() {
+    if (introHasRun) return;
+    introHasRun = true;
+    const overlay = document.getElementById('epicIntroOverlay');
+    const textDiv = document.getElementById('epicIntroText');
+    const fxDiv = document.getElementById('epicIntroFx');
+    const video = document.getElementById('epicIntroVideo');
+    // Ocultar el juego y la cámara desde el principio
+    document.getElementById('gameCanvas').style.display = 'none';
+    document.getElementById('status').style.display = 'none';
+    document.querySelector('.score-container').style.display = 'none';
+    document.getElementById('gameTitle').style.display = 'none';
+    document.getElementById('startMessage').style.display = 'none';
+    // 1. Fade in negro 5s
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 5s';
+    setTimeout(()=>{ overlay.style.opacity = '1'; }, 10);
+    // 2. Tras fade in, reproducir video
+    setTimeout(playIntroVideo, 5000);
+    function playIntroVideo() {
+        textDiv.innerHTML = '';
+        fxDiv.innerHTML = '';
+        video.style.display = 'block';
+        video.currentTime = 0;
+        try {
+            video.play();
+        } catch(e) {
+            textDiv.innerHTML = '<span style="color:#ff00ff;font-size:2vw;">Haz click para continuar</span>';
+            overlay.onclick = async ()=>{
+                overlay.onclick = null;
+                await video.play();
+            };
+        }
+        video.onended = showPostVideoAnim;
+        setTimeout(showPostVideoAnim, Math.max(12000, video.duration*1000||0));
+    }
+    // 3. Al terminar el video, mostrar animaciones de 'Iniciando el viaje' y luego fade out negro 5s
+    function showPostVideoAnim() {
+        video.onended = null;
+        video.pause();
+        video.style.display = 'none';
+        // Fondo animado: lluvia de código y meteoritos verdes
+        fxDiv.innerHTML = '<canvas id="matrixRain" style="width:100vw;height:100vh;position:absolute;inset:0;z-index:1;"></canvas>';
+        const matrixCanvas = document.getElementById('matrixRain');
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        const mtxCtx = matrixCanvas.getContext('2d');
+        const cols = Math.floor(window.innerWidth / 18);
+        const drops = Array(cols).fill(1);
+        let meteors = [];
+        function drawMatrixRain() {
+            mtxCtx.fillStyle = 'rgba(0,0,0,0.15)';
+            mtxCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            mtxCtx.font = '18px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = Math.random() > 0.95 ? String.fromCharCode(0x30A0 + Math.random() * 96) : (Math.random()>0.5?'0':'1');
+                mtxCtx.fillStyle = '#39ff14';
+                mtxCtx.fillText(text, i * 18, drops[i] * 18);
+                if (drops[i] * 18 > matrixCanvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+            // Meteoritos verdes
+            if (Math.random() > 0.97) {
+                meteors.push({
+                    x: Math.random() * matrixCanvas.width,
+                    y: -20,
+                    vx: (Math.random()-0.5)*2,
+                    vy: 6+Math.random()*4,
+                    len: 40+Math.random()*60
+                });
+            }
+            mtxCtx.save();
+            meteors.forEach(m => {
+                mtxCtx.strokeStyle = 'rgba(57,255,20,0.7)';
+                mtxCtx.lineWidth = 3;
+                mtxCtx.beginPath();
+                mtxCtx.moveTo(m.x, m.y);
+                mtxCtx.lineTo(m.x + m.vx*8, m.y + m.len);
+                mtxCtx.stroke();
+                m.x += m.vx;
+                m.y += m.vy;
+            });
+            meteors = meteors.filter(m => m.y < matrixCanvas.height+100);
+            mtxCtx.restore();
+            requestAnimationFrame(drawMatrixRain);
+        }
+        drawMatrixRain();
+        // Texto glitchy de inicio de viaje
+        const lines = [
+          '<span style="color:#39ff14;">[C137]</span> <span style="color:#ff00ff;">INICIANDO VIAJE POR EL CÓDIGO...</span>',
+          '<span style="color:#00fff7;">SISTEMA:</span> Cargando sistema interdimensional... <span style="color:#fffb00;">GLITCH DETECTADO</span>',
+          '<span style="color:#fffb00;">RICK:</span> Morty, prepárate... ¡esto va a ser un viaje bugueado!'
+        ];
+        let idx = 0;
+        function showLine() {
+            if (idx < lines.length) {
+                typeGlitchLine(lines[idx++], textDiv, showLine, 13+Math.random()*10);
+            } else {
+                setTimeout(startFinalFadeOut, 600);
+            }
+        }
+        showLine();
+    }
+    // 4. Fade out negro 5s y mostrar el juego
+    function startFinalFadeOut() {
+        overlay.style.transition = 'opacity 5s';
+        overlay.style.opacity = '0';
+        setTimeout(()=>{
+            overlay.style.display = 'none';
+            // Limpiar overlays y video
+            fxDiv.innerHTML = '';
+            textDiv.innerHTML = '';
+            video.style.display = 'none';
+            // Mostrar el juego y la cámara SOLO después de la intro
+            document.getElementById('gameCanvas').style.display = '';
+            document.getElementById('status').style.display = '';
+            document.querySelector('.score-container').style.display = '';
+            document.getElementById('gameTitle').style.display = '';
+            document.getElementById('startMessage').style.display = '';
+            introFinished = true;
+            // Mostrar el cartel de "Abre tu mano para comenzar" inmediatamente
+            showHandStartOverlay(true);
+        }, 5000);
+    }
+}
+function typeGlitchLine(line, target, cb, speed=18) {
+    // Glitchy typewriter with color flicker
+    target.innerHTML = '';
+    let i = 0;
+    function type() {
+        if (i <= line.length) {
+            let glitch = '';
+            if (i < line.length && Math.random() > 0.5) {
+                const colors = ['#ff00ff','#fffb00','#00fff7','#ff0055','#39ff14'];
+                const color = colors[Math.floor(Math.random()*colors.length)];
+                glitch = '<span style="color:'+color+';filter:blur(1.5px);font-weight:bold;">'+String.fromCharCode(33+Math.random()*94)+'</span>';
+            }
+            target.innerHTML = line.slice(0,i) + glitch + '<span style="border-right:2px solid #00ff00"></span>';
+            i++;
+            setTimeout(type, speed);
+        } else {
+            target.innerHTML = line;
+            setTimeout(cb, 200);
+        }
+    }
+    type();
+}
+// Mostrar overlay de "Abre tu mano para comenzar" si corresponde
+function showHandStartOverlay(show) {
+    const overlay = document.getElementById('handStartOverlay');
+    if (!overlay) return;
+    // Solo mostrar el overlay si el juego NO ha comenzado
+    if (window.__flappyGameStarted) {
+        overlay.style.display = 'none';
+        return;
+    }
+    overlay.style.display = show ? 'flex' : 'none';
+    // Blur effect
+    const blurBg = document.getElementById('blurBg');
+    if (blurBg) blurBg.style.display = show ? 'block' : 'none';
+}
+// Esperar a que el jugador abra la mano para iniciar el juego
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('epicIntroOverlay');
+    if (overlay) {
+        document.body.style.overflow = 'hidden';
+        startEpicIntro();
+        setTimeout(() => {
+            document.body.style.overflow = '';
+        }, 9000); // Suficiente para intro + video + fade out
+    }
+    let gameStarted = false;
+    let introSetupDone = false;
+    function tryStartGameOnHandOpen(isHandOpen) {
+        if (!introSetupDone && introFinished) {
+            setupGameVisuals();
+            introSetupDone = true;
+        }
+        if (!gameStarted && introFinished) {
+            showHandStartOverlay(!isHandOpen);
+            if (isHandOpen) {
+                gameStarted = true;
+                window.__flappyGameStarted = true;
+                showHandStartOverlay(false);
+                setTimeout(()=>startGame(), 50);
+            }
+        }
+    }
+    window.tryStartGameOnHandOpen = tryStartGameOnHandOpen;
+});
+function gameLoop(timestamp) {
+    if (!isGameRunning || isVictoryAnimation) {
+        return;
+    }
+    drawGameBg();
+    if (bird) bird.draw();
+    pipes.forEach(pipe => pipe.draw());
+    // Solo pausar el juego por mano cerrada antes de la primera mano abierta (inicio, score 0, no __flappyGameStarted)
+    if (!window.__flappyGameStarted && typeof lastHandOpen !== 'undefined' && !lastHandOpen && score === 0) {
+        if (typeof showHandStartOverlay === 'function') showHandStartOverlay(true);
+        requestAnimationFrame(gameLoop);
+        return;
+    } else {
+        if (typeof showHandStartOverlay === 'function') showHandStartOverlay(false);
+    }
+    // El juego avanza normalmente después de la primera mano abierta
+    try {
+        if (bird) bird.move();
+        if (timestamp - lastPipeSpawn > PIPE_SPAWN_INTERVAL) {
+            pipes.push(new Pipe());
+            lastPipeSpawn = timestamp;
+        }
+        pipes = pipes.filter(pipe => pipe.x + PIPE_WIDTH > 0);
+        pipes.forEach(pipe => {
+            pipe.update();
+            if (!pipe.scored && pipe.x + PIPE_WIDTH < bird.x) {
+                pipe.scored = true;
+                score++;
+                scoreSpan.textContent = score;
+                scoreContainer.classList.add('score-flash');
+                setTimeout(()=>scoreContainer.classList.remove('score-flash'), 200);
+                showPlusOne();
+                if (score >= 12 && !isVictoryAnimation) {
+                    epicVictoryAnimation();
+                    return;
+                }
+            }
+        });
+        if (checkCollisions()) {
+            gameOver();
+            return;
+        }
+        requestAnimationFrame(gameLoop);
+    } catch (error) {
+        console.error('Error en gameLoop:', error);
+        gameOver();
+    }
+}
+function epicVictoryAnimation() {
+    isVictoryAnimation = true;
+    // Overlay negro
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = 'black';
+    overlay.style.zIndex = '10001';
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 2s';
+    document.body.appendChild(overlay);
+    setTimeout(()=>{ overlay.style.opacity = '1'; }, 10);
+    setTimeout(()=>{
+        // Video final
+        const video = document.createElement('video');
+        video.src = '/img/videoricknave2.mp4';
+        video.style.position = 'fixed';
+        video.style.inset = '0';
+        video.style.width = '100vw';
+        video.style.height = '100vh';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = '10002';
+        video.style.background = 'black';
+        video.autoplay = true;
+        video.onended = ()=>{
+            // Limpiar overlays y mostrar transición negra
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            if (video.parentNode) video.parentNode.removeChild(video);
+            // Ocultar todos los overlays y elementos de juego
+            const handOverlay = document.getElementById('handStartOverlay');
+            if (handOverlay) handOverlay.style.display = 'none';
+            const status = document.getElementById('status');
+            if (status) status.style.display = 'none';
+            const scoreCont = document.querySelector('.score-container');
+            if (scoreCont) scoreCont.style.display = 'none';
+            const gameCanvas = document.getElementById('gameCanvas');
+            if (gameCanvas) gameCanvas.style.display = 'none';
+            // Transición negra de 5 segundos
+            const blackTrans = document.createElement('div');
+            blackTrans.style.position = 'fixed';
+            blackTrans.style.inset = '0';
+            blackTrans.style.background = 'black';
+            blackTrans.style.zIndex = '10003';
+            blackTrans.style.opacity = '1';
+            document.body.appendChild(blackTrans);
+            setTimeout(()=>{
+                window.location.href = '/Home/Room9';
+            }, 5000);
+        };
+        document.body.appendChild(video);
+        setTimeout(()=>{
+            video.play();
+        }, 100);
+    }, 2000);
+}
+</script>

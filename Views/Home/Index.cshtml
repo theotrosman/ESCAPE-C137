@@ -252,12 +252,42 @@
     .ascii-button:hover::after {
       opacity: 1;
     }
+
+    /* Overlay de transición para Room1 */
+    #transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 1s ease-in-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #transition-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .transition-text {
+      color: #00ff00;
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      text-shadow: 0 0 10px #00ff00;
+      animation: flicker 0.15s infinite alternate;
+    }
   </style>
 </head>
 <body>
   <!-- Video de fondo permanente (solo visible cuando overlay está activo) -->
   <video id="background-rick" autoplay loop muted playsinline style="opacity:0; visibility:hidden; transition:opacity 1.5s; position:fixed; top:0; left:0; width:100vw; height:100vh; object-fit:cover; z-index:0; pointer-events:none;">
-    <source src="/img/rick-1.mp4" type="video/mp4">
+    <source id="background-source" src="/img/rick-1.mp4" type="video/mp4">
   </video>
 
   <!-- Botón de play para iniciar la intro -->
@@ -265,6 +295,11 @@
     <div class="play-circle" onclick="startIntro()">
       <div class="play-triangle"></div>
     </div>
+  </div>
+
+  <!-- Overlay de transición para Room1 -->
+  <div id="transition-overlay">
+    <div class="transition-text">INICIANDO SISTEMA...</div>
   </div>
 
   <!-- Video de introducción principal -->
@@ -310,6 +345,11 @@
   let introPrimerizaAudio = document.getElementById("intro-primeriza-audio");
   let introVideo = document.getElementById("intro-video");
   let introAudio = document.getElementById("intro-audio");
+  
+  // Selección aleatoria del video de fondo
+  const backgroundVideos = ["/img/rick-1.mp4", "/img/rick-2.mp4"];
+  const randomVideo = backgroundVideos[Math.floor(Math.random() * backgroundVideos.length)];
+  document.getElementById("background-source").src = randomVideo;
   
   // Botón de play para iniciar la intro
   function startIntro() {
@@ -619,7 +659,28 @@
   }
 
   function entrarJuego() {
-    window.location.href = "/Home/Room1";
+    // Mostrar overlay de transición
+    const transitionOverlay = document.getElementById('transition-overlay');
+    transitionOverlay.classList.add('active');
+    
+    // Pausar audio de fondo
+    if (bgAudioStarted) {
+      bgAudio.pause();
+    }
+    
+    // Iniciar audio después de 3 segundos
+    setTimeout(() => {
+      // Aquí puedes agregar el audio que quieras que suene durante la transición
+      // Por ejemplo, un sonido de "sistema iniciando"
+      const transitionAudio = new Audio('/img/sfxtype.mp3');
+      transitionAudio.volume = 0.5;
+      transitionAudio.play().catch(e => console.warn("Audio de transición bloqueado", e));
+    }, 3000);
+    
+    // Redirigir después de 8 segundos
+    setTimeout(() => {
+      window.location.href = "/Home/Room1";
+    }, 8000);
   }
   function verTutorial() {
     window.location.href = "/Home/Tutorial";

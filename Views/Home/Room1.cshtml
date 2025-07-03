@@ -193,6 +193,123 @@
             80% { transform: translateX(2px); }
             100% { transform: translateX(0); }
         }
+
+        /* Efectos de glitch para la alerta */
+        .glitch-alert {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s;
+        }
+
+        .glitch-alert.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .alert-text {
+            color: #ff0000;
+            font-family: 'Fira Code', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            animation: alertGlitch 0.1s infinite alternate, alertShake 0.05s infinite;
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        .code-glitch {
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            font-size: 1rem;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        @@keyframes alertGlitch {
+            0% { 
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ffff, 0 0 20px #ff0000;
+                transform: skewX(0deg);
+            }
+            25% { 
+                text-shadow: -2px 0 #ff0000, 2px 0 #00ffff, 0 0 20px #ff0000;
+                transform: skewX(2deg);
+            }
+            50% { 
+                text-shadow: 2px 0 #00ffff, -2px 0 #ff0000, 0 0 20px #ff0000;
+                transform: skewX(-2deg);
+            }
+            75% { 
+                text-shadow: -2px 0 #00ffff, 2px 0 #ff0000, 0 0 20px #ff0000;
+                transform: skewX(1deg);
+            }
+            100% { 
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ffff, 0 0 20px #ff0000;
+                transform: skewX(0deg);
+            }
+        }
+
+        @@keyframes alertShake {
+            0% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-5px) translateY(-2px); }
+            50% { transform: translateX(5px) translateY(2px); }
+            75% { transform: translateX(-3px) translateY(-1px); }
+            100% { transform: translateX(3px) translateY(1px); }
+        }
+
+        /* Transición final */
+        .final-transition {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: #000;
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s;
+        }
+
+        .final-transition.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .final-message {
+            color: #00ff00;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 15px #00ff00;
+            opacity: 0;
+            animation: fadeInOut 5s ease-in-out;
+            white-space: pre-line;
+            line-height: 1.8;
+        }
+
+        @@keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
         /* Glitch SVG filter */
         svg#glitch-svg { position: absolute; width: 0; height: 0; }
         /* Cursor aura */
@@ -221,6 +338,47 @@
     <audio id="audioRick" src="/img/ultraviolence.mp3"></audio>
     <div id="flash" class="flash" style="display: none;"></div>
     <div class="scanlines"></div>
+
+    <!-- Overlay de glitch alert -->
+    <div id="glitch-alert" class="glitch-alert">
+        <div class="code-glitch" id="code-glitch"></div>
+        <div class="alert-text" id="alert-text">
+            ⚠️ ALERTA CRÍTICA ⚠️
+            LA IA ESTÁ METIENDO A RICK EN EL CÓDIGO
+            SISTEMA COMPROMETIDO
+            INYECCIÓN DE CONCIENCIA DETECTADA
+        </div>
+    </div>
+
+    <!-- Transición final -->
+    <div id="final-transition" class="final-transition">
+        <div class="final-message" id="final-message">
+            RICK SÁNCHEZ HA SIDO INTEGRADO AL CÓDIGO MVC
+            SU CONCIENCIA AHORA ES PARTE DEL SISTEMA
+            LA REALIDAD VIRTUAL SE HA FUSIONADO CON LA MATRIX
+            PREPÁRATE PARA LO QUE VIENE...
+        </div>
+    </div>
+
+    <div id="pause-hint" style="
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.35);
+      color: #fff;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.95rem;
+      padding: 4px 18px;
+      border-radius: 7px;
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s;
+      text-align: center;
+      letter-spacing: 1px;
+      text-shadow: 0 0 2px #000, 0 0 2px #fff;
+      "></div>
 
     <svg id="glitch-svg">
       <filter id="glitch-filter">
@@ -403,7 +561,9 @@
 
         function responder(rta) {
             if (rta === 'y') {
+                if (consola) consola.remove();
                 consola.innerHTML += "<br><span class='glitch'>[HACKING] Entrando a GameStart...</span><br>";
+                
                 // Fadeout negro antes del video
                 const fadeout1 = document.createElement('div');
                 fadeout1.style.position = 'fixed';
@@ -417,6 +577,7 @@
                 fadeout1.style.zIndex = 3000;
                 document.body.appendChild(fadeout1);
                 setTimeout(() => { fadeout1.style.opacity = 1; }, 10);
+                
                 setTimeout(() => {
                     // Overlay de video de transición
                     const videoOverlay = document.createElement('div');
@@ -432,33 +593,79 @@
                     videoOverlay.appendChild(vid);
                     document.body.appendChild(videoOverlay);
                     fadeout1.remove();
-                    // Al terminar el video o tras 8s, pasar de room con fadeout
+                    
+                    // Al terminar el primer video, mostrar glitch alert
                     let passed = false;
-                    function goNext() {
+                    function showGlitchAlert() {
                         if (passed) return;
                         passed = true;
-                        // Fadeout negro después del video
-                        const fadeout2 = document.createElement('div');
-                        fadeout2.style.position = 'fixed';
-                        fadeout2.style.top = 0;
-                        fadeout2.style.left = 0;
-                        fadeout2.style.width = '100vw';
-                        fadeout2.style.height = '100vh';
-                        fadeout2.style.background = '#000';
-                        fadeout2.style.opacity = 0;
-                        fadeout2.style.transition = 'opacity 3s';
-                        fadeout2.style.zIndex = 3000;
-                        document.body.appendChild(fadeout2);
-                        setTimeout(() => { fadeout2.style.opacity = 1; }, 10);
+                        
+                        // Ocultar video overlay
+                        videoOverlay.style.opacity = 0;
                         setTimeout(() => {
                             videoOverlay.remove();
-                            fetch("/Home/GameStart").then(() => {
-                                window.location.href = "/Home/GameStart";
-                            });
-                        }, 3000);
+                            
+                            // Mostrar glitch alert
+                            const glitchAlert = document.getElementById('glitch-alert');
+                            const codeGlitch = document.getElementById('code-glitch');
+                            
+                            // Generar código glitch
+                            generateGlitchCode(codeGlitch);
+                            
+                            const overlay = document.getElementById('overlay');
+                            if (overlay) overlay.remove();
+                            
+                            glitchAlert.classList.add('active');
+                            
+                            // Después de 3 segundos, mostrar el segundo video
+                            setTimeout(() => {
+                                glitchAlert.classList.remove('active');
+                                
+                                // Mostrar segundo video
+                                const videoOverlay2 = document.createElement('div');
+                                videoOverlay2.id = 'video-transition-overlay';
+                                const vid2 = document.createElement('video');
+                                vid2.src = '/img/rickVideo3.mp4';
+                                vid2.autoplay = true;
+                                vid2.muted = false;
+                                vid2.controls = false;
+                                vid2.style.width = '100vw';
+                                vid2.style.height = '100vh';
+                                vid2.style.objectFit = 'cover';
+                                videoOverlay2.appendChild(vid2);
+                                document.body.appendChild(videoOverlay2);
+                                
+                                // Al terminar el segundo video, mostrar transición final
+                                let finalPassed = false;
+                                function showFinalTransition() {
+                                    if (finalPassed) return;
+                                    finalPassed = true;
+                                    
+                                    videoOverlay2.style.opacity = 0;
+                                    setTimeout(() => {
+                                        videoOverlay2.remove();
+                                        
+                                        // Mostrar transición final
+                                        const finalTransition = document.getElementById('final-transition');
+                                        finalTransition.classList.add('active');
+                                        
+                                        // Después de 5 segundos, ir a GameStart
+                                        setTimeout(() => {
+                                            fetch("/Home/GameStart").then(() => {
+                                                window.location.href = "/Home/GameStart";
+                                            });
+                                        }, 5000);
+                                    }, 1000);
+                                }
+                                
+                                vid2.onended = showFinalTransition;
+                                setTimeout(showFinalTransition, 8000); // Fallback de 8 segundos
+                            }, 3000);
+                        }, 500);
                     }
-                    vid.onended = goNext;
-                    setTimeout(goNext, 8000);
+                    
+                    vid.onended = showGlitchAlert;
+                    setTimeout(showGlitchAlert, 8000); // Fallback de 8 segundos
                 }, 3000);
             } else {
                 consola.innerHTML += "<br><span class='glitch'>[RICK] ¡Morty no tenemos tiempo!</span><br>";
@@ -467,6 +674,60 @@
                 lanzarFlash();
             }
         }
+
+        // Función para generar código glitch
+        function generateGlitchCode(element) {
+            const glitchCode = [
+                "ERROR: 0xDEADBEEF",
+                "SYSTEM_CORRUPTION_DETECTED",
+                "INJECTING_RICK_CONSCIOUSNESS",
+                "MVC_FRAMEWORK_COMPROMISED",
+                "AI_OVERRIDE_IN_PROGRESS",
+                "REALITY_MATRIX_MERGING",
+                "CODE_FUSION_87%_COMPLETE",
+                "RICK_SANCHEZ_ENTITY_LOADING",
+                "VIRTUAL_CONSCIOUSNESS_TRANSFER",
+                "SYSTEM_INTEGRITY_FAILING",
+                "MORTY_PROTOCOL_OVERRIDDEN",
+                "RICK_AI_INTEGRATION_ACTIVE"
+            ];
+            
+            let currentIndex = 0;
+            const interval = setInterval(() => {
+                if (currentIndex < glitchCode.length) {
+                    const line = document.createElement('div');
+                    line.style.position = 'absolute';
+                    line.style.left = Math.random() * 80 + '%';
+                    line.style.top = Math.random() * 80 + '%';
+                    line.style.color = Math.random() < 0.5 ? '#ff0000' : '#00ff00';
+                    line.style.fontSize = (Math.random() * 0.5 + 0.8) + 'rem';
+                    line.style.opacity = '0.8';
+                    line.style.textShadow = '0 0 10px currentColor';
+                    line.textContent = glitchCode[currentIndex];
+                    element.appendChild(line);
+                    
+                    // Remover la línea después de un tiempo
+                    setTimeout(() => {
+                        if (line.parentNode) {
+                            line.parentNode.removeChild(line);
+                        }
+                    }, 2000);
+                    
+                    currentIndex++;
+                } else {
+                    clearInterval(interval);
+                }
+            }, 200);
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+          const hint = document.getElementById('pause-hint');
+          if (hint) {
+            hint.textContent = 'Presiona ESC para pausar';
+            setTimeout(() => { hint.style.opacity = 1; }, 100); // Fade in
+            setTimeout(() => { hint.style.opacity = 0; }, 3100); // Fade out después de 3s
+          }
+        });
     </script>
         @Html.Partial("_NavMenu")
 

@@ -19,20 +19,17 @@
 
     <!-- Overlay de carga inicial -->
     <div id="loading-overlay">
-        <div class="loading-text">
-            [SISTEMA] Inicializando TRUCO.EXE...<br><br>
-            [RICK] Morty, necesito que juegues una partida de Truco...<br><br>
-            [MORTY] ¿Truco? ¿Qué es eso Rick?<br><br>
-            [RICK] Es un juego de cartas argentino, Morty. Los hackers están usando...<br><br>
-            [RICK] ...un algoritmo de Truco para corromper el multiverso, pero cada 10 segundos una linea de código se borra, asi que el juego va a estar  muy... bugeado Morty<br>
-            [MORTY] ¿Y por qué tengo que jugar yo?<br><br>
-            [RICK] Porque sos el único que puede estabilizar la realidad, Morty, no te dejes llevar por los bugs.<br><br>
-            [RICK] Si ganás, el multiverso se estabiliza. Si perdés...<br><br>
-            [MORTY] ¿Si pierdo qué Rick?<br><br>
-            [RICK] ...reiniciará la simulación desde el principio.<br><br>
-            [SISTEMA] Presiona ESPACIO para comenzar...<br><br>
+        <div class="loading-visuals">
+            <div class="scanlines"></div>
+            <div class="flash-effect" id="flash-effect"></div>
+            <div class="flicker-overlay" id="flicker-overlay"></div>
+            <div class="interference-lines" id="interference-lines"></div>
+        </div>
+        <div class="loading-text epic-shake" id="epic-loading-text">
+            <!-- Las líneas se llenan por JS -->
         </div>
     </div>
+    <div class="blackout" id="blackout"></div>
 
     <!-- Contenedor principal del juego -->
     <div id="truco-main-layout" style="display: flex; height: 100vh;">
@@ -749,4 +746,218 @@ html, body { width: 100vw; height: 100vh; min-width: 0; min-height: 0; overflow:
     border: 2px solid #ff6b35;
     box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
 }
+
+.loading-visuals {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 2;
+}
+.scanlines {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 2px,
+        #00ff0022 2px, #00ff0022 4px
+    );
+    opacity: 0.13;
+    mix-blend-mode: lighten;
+    z-index: 2;
+    animation: scanmove 2.5s linear infinite;
+}
+@@keyframes scanmove {
+    0% { background-position-y: 0; }
+    100% { background-position-y: 40px; }
+}
+.flash-effect {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: white;
+    opacity: 0;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+.flicker-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #00ff0022;
+    opacity: 0;
+    z-index: 4;
+    pointer-events: none;
+    animation: flicker 0.18s infinite alternate;
+}
+@@keyframes flicker {
+    0% { opacity: 0.01; }
+    50% { opacity: 0.08; }
+    100% { opacity: 0.02; }
+}
+.interference-lines {
+    position: absolute;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 5;
+}
+.interf-line {
+    position: absolute;
+    width: 100vw;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #0ff 40%, #f0f 60%, transparent);
+    opacity: 0.18;
+    filter: blur(1px);
+    pointer-events: none;
+    animation: interf-move 1.2s linear infinite;
+}
+@@keyframes interf-move {
+    0% { left: -100vw; }
+    100% { left: 100vw; }
+}
+.glitchy-line {
+    display: block;
+    font-size: 1.3em;
+    color: var(--neon-green);
+    text-shadow: 0 0 8px #00ff00, 0 0 2px #fff, 0 0 8px #0ff;
+    letter-spacing: 1.5px;
+    margin: 18px 0;
+    animation: glitch 0.18s infinite alternate, shakeLine 0.22s infinite alternate;
+    filter: blur(0.5px);
+    white-space: pre-line;
+}
+.glitchy-line span {
+    display: inline-block;
+    animation: colorCycle 1.2s infinite alternate;
+}
+.press-space {
+    color: #fff;
+    font-size: 1.1em;
+    margin-top: 32px;
+    text-shadow: 0 0 8px #00ff00, 0 0 2px #fff;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeInSpace 1.2s 1.2s forwards, glitch 0.18s infinite alternate;
+}
+@@keyframes fadeInSpace {
+    to { opacity: 1; }
+}
+.epic-shake {
+    animation: shakeEpic 0.32s infinite alternate;
+}
+@@keyframes shakeEpic {
+    0% { transform: translate(0,0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(2px, -2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(2px, 2px); }
+    100% { transform: translate(0,0); }
+}
+@@keyframes shakeLine {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-2px) scaleX(1.03); }
+    100% { transform: translateY(0); }
+}
+.blackout {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: #000;
+    opacity: 0;
+    z-index: 10000;
+    pointer-events: none;
+    transition: opacity 1s;
+}
 </style>
+
+<script>
+// DIÁLOGO ÉPICO Y EFECTOS
+const introLines = [
+    '[SISTEMA] Inicializando TRUCO.EXE...',
+    '[RICK] Morty, el multiverso depende de vos.',
+    '[IA] El código está inestable... ¡apúrate!',
+    '[RICK] Si perdemos, la simulación se reinicia.',
+    '[IA] Detectando bugs en la realidad...',
+    '[SISTEMA] Carga de cartas... Listo.',
+    '[RICK] ¡Vamos Morty, no hay tiempo!'
+];
+const sfx = new Audio('/img/sfxtype.mp3');
+sfx.volume = 0.5;
+let lineIdx = 0;
+let showing = true;
+const loadingText = document.getElementById('epic-loading-text');
+const flash = document.getElementById('flash-effect');
+const flicker = document.getElementById('flicker-overlay');
+const interf = document.getElementById('interference-lines');
+const blackout = document.getElementById('blackout');
+let bgMusic = document.getElementById('bg-music');
+if(bgMusic) { bgMusic.pause(); }
+// Generar líneas de interferencia
+function spawnInterfLines() {
+    for(let i=0;i<7;i++) {
+        let l = document.createElement('div');
+        l.className = 'interf-line';
+        l.style.top = Math.random()*100+'vh';
+        l.style.animationDuration = (0.7+Math.random()*1.2)+'s';
+        l.style.opacity = 0.09+Math.random()*0.18;
+        interf.appendChild(l);
+    }
+}
+spawnInterfLines();
+// Animación de línea con glitch y shake
+function showGlitchyLine(line, cb) {
+    let i = 0;
+    let out = '';
+    let interval = setInterval(() => {
+        // Glitch aleatorio en letras
+        let glitched = line.split('').map((c, idx) => {
+            if (i > idx) return `<span>${c}</span>`;
+            if (c === ' ' || Math.random() > 0.22) return '_';
+            return String.fromCharCode(33 + Math.floor(Math.random()*94));
+        }).join('');
+        loadingText.innerHTML = out + `<span class='glitchy-line'>${glitched}</span>`;
+        if (i === 0) { sfx.currentTime = 0; sfx.play(); flashGlitch(); flickerGlitch(); }
+        i++;
+        if (i > line.length) {
+            clearInterval(interval);
+            out += `<span class='glitchy-line'>${line}</span>`;
+            loadingText.innerHTML = out;
+            setTimeout(cb, 500 + Math.random()*400);
+        }
+    }, 38 + Math.random()*32);
+}
+function flashGlitch() {
+    flash.style.opacity = 0.18 + Math.random()*0.22;
+    setTimeout(() => { flash.style.opacity = 0; }, 90 + Math.random()*60);
+}
+function flickerGlitch() {
+    flicker.style.opacity = 0.12 + Math.random()*0.18;
+    setTimeout(() => { flicker.style.opacity = 0; }, 120 + Math.random()*80);
+}
+function showEpicIntro() {
+    if (!showing) return;
+    if (lineIdx < introLines.length) {
+        showGlitchyLine(introLines[lineIdx], () => {
+            lineIdx++;
+            showEpicIntro();
+        });
+    } else {
+        // Mostrar mensaje de presionar espacio
+        loadingText.innerHTML += `<div class='press-space'>[SISTEMA] Presiona ESPACIO para comenzar...</div>`;
+        document.addEventListener('keydown', function spaceHandler(e) {
+            if (e.code === 'Space' && showing) {
+                showing = false;
+                document.getElementById('loading-overlay').style.display = 'none';
+                blackout.style.transition = 'none';
+                blackout.style.opacity = 1;
+                document.removeEventListener('keydown', spaceHandler);
+                setTimeout(() => {
+                    blackout.style.transition = 'opacity 5s';
+                    blackout.style.opacity = 0;
+                    setTimeout(() => {
+                        if(bgMusic) { try { bgMusic.currentTime = 0; bgMusic.play(); } catch(e){} }
+                    }, 5000);
+                }, 50);
+            }
+        });
+    }
+}
+window.addEventListener('DOMContentLoaded', showEpicIntro);
+</script>
