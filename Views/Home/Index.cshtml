@@ -300,6 +300,7 @@
     <button class="ascii-button" id="btn-logros" onclick="verLogros()">> SALA DE TROFEOS <</button>
     <button class="ascii-button tutorial-button" id="btn-tuto" onclick="verTutorial()">> VER TUTORIAL <</button>
     <button class="ascii-button" id="btn-equipo" onclick="verEquipo()">> EQUIPO <</button>
+    <button class="ascii-button" id="btn-certificado" onclick="verCertificado()">> CERTIFICADO <</button>
   </div>
 
   <script src="/js/endings.js"></script>
@@ -334,7 +335,7 @@
     document.getElementById("overlay").style.animation = "none";
     document.getElementById("typewriter").style.display = "none";
     // Mostrá los botones y quitá el efecto explosivo
-    ["btn-juego", "btn-tuto", "btn-logros", "btn-equipo"].forEach(id => {
+    ["btn-juego", "btn-tuto", "btn-logros", "btn-equipo", "btn-certificado"].forEach(id => {
       const btn = document.getElementById(id);
       btn.classList.add("show");
       btn.classList.remove("explosive");
@@ -601,15 +602,18 @@
     const btn2 = document.getElementById("btn-tuto");
     const btn3 = document.getElementById("btn-logros");
     const btn4 = document.getElementById("btn-equipo");
+    const btn5 = document.getElementById("btn-certificado");
     btn1.classList.add("show", "explosive");
     btn2.classList.add("show", "explosive");
     btn3.classList.add("show", "explosive");
     btn4.classList.add("show", "explosive");
+    btn5.classList.add("show", "explosive");
     setTimeout(() => {
       btn1.classList.remove("explosive");
       btn2.classList.remove("explosive");
       btn3.classList.remove("explosive");
       btn4.classList.remove("explosive");
+      btn5.classList.remove("explosive");
     }, 700);
     // El fade-in del fondo ahora solo ocurre después de los videos en startVideoSequence
   }
@@ -625,6 +629,9 @@
   }
   function verEquipo() {
     window.location.href = '/Home/Equipo';
+  }
+  function verCertificado() {
+    window.location.href = '/Home/Certificado';
   }
 
   // --- EFECTO SCRAMBLE EN BOTONES PRINCIPALES ---

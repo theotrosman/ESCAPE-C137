@@ -404,9 +404,276 @@ namespace PrimerProyecto.Controllers
             return Ok();
         }
         public IActionResult Certificado()
-{
-    return View();
-}
+        {
+            return View();
+        }
+
+        // Métodos para obtener datos reales del certificado
+        private Dictionary<string, object> GetPlayerCertificateData()
+        {
+            var data = new Dictionary<string, object>();
+            
+            // Obtener salas completadas
+            var completedRooms = new List<int>();
+            for (int i = 1; i <= 9; i++)
+            {
+                if (IsRoomCompleted(i))
+                {
+                    completedRooms.Add(i);
+                }
+            }
+            
+            // Obtener logros desbloqueados
+            var unlockedAchievements = new List<int>();
+            for (int i = 1; i <= 8; i++)
+            {
+                if (IsAchievementUnlocked(i))
+                {
+                    unlockedAchievements.Add(i);
+                }
+            }
+            
+            // Calcular estadísticas
+            var totalRooms = 9;
+            var completedCount = completedRooms.Count;
+            var achievementCount = unlockedAchievements.Count;
+            var completionPercentage = (double)completedCount / totalRooms * 100;
+            
+            // Determinar calificación automática
+            string grade = DetermineGrade(completedCount, achievementCount, completionPercentage);
+            
+            // Generar comentario automático
+            string comment = GenerateAutomaticComment(completedRooms, unlockedAchievements, completionPercentage);
+            
+            // Calcular tiempo estimado (basado en salas completadas)
+            string estimatedTime = CalculateEstimatedTime(completedCount);
+            
+            // Determinar nivel de dificultad
+            string difficultyLevel = DetermineDifficultyLevel(completedCount, completionPercentage);
+            
+            // Calcular puntuación
+            int score = CalculateScore(completedCount, achievementCount, completionPercentage);
+            
+            // Determinar habilidades demostradas
+            var skills = DetermineSkills(completedRooms);
+            
+            // Determinar logros específicos
+            var specificAchievements = MapAchievementsToNames(unlockedAchievements);
+            
+            // Calcular estadísticas adicionales
+            var stats = CalculateGameStats(completedRooms, unlockedAchievements);
+            
+            data["completedRooms"] = completedRooms;
+            data["unlockedAchievements"] = unlockedAchievements;
+            data["completionPercentage"] = completionPercentage;
+            data["grade"] = grade;
+            data["comment"] = comment;
+            data["estimatedTime"] = estimatedTime;
+            data["difficultyLevel"] = difficultyLevel;
+            data["score"] = score;
+            data["skills"] = skills;
+            data["specificAchievements"] = specificAchievements;
+            data["stats"] = stats;
+            
+            return data;
+        }
+
+        private string DetermineGrade(int completedRooms, int achievements, double completionPercentage)
+        {
+            if (completedRooms >= 8 && achievements >= 7 && completionPercentage >= 90)
+                return "A+";
+            else if (completedRooms >= 7 && achievements >= 6 && completionPercentage >= 80)
+                return "A";
+            else if (completedRooms >= 6 && achievements >= 5 && completionPercentage >= 70)
+                return "B+";
+            else if (completedRooms >= 5 && achievements >= 4 && completionPercentage >= 60)
+                return "B";
+            else if (completedRooms >= 3 && achievements >= 2 && completionPercentage >= 40)
+                return "C+";
+            else if (completedRooms >= 2 && achievements >= 1 && completionPercentage >= 20)
+                return "C";
+            else
+                return "D";
+        }
+
+        private string GenerateAutomaticComment(List<int> completedRooms, List<int> achievements, double completionPercentage)
+        {
+            var comments = new List<string>();
+            
+            if (completionPercentage >= 90)
+            {
+                comments.Add("¡Excelente desempeño! Has demostrado dominio completo del sistema MVC-137.");
+                comments.Add("Rick estaría orgulloso de tu capacidad de resolución de problemas.");
+            }
+            else if (completionPercentage >= 70)
+            {
+                comments.Add("Muy buen trabajo. Has mostrado habilidades sólidas en programación y lógica.");
+                comments.Add("Tu comprensión de los conceptos es notable.");
+            }
+            else if (completionPercentage >= 50)
+            {
+                comments.Add("Buen progreso. Has completado la mayoría de los desafíos principales.");
+                comments.Add("Continúa desarrollando tus habilidades de programación.");
+            }
+            else if (completionPercentage >= 30)
+            {
+                comments.Add("Progreso satisfactorio. Has completado varios desafíos importantes.");
+                comments.Add("Hay potencial para mejorar con más práctica.");
+            }
+            else
+            {
+                comments.Add("Has iniciado tu viaje en el sistema MVC-137.");
+                comments.Add("Cada sala completada es un paso hacia el dominio.");
+            }
+            
+            // Añadir comentarios específicos basados en salas completadas
+            if (completedRooms.Contains(7))
+                comments.Add("Especial mención por completar el desafío del Balatro Codex.");
+            
+            if (completedRooms.Contains(9))
+                comments.Add("¡Has alcanzado el final del escape room! Una hazaña notable.");
+            
+            if (achievements.Count >= 6)
+                comments.Add("Has desbloqueado múltiples logros, mostrando dedicación y habilidad.");
+            
+            return string.Join(" ", comments);
+        }
+
+        private string CalculateEstimatedTime(int completedRooms)
+        {
+            // Tiempo estimado por sala (en minutos)
+            var roomTimes = new Dictionary<int, int>
+            {
+                {1, 5}, {2, 8}, {3, 12}, {4, 15}, {5, 10}, {6, 18}, {7, 25}, {8, 20}, {9, 30}
+            };
+            
+            int totalMinutes = 0;
+            for (int i = 1; i <= completedRooms; i++)
+            {
+                if (roomTimes.ContainsKey(i))
+                    totalMinutes += roomTimes[i];
+            }
+            
+            if (totalMinutes < 60)
+                return $"{totalMinutes} minutos";
+            else
+            {
+                int hours = totalMinutes / 60;
+                int minutes = totalMinutes % 60;
+                return $"{hours}h {minutes}m";
+            }
+        }
+
+        private string DetermineDifficultyLevel(int completedRooms, double completionPercentage)
+        {
+            if (completionPercentage >= 90)
+                return "Experto";
+            else if (completionPercentage >= 70)
+                return "Difícil";
+            else if (completionPercentage >= 50)
+                return "Intermedio";
+            else
+                return "Fácil";
+        }
+
+        private int CalculateScore(int completedRooms, int achievements, double completionPercentage)
+        {
+            int baseScore = completedRooms * 100;
+            int achievementBonus = achievements * 50;
+            int completionBonus = (int)(completionPercentage * 2);
+            
+            return Math.Min(1000, baseScore + achievementBonus + completionBonus);
+        }
+
+        private List<string> DetermineSkills(List<int> completedRooms)
+        {
+            var skills = new List<string>();
+            
+            if (completedRooms.Contains(2))
+                skills.Add("Lógica");
+            
+            if (completedRooms.Contains(3))
+                skills.Add("Análisis");
+            
+            if (completedRooms.Contains(4))
+                skills.Add("Programación");
+            
+            if (completedRooms.Contains(5))
+                skills.Add("Creatividad");
+            
+            if (completedRooms.Contains(6))
+                skills.Add("Criptografía");
+            
+            if (completedRooms.Contains(7))
+                skills.Add("Paciencia");
+            
+            if (completedRooms.Contains(8))
+                skills.Add("Velocidad");
+            
+            if (completedRooms.Contains(9))
+                skills.Add("Perseverancia");
+            
+            return skills;
+        }
+
+        private List<string> MapAchievementsToNames(List<int> achievements)
+        {
+            var achievementNames = new Dictionary<int, string>
+            {
+                {1, "hacker"}, {2, "solver"}, {3, "speedrunner"}, {4, "collector"},
+                {5, "explorer"}, {6, "genius"}, {7, "master"}, {8, "legend"}
+            };
+            
+            var mappedAchievements = new List<string>();
+            foreach (var achievement in achievements)
+            {
+                if (achievementNames.ContainsKey(achievement))
+                    mappedAchievements.Add(achievementNames[achievement]);
+            }
+            
+            return mappedAchievements;
+        }
+
+        private Dictionary<string, object> CalculateGameStats(List<int> completedRooms, List<int> achievements)
+        {
+            var stats = new Dictionary<string, object>();
+            
+            // Tiempo promedio (estimado)
+            stats["tiempoPromedio"] = CalculateEstimatedTime(completedRooms.Count);
+            
+            // Precisión basada en logros vs salas completadas
+            double precision = completedRooms.Count > 0 ? (double)achievements.Count / completedRooms.Count * 100 : 0;
+            stats["precision"] = $"{Math.Round(precision)}%";
+            
+            // Velocidad basada en número de salas completadas
+            if (completedRooms.Count >= 7)
+                stats["velocidad"] = "Rápido";
+            else if (completedRooms.Count >= 4)
+                stats["velocidad"] = "Normal";
+            else
+                stats["velocidad"] = "Lento";
+            
+            // Puzzles resueltos
+            stats["puzzlesResueltos"] = $"{completedRooms.Count}/9";
+            
+            // Pistas usadas (estimado basado en intentos)
+            int pistasUsadas = Math.Max(0, completedRooms.Count - achievements.Count);
+            stats["pistasUsadas"] = pistasUsadas;
+            
+            // Ranking global (simulado)
+            int ranking = 1000 - (completedRooms.Count * 100) - (achievements.Count * 50);
+            ranking = Math.Max(1, ranking);
+            stats["rankingGlobal"] = $"#{ranking}";
+            
+            return stats;
+        }
+
+        [HttpPost]
+        public IActionResult GetCertificateData()
+        {
+            var certificateData = GetPlayerCertificateData();
+            return Json(certificateData);
+        }
     }
 }
 

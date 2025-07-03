@@ -1,4 +1,7 @@
+    <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
+
 @{
+    
     Layout = null;
     var roomNumber = ViewBag.RoomNumber;
     var roomName = ViewBag.RoomName ?? $"Room{roomNumber}";
@@ -310,7 +313,7 @@ showMessage('[x] Clave incorrecta', false, true);
                 }
             }
         }
-        const textoConsola = "> Protocol/R-37:   █  █  █  █  █  █  █  █  █  █ █  █  █  █  █ █  █  █  █  █\n> Realidad-alternativa-inestable\n> Clave/requerida/para/estabilizar...";
+        const textoConsola = "> Protocol/R-37:   █  █  █  █  █  █  █  █  █  █ █  █  █  █  █ █  █  █  █  █\n> Si - ves - esto-  solicita  -a  -los  -encargados   -de -  la  - exposición -  la  - clave -  de -  administrador\n> Clave/requerida/para/estabilizar/realidad/alternativa/inestable...";
 let i = 0;
 function escribirTexto() {
   if (i < textoConsola.length) {

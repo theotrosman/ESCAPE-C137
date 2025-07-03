@@ -74,7 +74,11 @@ const frasesAbsurdas = [
     "callate la boca papa frita",
     "le conté cómo me sentía y me dejó en visto. eso también fue una respuesta",
     "me dijo que no sabía lo que quería. y mientras lo pensaba, me perdí yo",
-    "tengo una playlist con su nombre y ahora no puedo escuchar ni el clima",
+    "morty si tocas 7 el mundo te lo va a agradecer",
+    "morty si tocas 7 el mundo te lo va a agradecer",
+    "morty si tocas 7 el mundo te lo va a agradecer",
+    "morty si tocas 7 el mundo te lo va a agradecer",
+    "morty si tocas 7 el mundo te lo va a agradecer",
     "Amigo, no tenes aura",
     "tenés razón",
     "Estaba cagando y me levante para aplaudirte",
@@ -94,7 +98,9 @@ const respuestasJugador = {
     "bruh": [
       "no servis para este juego",
       "¡No te rindas, sigue practicando pero nunca avanzarás!",
-      "el BeReal es el nuevo 'sigo acá pero no te quiero tanto'"
+      "el BeReal es el nuevo 'sigo acá pero no te quiero tanto'",
+      "morty si tocas 7 el mundo te lo va a agradecer",
+
     ],
     "si": [
       "erorr 404",
@@ -120,7 +126,8 @@ const respuestasJugador = {
     "me respondió a las 3 de la mañana con un 'pensé que te había contestado'": [
       "lol",
       "es el clásico 'no me olvidé, solo no me importó tanto'",
-      "total"
+      "total",
+      "morty si tocas 7 el mundo te lo va a agradecer",
     ],
     "♫ En tu boca mordí la manzana carmín del deseo y la tentación... ♫": [
       "Tirame una star en el repo de github: https://github.com/theotrosman/ESCAPE-C137",

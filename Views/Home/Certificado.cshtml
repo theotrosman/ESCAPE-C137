@@ -6,7 +6,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Certificado de Realidad Superada - Rick & Morty</title>
+    <title>Certificado de Realidad Superada</title>
+        <link rel="icon" type="image/png" href="~/img/morty-icon.png" />
+
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -112,6 +114,14 @@
             font-size: 1rem;
             margin-top: 0.2rem;
             opacity: 0.7;
+        }
+        .header .info-message {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            text-align: center;
         }
         .main-content {
             display: flex;
@@ -368,6 +378,172 @@
                 margin: 0 !important;
             }
         }
+        /* Estilos para los nuevos elementos */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .achievement-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.8rem;
+            background: rgba(0,255,0,0.1);
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+        
+        .achievement-badge.unlocked {
+            opacity: 1;
+            background: rgba(0,255,0,0.2);
+            box-shadow: 0 0 15px #00ff00;
+        }
+        
+        .achievement-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ff00;
+        }
+        
+        .badge-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .badge-text {
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-align: center;
+            color: #0ff;
+        }
+        
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .skill-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .skill-checkbox:hover {
+            background: rgba(0,255,0,0.1);
+        }
+        
+        .skill-checkbox input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            accent-color: #00ff00;
+        }
+        
+        .rating-stars {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.5rem;
+        }
+        
+        .star {
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.3;
+        }
+        
+        .star:hover,
+        .star.active {
+            opacity: 1;
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 8px #00ff00);
+        }
+        
+        .star.rated {
+            opacity: 1;
+            color: #00ff00;
+        }
+        
+        /* Estilos para la sección de estadísticas */
+        .stats-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(0,255,0,0.05);
+            border: 2px solid #00ff00;
+            border-radius: 12px;
+            box-shadow: 0 0 20px #00ff00cc;
+        }
+        
+        .stats-title {
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            color: #0ff;
+            margin: 0 0 1.5rem 0;
+            text-shadow: 0 0 10px #0ff;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px #00ff00;
+            background: rgba(0,255,0,0.1);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #0ff;
+            text-align: center;
+            margin-bottom: 0.3rem;
+            opacity: 0.8;
+        }
+        
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+        }
+        
+        @@media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -380,11 +556,15 @@
     <button onclick="iniciarCertificado()" style="font-size: 1.3rem; background: #00ff00; color: #000; padding: 1rem 2rem; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #00ff00;">🎖️ CREAR MI CERTIFICADO</button>
 </div>
 <video id="camaraPreview" autoplay style="display:none;"></video>
+<audio id="balatroTheme" src="/img/balatrotheme.mp3" autoplay loop style="display:none;"></audio>
 <div id="certificado" style="display: none;">
     <div class="header">
         <h1>CERTIFICADO DE REALIDAD SUPERADA</h1>
         <div class="subtitulo">Este documento certifica oficialmente que has hackeado exitosamente el sistema MVC-137</div>
         <div class="date-field">Emitido el: <span id="fechaEmision"></span></div>
+        <div class="info-message">
+            <span style="color: #0ff; font-size: 0.9rem;">📊 Los datos de desempeño se generan automáticamente según tu progreso real en el escape room</span>
+        </div>
     </div>
     <div class="main-content">
         <div class="avatar-block" style="position:relative;">
@@ -397,28 +577,29 @@
             <div class="avatar-tooltip">¡Morty nunca estuvo tan orgulloso!</div>
             <div class="qr-block">
                 <canvas id="qr-canvas" width="140" height="140"></canvas>
-                <div style="font-size:0.8rem;color:#0ff;opacity:0.7;">Verifica tu certificado</div>
+                <div style="font-size:0.8rem;color:#0ff;opacity:0.7;">¡Escanea para una sorpresa!</div>
+                <div style="font-size:0.7rem;color:#f0f;opacity:0.6;margin-top:0.2rem;">🎵 Never gonna give you up... 🎵</div>
             </div>
         </div>
         <div class="data-block">
             <div class="data-row">
                 <div class="info-group">
-                    <label>NOMBRE COMPLETO</label>
-                    <input type="text" id="nombreJugador" placeholder="Ej: Rick Sánchez " oninput="actualizarNombre();updateQR();" />
+                    <label>NOMBRE COMPLETO *</label>
+                    <input type="text" id="nombreJugador" placeholder="Tu nombre completo" oninput="actualizarNombre();updateQR();" required />
                 </div>
                 <div class="info-group">
-                    <label>CURSO/ESPECIALIDAD</label>
-                    <input type="text" id="cursoJugador" placeholder="Ej: 3ID" oninput="updateQR();" />
+                    <label>CURSO/ESPECIALIDAD *</label>
+                    <input type="text" id="cursoJugador" placeholder="Ej: 3ID - Programación Web" oninput="updateQR();" required />
                 </div>
             </div>
             <div class="data-row">
                 <div class="info-group">
-                    <label>UNIVERSIDAD/INSTITUCIÓN</label>
-                    <input type="text" id="institucionJugador" placeholder="Ej: ORT Yatay" oninput="updateQR();" />
+                    <label>UNIVERSIDAD/INSTITUCIÓN *</label>
+                    <input type="text" id="institucionJugador" placeholder="Ej: ORT Yatay" oninput="updateQR();" required />
                 </div>
                 <div class="info-group">
                     <label>CALIFICACIÓN</label>
-                    <select id="calificacionJugador" onchange="actualizarCalificacion();updateQR();">
+                    <select id="calificacionJugador" onchange="actualizarCalificacion();updateQR();" disabled>
                         <option value="A+">A+ (Excelente)</option>
                         <option value="A">A (Muy Bueno)</option>
                         <option value="B+">B+ (Bueno)</option>
@@ -437,15 +618,137 @@
                     <input type="date" id="fechaCompletado" oninput="updateQR();" />
                 </div>
             </div>
+            
+            <!-- NUEVOS CAMPOS AÑADIDOS -->
+            <div class="data-row">
+                <div class="info-group">
+                    <label>TIEMPO DE COMPLETADO</label>
+                    <input type="text" id="tiempoCompletado" placeholder="Ej: 45 minutos" oninput="updateQR();" />
+                </div>
+                <div class="info-group">
+                    <label>NIVEL DE DIFICULTAD</label>
+                    <select id="nivelDificultad" onchange="updateQR();">
+                        <option value="Fácil">Fácil</option>
+                        <option value="Intermedio" selected>Intermedio</option>
+                        <option value="Difícil">Difícil</option>
+                        <option value="Experto">Experto</option>
+                    </select>
+                </div>
+                <div class="info-group">
+                    <label>PUNTUACIÓN FINAL</label>
+                    <input type="number" id="puntuacionFinal" placeholder="Ej: 850" min="0" max="1000" oninput="updateQR();" />
+                </div>
+            </div>
+            
+            <div class="data-row">
+                <div class="info-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="emailJugador" placeholder="tu@email.com" oninput="updateQR();" />
+                </div>
+                <div class="info-group">
+                    <label>EDAD</label>
+                    <input type="number" id="edadJugador" placeholder="Ej: 25" min="1" max="120" oninput="updateQR();" />
+                </div>
+                <div class="info-group">
+                    <label>PAÍS</label>
+                    <input type="text" id="paisJugador" placeholder="Ej: Argentina" oninput="updateQR();" />
+                </div>
+            </div>
+            
+            <div class="data-row">
+                <div class="info-group" style="flex:2;">
+                    <label>LOGROS DESBLOQUEADOS</label>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Las postales de las rooms superadas se insertarán aquí por JS -->
+                    </div>
+                </div>
+                <div class="info-group">
+                    <label>NÚMERO DE INTENTOS</label>
+                    <input type="number" id="numeroIntentos" placeholder="Ej: 3" min="1" oninput="updateQR();" />
+                </div>
+            </div>
+            
+            <div class="data-row">
+                <div class="info-group" style="flex:2;">
+                    <label>HABILIDADES DEMOSTRADAS</label>
+                    <div class="skills-container">
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Lógica" onchange="updateQR();"> Lógica
+                        </label>
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Programación" onchange="updateQR();"> Programación
+                        </label>
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Criptografía" onchange="updateQR();"> Criptografía
+                        </label>
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Análisis" onchange="updateQR();"> Análisis
+                        </label>
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Creatividad" onchange="updateQR();"> Creatividad
+                        </label>
+                        <label class="skill-checkbox">
+                            <input type="checkbox" value="Paciencia" onchange="updateQR();"> Paciencia
+                        </label>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <label>NIVEL DE SATISFACCIÓN</label>
+                    <div class="rating-stars">
+                        <span class="star" data-rating="1">⭐</span>
+                        <span class="star" data-rating="2">⭐</span>
+                        <span class="star" data-rating="3">⭐</span>
+                        <span class="star" data-rating="4">⭐</span>
+                        <span class="star" data-rating="5">⭐</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="calificacion-block">
         <div class="calificacion-label">Calificación Final:</div>
         <span class="grade-display" id="gradeDisplay">A+<span class="rick-approved" id="rickApproved"></span></span>
     </div>
+    
+    <!-- NUEVA SECCIÓN DE ESTADÍSTICAS -->
+    <div class="stats-section">
+        <h3 class="stats-title">📊 ESTADÍSTICAS DE COMPLETADO</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-label">Tiempo Promedio</div>
+                <div class="stat-value" id="tiempoPromedio">45 min</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-label">Precisión</div>
+                <div class="stat-value" id="precision">92%</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-label">Velocidad</div>
+                <div class="stat-value" id="velocidad">Rápido</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🧩</div>
+                <div class="stat-label">Puzzles Resueltos</div>
+                <div class="stat-value" id="puzzlesResueltos">8/8</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🔍</div>
+                <div class="stat-label">Pistas Usadas</div>
+                <div class="stat-value" id="pistasUsadas">2</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-label">Ranking Global</div>
+                <div class="stat-value" id="rankingGlobal">#127</div>
+            </div>
+        </div>
+    </div>
     <div class="signature-section">
         <div class="signature-area">
-            <p>Firma del Estudiante</p>
+            <p>Firma</p>
             <canvas id="firmaCanvas" width="320" height="100"></canvas>
             <button onclick="borrarFirma()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Borrar Firma</button>
         </div>
@@ -457,11 +760,30 @@
         </div>
     </div>
     <div class="controls">
+        <button onclick="abrirPersonalizacion()" style="background: #0ff; color: #000;">🎨 Personalizar certificado</button>
         <button onclick="descargarCertificado()">💾 Descargar PNG</button>
         <button onclick="descargarPDF()">📄 Descargar PDF</button>
         <button onclick="imprimirCertificado()">🖨️ Imprimir</button>
     </div>
 </div>
+
+<!-- Modal de personalización -->
+<div id="modalPersonalizacion" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:#111; border-radius:16px; padding:2rem 2.5rem; box-shadow:0 0 30px #0ff, 0 0 60px #00ff00; min-width:320px; max-width:90vw;">
+        <h2 style="color:#0ff; text-align:center; margin-bottom:1.5rem;">Personaliza tu certificado</h2>
+        <div style="display:flex; flex-direction:column; gap:1.2rem;">
+            <label style="color:#0ff;">Color principal (bordes, títulos): <input type="color" id="colorPrimario" value="#00ff00" style="margin-left:1rem;"></label>
+            <label style="color:#0ff;">Color secundario (textos, detalles): <input type="color" id="colorSecundario" value="#0ff" style="margin-left:1rem;"></label>
+            <label style="color:#0ff;">Imagen de fondo (opcional): <input type="file" id="fondoCertificado" accept="image/*" style="margin-left:1rem;"></label>
+        </div>
+        <div style="display:flex; gap:1.5rem; justify-content:center; margin-top:2rem;">
+            <button onclick="previsualizarPersonalizacion()" style="background:#0ff; color:#000; padding:0.7rem 1.5rem; border-radius:8px; font-weight:bold;">Previsualizar</button>
+            <button onclick="cerrarPersonalizacion()" style="background:#f0f; color:#fff; padding:0.7rem 1.5rem; border-radius:8px; font-weight:bold;">Cancelar</button>
+            <button onclick="aplicarYDescargar()" style="background:#00ff00; color:#000; padding:0.7rem 1.5rem; border-radius:8px; font-weight:bold;">Descargar</button>
+        </div>
+    </div>
+</div>
+
 <script>
 // Matrix background effect
 const canvas = document.querySelector('.matrix-bg');
@@ -545,11 +867,22 @@ function actualizarCalificacion() {
 }
 // QR code
 function updateQR() {
-        const nombre = document.getElementById('nombreJugador').value;
+    const nombre = document.getElementById('nombreJugador').value;
     const curso = document.getElementById('cursoJugador').value;
     const inst = document.getElementById('institucionJugador').value;
     const calif = document.getElementById('calificacionJugador').value;
     const fecha = document.getElementById('fechaCompletado').value;
+    const tiempo = document.getElementById('tiempoCompletado').value;
+    const dificultad = document.getElementById('nivelDificultad').value;
+    const puntuacion = document.getElementById('puntuacionFinal').value;
+    const email = document.getElementById('emailJugador').value;
+    const edad = document.getElementById('edadJugador').value;
+    const pais = document.getElementById('paisJugador').value;
+    const intentos = document.getElementById('numeroIntentos').value;
+    const logros = getUnlockedAchievements();
+    const habilidades = getSelectedSkills();
+    
+    // QR siempre apunta al Rick Roll clásico
     const qr = new QRious({
         element: document.getElementById('qr-canvas'),
         value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -558,7 +891,7 @@ function updateQR() {
         foreground: '#000',
         level: 'H'
     });
-    }
+}
 setTimeout(updateQR, 500);
     // Cámara
     const cam = document.getElementById("camaraPreview");
@@ -632,51 +965,101 @@ function subirFoto(e) {
     };
     reader.readAsDataURL(file);
 }
-function setDownloadMode(enable) {
+function setDownloadMode(enable, colorPrimario, colorSecundario, fondoDataUrl) {
     const cert = document.getElementById('certificado');
     const foto = document.getElementById('fotoPreview');
     const qr = document.getElementById('qr-canvas');
     const header = cert.querySelector('.header h1');
     const subtitle = cert.querySelector('.header .subtitulo');
+    const photoButtons = cert.querySelectorAll('.photo-btn');
+    const signatureButton = cert.querySelector('button[onclick="borrarFirma()"]');
+    const navMenu = document.getElementById('hackerNav');
+    const autoHideFields = document.querySelectorAll('.auto-hide');
+
     if (enable) {
-        cert.style.background = '#fff';
-        cert.style.border = '6px solid #d4af37';
-        cert.style.boxShadow = '0 0 40px #d4af37, 0 0 60px #fff inset';
-        cert.style.color = '#222';
-        header.style.color = '#d4af37';
-        header.style.textShadow = '0 0 8px #d4af37, 0 0 12px #fff';
-        subtitle.style.color = '#555';
-        foto.style.boxShadow = '0 0 24px #d4af37, 0 0 40px #fff';
-        qr.style.background = '#fff';
-        qr.style.boxShadow = '0 0 12px #d4af37';
-        // Cambiar textos a negro
-        cert.querySelectorAll('input, textarea, select, .grade-display, .instructor-sign, .signature-area p, .calificacion-label').forEach(el => {
-            el.style.color = '#222';
-            el.style.borderColor = '#d4af37';
-            el.style.background = '#fff';
-            el.style.boxShadow = '0 0 8px #d4af37';
-        });
-        cert.querySelectorAll('label').forEach(el => { el.style.color = '#d4af37'; });
-        // QR dorado
-        new QRious({
-            element: qr,
-            value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-            size: 140,
-            background: '#fff',
-            foreground: '#d4af37',
-            level: 'H'
+        // Si hay personalización, usarla
+        if (colorPrimario && colorSecundario) {
+            cert.style.background = '#fff';
+            cert.style.border = `4px solid ${colorPrimario}`;
+            cert.style.boxShadow = `0 0 40px ${colorPrimario}, 0 0 60px ${colorSecundario}`;
+            cert.style.color = colorSecundario;
+            cert.querySelectorAll('.header h1, .calificacion-label, .stats-title').forEach(el => {
+                el.style.color = colorPrimario;
+                el.style.textShadow = `0 0 18px ${colorPrimario}, 0 0 32px ${colorSecundario}`;
+            });
+            cert.querySelectorAll('label').forEach(el => { el.style.color = colorSecundario; });
+            cert.querySelectorAll('.grade-display').forEach(el => { el.style.color = colorPrimario; });
+            if (fondoDataUrl) {
+                cert.style.backgroundImage = `url('${fondoDataUrl}')`;
+                cert.style.backgroundSize = 'cover';
+                cert.style.backgroundPosition = 'center';
+                cert.style.backgroundRepeat = 'no-repeat';
+            } else {
+                cert.style.backgroundImage = '';
+            }
+            // QR personalizado
+            new QRious({
+                element: qr,
+                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                size: 140,
+                background: '#fff',
+                foreground: colorPrimario,
+                level: 'H'
+            });
+        } else {
+            // Modo blanco/dorado por defecto
+            cert.style.background = '#fff';
+            cert.style.border = '6px solid #d4af37';
+            cert.style.boxShadow = '0 0 40px #d4af37, 0 0 60px #fff inset';
+            cert.style.color = '#222';
+            header.style.color = '#d4af37';
+            header.style.textShadow = '0 0 8px #d4af37, 0 0 12px #fff';
+            subtitle.style.color = '#555';
+            foto.style.boxShadow = '0 0 24px #d4af37, 0 0 40px #fff';
+            qr.style.background = '#fff';
+            qr.style.boxShadow = '0 0 12px #d4af37';
+            cert.querySelectorAll('input, textarea, select, .grade-display, .instructor-sign, .signature-area p, .calificacion-label').forEach(el => {
+                el.style.color = '#222';
+                el.style.borderColor = '#d4af37';
+                el.style.background = '#fff';
+                el.style.boxShadow = '0 0 8px #d4af37';
+            });
+            cert.querySelectorAll('label').forEach(el => { el.style.color = '#d4af37'; });
+            new QRious({
+                element: qr,
+                value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+                size: 140,
+                background: '#fff',
+                foreground: '#d4af37',
+                level: 'H'
+            });
+        }
+        // Ocultar botones y menú
+        photoButtons.forEach(btn => btn.style.display = 'none');
+        if (signatureButton) signatureButton.style.display = 'none';
+        if (navMenu) navMenu.style.display = 'none';
+        // Ocultar campos auto-hide si están vacíos, en N/A o valor por defecto
+        autoHideFields.forEach(field => {
+            if (!field.value || field.value === 'N/A' || field.value === '' || field.value === '0' || field.value === 'Fácil') {
+                field.parentElement.style.display = 'none';
+            }
         });
     } else {
+        // Restaurar
         cert.style.background = '';
         cert.style.border = '';
         cert.style.boxShadow = '';
         cert.style.color = '';
+        cert.style.backgroundImage = '';
         header.style.color = '';
         header.style.textShadow = '';
         subtitle.style.color = '';
         foto.style.boxShadow = '';
         qr.style.background = '';
         qr.style.boxShadow = '';
+        photoButtons.forEach(btn => btn.style.display = '');
+        if (signatureButton) signatureButton.style.display = '';
+        if (navMenu) navMenu.style.display = '';
         cert.querySelectorAll('input, textarea, select, .grade-display, .instructor-sign, .signature-area p, .calificacion-label').forEach(el => {
             el.style.color = '';
             el.style.borderColor = '';
@@ -684,7 +1067,6 @@ function setDownloadMode(enable) {
             el.style.boxShadow = '';
         });
         cert.querySelectorAll('label').forEach(el => { el.style.color = ''; });
-        // QR negro
         new QRious({
             element: qr,
             value: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -693,15 +1075,23 @@ function setDownloadMode(enable) {
             foreground: '#000',
             level: 'H'
         });
+        autoHideFields.forEach(field => {
+            field.parentElement.style.display = '';
+        });
     }
 }
-function descargarCertificado() {
-    const nombre = document.getElementById('nombreJugador').value;
-    if (!nombre) return alert('Completa tu nombre antes de descargar.');
+function descargarCertificado(colorPrimario, colorSecundario, fondoDataUrl) {
+    const nombre = document.getElementById('nombreJugador').value.trim();
+    const curso = document.getElementById('cursoJugador').value.trim();
+    const institucion = document.getElementById('institucionJugador').value.trim();
+    if (!nombre || !curso || !institucion) {
+        alert('Por favor completa todos los campos requeridos (*) antes de descargar el certificado.');
+        return;
+    }
     const certificado = document.getElementById('certificado');
     const controls = document.querySelector('.controls');
     controls.style.display = 'none';
-    setDownloadMode(true);
+    setDownloadMode(true, colorPrimario, colorSecundario, fondoDataUrl);
     html2canvas(certificado, {
         useCORS: true,
         scale: 4,
@@ -719,8 +1109,15 @@ function descargarCertificado() {
     });
 }
 function descargarPDF() {
-    const nombre = document.getElementById('nombreJugador').value;
-    if (!nombre) return alert('Completa tu nombre antes de descargar.');
+    const nombre = document.getElementById('nombreJugador').value.trim();
+    const curso = document.getElementById('cursoJugador').value.trim();
+    const institucion = document.getElementById('institucionJugador').value.trim();
+    
+    if (!nombre || !curso || !institucion) {
+        alert('Por favor completa todos los campos requeridos (*) antes de descargar el certificado.');
+        return;
+    }
+    
     const certificado = document.getElementById('certificado');
     const controls = document.querySelector('.controls');
     controls.style.display = 'none';
@@ -758,6 +1155,12 @@ function imprimirCertificado() {
 function iniciarCertificado() {
     document.getElementById('overlayIntro').style.display = 'none';
     document.getElementById('certificado').style.display = 'block';
+    
+    // Cargar datos reales automáticamente
+    setTimeout(() => {
+        cargarDatosReales();
+    }, 500);
+    
     setTimeout(() => {
         document.getElementById('certificado').style.animation = 'none';
     }, 1500);
@@ -766,6 +1169,276 @@ function iniciarCertificado() {
 const style = document.createElement('style');
 style.textContent = `@@keyframes flashAnim {0%{opacity:0;}50%{opacity:0.8;}100%{opacity:0;}}`;
 document.head.appendChild(style);
+
+// Funciones para los nuevos elementos
+let currentRating = 0;
+
+// Manejo de logros
+document.querySelectorAll('.achievement-badge').forEach(badge => {
+    badge.addEventListener('click', function() {
+        this.classList.toggle('unlocked');
+        updateQR();
+    });
+});
+
+// Manejo de estrellas de rating
+document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        currentRating = rating;
+        
+        // Actualizar visualización
+        document.querySelectorAll('.star').forEach((s, index) => {
+            if (index < rating) {
+                s.classList.add('rated');
+            } else {
+                s.classList.remove('rated');
+            }
+        });
+        
+        updateQR();
+    });
+    
+    star.addEventListener('mouseenter', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        document.querySelectorAll('.star').forEach((s, index) => {
+            if (index < rating) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    });
+    
+    star.addEventListener('mouseleave', function() {
+        document.querySelectorAll('.star').forEach(s => {
+            s.classList.remove('active');
+        });
+    });
+});
+
+// Función para obtener logros desbloqueados
+function getUnlockedAchievements() {
+    const unlocked = [];
+    document.querySelectorAll('.achievement-badge.unlocked').forEach(badge => {
+        unlocked.push(badge.getAttribute('data-achievement'));
+    });
+    return unlocked.join(', ');
+}
+
+// Función para obtener habilidades seleccionadas
+function getSelectedSkills() {
+    const skills = [];
+    document.querySelectorAll('.skill-checkbox input:checked').forEach(checkbox => {
+        skills.push(checkbox.value);
+    });
+    return skills.join(', ');
+}
+
+// Descripciones de rooms para el certificado
+const roomDescriptions = [
+    '',
+    'Room 1: Primeros pasos en el sistema. ¡Bienvenido al desafío!',
+    'Room 2: Lógica y observación. Has descifrado el primer código.',
+    'Room 3: ADN y análisis. Superaste el reto biotecnológico.',
+    'Room 4: Programación y secuencias. Dominaste la consola.',
+    'Room 5: Creatividad y deducción. Resolviste el enigma visual.',
+    'Room 6: Criptografía avanzada. Descifraste los secretos de Rick.',
+    'Room 7: Balatro Codex. Lograste el desafío más complejo.',
+    'Room 8: Escape final. Superaste la última barrera.',
+    'Room 9: Realidad superada. ¡Completaste el escape room!'
+];
+
+function poblarLogrosRooms(completedRooms) {
+    const grid = document.getElementById('achievementsGrid');
+    grid.innerHTML = '';
+    console.log('Rooms completadas:', completedRooms);
+    if (!completedRooms || completedRooms.length === 0) {
+        grid.innerHTML = '<div style="color:#0ff; opacity:0.7; text-align:center;">No has completado ninguna sala aún.</div>';
+        return;
+    }
+    completedRooms.forEach(num => {
+        if (num >= 1 && num <= 9) {
+            const div = document.createElement('div');
+            div.className = 'room-postal';
+            div.innerHTML = `
+                <img src="/img/postal${num}.png" alt="Room ${num}" class="postal-img" style="width:100px; border-radius:8px; box-shadow:0 0 10px #0ff; margin-bottom:0.3rem;">
+                <div class="postal-title" style="font-size:0.95rem; color:#0ff; font-weight:bold; text-align:center;">Room ${num}</div>
+                <div class="postal-desc" style="font-size:0.75rem; color:#fff; opacity:0.7; text-align:center;">${roomDescriptions[num]}</div>
+            `;
+            grid.appendChild(div);
+        }
+    });
+}
+
+// Cargar datos reales del jugador
+function cargarDatosReales() {
+    fetch('/Home/GetCertificateData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Llenar campos automáticamente
+        document.getElementById('tiempoCompletado').value = (data.completedRooms.length === 9) ? data.estimatedTime : 'N/A';
+        document.getElementById('nivelDificultad').value = data.difficultyLevel || 'N/A';
+        document.getElementById('puntuacionFinal').value = data.score || 'N/A';
+        document.getElementById('calificacionJugador').value = data.grade;
+        document.getElementById('numeroIntentos').value = Math.max(1, data.completedRooms.length);
+
+        // Comentario detallado y personalizado
+        let comment = '';
+        if (data.completedRooms.length === 9) {
+            comment += '¡Increíble! Has completado todas las salas del escape room, demostrando perseverancia, lógica y creatividad. ';
+            if (data.grade === 'A+' || data.grade === 'A') comment += 'Tu desempeño fue sobresaliente, resolviendo los desafíos más complejos con gran destreza. ';
+            if (data.specificAchievements && data.specificAchievements.includes('genius')) comment += 'Obtuviste el logro "Genius", lo que te coloca entre los mejores jugadores. ';
+            comment += 'Tu tiempo de completado fue de ' + data.estimatedTime + ', lo que indica una excelente gestión del tiempo.';
+        } else if (data.completedRooms.length >= 6) {
+            comment += 'Has avanzado por la mayoría de las salas, mostrando buenas habilidades de resolución de problemas. ';
+            if (data.grade === 'B+' || data.grade === 'B') comment += 'Tu progreso es sólido, aunque podrías mejorar en algunos retos avanzados. ';
+            comment += 'Sigue practicando para alcanzar la perfección.';
+        } else if (data.completedRooms.length >= 3) {
+            comment += 'Buen comienzo. Has superado varios desafíos iniciales y tienes potencial para avanzar mucho más. ';
+            if (data.grade === 'C+' || data.grade === 'C') comment += 'Te recomiendo repasar los conceptos de lógica y análisis para mejorar tu rendimiento.';
+        } else {
+            comment += 'Estás dando tus primeros pasos en el escape room. Cada sala completada suma experiencia. ¡No te rindas!';
+        }
+        document.getElementById('comentariosJugador').value = comment;
+
+        // Actualizar estadísticas
+        if (data.stats) {
+            document.getElementById('tiempoPromedio').textContent = data.stats.tiempoPromedio;
+            document.getElementById('precision').textContent = data.stats.precision;
+            document.getElementById('velocidad').textContent = data.stats.velocidad;
+            document.getElementById('puzzlesResueltos').textContent = data.stats.puzzlesResueltos;
+            document.getElementById('pistasUsadas').textContent = data.stats.pistasUsadas;
+            document.getElementById('rankingGlobal').textContent = data.stats.rankingGlobal;
+        }
+        // Desbloquear logros reales
+        if (data.specificAchievements) {
+            document.querySelectorAll('.achievement-badge').forEach(badge => {
+                const achievementName = badge.getAttribute('data-achievement');
+                if (data.specificAchievements.includes(achievementName)) {
+                    badge.classList.add('unlocked');
+                }
+            });
+        }
+        // Seleccionar habilidades reales
+        if (data.skills) {
+            document.querySelectorAll('.skill-checkbox input').forEach(checkbox => {
+                if (data.skills.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                }
+            });
+        }
+        // Establecer rating basado en calificación
+        let rating = 3; // Default
+        if (data.grade === 'A+') rating = 5;
+        else if (data.grade === 'A') rating = 4;
+        else if (data.grade === 'B+') rating = 4;
+        else if (data.grade === 'B') rating = 3;
+        else if (data.grade === 'C+') rating = 3;
+        else if (data.grade === 'C') rating = 2;
+        else rating = 1;
+        currentRating = rating;
+        document.querySelectorAll('.star').forEach((star, index) => {
+            if (index < rating) {
+                star.classList.add('rated');
+            }
+        });
+        actualizarCalificacion();
+        updateQR();
+
+        // Llamar a poblarLogrosRooms
+        poblarLogrosRooms(data.completedRooms || []);
+    })
+    .catch(error => {
+        console.error('Error cargando datos del certificado:', error);
+    });
+}
+
+function abrirPersonalizacion() {
+    document.getElementById('modalPersonalizacion').style.display = 'flex';
+}
+function cerrarPersonalizacion() {
+    document.getElementById('modalPersonalizacion').style.display = 'none';
+}
+// Guardar los estilos originales para restaurar
+let estilosOriginales = null;
+let fondoOriginal = null;
+
+function previsualizarPersonalizacion() {
+    const colorPrimario = document.getElementById('colorPrimario').value;
+    const colorSecundario = document.getElementById('colorSecundario').value;
+    const fondoInput = document.getElementById('fondoCertificado');
+    const cert = document.getElementById('certificado');
+
+    // Guardar estilos originales solo la primera vez
+    if (!estilosOriginales) {
+        estilosOriginales = {
+            border: cert.style.border,
+            boxShadow: cert.style.boxShadow,
+            color: cert.style.color,
+        };
+        fondoOriginal = cert.style.backgroundImage;
+    }
+
+    // Aplicar colores
+    cert.style.border = `4px solid ${colorPrimario}`;
+    cert.style.boxShadow = `0 0 40px ${colorPrimario}, 0 0 60px ${colorSecundario}`;
+    cert.style.color = colorSecundario;
+    cert.querySelectorAll('.header h1, .calificacion-label, .stats-title').forEach(el => {
+        el.style.color = colorPrimario;
+        el.style.textShadow = `0 0 18px ${colorPrimario}, 0 0 32px ${colorSecundario}`;
+    });
+    cert.querySelectorAll('label').forEach(el => { el.style.color = colorSecundario; });
+    cert.querySelectorAll('.grade-display').forEach(el => { el.style.color = colorPrimario; });
+
+    // Imagen de fondo
+    if (fondoInput.files && fondoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            cert.style.backgroundImage = `url('${e.target.result}')`;
+            cert.style.backgroundSize = 'cover';
+            cert.style.backgroundPosition = 'center';
+            cert.style.backgroundRepeat = 'no-repeat';
+        };
+        reader.readAsDataURL(fondoInput.files[0]);
+    } else {
+        cert.style.backgroundImage = '';
+    }
+}
+
+function aplicarYDescargar() {
+    const colorPrimario = document.getElementById('colorPrimario').value;
+    const colorSecundario = document.getElementById('colorSecundario').value;
+    const fondoInput = document.getElementById('fondoCertificado');
+    if (fondoInput.files && fondoInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            cerrarPersonalizacion();
+            setTimeout(() => {
+                descargarCertificado(colorPrimario, colorSecundario, e.target.result);
+            }, 300);
+        };
+        reader.readAsDataURL(fondoInput.files[0]);
+    } else {
+        cerrarPersonalizacion();
+        setTimeout(() => {
+            descargarCertificado(colorPrimario, colorSecundario, null);
+        }, 300);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var audio = document.getElementById('balatroTheme');
+    if (audio) {
+        audio.volume = 0.3;
+        audio.play().catch(()=>{});
+    }
+});
 </script>
     @Html.Partial("_NavMenu")
 </body>

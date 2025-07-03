@@ -367,6 +367,211 @@
         }
     });
     </script>
+
+    <!-- Cursor Effects Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create cursor aura element
+        const cursorAura = document.createElement('div');
+        cursorAura.className = 'cursor-aura';
+        cursorAura.style.display = 'none';
+        document.body.appendChild(cursorAura);
+
+        let isDragging = false;
+        let mouseX = 0;
+        let mouseY = 0;
+        let auraOffsetX = 0;
+        let auraOffsetY = 0;
+
+        // Track mouse movement with enhanced movement
+        document.addEventListener('mousemove', function(e) {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Add subtle random movement to aura for more dynamic feel
+            auraOffsetX = (Math.sin(Date.now() * 0.01) * 3) + (Math.random() - 0.5) * 2;
+            auraOffsetY = (Math.cos(Date.now() * 0.008) * 2) + (Math.random() - 0.5) * 1.5;
+            
+            // Update cursor aura position with smaller size and more movement
+            cursorAura.style.left = (mouseX - 4 + auraOffsetX) + 'px';
+            cursorAura.style.top = (mouseY - 4 + auraOffsetY) + 'px';
+        });
+
+        // Show aura when mouse is over interactive elements
+        document.addEventListener('mouseover', function(e) {
+            if (e.target.matches('.card, .canto-btn, .response-btn, .mazo-btn, .continue-btn, .reveal-btn, button')) {
+                cursorAura.style.display = 'block';
+                cursorAura.style.animation = 'rainbowAura 0.8s infinite';
+                cursorAura.style.transform = 'scale(1.5)';
+            }
+        });
+
+        // Hide aura when mouse leaves interactive elements
+        document.addEventListener('mouseout', function(e) {
+            if (e.target.matches('.card, .canto-btn, .response-btn, .mazo-btn, .continue-btn, .reveal-btn, button')) {
+                cursorAura.style.display = 'none';
+                cursorAura.style.transform = 'scale(1)';
+            }
+        });
+
+        // Enhanced epic click effect with thematic elements
+        document.addEventListener('click', function(e) {
+            // Create epic click effect with smaller size
+            const epicEffect = document.createElement('div');
+            epicEffect.style.position = 'fixed';
+            epicEffect.style.left = (mouseX - 12) + 'px';
+            epicEffect.style.top = (mouseY - 12) + 'px';
+            epicEffect.style.width = '24px';
+            epicEffect.style.height = '24px';
+            epicEffect.style.borderRadius = '50%';
+            epicEffect.style.background = 'radial-gradient(circle, rgba(0,255,255,0.9) 0%, rgba(255,0,255,0.7) 40%, rgba(0,255,0,0.5) 70%, transparent 100%)';
+            epicEffect.style.pointerEvents = 'none';
+            epicEffect.style.zIndex = '10000';
+            epicEffect.style.animation = 'epicClick 0.8s ease-out';
+            epicEffect.style.mixBlendMode = 'screen';
+            document.body.appendChild(epicEffect);
+
+            // Create thematic card-like particles
+            const cardParticles = 8;
+            for (let i = 0; i < cardParticles; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.left = (mouseX - 8) + 'px';
+                    particle.style.top = (mouseY - 8) + 'px';
+                    particle.style.width = '16px';
+                    particle.style.height = '16px';
+                    particle.style.borderRadius = '2px';
+                    particle.style.background = `linear-gradient(45deg, 
+                        hsl(${i * 45}, 100%, 50%) 0%, 
+                        hsl(${(i * 45 + 180) % 360}, 100%, 50%) 100%)`;
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '9999';
+                    particle.style.opacity = '0.9';
+                    particle.style.transform = 'scale(0.5) rotate(0deg)';
+                    particle.style.transition = 'all 0.6s ease';
+                    particle.style.boxShadow = `0 0 10px hsl(${i * 45}, 100%, 50%)`;
+                    document.body.appendChild(particle);
+
+                    // Animate particles outward in card-like pattern
+                    const angle = (i * 360 / cardParticles) * (Math.PI / 180);
+                    const distance = 60 + Math.random() * 40;
+                    const finalX = Math.cos(angle) * distance;
+                    const finalY = Math.sin(angle) * distance;
+
+                    setTimeout(() => {
+                        particle.style.transform = `translate(${finalX}px, ${finalY}px) scale(0) rotate(${i * 45}deg)`;
+                        particle.style.opacity = '0';
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                document.body.removeChild(particle);
+                            }
+                        }, 600);
+                    }, 50);
+                }, i * 30);
+            }
+
+            // Create ripple effect
+            const ripple = document.createElement('div');
+            ripple.style.position = 'fixed';
+            ripple.style.left = (mouseX - 20) + 'px';
+            ripple.style.top = (mouseY - 20) + 'px';
+            ripple.style.width = '40px';
+            ripple.style.height = '40px';
+            ripple.style.borderRadius = '50%';
+            ripple.style.border = '2px solid rgba(0,255,255,0.8)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.zIndex = '9998';
+            ripple.style.opacity = '1';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.transition = 'all 0.4s ease';
+            document.body.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.style.transform = 'scale(3)';
+                ripple.style.opacity = '0';
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        document.body.removeChild(ripple);
+                    }
+                }, 400);
+            }, 50);
+
+            // Remove epic effect after animation
+            setTimeout(() => {
+                if (epicEffect.parentNode) {
+                    document.body.removeChild(epicEffect);
+                }
+            }, 800);
+
+            // Add epic effect to clicked element
+            if (e.target.matches('.card, .canto-btn, .response-btn, .mazo-btn, .continue-btn, .reveal-btn, button')) {
+                e.target.classList.add('epic-click');
+                setTimeout(() => {
+                    e.target.classList.remove('epic-click');
+                }, 800);
+            }
+        });
+
+        // Enhanced drag effects with more movement
+        document.addEventListener('mousedown', function(e) {
+            if (e.target.matches('.card, .canto-btn, .response-btn, .mazo-btn, .continue-btn, .reveal-btn, button')) {
+                isDragging = true;
+                cursorAura.style.display = 'block';
+                cursorAura.style.animation = 'rainbowAura 0.5s infinite';
+                cursorAura.style.transform = 'scale(2)';
+            }
+        });
+
+        document.addEventListener('mouseup', function(e) {
+            isDragging = false;
+            cursorAura.style.transform = 'scale(1)';
+            if (!e.target.matches('.card, .canto-btn, .response-btn, .mazo-btn, .continue-btn, .reveal-btn, button')) {
+                cursorAura.style.display = 'none';
+            }
+        });
+
+        // Enhanced rainbow particles on drag with card theme
+        document.addEventListener('mousemove', function(e) {
+            if (isDragging) {
+                // Create thematic card particles
+                if (Math.random() < 0.4) {
+                    const particle = document.createElement('div');
+                    particle.style.position = 'fixed';
+                    particle.style.left = (mouseX - 4) + 'px';
+                    particle.style.top = (mouseY - 4) + 'px';
+                    particle.style.width = '8px';
+                    particle.style.height = '8px';
+                    particle.style.borderRadius = '1px';
+                    particle.style.background = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '9998';
+                    particle.style.opacity = '0.9';
+                    particle.style.transform = 'scale(1) rotate(0deg)';
+                    particle.style.transition = 'all 0.8s ease';
+                    particle.style.boxShadow = `0 0 8px hsl(${Math.random() * 360}, 100%, 60%)`;
+                    document.body.appendChild(particle);
+
+                    // Random movement pattern
+                    const moveX = (Math.random() - 0.5) * 100;
+                    const moveY = (Math.random() - 0.5) * 100;
+                    const rotation = Math.random() * 360;
+
+                    setTimeout(() => {
+                        particle.style.transform = `translate(${moveX}px, ${moveY}px) scale(0) rotate(${rotation}deg)`;
+                        particle.style.opacity = '0';
+                        setTimeout(() => {
+                            if (particle.parentNode) {
+                                document.body.removeChild(particle);
+                            }
+                        }, 800);
+                    }, 100);
+                }
+            }
+        });
+    });
+    </script>
+
      @Html.Partial("_NavMenu")
 </body>
 </html>
