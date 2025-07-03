@@ -21,7 +21,7 @@ En esta dimensión el backend está bloqueado.
 ERROR 403 — RickLockedException("readmeOnly = true")
  
 Morty, este archivo es una llave.
-Buscá el patrón. Desbloqueá el código.
+Buscá el patrón. Desbloqueá el código. 
 Y por favor... no confíes en las variables globales.
 + Dividir
 + Extraer
