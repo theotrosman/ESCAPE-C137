@@ -6,7 +6,7 @@
 </p>
 
 ---
-
+ 
 ```txt 
 [RICK CONNECTING...]
 ...Morty... ¿me recibís?...
