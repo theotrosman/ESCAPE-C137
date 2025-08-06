@@ -1,0 +1,25 @@
+name: Daily README Update
+
+on:
+  schedule:
+    - cron: '0 13 * * *' # 10 AM Buenos Aires (UTC-3)
+
+permissions:
+  contents: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Append blank line to README
+        run: |
+          echo "" >> README.md
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Automated daily README update"
+          add: README.md
